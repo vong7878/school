@@ -270,10 +270,77 @@
             </div>
 
             <!-- 6. Scores Management Section -->
-            <div id="section-scores" class="content-section" style="display: none;">
-                <h2>📈 ຈັດການຄະແນນ</h2>
-                <p>ຄະແນນລະຫວ່າງຮຽນ, ຄະແນນສອບເສັງ ແລະ ຜົນການຮຽນ.</p>
+           <!-- 6. Scores Management Section -->
+<div id="section-scores" class="content-section" style="display: none;">
+    <h2>📈 ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</h2>
+    <p>ບັນທຶກ, ປະເມີນ ແລະ ຈັດການຄະແນນສອບເສັງຂອງນັກຮຽນໃນແຕ່ລະວິຊາ.</p>
+
+    <!-- ຟອມບັນທຶກຄະແນນ -->
+    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <h3 id="score-form-title">➕ ບັນທຶກຄະແນນນັກຮຽນ</h3>
+        <form id="score-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+            <input type="hidden" id="score-doc-id">
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະຫັດ ຫຼື ຊື່ນັກຮຽນ:</label>
+                <input type="text" id="score-student-name" required placeholder="ຊື່ ຫຼື ລະຫັດນັກຮຽນ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
             </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ:</label>
+                <select id="score-grade" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">-- ເລືອກຊັ້ນຮຽນ --</option>
+                    <option value="ມ.1">ມ.1</option>
+                    <option value="ມ.2">ມ.2</option>
+                    <option value="ມ.3">ມ.3</option>
+                    <option value="ມ.4">ມ.4</option>
+                    <option value="ມ.5">ມ.5</option>
+                    <option value="ມ.6">ມ.6</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ວິຊາສອນ:</label>
+                <input type="text" id="score-subject" required placeholder="ຕົວຢ່າງ: ຄະນິດສາດ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄະແນນເກັບ (40):</label>
+                <input type="number" id="score-midterm" required min="0" max="40" placeholder="0-40" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄະແນນສອບເສັງ (60):</label>
+                <input type="number" id="score-final" required min="0" max="60" placeholder="0-60" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+                <button type="submit" id="save-score-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຄະແນນ</button>
+                <button type="button" id="cancel-score-edit-btn" onclick="resetScoreForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ຕາຕະລາງສະແດງຜົນຄະແນນ -->
+    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+            <h3>📋 ຕາຕະລາງສະຫຼຸບຄະແນນນັກຮຽນ</h3>
+            <input type="text" id="search-score-input" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ ຫຼື ວິຊາ..." onkeyup="filterScores()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ຊື່ນັກຮຽນ</th>
+                    <th>ຊັ້ນຮຽນ</th>
+                    <th>ວິຊາ</th>
+                    <th>ຄະແນນເກັບ (40)</th>
+                    <th>ສອບເສັງ (60)</th>
+                    <th>ລວມ (100)</th>
+                    <th>ເກຣດ</th>
+                    <th>ຈັດການ</th>
+                </tr>
+            </thead>
+            <tbody id="scores-table-body">
+                <tr><td colspan="8" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
             <!-- 7. Finance Section -->
             <div id="section-finance" class="content-section" style="display: none;">
