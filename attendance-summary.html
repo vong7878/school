@@ -24,6 +24,32 @@
             border-radius: 4px;
         }
         .back-btn:hover { background-color: #5a6268; }
+        
+        /* ດີໄຊນ໌ກາດສະຖິຕິ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 5px solid #007bff;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .stat-card.present { border-left-color: #28a745; }
+        .stat-card.absent { border-left-color: #dc3545; }
+        .stat-card.leave { border-left-color: #ffc107; }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -43,8 +69,23 @@
 
     <div class="report-container">
         <a href="index.html" class="back-btn">⬅️ ກັບຄືນໜ້າຫຼັກ</a>
-        <h2>📉 ສະຫຼຸບຍອດວັນຂາດ ແລະ ການຫັກຄະແນນນັກຮຽນ</h2>
-        <p style="color: #666; margin-bottom: 15px;">* ໝາຍເຫດ: ຄິດໄລ່ຫັກຄະແນນ 1 ຄັ້ງ = ຫັກ 1 ຄະແນນ (ສາມາດປັບປ່ຽນໄດ້ຕາມຕ້ອງການ)</p>
+        <h2>📉 ສະຖິຕິ ແລະ ສະຫຼຸບຍອດການມາຮຽນ-ຂາດຮຽນ</h2>
+
+        <!-- 📊 ສ່ວນສະແດງກາດສະຖິຕິລວມ -->
+        <div class="stats-grid">
+            <div class="stat-card present">
+                <div>🟢 มาຮຽນລວມ</div>
+                <div class="stat-number" id="total-present">0 ຄັ້ງ</div>
+            </div>
+            <div class="stat-card absent">
+                <div>🔴 ຂາດຮຽນລວມ</div>
+                <div class="stat-number" id="total-absent">0 ຄັ້ງ</div>
+            </div>
+            <div class="stat-card leave">
+                <div>🟠 ລາຮຽນລວມ</div>
+                <div class="stat-number" id="total-leave">0 ຄັ້ງ</div>
+            </div>
+        </div>
 
         <table>
             <thead>
@@ -63,7 +104,7 @@
         </table>
     </div>
 
-    <!-- Firebase ແລະ Script ປະມວນຜົນສະຫຼຸບ -->
+    <!-- Firebase ແລະ Script ປະມວນຜົນສະຖິຕິ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -86,10 +127,7 @@
             tbody.innerHTML = `<tr><td colspan="6">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
 
             try {
-                // 1. ดึงข้อมูลการเช็คชื่อทั้งหมด
                 const attendanceSnapshot = await getDocs(collection(db, "attendance"));
-                
-                // 2. ดึงข้อมูลนักเรียนทั้งหมดเพื่อเอาชื่อและชั้นเรียนที่ถูกต้อง
                 const studentsSnapshot = await getDocs(collection(db, "students"));
                 const studentsMap = {};
                 studentsSnapshot.forEach(doc => {
@@ -100,12 +138,19 @@
                     };
                 });
 
-                // 3. ປະມວນຜົນລວມຍອດການຂາດ/ລາ ຂອງແต้นັກຮຽນແຕ່ລະຄົນ
                 const summaryData = {};
+                let overallPresent = 0;
+                let overallAbsent = 0;
+                let overallLeave = 0;
 
                 attendanceSnapshot.forEach(doc => {
                     const data = doc.data();
                     const sId = data.studentId;
+
+                    // ນັບສະຖິຕິລວມທັງໝົດ
+                    if (data.status === 'ມາ') overallPresent++;
+                    if (data.status === 'ຂາດ') overallAbsent++;
+                    if (data.status === 'ລາ') overallLeave++;
 
                     if (!sId) return;
 
@@ -126,6 +171,11 @@
                     }
                 });
 
+                // ອັບເດດຕົວເລກສະຖິຕິລວມຂຶ້ນ Card ດ້ານເທິງ
+                document.getElementById('total-present').innerText = overallPresent + ' ຄັ້ງ';
+                document.getElementById('total-absent').innerText = overallAbsent + ' ຄັ້ງ';
+                document.getElementById('total-leave').innerText = overallLeave + ' ຄັ້ງ';
+
                 tbody.innerHTML = '';
                 const studentIds = Object.keys(summaryData);
 
@@ -133,10 +183,10 @@
                     tbody.innerHTML = `<tr><td colspan="6">ຍັງບໍ່ມີຂໍ້ມູນການຂາດຮຽນໃນລະບົບ</td></tr>`;
                     return;
                 }
-// 4. ສະແດງຜົນລົງໃນຕາຕະລາງ
+
                 studentIds.forEach(sId => {
                     const student = summaryData[sId];
-                    const deductScore = student.absentCount * 1.0; // ຕັ້ງຄ່າ: ຂາດ 1 ຄັ້ງ ຫັກ 1 ຄະແນນ
+                    const deductScore = student.absentCount * 1.0;
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -149,7 +199,6 @@
                     `;
                     tbody.appendChild(tr);
                 });
-               
 
             } catch (error) {
                 console.error("Error loading summary: ", error);
