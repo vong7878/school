@@ -1,189 +1,200 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-    getFirestore, 
-    collection, 
-    addDoc, 
-    deleteDoc, 
-    doc, 
-    onSnapshot,
-    query,
-    orderBy 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// =================================================================
-// 1. ວາງຂໍ້ມູນ firebaseConfig ຂອງທ່ານໃສ່ບ່ອນນີ້ (ເອົາມາຈາກ Firebase Console)
-// =================================================================
-const firebaseConfig = {
-    apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    authDomain: "your-project-id.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project-id.appspot.com",
-    messagingSenderId: "123456789012",
-    appId: "1:123456789012:web:abcdef1234567890"
-};
-
-// ເລີ່ມຕົ້ນເຊື່ອມຕໍ່ Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// ອ້າງອີງຫາ Collections ໃນ Firestore
-const studentsCol = collection(db, "students");
-const teachersCol = collection(db, "teachers");
-
-let allStudents = []; // ເກັບຂໍ້ມູນຊົ່ວຄາວໄວ້ສຳລັບຄົ້ນຫາ
-let allTeachers = [];
-
-// ================= ລະບົບສະຫຼັບເມນູ =================
-document.querySelectorAll('.nav-links li').forEach(item => {
-    item.addEventListener('click', function() {
-        const targetId = this.getAttribute('data-target');
-        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-        document.getElementById(targetId).classList.add('active');
-
-        document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
-        this.classList.add('active');
-    });
-});
-
-// ================= ຈັດການຂໍ້ມູນນັກຮຽນ (Real-time) =================
-
-// ດຶງຂໍ້ມູນນັກຮຽນແບບ Real-time (ອັບເດດອັດຕະໂນມັດເມື່ອຂໍ້ມູນປ່ຽນ)
-onSnapshot(studentsCol, (snapshot) => {
-    allStudents = snapshot.docs.map(doc => ({
-        docId: doc.id, // ID ຂອງເອກະສານໃນ Firebase
-        ...doc.data()
-    }));
-    renderStudents(allStudents);
-    document.getElementById('total-students').innerText = allStudents.length + ' ຄົນ';
-});
-
-function renderStudents(data) {
-    const tbody = document.getElementById('student-list');
-    tbody.innerHTML = '';
-
-    data.forEach((student) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${student.id}</td>
-            <td>${student.name}</td>
-            <td>${student.grade}</td>
-            <td>${student.phone}</td>
-            <td>
-                <button class="btn-delete" data-id="${student.docId}">ລຶບ</button>
-            </td>
-        `;
-        
-        // ຜູກ Event ປຸ່ມລຶບ
-        tr.querySelector('.btn-delete').addEventListener('click', () => deleteStudent(student.docId));
-        tbody.appendChild(tr);
-    });
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Noto Sans Lao', sans-serif;
 }
 
-// ເພີ່ມຂໍ້ມູນນັກຮຽນລົງ Firebase
-document.getElementById('student-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = this.querySelector('button');
-    btn.disabled = true;
-    btn.innerText = 'ກຳລັງບັນທຶກ...';
-
-    try {
-        await addDoc(studentsCol, {
-            id: document.getElementById('stu-id').value,
-            name: document.getElementById('stu-name').value,
-            grade: document.getElementById('stu-grade').value,
-            phone: document.getElementById('stu-phone').value,
-            createdAt: new Date()
-        });
-        this.reset();
-    } catch (error) {
-        alert("ເກີດຂໍ້ຜິດພາດໃນການບັນທຶກ: " + error.message);
-    } finally {
-        btn.disabled = false;
-        btn.innerText = '+ ເພີ່ມຂໍ້ມູນ';
-    }
-});
-
-// ລຶບຂໍ້ມູນນັກຮຽນອອກຈາກ Firebase
-async function deleteStudent(docId) {
-    if (confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນນັກຮຽນຄົນນີ້?')) {
-        try {
-            await deleteDoc(doc(db, "students", docId));
-        } catch (error) {
-            alert("ລຶບບໍ່ສຳເລັດ: " + error.message);
-        }
-    }
+body {
+    background-color: #f4f7f6;
+    color: #333;
 }
 
-// ຄົ້ນຫານັກຮຽນ
-document.getElementById('search-student').addEventListener('keyup', function() {
-    const keyword = this.value.toLowerCase();
-    const filtered = allStudents.filter(s => 
-        s.name.toLowerCase().includes(keyword) || 
-        s.id.toLowerCase().includes(keyword)
-    );
-    renderStudents(filtered);
-});
-
-// ================= ຈັດການຂໍ້ມູນຄູອາຈານ (Real-time) =================
-
-onSnapshot(teachersCol, (snapshot) => {
-    allTeachers = snapshot.docs.map(doc => ({
-        docId: doc.id,
-        ...doc.data()
-    }));
-    renderTeachers(allTeachers);
-    document.getElementById('total-teachers').innerText = allTeachers.length + ' ຄົນ';
-});
-
-function renderTeachers(data) {
-    const tbody = document.getElementById('teacher-list');
-    tbody.innerHTML = '';
-
-    data.forEach((teacher) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${teacher.id}</td>
-            <td>${teacher.name}</td>
-            <td>${teacher.subject}</td>
-            <td>${teacher.phone}</td>
-            <td>
-                <button class="btn-delete" data-id="${teacher.docId}">ລຶບ</button>
-            </td>
-        `;
-        tr.querySelector('.btn-delete').addEventListener('click', () => deleteTeacher(teacher.docId));
-        tbody.appendChild(tr);
-    });
+.container {
+    display: flex;
+    min-height: 100vh;
 }
 
-document.getElementById('teacher-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = this.querySelector('button');
-    btn.disabled = true;
-    btn.innerText = 'ກຳລັງບັນທຶກ...';
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background-color: #1e293b;
+    color: white;
+    padding: 20px 0;
+    flex-shrink: 0;
+}
 
-    try {
-        await addDoc(teachersCol, {
-            id: document.getElementById('tea-id').value,
-            name: document.getElementById('tea-name').value,
-            subject: document.getElementById('tea-subject').value,
-            phone: document.getElementById('tea-phone').value,
-            createdAt: new Date()
-        });
-        this.reset();
-    } catch (error) {
-        alert("ເກີດຂໍ້ຜິດພາດ: " + error.message);
-    } finally {
-        btn.disabled = false;
-        btn.innerText = '+ ເພີ່ມຂໍ້ມູນ';
+.sidebar .logo {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #334155;
+    margin-bottom: 20px;
+}
+
+.nav-links {
+    list-style: none;
+}
+
+.nav-links li {
+    padding: 15px 25px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 16px;
+}
+
+.nav-links li:hover, .nav-links li.active {
+    background-color: #3b82f6;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    padding: 30px;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+h1 {
+    margin-bottom: 25px;
+    color: #1e293b;
+}
+
+/* Dashboard Cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border-left: 5px solid #3b82f6;
+}
+
+.card h3 {
+    font-size: 16px;
+    color: #64748b;
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1e293b;
+}
+
+/* Forms */
+.form-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 25px;
+}
+
+.form-container h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+input, select {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+
+input:focus, select:focus {
+    border-color: #3b82f6;
+}
+
+.btn-add {
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-add:hover {
+    background-color: #059669;
+}
+
+/* Table */
+.table-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+#search-student {
+    width: 100%;
+    max-width: 350px;
+    margin-bottom: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: #f1f5f9;
+}
+
+.btn-delete {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.btn-delete:hover {
+    background-color: #dc2626;
+}
+
+/* Responsive ສຳລັບມືຖື */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
     }
-});
-
-async function deleteTeacher(docId) {
-    if (confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນຄູອາຈານທ່ານນີ້?')) {
-        try {
-            await deleteDoc(doc(db, "teachers", docId));
-        } catch (error) {
-            alert("ລຶບບໍ່ສຳເລັດ: " + error.message);
-        }
+    .sidebar {
+        width: 100%;
     }
 }
