@@ -94,6 +94,7 @@ function startApp(role, userData) {
             <li data-target="teachers">👩‍🏫 ຈັດການຄູອາຈານ</li>
             <li data-target="attendance">📝 ເຊັກຊື່ມາຮຽນ</li>
             <li><a href="attendance-report.html" style="text-decoration: none; color: inherit;">📈 ເບິ່ງລາຍງານການຂາດ-ມາ</a></li>
+            <a href="attendance-summary.html" class="back-btn" style="background-color: #28a745; margin-left: 10px;">📈 ເບິ່ງໜ້າສະຫຼຸບຍອດຂາດ & ຫັກຄະແນນ</a>
         `;
         showSection('dashboard');
     } else {
