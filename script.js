@@ -343,3 +343,109 @@ window.filterTeachers = function() {
 window.addEventListener('DOMContentLoaded', () => {
     window.loadTeachers();
 });
+// 1. ໂຫຼດລາຍຊື່ຫ້ອງຮຽນຈາກ Firebase Firestore
+window.loadClasses = async function() {
+    const tbody = document.getElementById('classes-table-body');
+    if (!tbody) return;
+    
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
+
+    try {
+        const querySnapshot = await getDocs(collection(db, "classes"));
+        tbody.innerHTML = '';
+
+        if (querySnapshot.empty) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນຫ້ອງຮຽນໃນລະບົບ</td></tr>`;
+            return;
+        }
+
+        querySnapshot.forEach((documentSnapshot) => {
+            const data = documentSnapshot.data();
+            const docId = documentSnapshot.id;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${data.level || '-'}</td>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: #007bff;">${data.name || '-'}</td>
+                <td style="border: 1px solid #ddd; padding: 10px;">${data.teacher || '-'}</td>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">
+                    <button onclick="editClass('${docId}', '${data.level}', '${data.name}', '${data.teacher}')" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
+                    <button onclick="deleteClass('${docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">🗑️</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+    } catch (error) {
+        console.error("Error loading classes: ", error);
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
+    }
+}
+
+// 2. ຈັດການການສົ່ງຟອມ (ເພີ່ມ ຫຼື ອັບເດດຫ້ອງຮຽນ)
+const classForm = document.getElementById('class-form');
+if (classForm) {
+    classForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const docId = document.getElementById('class-doc-id').value;
+        const level = document.getElementById('class-level').value;
+        const name = document.getElementById('class-name').value;
+        const teacher = document.getElementById('class-teacher').value;
+
+        try {
+            if (docId) {
+                // ອັບເດດຂໍ້ມູນ
+                await updateDoc(doc(db, "classes", docId), { level: level, name: name, teacher: teacher });
+                alert('✅ ແກ້ໄຂຂໍ້ມູນຫ້ອງຮຽນສຳເລັດ!');
+            } else {
+                // ເພີ່ມໃໝ່
+                await addDoc(collection(db, "classes"), { level: level, name: name, teacher: teacher });
+                alert('✅ ເພີ່ມຫ້ອງຮຽນສຳເລັດ!');
+            }
+            window.resetClassForm();
+            window.loadClasses();
+        } catch (error) {
+            console.error("Error saving class: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
+        }
+    });
+}
+
+// 3. ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແກ້ໄຂ
+window.editClass = function(docId, level, name, teacher) {
+    document.getElementById('class-doc-id').value = docId;
+    document.getElementById('class-level').value = level;
+    document.getElementById('class-name').value = name;
+    document.getElementById('class-teacher').value = teacher;
+    
+    document.getElementById('save-class-btn').innerText = 'ອັບເດດຫ້ອງ';
+    document.getElementById('cancel-class-edit-btn').style.display = 'inline-block';
+}
+
+// 4. ລົບຫ້ອງຮຽນ
+window.deleteClass = async function(docId) {
+    if (confirm('ທ່ານຕ້ອງການລົບຫ້ອງຮຽນນີ້ແທ້ບໍ?')) {
+        try {
+            await deleteDoc(doc(db, "classes", docId));
+            alert('✅ ລົບຫ້ອງຮຽນສຳເລັດ!');
+            window.loadClasses();
+        } catch (error) {
+            console.error("Error deleting class: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດໃນການລົບ');
+        }
+    }
+}
+
+// 5. ຣີເຊັດຟອມຫ້ອງຮຽນ
+window.resetClassForm = function() {
+    const form = document.getElementById('class-form');
+    if (form) form.reset();
+    document.getElementById('class-doc-id').value = '';
+    document.getElementById('save-class-btn').innerText = 'ບັນທຶກຫ້ອງ';
+    document.getElementById('cancel-class-edit-btn').style.display = 'none';
+}
+
+// ເອີ້ນໃຊ້ຟັງຊັນໂຫຼດຂໍ້ມູນຫ້ອງຮຽນຕອນເປີດໜ້າເວັບ
+window.addEventListener('DOMContentLoaded', () => {
+    window.loadClasses();
+});
