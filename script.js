@@ -301,3 +301,10 @@ if (saveAttendanceBtn) {
         }
     });
 }
+menu.innerHTML = `
+            <li class="active" data-target="dashboard">📊 ໜ້າຫຼັກ (Dashboard)</li>
+            <li data-target="students">👨‍🎓 ຈັດການນັກຮຽນ</li>
+            <li data-target="teachers">👩‍🏫 ຈັດການຄູອາຈານ</li>
+            <li data-target="attendance">📝 ເຊັກຊື່ມາຮຽນ</li>
+            <li><a href="attendance-report.html" style="text-decoration: none; color: inherit;">📈 ເບິ່ງລາຍງານການຂາດ-ມາ</a></li>
+        `;
