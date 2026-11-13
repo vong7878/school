@@ -59,50 +59,76 @@
         </div>
 
         <!-- 2. Students Management Section -->
-        <div id="section-students" class="content-section" style="display: none;">
-            <h2>👨‍🎓 ຈັດການຂໍ້ມູນນັກຮຽນ</h2>
-            <p>ເພີ່ມ, ແກ້ໄຂ, ລຶບ ແລະ ຄົ້ນຫາຂໍ້ມູນນັກຮຽນໃນລະບົບ.</p>
-            <!-- ຟອມ ແລະ ตารางຈັດການນັກຮຽນ -->
-        </div>
-
-        <!-- 3. Teachers Management Section -->
-        <div id="section-teachers" class="content-section" style="display: none;">
-            <h2>👩‍🏫 ຈັດການຂໍ້ມູນຄູອາຈານ ແລະ ຕາຕະລາງສອນ</h2>
-            <!-- เนื้อหาຈັດການຄູ -->
-        </div>
-
-        <!-- 4. Classes Management Section -->
-        <div id="section-classes" class="content-section" style="display: none;">
-            <h2>🏫 ຈັດການຫ້ອງຮຽນ ແລະ ຊັ້ນຮຽນ</h2>
-            <!-- เนื้อหาຫ້ອງຮຽນ -->
-        </div>
-
-        <!-- 5. Attendance Management Section -->
-        <div id="section-attendance" class="content-section" style="display: none;">
-            <h2>📝 ຈັດການການມາຮຽນ (ມາ, ຂາດ, ມາຊ້າ, ລາພັກ)</h2>
-            <div style="margin-top: 15px;">
-                <a href="attendance-report.html" style="padding: 10px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; margin-right: 10px;">📊 ເບິ່ງປະຫວັດການເຊັກຊື່</a>
-                <a href="attendance-summary.html" style="padding: 10px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">📈 ສະຫຼຸບວັນຂາດ & ຫັກຄະແນນ</a>
+       <!-- 🖥️ Main Content Area: ສະແດງເນື້ອຫາຕາມໂມດູນທີ່ເລືອກ -->
+<div style="flex: 1; padding: 30px; overflow-y: auto; background: #f4f6f9;">
+    
+    <!-- 1. Dashboard -->
+    <div id="section-dashboard" class="content-section">
+        <h2>📊 Dashboard - ພາບລວມລະບົບ</h2>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px;">
+            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4>ນັກຮຽນທັງໝົດ</h4>
+                <p id="dash-total-students" style="font-size: 24px; font-weight: bold; color: #007bff;">0 ຄົນ</p>
+            </div>
+            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4>ຄູອາຈານທັງໝົດ</h4>
+                <p id="dash-total-teachers" style="font-size: 24px; font-weight: bold; color: #28a745;">0 ຄົນ</p>
+            </div>
+            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4>ຫ້ອງຮຽນທັງໝົດ</h4>
+                <p style="font-size: 24px; font-weight: bold; color: #ffc107;">12 ຫ້ອງ</p>
+            </div>
+            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4>ສະຖິຕິມາຮຽນ</h4>
+                <p style="font-size: 24px; font-weight: bold; color: #17a2b8;">95%</p>
             </div>
         </div>
+    </div>
 
-        <!-- 6. Scores Management Section -->
-        <div id="section-scores" class="content-section" style="display: none;">
-            <h2>📈 ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</h2>
-            <!-- เนื้อหาຄະແນນ -->
-        </div>
+    <!-- 2. ຈັດການນັກຮຽນ -->
+    <div id="section-students" class="content-section" style="display: none;">
+        <h2>👨‍🎓 ຈັດການຂໍ້ມູນນັກຮຽນ</h2>
+        <p>ລະບົບເພີ່ມ, ແກ້ໄຂ, ລຶບ ແລະ ຄົ້ນຫາຂໍ້ມູນນັກຮຽນໃນຖານຂໍ້ມູນ.</p>
+    </div>
 
-        <!-- 7. Finance Section -->
-        <div id="section-finance" class="content-section" style="display: none;">
-            <h2>💰 ລະບົບການເງິນ ແລະ ຄ່າຮຽນ</h2>
-            <!-- เนื้อหาການເງິນ -->
-        </div>
+    <!-- 3. ຈັດການຄູອາຈານ -->
+    <div id="section-teachers" class="content-section" style="display: none;">
+        <h2>👩‍🏫 ຈັດການຂໍ້ມູນຄູອາຈານ</h2>
+        <p>ຂໍ້ມູນຄູ, ວິຊາທີ່ສອນ ແລະ ຕາຕະລາງສອນ.</p>
+    </div>
 
-        <!-- 8. News & Notifications Section -->
-        <div id="section-news" class="content-section" style="display: none;">
-            <h2>📢 ຂ່າວສານ, ປະກາດ ແລະ ປະຕິທິນໂຮງຮຽນ</h2>
-            <!-- เนื้อหาຂ່າວສານ -->
+    <!-- 4. ຈັດການຫ້ອງຮຽນ -->
+    <div id="section-classes" class="content-section" style="display: none;">
+        <h2>🏫 ຈັດການຫ້ອງຮຽນ ແລະ ຊັ້ນຮຽນ</h2>
+        <p>ລະດັບຊັ້ນ, ຫ້ອງຮຽນ ແລະ ຈັດສັນລາຍຊື່ນັກຮຽນ.</p>
+    </div>
+
+    <!-- 5. ຈັດການການມາຮຽນ -->
+    <div id="section-attendance" class="content-section" style="display: none;">
+        <h2>📝 ຈັດການການມາຮຽນ (ມາ, ຂາດ, ມາຊ້າ, ລາພັກ)</h2>
+        <div style="margin-top: 15px;">
+            <a href="attendance-report.html" style="padding: 10px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; margin-right: 10px;">📊 ເບິ່ງປະຫວັດການເຊັກຊື່</a>
+            <a href="attendance-summary.html" style="padding: 10px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">📈 ສະຫຼຸບວັນຂາດ & ຫັກຄະແນນ</a>
         </div>
+    </div>
+
+    <!-- 6. ຈັດການຄະແນນ -->
+    <div id="section-scores" class="content-section" style="display: none;">
+        <h2>📈 ຈັດການຄະແນນ</h2>
+        <p>ຄະແນນລະຫວ່າງຮຽນ, ຄະແນນສອບເສັງ ແລະ ຜົນການຮຽນ.</p>
+    </div>
+
+    <!-- 7. ການເງິນ -->
+    <div id="section-finance" class="content-section" style="display: none;">
+        <h2>💰 ລະບົບການເງິນ & ຄ່າຮຽນ</h2>
+        <p>ຈັດການຄ່າຮຽນ, ບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ ແລະ ສະຖານະການຊຳລະ.</p>
+    </div>
+
+    <!-- 8. ຂ່າວສານ -->
+    <div id="section-news" class="content-section" style="display: none;">
+        <h2>📢 ຂ່າວສານ ແລະ ແຈ້ງເຕືອນ</h2>
+        <p>ປະກາດຂ່າວ, ປະຕິທິນໂຮງຮຽນ ແລະ ສົ່ງການແຈ້ງເຕືອນ.</p>
+    </div>
 
     </div>
 </div>
