@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ລະບົບຄຸ້ມຄອງໂຮງຮຽນ (Firebase)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>🎓 ລະບົບໂຮງຮຽນ</h2>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-target="dashboard">📊 ໜ້າຫຼັກ (Dashboard)</li>
+                <li data-target="students">👨‍🎓 ຈັດການນັກຮຽນ</li>
+                <li data-target="teachers">👩‍🏫 ຈັດການຄູອາຈານ</li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- 1. ໜ້າ Dashboard -->
+            <section id="dashboard" class="section active">
+                <h1>ພາບລວມຂອງໂຮງຮຽນ</h1>
+                <div class="cards">
+                    <div class="card">
+                        <h3>ນັກຮຽນທັງໝົດ</h3>
+                        <p id="total-students">ກຳລັງໂຫຼດ...</p>
+                    </div>
+                    <div class="card">
+                        <h3>ຄູອາຈານທັງໝົດ</h3>
+                        <p id="total-teachers">ກຳລັງໂຫຼດ...</p>
+                    </div>
+                    <div class="card">
+                        <h3>ຫ້ອງຮຽນທັງໝົດ</h3>
+                        <p>12 ຫ້ອງ</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. ໜ້າຈັດການນັກຮຽນ -->
+            <section id="students" class="section">
+                <h1>ຈັດການຂໍ້ມູນນັກຮຽນ</h1>
+                <div class="form-container">
+                    <h3>ເພີ່ມນັກຮຽນໃໝ່</h3>
+                    <form id="student-form">
+                        <input type="text" id="stu-id" placeholder="ລະຫັດນັກຮຽນ (ເຊັ່ນ: S001)" required>
+                        <input type="text" id="stu-name" placeholder="ຊື່ ແລະ ນາມສະກຸນ" required>
+                        <select id="stu-grade" required>
+                            <option value="">-- ເລືອກຊັ້ນຮຽນ --</option>
+                            <option value="ມ.1">ມ.1</option>
+                            <option value="ມ.2">ມ.2</option>
+                            <option value="ມ.3">ມ.3</option>
+                            <option value="ມ.4">ມ.4</option>
+                            <option value="ມ.5">ມ.5</option>
+                            <option value="ມ.6">ມ.6</option>
+                            <option value="ມ.7">ມ.7</option>
+                        </select>
+                        <input type="tel" id="stu-phone" placeholder="ເບີໂທຜູ້ປົກຄອງ" required>
+                        <button type="submit" class="btn-add">+ ເພີ່ມຂໍ້ມູນ</button>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <input type="text" id="search-student" placeholder="🔍 ຄົ້ນຫາຊື່ ຫຼື ລະຫັດນັກຮຽນ...">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ລະຫັດ</th>
+                                <th>ຊື່ ແລະ ນາມສະກຸນ</th>
+                                <th>ຊັ້ນຮຽນ</th>
+                                <th>ເບີໂທຜູ້ປົກຄອງ</th>
+                                <th>ຈັດການ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-list"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 3. ໜ້າຈັດການຄູອາຈານ -->
+            <section id="teachers" class="section">
+                <h1>ຈັດການຂໍ້ມູນຄູອາຈານ</h1>
+                <div class="form-container">
+                    <h3>ເພີ່ມຄູອາຈານໃໝ່</h3>
+                    <form id="teacher-form">
+                        <input type="text" id="tea-id" placeholder="ລະຫັດຄູ (ເຊັ່ນ: T001)" required>
+                        <input type="text" id="tea-name" placeholder="ຊື່ ແລະ ນາມສະກຸນ" required>
+                        <input type="text" id="tea-subject" placeholder="ວິຊາສອນ (ເຊັ່ນ: ຄະນິດສາດ)" required>
+                        <input type="tel" id="tea-phone" placeholder="ເບີໂທຕິດຕໍ່" required>
+                        <button type="submit" class="btn-add">+ ເພີ່ມຂໍ້ມູນ</button>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ລະຫັດ</th>
+                                <th>ຊື່ ແລະ ນາມສະກຸນ</th>
+                                <th>ວິຊາສອນ</th>
+                                <th>ເບີໂທຕິດຕໍ່</th>
+                                <th>ຈັດການ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-list"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ໃຊ້ type="module" ເພື່ອເຊື່ອມຕໍ່ Firebase -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
