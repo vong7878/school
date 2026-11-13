@@ -1,8 +1,7 @@
 // 1. ນຳເຂົ້າ Firebase SDK ທີ່ຈຳເປັນ
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-// 📌 ປະກາດ Firebase Firestore Database ໄວ້ເທິງສຸດສະເໝີ
-const db = firebase.firestore();
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 // 2. ຕັ້ງຄ່າ Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
@@ -14,11 +13,11 @@ const firebaseConfig = {
     measurementId: "G-NPNFSW2C72"
 };
 
-// 3. ເລີ່ມຕົ້ນ Firebase App ແລະ Firestore
+// 3. ເລີ່ມຕົ້ນ Firebase App ແລະ Firestore (ປະກາດ db ພຽງຄັ້ງດຽວເທົ່ານັ້ນ!)
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ຕົວແປເກັບຂໍ້ມູນລວມສຳລັບການຄົ້ນຫາ
+// ຕົວແປເກັບຂໍ້ມູນລວມສຳລັບการຄົ້ນຫາ
 let allStudentsData = [];
 let allTeachersData = [];
 let allScoresData = [];
@@ -41,7 +40,7 @@ window.showSection = function(sectionName) {
 
 // ຟັງຊັນອອກຈາກລະບົບ (Logout)
 window.logout = function() {
-    localStorage.removeItem('isLoggedIn');
+    localStorage.clear();
     alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
     window.location.href = 'index.html';
 }
@@ -324,7 +323,7 @@ window.filterTeachers = function() {
 
 
 // ==========================================
-// 7. ໂມດູນຈັດການຫ້ອງຮຽນ (Classes Management)
+// 7. ໂມດູນຈັດການຫ້ອງຮຽນ (Classes Management - Firebase v10 Modular)
 // ==========================================
 window.loadClasses = async function() {
     const tbody = document.getElementById('classes-table-body');
@@ -347,16 +346,24 @@ window.loadClasses = async function() {
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${data.level || '-'}</td>
-                <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: #007bff;">${data.name || '-'}</td>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${data.level || data.grade || '-'}</td>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: #007bff;">${data.name || data.className || '-'}</td>
                 <td style="border: 1px solid #ddd; padding: 10px;">${data.teacher || '-'}</td>
-                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">
-                    <button onclick="editClass('${docId}', '${data.level}', '${data.name}', '${data.teacher}')" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;" class="action-col">
+                    <button onclick="viewClassStudents('${docId}', '${data.name || data.className || ''}')" style="background: #17a2b8; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">👥 ເບິ່ງນັກຮຽນ</button>
+                    <button onclick="editClass('${docId}', '${data.level || data.grade || ''}', '${data.name || data.className || ''}', '${data.teacher || ''}')" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
                     <button onclick="deleteClass('${docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">🗑️</button>
                 </td>
             `;
             tbody.appendChild(tr);
         });
+
+        const role = localStorage.getItem('userRole');
+        if (role === 'student') {
+            const formContainer = document.getElementById('class-form-container');
+            if (formContainer) formContainer.style.display = 'none';
+        }
+
     } catch (error) {
         console.error("Error loading classes: ", error);
         tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
@@ -367,17 +374,17 @@ const classForm = document.getElementById('class-form');
 if (classForm) {
     classForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const docId = document.getElementById('class-doc-id').value;
-        const level = document.getElementById('class-level').value;
-        const name = document.getElementById('class-name').value;
-        const teacher = document.getElementById('class-teacher').value;
+        const docId = document.getElementById('class-doc-id') ? document.getElementById('class-doc-id').value : '';
+        const level = document.getElementById('class-level') ? document.getElementById('class-level').value : '';
+        const name = document.getElementById('class-name') ? document.getElementById('class-name').value : '';
+        const teacher = document.getElementById('class-teacher') ? document.getElementById('class-teacher').value : '';
 
         try {
             if (docId) {
                 await updateDoc(doc(db, "classes", docId), { level, name, teacher });
                 alert('✅ ແກ້ໄຂຂໍ້ມູນຫ້ອງຮຽນສຳເລັດ!');
             } else {
-                await addDoc(collection(db, "classes"), { level, name, teacher });
+                await addDoc(collection(db, "classes"), { level, name, teacher, createdAt: serverTimestamp() });
                 alert('✅ ເພີ່ມຫ້ອງຮຽນສຳເລັດ!');
             }
             window.resetClassForm();
@@ -390,13 +397,15 @@ if (classForm) {
 }
 
 window.editClass = function(docId, level, name, teacher) {
-    document.getElementById('class-doc-id').value = docId;
-    document.getElementById('class-level').value = level;
-    document.getElementById('class-name').value = name;
-    document.getElementById('class-teacher').value = teacher;
+    if(document.getElementById('class-doc-id')) document.getElementById('class-doc-id').value = docId;
+    if(document.getElementById('class-level')) document.getElementById('class-level').value = level;
+    if(document.getElementById('class-name')) document.getElementById('class-name').value = name;
+    if(document.getElementById('class-teacher')) document.getElementById('class-teacher').value = teacher;
     
-    document.getElementById('save-class-btn').innerText = 'ອັບເດດຫ້ອງ';
-    document.getElementById('cancel-class-edit-btn').style.display = 'inline-block';
+    const saveBtn = document.getElementById('save-class-btn');
+    const cancelBtn = document.getElementById('cancel-class-edit-btn');
+    if(saveBtn) saveBtn.innerText = 'ອັບເດດຫ້ອງ';
+    if(cancelBtn) cancelBtn.style.display = 'inline-block';
 }
 
 window.deleteClass = async function(docId) {
@@ -415,9 +424,56 @@ window.deleteClass = async function(docId) {
 window.resetClassForm = function() {
     const form = document.getElementById('class-form');
     if (form) form.reset();
-    document.getElementById('class-doc-id').value = '';
-    document.getElementById('save-class-btn').innerText = 'ບັນທຶກຫ້ອງ';
-    document.getElementById('cancel-class-edit-btn').style.display = 'none';
+    if(document.getElementById('class-doc-id')) document.getElementById('class-doc-id').value = '';
+    const saveBtn = document.getElementById('save-class-btn');
+    const cancelBtn = document.getElementById('cancel-class-edit-btn');
+    if(saveBtn) saveBtn.innerText = 'ບັນທຶກຫ້ອງ';
+    if(cancelBtn) cancelBtn.style.display = 'none';
+}
+
+window.viewClassStudents = async function(classId, className) {
+    try {
+        const querySnapshot = await getDocs(collection(db, 'students'));
+        let studentListHtml = `<h3>👥 ລາຍຊື່ນັກຮຽນໃນຫ້ອງ: ${className}</h3>`;
+        
+        let foundCount = 0;
+        let listHtml = `<ul style="padding-left: 20px; text-align: left;">`;
+        
+        querySnapshot.forEach((docSnap) => {
+            const sData = docSnap.data();
+            if (sData.classId === classId || sData.grade === className) {
+                foundCount++;
+                listHtml += `<li>${sData.name || 'ບໍ່ມີຊື່'} (ລະຫັດ: ${sData.id || sData.studentId || '-'})</li>`;
+            }
+        });
+        listHtml += `</ul>`;
+
+        if (foundCount === 0) {
+            studentListHtml += `<p>ຍັງບໍ່ມີນັກຮຽນໃນຫ້ອງນີ້.</p>`;
+        } else {
+            studentListHtml += listHtml;
+        }
+
+        let modal = document.getElementById('student-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'student-modal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;';
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = `
+            <div style="background: white; padding: 25px; border-radius: 8px; width: 400px; max-width: 90%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                ${studentListHtml}
+                <button onclick="document.getElementById('student-modal').style.display='none'" style="margin-top: 15px; background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; width: 100%;">ປິດ</button>
+            </div>
+        `;
+        modal.style.display = 'flex';
+
+    } catch (error) {
+        console.error('Error loading students: ', error);
+        alert('❌ ບໍ່ສາມາດໂຫຼດລາຍຊື່ນັກຮຽນໄດ້');
+    }
 }
 
 
@@ -727,7 +783,10 @@ window.addEventListener('DOMContentLoaded', () => {
     if (window.loadClasses) window.loadClasses();
     if (window.loadScores) window.loadScores();
     if (window.loadFinances) window.loadFinances();
+    if (window.applyRolePermissions) window.applyRolePermissions();
 });
+
+
 // ==========================================
 // 11. ລະບົບຄວບຄຸມສິດຜູ້ໃຊ້ (Role-Based Access Control)
 // ==========================================
@@ -735,490 +794,45 @@ window.applyRolePermissions = function() {
     const role = localStorage.getItem('userRole');
     const userName = localStorage.getItem('userName') || 'User';
 
-    // ຖ້າຍັງບໍ່ໄດ້ Login ໃຫ້ດີດກັບໄປໜ້າ login.html
     if (!role) {
         window.location.href = 'login.html';
         return;
     }
 
-    // ສະແດງຊື່ ແລະ ບົດບາດຜູ້ໃຊ້ຢູ່ໜ້າເວັບ (ຖ້າມີ element id="user-display")
+    const nameSpan = document.getElementById('user-display-name');
+    const roleSpan = document.getElementById('user-display-role');
+    if (nameSpan) nameSpan.innerText = userName;
+    if (roleSpan) roleSpan.innerText = role.toUpperCase();
+
     const userDisplay = document.getElementById('user-display');
     if (userDisplay) {
         userDisplay.innerText = `👤 ${userName} (${role.toUpperCase()})`;
     }
 
-    // ຟັງຊັນຊ່ວຍເຊື່ອງເມນູ ແລະ ຟອມ/ປຸ່ມແກ້ໄຂ
-    const hideElements = (ids) => {
-        ids.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.style.display = 'none';
-        });
-    };
-
-    const makeReadOnly = (formIds) => {
-        formIds.forEach(id => {
-            const form = document.getElementById(id);
-            if (form && form.parentElement) {
-                form.parentElement.style.display = 'none'; // ເຊື່ອງກ່ອງຟອມເພີ່ມ/ແກ້ໄຂ
-            }
-        });
-    };
-
-    // ກຳນົດສິດແຍກຕາມ 5 ບົດບາດ
-    switch (role) {
-        case 'admin':
-            // Admin: ເຫັນທຸກເມນູ ແລະ ຈັດການໄດ້ທຸກຢ່າງ (ບໍ່ເຊື່ອງຫຍັງເລີຍ)
-            break;
-
-        case 'director':
-            // Director (ຜູ້ອຳນວຍການ): ເບິ່ງພາບລວມ ແລະ ລາຍງານໄດ້ທຸກໜ້າ ແຕ່ບໍ່ສາມາດເພີ່ມ/ແກ້ໄຂຂໍ້ມູນ
-            makeReadOnly(['student-form', 'teacher-form', 'class-form', 'score-form', 'finance-form', 'news-form']);
-            break;
-
-        case 'teacher':
-            // Teacher (ຄູອາຈານ): ຈັດການການມາຮຽນ ແລະ ຄະແນນໄດ້, ແຕ່ເຂົ້າເຖິງການເງິນ ແລະ ຈັດການຄູ/ນັກຮຽນບໍ່ໄດ້
-            hideElements(['menu-teachers', 'menu-finance']);
-            makeReadOnly(['student-form', 'class-form', 'news-form']);
-            break;
-
-        case 'student':
-            // Student (ນັກຮຽນ): ເບິ່ງໄດ້ສະເພາະ Dashboard, ຄະແນນ, ຫ້ອງຮຽນ(ຕາຕະລາງ) ແລະ ຂ່າວສານ
-            hideElements(['menu-students', 'menu-teachers', 'menu-attendance', 'menu-finance']);
-            makeReadOnly(['class-form', 'score-form', 'news-form']);
-            window.showSection('scores'); // ເປີດໜ້າຄະແນນໃຫ້ເຫັນທັນທີ
-            break;
-
-        case 'parent':
-            // Parent (ຜູ້ປົກຄອງ): ເບິ່ງໄດ້ສະເພາະ Dashboard, ຄະແນນ, ການເງິນ(ຄ່າຮຽນ) ແລະ ຂ່າວສານ
-            hideElements(['menu-students', 'menu-teachers', 'menu-classes', 'menu-attendance']);
-            makeReadOnly(['score-form', 'finance-form', 'news-form']);
-            window.showSection('scores');
-            break;
-    }
-}
-
-// ປັບປຸງການສະແດງຜົນຕາຕະລາງຄະແນນ: ກອງຂໍ້ມູນໃຫ້ Student/Parent ເຫັນສະເພາະຂອງຕົນເອງ ແລະ ເຊື່ອງປຸ່ມ ແກ້ໄຂ/ລົບ
-const originalRenderScoresTable = renderScoresTable;
-renderScoresTable = function(scores) {
-    const role = localStorage.getItem('userRole');
-    const userName = (localStorage.getItem('userName') || '').toLowerCase();
-
-    // ຖ້າເປັນ Student ຫຼື Parent ໃຫ້ກອງເອົາສະເພາະລາຍຊື່ທີ່ຕົງກັບຊື່ນັກຮຽນ
-    let filteredScores = scores;
-    if (role === 'student' || role === 'parent') {
-        filteredScores = scores.filter(s => s.studentName && s.studentName.toLowerCase().includes(userName));
-    }
-
-    originalRenderScoresTable(filteredScores);
-
-    // ຖ້າບໍ່ແມ່ນ Admin ຫຼື Teacher ໃຫ້ເຊື່ອງປຸ່ມ ✏️ ແລະ 🗑️ ໃນຕາຕະລາງຄະແນນ
-    if (role !== 'admin' && role !== 'teacher') {
-        const tbody = document.getElementById('scores-table-body');
-        if (tbody) {
-            tbody.querySelectorAll('button').forEach(btn => btn.style.display = 'none');
-        }
-    }
-};
-
-// ປັບປຸງຟັງຊັນ Logout ໃຫ້ລ້າງຂໍ້ມູນ Session ທັງໝົດແລ້ວກັບໄປໜ້າ login.html
-window.logout = function() {
-    localStorage.clear();
-    alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
-    window.location.href = 'login.html';
-};
-
-// ເອີ້ນໃຊ້ລະບົບກວດສອບສິດທັນທີເມື່ອໂຫຼດໜ້າເວັບ
-window.addEventListener('DOMContentLoaded', () => {
-    window.applyRolePermissions();
-});
-window.applyRolePermissions = function() {
-    const role = localStorage.getItem('userRole');
-    const userName = localStorage.getItem('userName') || 'ผู้ใช้งาน';
-
-    if (!role) {
-        window.location.href = 'login.html';
-        return;
-    }
-
-    // 🎯 ອັບເດດສະແດງຊື່ ແລະ ບົດບາດພ້ອມໄອຄອນຫົວຄົນ
-    const nameSpan = document.getElementById('user-display-name');
-    const roleSpan = document.getElementById('user-display-role');
-    
-    if (nameSpan) nameSpan.innerText = userName;
-    if (roleSpan) roleSpan.innerText = role;
-
-    // (ສ່ວນໂຄດເຊື່ອງເມນູຕາມ Role ຕ່າງໆທີ່ເຮົາຂຶ້ນໄປກ່ອນໜ້ານີ້...)
-};
-
-
-window.applyRolePermissions = function() {
-    const role = localStorage.getItem('userRole');
-    const userName = localStorage.getItem('userName') || 'ນັກຮຽນ';
-
-    if (!role) {
-        window.location.href = 'login.html';
-        return;
-    }
-
-    // ສະແດງຊື່ ແລະ ບົດບາດ
-    const nameSpan = document.getElementById('user-display-name');
-    const roleSpan = document.getElementById('user-display-role');
-    if (nameSpan) nameSpan.innerText = userName;
-    if (roleSpan) roleSpan.innerText = role;
-
-    // 🎯 ຖ້າເປັນ "ນັກຮຽນ" (student)
     if (role === 'student') {
-        // 1. ເຊື່ອງເມນູທີ່ນັກຮຽນບໍ່ກ່ຽວຂ້ອງ (ໃຫ້ເຫັນສະເພາະ ຫ້ອງຮຽນ/ຕາຕະລາງ, ການເງິນ/ຊຳລະ ແລະ ຂ່າວສານ)
         const menusToHide = ['menu-dashboard', 'menu-students', 'menu-teachers', 'menu-attendance', 'menu-scores'];
         menusToHide.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.style.display = 'none';
         });
 
-        // 2. ເຊື່ອງຟອມເພີ່ມ/ແກ້ໄຂທຸກຢ່າງ (ປ້ອງກັນບໍ່ໃຫ້ມີການບັນທຶກຂໍ້ມູນ)
         const formsToHide = ['student-form', 'teacher-form', 'class-form', 'score-form', 'finance-form', 'news-form'];
         formsToHide.forEach(id => {
             const form = document.getElementById(id);
-            if (form) {
-                // ຖ້າຟອມຢູ່ໃນ Card ຫຼື Container ໃຫ້ເຊື່ອງທັງກ່ອງ
-                if (form.parentElement) form.parentElement.style.display = 'none';
+            if (form && form.parentElement) {
+                form.parentElement.style.display = 'none';
             }
         });
 
-        // 3. ເຊື່ອງປຸ່ມກະທຳຕ່າງໆ (Add, Edit, Delete buttons) ທົ່ວໜ້າເວັບ
         document.querySelectorAll('button').forEach(btn => {
             const text = btn.innerText.toLowerCase();
-            // ยกเว้นປຸ່ມອອກຈາກລະບົບ ແລະ ປຸ່ມຊຳລະເງິນ
-            if (!text.includes('ອອກຈາກລະບົບ') && !text.includes('ຊຳລະ') && !text.includes('จ่าย')) {
+            if (!text.includes('ອອກຈາກລະບົບ') && !text.includes('ຊຳລະ') && !text.includes('ປິດ')) {
                 btn.style.display = 'none';
             }
         });
 
-        // 4. ເປີດໃຫ້ເຂົ້າເຖິງສະເພາະໜ້າຫ້ອງຮຽນ (ຕາຕະລາງ) ຫຼື ໜ້າການເງິນເປັນຄ່າເລີ່ມຕົ້ນ
         if (typeof showSection === 'function') {
-            showSection('classes'); // ຫຼື 'finance'
+            showSection('classes');
         }
-    }
-}
-
-// ເອີ້ນໃຊ້ງານທັນຕອນໂຫຼດໜ້າເວັບ
-window.addEventListener('DOMContentLoaded', () => {
-    window.applyRolePermissions();
-});
-
-// 📥 ໂຫຼດລາຍຊື່ຫ້ອງຮຽນທັງໝົດ
-window.loadClasses = async function() {
-    const tbody = document.getElementById('classes-table-body');
-    if (!tbody) return;
-
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>';
-
-    try {
-        const snapshot = await db.collection('classes').get();
-        tbody.innerHTML = '';
-
-        if (snapshot.empty) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນຫ້ອງຮຽນ</td></tr>';
-            return;
-        }
-
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px solid #eee';
-            tr.innerHTML = `
-                <td style="padding: 10px;">${data.grade || ''}</td>
-                <td style="padding: 10px;"><b>${data.className || ''}</b></td>
-                <td style="padding: 10px;">${data.teacher || ''}</td>
-                <td style="padding: 10px;" class="action-col">
-                    <button onclick="viewClassStudents('${doc.id}', '${data.className}')" style="background: #17a2b8; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">👥 ເບິ່ງນັກຮຽນ</button>
-                    <button onclick="editClass('${doc.id}', '${data.grade}', '${data.className}', '${data.teacher}')" style="background: #ffc107; color: black; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️ ແກ້ໄຂ</button>
-                    <button onclick="deleteClass('${doc.id}')" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🗑️ ລົບ</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        // 🎯 ຖ້າເປັນ Student ໃຫ້ເຊື່ອງຟອມ ແລະ ປຸ່ມຈັດການ
-        const role = localStorage.getItem('userRole');
-        if (role === 'student') {
-            const formContainer = document.getElementById('class-form-container');
-            if (formContainer) formContainer.style.display = 'none';
-            document.querySelectorAll('.action-col').forEach(el => {
-                // ให้นັກຮຽນເຫັນສະເພາະປຸ່ມເບິ່ງນັກຮຽນ (ຖ້າຕ້ອງການ) ຫຼຶເຊື່ອງທັງໝົດยกเว้นເບິ່ງ
-            });
-        }
-
-    } catch (error) {
-        console.error('Error loading classes: ', error);
-    }
-}
-
-// 💾 ບັນທຶກ ຫຼື ອັບເດດຫ້ອງຮຽນ
-window.addClass = async function(event) {
-    event.preventDefault();
-    
-    const grade = document.getElementById('class-grade').value;
-    const className = document.getElementById('class-name').value;
-    const teacher = document.getElementById('class-teacher').value;
-    const editId = document.getElementById('class-edit-id') ? document.getElementById('class-edit-id').value : '';
-
-    try {
-        if (editId) {
-            // ອັບເດດຂໍ້ມູນເກົ່າ
-            await db.collection('classes').doc(editId).update({
-                grade: grade,
-                className: className,
-                teacher: teacher,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            alert('✅ ແກ້ໄຂຂໍ້ມູນຫ້ອງຮຽນສຳເລັດ!');
-            if (document.getElementById('class-edit-id')) document.getElementById('class-edit-id').value = '';
-        } else {
-            // ເພີ່ມຂໍ້ມູນໃຫມ່
-            await db.collection('classes').add({
-                grade: grade,
-                className: className,
-                teacher: teacher,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            alert('✅ ເພີ່ມຫ້ອງຮຽນສຳເລັດ!');
-        }
-
-        document.getElementById('class-form').reset();
-        window.loadClasses();
-    } catch (error) {
-        console.error('Error saving class: ', error);
-        alert('❌ เกิดข้อผิดพลาด: ' + error.message);
-    }
-}
-
-// ✏️ ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແก້ໄຂ
-window.editClass = function(id, grade, className, teacher) {
-    if (document.getElementById('class-grade')) document.getElementById('class-grade').value = grade;
-    if (document.getElementById('class-name')) document.getElementById('class-name').value = className;
-    if (document.getElementById('class-teacher')) document.getElementById('class-teacher').value = teacher;
-    
-    // ສ້າງ Hidden Input ເກັບ ID ໄວ້ຖ້າຫາກຍັງບໍ່ມີ
-    let editIdInput = document.getElementById('class-edit-id');
-    if (!editIdInput) {
-        editIdInput = document.createElement('input');
-        editIdInput.type = 'hidden';
-        editIdInput.id = 'class-edit-id';
-        document.getElementById('class-form').appendChild(editIdInput);
-    }
-    editIdInput.value = id;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// 🗑️ ລົບຫ້ອງຮຽນ
-window.deleteClass = async function(id) {
-    if (!confirm('ຕ້ອງການລົບຫ້ອງຮຽນນີ້ແທ້ບໍ?')) return;
-    try {
-        await db.collection('classes').doc(id).delete();
-        alert('🗑️ ລົບຂໍ້ມູນສຳເລັດ!');
-        window.loadClasses();
-    } catch (error) {
-        console.error('Error deleting class: ', error);
-        alert('❌ ບໍ່ສາມາດລົບຂໍ້ມູນໄດ້');
-    }
-}
-
-// 👥 ເບິ່ງລາຍຊື່ນັກຮຽນໃນຫ້ອງນັ້ນໆ
-window.viewClassStudents = async function(classId, className) {
-    try {
-        const snapshot = await db.collection('students').where('classId', '==', classId).get();
-        let studentListHtml = `<h3>👥 ລາຍຊື່ນັກຮຽນໃນຫ້ອງ: ${className}</h3>`;
-        
-        if (snapshot.empty) {
-            studentListHtml += `<p>ຍັງບໍ່ມີນັກຮຽນໃນຫ້ອງນີ້.</p>`;
-        } else {
-            studentListHtml += `<ul style="padding-left: 20px;">`;
-            snapshot.forEach(doc => {
-                const sData = doc.data();
-                studentListHtml += `<li>${sData.name || 'ບໍ່ມີຊື່'} (ລະຫັດ: ${sData.studentId || '-'})</li>`;
-            });
-            studentListHtml += `</ul>`;
-        }
-
-        // ສະແດງຜົນໃນ Modal ຫຼື Alert / Container ສະເພາະ
-        let modal = document.getElementById('student-modal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'student-modal';
-            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;';
-            document.body.appendChild(modal);
-        }
-
-        modal.innerHTML = `
-            <div style="background: white; padding: 25px; border-radius: 8px; width: 400px; max-width: 90%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                ${studentListHtml}
-                <button onclick="document.getElementById('student-modal').style.display='none'" style="margin-top: 15px; background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; width: 100%;">ປິດ</button>
-            </div>
-        `;
-        modal.style.display = 'flex';
-
-    } catch (error) {
-        console.error('Error loading students: ', error);
-        alert('❌ ບໍ່สามารถໂຫຼດລາຍຊື່ນັກຮຽນໄດ້');
-    }
-}
-
-// ເອີ້ນໂຫຼດຂໍ້ມູນຕອນເປີດໜ້າເວັບ
-window.addEventListener('DOMContentLoaded', () => {
-    window.loadClasses();
-});
-// ==========================================
-// 7. ໂມດູນຈັດການຫ້ອງຮຽນ (Classes Management - Firebase v10 Modular)
-// ==========================================
-window.loadClasses = async function() {
-    const tbody = document.getElementById('classes-table-body');
-    if (!tbody) return;
-    
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
-
-    try {
-        const querySnapshot = await getDocs(collection(db, "classes"));
-        tbody.innerHTML = '';
-
-        if (querySnapshot.empty) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນຫ້ອງຮຽນໃນລະບົບ</td></tr>`;
-            return;
-        }
-
-        querySnapshot.forEach((documentSnapshot) => {
-            const data = documentSnapshot.data();
-            const docId = documentSnapshot.id;
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${data.level || data.grade || '-'}</td>
-                <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: #007bff;">${data.name || data.className || '-'}</td>
-                <td style="border: 1px solid #ddd; padding: 10px;">${data.teacher || ''}</td>
-                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;" class="action-col">
-                    <button onclick="viewClassStudents('${docId}', '${data.name || data.className || ''}')" style="background: #17a2b8; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">👥 ເບິ່ງນັກຮຽນ</button>
-                    <button onclick="editClass('${docId}', '${data.level || data.grade || ''}', '${data.name || data.className || ''}', '${data.teacher || ''}')" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
-                    <button onclick="deleteClass('${docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">🗑️</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        // 🎯 ຖ້າເປັນ Student ໃຫ້ເຊື່ອງຟອມ ແລະ ປຸ່ມຈັດການ
-        const role = localStorage.getItem('userRole');
-        if (role === 'student') {
-            const formContainer = document.getElementById('class-form-container');
-            if (formContainer) formContainer.style.display = 'none';
-        }
-
-    } catch (error) {
-        console.error("Error loading classes: ", error);
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
-    }
-}
-
-const classForm = document.getElementById('class-form');
-if (classForm) {
-    classForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const docId = document.getElementById('class-doc-id') ? document.getElementById('class-doc-id').value : '';
-        const level = document.getElementById('class-level') ? document.getElementById('class-level').value : '';
-        const name = document.getElementById('class-name') ? document.getElementById('class-name').value : '';
-        const teacher = document.getElementById('class-teacher') ? document.getElementById('class-teacher').value : '';
-
-        try {
-            if (docId) {
-                await updateDoc(doc(db, "classes", docId), { level, name, teacher });
-                alert('✅ ແກ້ໄຂຂໍ້ມູນຫ້ອງຮຽນສຳເລັດ!');
-            } else {
-                await addDoc(collection(db, "classes"), { level, name, teacher });
-                alert('✅ ເພີ່ມຫ້ອງຮຽນສຳເລັດ!');
-            }
-            window.resetClassForm();
-            window.loadClasses();
-        } catch (error) {
-            console.error("Error saving class: ", error);
-            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
-        }
-    });
-}
-
-window.editClass = function(docId, level, name, teacher) {
-    if(document.getElementById('class-doc-id')) document.getElementById('class-doc-id').value = docId;
-    if(document.getElementById('class-level')) document.getElementById('class-level').value = level;
-    if(document.getElementById('class-name')) document.getElementById('class-name').value = name;
-    if(document.getElementById('class-teacher')) document.getElementById('class-teacher').value = teacher;
-    
-    const saveBtn = document.getElementById('save-class-btn');
-    const cancelBtn = document.getElementById('cancel-class-edit-btn');
-    if(saveBtn) saveBtn.innerText = 'ອັບເດດຫ້ອງ';
-    if(cancelBtn) cancelBtn.style.display = 'inline-block';
-}
-
-window.deleteClass = async function(docId) {
-    if (confirm('ທ່ານຕ້ອງການລົບຫ້ອງຮຽນນີ້ແທ້ບໍ?')) {
-        try {
-            await deleteDoc(doc(db, "classes", docId));
-            alert('✅ ລົບຫ້ອງຮຽນສຳເລັດ!');
-            window.loadClasses();
-        } catch (error) {
-            console.error("Error deleting class: ", error);
-            alert('❌ ເກີດຂໍ້ຜິດພາດໃນການລົບ');
-        }
-    }
-}
-
-window.resetClassForm = function() {
-    const form = document.getElementById('class-form');
-    if (form) form.reset();
-    if(document.getElementById('class-doc-id')) document.getElementById('class-doc-id').value = '';
-    const saveBtn = document.getElementById('save-class-btn');
-    const cancelBtn = document.getElementById('cancel-class-edit-btn');
-    if(saveBtn) saveBtn.innerText = 'ບັນທຶກຫ້ອງ';
-    if(cancelBtn) cancelBtn.style.display = 'none';
-}
-
-window.viewClassStudents = async function(classId, className) {
-    try {
-        const querySnapshot = await getDocs(collection(db, 'students'));
-        let studentListHtml = `<h3>👥 ລາຍຊື່ນັກຮຽນໃນຫ້ອງ: ${className}</h3>`;
-        
-        let foundCount = 0;
-        let listHtml = `<ul style="padding-left: 20px; text-align: left;">`;
-        
-        querySnapshot.forEach((docSnap) => {
-            const sData = docSnap.data();
-            if (sData.classId === classId || sData.grade === className) {
-                foundCount++;
-                listHtml += `<li>${sData.name || 'ບໍ່ມີຊື່'} (ລະຫັດ: ${sData.id || sData.studentId || '-'})</li>`;
-            }
-        });
-        listHtml += `</ul>`;
-
-        if (foundCount === 0) {
-            studentListHtml += `<p>ຍັງບໍ່ມີນັກຮຽນໃນຫ້ອງນີ້.</p>`;
-        } else {
-            studentListHtml += listHtml;
-        }
-
-        let modal = document.getElementById('student-modal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'student-modal';
-            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;';
-            document.body.appendChild(modal);
-        }
-
-        modal.innerHTML = `
-            <div style="background: white; padding: 25px; border-radius: 8px; width: 400px; max-width: 90%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                ${studentListHtml}
-                <button onclick="document.getElementById('student-modal').style.display='none'" style="margin-top: 15px; background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; width: 100%;">ປິດ</button>
-            </div>
-        `;
-        modal.style.display = 'flex';
-
-    } catch (error) {
-        console.error('Error loading students: ', error);
-        alert('❌ ບໍ່ສາມາດໂຫຼດລາຍຊື່ນັກຮຽນໄດ້');
     }
 }
