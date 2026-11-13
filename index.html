@@ -342,11 +342,89 @@
     </div>
 </div>
 
-            <!-- 7. Finance Section -->
-            <div id="section-finance" class="content-section" style="display: none;">
-                <h2>💰 ລະບົບການເງິນ & ຄ່າຮຽນ</h2>
-                <p>ຈັດການຄ່າຮຽນ, ບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ ແລະ ສະຖານະການຊຳລະ.</p>
+         <!-- 7. Finance Management Section -->
+<div id="section-finance" class="content-section" style="display: none;">
+    <h2>💰 ລະບົບການເງິນ & ຄ່າຮຽນ</h2>
+    <p>ຕິດຕາມການຊຳລະຄ່າຮຽນ, ບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ ແລະ ສະຖານະການເງິນຂອງໂຮງຮຽນ.</p>
+
+    <!-- ບັດສະຫຼຸບຍອດເງິນ -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <h4>ລາຍຮັບຄ່າຮຽນລວມ</h4>
+            <p id="total-income" style="font-size: 24px; font-weight: bold; color: #28a745;">0 ₭</p>
+        </div>
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <h4>ຍອດຄ້າງຊຳລະ</h4>
+            <p id="total-pending" style="font-size: 24px; font-weight: bold; color: #dc3545;">0 ₭</p>
+        </div>
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <h4>ລາຍການທັງໝົດ</h4>
+            <p id="total-finance-records" style="font-size: 24px; font-weight: bold; color: #007bff;">0 ລາຍການ</p>
+        </div>
+    </div>
+
+    <!-- ຟອມບັນທຶກການເງິນ / ຄ່າຮຽນ -->
+    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <h3 id="finance-form-title">➕ ບັນທຶກການຊຳລະຄ່າຮຽນ</h3>
+        <form id="finance-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+            <input type="hidden" id="finance-doc-id">
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ນັກຮຽນ:</label>
+                <input type="text" id="finance-student-name" required placeholder="ຊື່-ນາມສະກຸນນັກຮຽນ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
             </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ:</label>
+                <select id="finance-grade" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">-- ເລືອກຊັ້ນຮຽນ --</option>
+                    <option value="ມ.1">ມ.1</option>
+                    <option value="ມ.2">ມ.2</option>
+                    <option value="ມ.3">ມ.3</option>
+                    <option value="ມ.4">ມ.4</option>
+                    <option value="ມ.5">ມ.5</option>
+                    <option value="ມ.6">ມ.6</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຈຳນວນເງິນ (ກີບ):</label>
+                <input type="number" id="finance-amount" required placeholder="ຕົວຢ່າງ: 500000" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ສະຖານະຊຳລະ:</label>
+                <select id="finance-status" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="ຈ່າຍແລ້ວ">✅ ຈ່າຍແລ້ວ</option>
+                    <option value="ຄ້າງຈ່າຍ">❌ ຄ້າງຈ່າຍ</option>
+                </select>
+            </div>
+            <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+                <button type="submit" id="save-finance-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຂໍ້ມູນ</button>
+                <button type="button" id="cancel-finance-edit-btn" onclick="resetFinanceForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ຕາຕະລາງສະແດງຜົນການເງິນ -->
+    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+            <h3>📋 ປະຫວັດການຊຳລະຄ່າຮຽນ</h3>
+            <input type="text" id="search-finance-input" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." onkeyup="filterFinances()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ຊື່ນັກຮຽນ</th>
+                    <th>ຊັ້ນຮຽນ</th>
+                    <th>ຈຳນວນເງິນ</th>
+                    <th>ສະຖານະ</th>
+                    <th>ຈັດການ</th>
+                </tr>
+            </thead>
+            <tbody id="finances-table-body">
+                <tr><td colspan="5" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
             <!-- 8. News Section -->
             <div id="section-news" class="content-section" style="display: none;">
