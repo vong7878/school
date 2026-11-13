@@ -133,11 +133,10 @@
                     tbody.innerHTML = `<tr><td colspan="6">ຍັງບໍ່ມີຂໍ້ມູນການຂາດຮຽນໃນລະບົບ</td></tr>`;
                     return;
                 }
-
-                // 4. ສະແດງຜົນລົງໃນຕາຕະລາງ
+// 4. ສະແດງຜົນລົງໃນຕາຕະລາງ
                 studentIds.forEach(sId => {
                     const student = summaryData[sId];
-                    const deductedScore = student.absentCount * 1.0; // ຕັ້ງຄ່າ: ຂາດ 1 ຄັ້ງ ຫັກ 1 ຄະແນນ
+                    const deductScore = student.absentCount * 1.0; // ຕັ້ງຄ່າ: ຂາດ 1 ຄັ້ງ ຫັກ 1 ຄະແນນ
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -150,6 +149,7 @@
                     `;
                     tbody.appendChild(tr);
                 });
+               
 
             } catch (error) {
                 console.error("Error loading summary: ", error);
