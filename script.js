@@ -1060,7 +1060,7 @@ window.deleteTimetable = async function(id) {
             console.error("Error deleting timetable: ", error);
         }
     }
-};
+
 
 // 5. ຣີເຊັດຟອມ
 window.resetTimetableForm = function() {
