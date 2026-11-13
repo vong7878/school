@@ -208,3 +208,95 @@ tr:hover {
 .sidebar ul li a:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
+        body {
+            font-family: 'Noto Sans Lao', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f9;
+        }
+        /* ຕົບແຕ່ງສ່ວນ Header ດ້ານເທິງ */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        /* 📌 ປຸ່ມ 3 ຂີດ ສຳລັບກົດເຊື່ອງ/ເປີດ Sidebar */
+        .sidebar-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px 10px;
+            color: #333;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .sidebar-toggle-btn:hover {
+            background: #f1f3f5;
+        }
+        .app-title h2 {
+            margin: 0;
+            color: #333;
+            font-size: 20px;
+        }
+        /* ໄອຄອນໂປຣໄຟລ໌ ແລະ ຂໍ້ມູນຜູ້ໃຊ້ */
+        .user-profile-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 6px 15px;
+            border-radius: 30px;
+            border: 1px solid #e9ecef;
+        }
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        #user-display-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+        #user-display-role {
+            font-size: 10px;
+            background: #007bff;
+            color: white;
+            padding: 1px 6px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            width: fit-content;
+            margin-top: 2px;
+        }
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Noto Sans Lao', sans-serif;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        /* 📌 CSS ສຳລັບເຊື່ອງ/ສະແດງ Sidebar ຢ່າງລຽບນຽນ */
+        aside, .sidebar, #sidebar {
+            transition: all 0.3s ease-in-out;
+        }
+        .sidebar-hidden {
+            margin-left: -260px !important;
+            display: none !important;
+        }
+    
