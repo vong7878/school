@@ -360,3 +360,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// ຟັງຊັນສະຫຼັບການສະແດງຜົນແຕ່ລະໂມດູນຕາມປຸ່ມທີ່ກົດ
+window.showSection = function(sectionName) {
+    // ซ่อนທຸກ section ກ່ອນ
+    const sections = document.querySelectorAll('.content-section');
+    sections.forEach(sec => {
+        sec.style.display = 'none';
+    });
+
+    // ສະແດງສະເພາະ section ທີ່ຖືກຄລິກ
+    const targetSection = document.getElementById(`section-${sectionName}`);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+    }
+}
