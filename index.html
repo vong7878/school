@@ -282,7 +282,7 @@ class-form-container
                 <input type="text" id="timetable-teacher" placeholder="ຊື່-ນາມສະກຸນຄູ" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
             <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
-                <button type="submit" id="save-timetable-btn" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 ບັນທຶກຕາຕະລາງ</button>
+                <button type="button" id="save-timetable-btn" onclick="saveTimetableData(event)" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 ບັນທຶກຕາຕະລາງ</button>
                 <button type="button" id="cancel-timetable-edit-btn" onclick="resetTimetableForm()" style="display: none; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
             </div>
         </form>
