@@ -358,5 +358,5 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (savedRole === 'student') {
             startApp('student', JSON.parse(savedData));
         }
-    }
+ }
 });
