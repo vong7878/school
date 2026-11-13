@@ -359,19 +359,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-// 4. ສະແດງຜົນລົງໃນຕາຕະລາງ
-                studentIds.forEach(sId => {
-                    const student = summaryData[sId];
-                    const deductScore = student.absentCount * 1.0; // ຕັ້ງຄ່າ: ຂາດ 1 ຄັ້ງ ຫັກ 1 ຄະແນນ
 
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${student.studentId}</td>
-                        <td>${student.name}</td>
-                        <td>${student.grade}</td>
-                        <td><span class="absent-count">${student.absentCount} ຄັ້ງ</span></td>
-                        <td>${student.leaveCount} ຄັ້ງ</td>
-                        <td><span class="deduct-score">-${deductScore} ຄະແນນ</span></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
