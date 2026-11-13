@@ -258,3 +258,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// ລະບົບກົດປຸ່ມບັນທຶກການເຊັກຊື່ລົງ Firebase
+const saveAttendanceBtn = document.getElementById('save-attendance-btn');
+if (saveAttendanceBtn) {
+    saveAttendanceBtn.addEventListener('click', async function() {
+        const selectedGrade = document.getElementById('select-grade-attendance').value;
+        const attendanceDate = document.getElementById('attendance-date').value;
+
+        if (!selectedGrade) {
+            alert('ກະລຸນາເລືອກຊັ້ນຮຽນກ່ອນ!');
+            return;
+        }
+
+        try {
+            const filteredStudents = allStudents.filter(s => s.grade === selectedGrade);
+            
+            if (filteredStudents.length === 0) {
+                alert('❌ ບໍ່ພົບรายຊື່ນັກຮຽນໃນຊັ້ນຮຽນນີ້!');
+                return;
+            }
+
+            for (let student of filteredStudents) {
+                // ດຶງຄ່າ Radio Button (ມາ, ຂາດ, ລາ) ຂອງນັກຮຽນແຕ່ລະຄົນ
+                const radios = document.querySelectorAll(`input[name="status_${student.docId}"]:checked`);
+                const status = radios.length > 0 ? radios[0].value : 'ມາ';
+
+                // บันทึกข้อมูลลง Firestore Collection attendance
+                await addDoc(attendanceCol, {
+                    studentId: student.id,
+                    studentName: student.name,
+                    grade: student.grade,
+                    date: attendanceDate,
+                    status: status,
+                    timestamp: new Date()
+                });
+            }
+
+            alert('✅ ບັນທຶກການເຊັກຊື່ສຳເລັດຮຽບຮ້ອຍ!');
+        } catch (error) {
+            console.error("Error saving attendance: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດໃນການບັນທຶກ: ' + error.message);
+        }
+    });
+}
