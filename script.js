@@ -235,30 +235,7 @@ if (gradeSelect) {
 }
 
 
-// ຮັບປະກັນວ່າ HTML ໂຫຼດຄົບແລ້ວ ຈຶ່ງຜູກ Event ໃຫ້ປຸ່ມຕ่างໆ
-document.addEventListener('DOMContentLoaded', () => {
-    const btnTeacher = document.getElementById('btn-open-teacher-login');
-    const btnStudent = document.getElementById('btn-open-student-login');
-    const btnClose = document.getElementById('btn-close-modal');
 
-    if (btnTeacher) {
-        btnTeacher.addEventListener('click', () => {
-            window.openLoginModal('teacher');
-        });
-    }
-
-    if (btnStudent) {
-        btnStudent.addEventListener('click', () => {
-            window.openLoginModal('student');
-        });
-    }
-
-    if (btnClose) {
-        btnClose.addEventListener('click', () => {
-            window.closeLoginModal();
-        });
-    }
-});
 // ລະບົບກົດປຸ່ມບັນທຶກການເຊັກຊື່ລົງ Firebase
 const saveAttendanceBtn = document.getElementById('save-attendance-btn');
 if (saveAttendanceBtn) {
@@ -346,9 +323,31 @@ window.logout = function() {
     document.getElementById('app-container').style.display = 'none';
     document.getElementById('auth-container').style.display = 'flex';
 }
-        `;
-// ກວດສອບວ່າເຄີຍລັອກອິນໄວ້ແລ້ວບໍ່ ຕອນເປີດເວັບຂຶ້ນມາ
+// 1. ລະບົບຜູກ Event ໃຫ້ປຸ່ມລັອກອິນຕ່າງໆ
 document.addEventListener('DOMContentLoaded', () => {
+    const btnTeacher = document.getElementById('btn-open-teacher-login');
+    const btnStudent = document.getElementById('btn-open-student-login');
+    const btnClose = document.getElementById('btn-close-modal');
+
+    if (btnTeacher) {
+        btnTeacher.addEventListener('click', () => {
+            window.openLoginModal('teacher');
+        });
+    }
+
+    if (btnStudent) {
+        btnStudent.addEventListener('click', () => {
+            window.openLoginModal('student');
+        });
+    }
+
+    if (btnClose) {
+        btnClose.addEventListener('click', () => {
+            window.closeLoginModal();
+        });
+    }
+
+    // 2. ລະບົບຈື່ການລັອກອິນດ້ວຍ localStorage ຕອນເປີດເວັບ
     const savedRole = localStorage.getItem('school_user_role');
     const savedData = localStorage.getItem('school_user_data');
 
@@ -358,5 +357,5 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (savedRole === 'student') {
             startApp('student', JSON.parse(savedData));
         }
- }
+    }
 });
