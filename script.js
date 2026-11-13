@@ -830,3 +830,21 @@ window.logout = function() {
 window.addEventListener('DOMContentLoaded', () => {
     window.applyRolePermissions();
 });
+window.applyRolePermissions = function() {
+    const role = localStorage.getItem('userRole');
+    const userName = localStorage.getItem('userName') || 'ผู้ใช้งาน';
+
+    if (!role) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // 🎯 ອັບເດດສະແດງຊື່ ແລະ ບົດບາດພ້ອມໄອຄອນຫົວຄົນ
+    const nameSpan = document.getElementById('user-display-name');
+    const roleSpan = document.getElementById('user-display-role');
+    
+    if (nameSpan) nameSpan.innerText = userName;
+    if (roleSpan) roleSpan.innerText = role;
+
+    // (ສ່ວນໂຄດເຊື່ອງເມນູຕາມ Role ຕ່າງໆທີ່ເຮົາຂຶ້ນໄປກ່ອນໜ້ານີ້...)
+};
