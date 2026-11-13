@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ເຂົ້າສູ່ລະບົບ - School Management System</title>
+    <style>
+        body { font-family: 'Phetsarath OT', Arial, sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .error-msg { color: #dc3545; text-align: center; margin-top: 10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>🔐 ເຂົ້າສູ່ລະບົບໂຮງຮຽນ</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label>ອີເມວ (Email):</label>
+                <input type="email" id="login-email" required placeholder="example@school.com">
+            </div>
+            <div class="form-group">
+                <label>ລະຫັດຜ່ານ (Password):</label>
+                <input type="password" id="login-password" required placeholder="********">
+            </div>
+            <button type="submit">ເຂົ້າສູ່ລະບົບ</button>
+            <div id="login-error" class="error-msg"></div>
+        </form>
+    </div>
+
+    <!-- ໂຄດເຊື່ອມຕໍ່ Firebase Authentication / Firestore ເພື່ອກວດສອບ User -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
+            authDomain: "my-school-c1104.firebaseapp.com",
+            projectId: "my-school-c1104",
+            storageBucket: "my-school-c1104.appspot.com",
+            messagingSenderId: "339930418459",
+            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+            measurementId: "G-NPNFSW2C72"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            const errorDiv = document.getElementById('login-error');
+            errorDiv.innerText = "ກຳລັງກວດສອບຂໍ້ມູນ...";
+
+            try {
+                // คົຫາ User ໃນ Collection `users` ຕາມ Email ແລະ Password
+                const q = query(collection(db, "users"), where("email", "==", email), where("password", "==", password));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    errorDiv.innerText = "❌ ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ!";
+                    return;
+                }
+
+                // ດຶງຂໍ້ມູນ Role ຂອງ User ນັ້ນໆ
+                let userData = null;
+                querySnapshot.forEach((doc) => {
+                    userData = doc.data();
+                });
+
+                // ບັນທຶກສະຖານະ Login ແລະ Role ລົງ LocalStorage
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', userData.email);
+                localStorage.setItem('userRole', userData.role); // ຕົວຢ່າງ: admin, teacher, director, student, parent
+                localStorage.setItem('userName', userData.name || 'User');
+
+                alert(`✅ ເຂົ້າສູ່ລະບົບສຳເລັດ! ຍິນດີຕ້ອນຮັບ (${userData.role.toUpperCase()})`);
+                window.location.href = 'index.html'; // ພາໄປໜ້າ Dashboard ຫຼັກ
+
+            } catch (error) {
+                console.error("Login error: ", error);
+                errorDiv.innerText = "❌ ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່ລະບົບ";
+            }
+        });
+    </script>
+</body>
+</html>
