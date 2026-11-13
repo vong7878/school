@@ -234,3 +234,27 @@ if (gradeSelect) {
 }
 
 
+// ຮັບປະກັນວ່າ HTML ໂຫຼດຄົບແລ້ວ ຈຶ່ງຜູກ Event ໃຫ້ປຸ່ມຕ่างໆ
+document.addEventListener('DOMContentLoaded', () => {
+    const btnTeacher = document.getElementById('btn-open-teacher-login');
+    const btnStudent = document.getElementById('btn-open-student-login');
+    const btnClose = document.getElementById('btn-close-modal');
+
+    if (btnTeacher) {
+        btnTeacher.addEventListener('click', () => {
+            window.openLoginModal('teacher');
+        });
+    }
+
+    if (btnStudent) {
+        btnStudent.addEventListener('click', () => {
+            window.openLoginModal('student');
+        });
+    }
+
+    if (btnClose) {
+        btnClose.addEventListener('click', () => {
+            window.closeLoginModal();
+        });
+    }
+});
