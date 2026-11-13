@@ -449,3 +449,106 @@ window.resetClassForm = function() {
 window.addEventListener('DOMContentLoaded', () => {
     window.loadClasses();
 });
+
+// ບັນທຶກຂໍ້ມູນນັກຮຽນ (ເພີ່ມ ຫຼື ອັບເດດ)
+const studentForm = document.getElementById('student-form');
+if (studentForm) {
+    studentForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const docId = document.getElementById('student-doc-id').value;
+        const studentId = document.getElementById('student-id').value;
+        const name = document.getElementById('student-name').value;
+        const grade = document.getElementById('student-grade').value;
+        const phone = document.getElementById('student-phone').value;
+        const parent = document.getElementById('student-parent').value;
+
+        try {
+            if (docId) {
+                // ອັບເດດຂໍ້ມູນ
+                await updateDoc(doc(db, "students", docId), { 
+                    id: studentId, name: name, grade: grade, phone: phone, parent: parent 
+                });
+                alert('✅ ແກ້ໄຂຂໍ້ມູນນັກຮຽນສຳເລັດ!');
+            } else {
+                // ເเพີ່ມໃໝ່
+                await addDoc(collection(db, "students"), { 
+                    id: studentId, name: name, grade: grade, phone: phone, parent: parent 
+                });
+                alert('✅ ເພີ່ມນັກຮຽນສຳເລັດ!');
+            }
+            window.resetStudentForm();
+            window.loadStudents();
+        } catch (error) {
+            console.error("Error saving student: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
+        }
+    });
+}
+
+// ສະແດງຜົນລົງຕາຕະລາງ HTML
+function renderStudentsTable(students) {
+    const tbody = document.getElementById('students-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px;">ບໍ່ພົບຂໍ້ມູນນັກຮຽນ</td></tr>`;
+        return;
+    }
+
+    students.forEach((student) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${student.id || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px;">${student.name || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${student.grade || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${student.phone || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px;">${student.parent || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">
+                <button onclick="editStudent('${student.docId}', '${student.id || ''}', '${student.name || ''}', '${student.grade || ''}', '${student.phone || ''}', '${student.parent || ''}')" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
+                <button onclick="deleteStudent('${student.docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">🗑️</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແກ້ໄຂ
+window.editStudent = function(docId, id, name, grade, phone, parent) {
+    document.getElementById('student-doc-id').value = docId;
+    document.getElementById('student-id').value = id;
+    document.getElementById('student-name').value = name;
+    document.getElementById('student-grade').value = grade;
+    document.getElementById('student-phone').value = phone;
+    document.getElementById('student-parent').value = parent;
+    
+    document.getElementById('student-form-title').innerText = '✏️ ແກ້ໄຂຂໍ້ມູນນັກຮຽນ';
+    document.getElementById('save-student-btn').innerText = 'ອັບເດດຂໍ້ມູນ';
+    document.getElementById('cancel-edit-btn').style.display = 'inline-block';
+}
+
+// ຣີເຊັດຟອມນັກຮຽນ
+window.resetStudentForm = function() {
+    const form = document.getElementById('student-form');
+    if (form) form.reset();
+    document.getElementById('student-doc-id').value = '';
+    document.getElementById('student-form-title').innerText = '➕ ເພີ່ມຂໍ້ມູນນັກຮຽນໃໝ່';
+    document.getElementById('save-student-btn').innerText = 'ບັນທຶກຂໍ້ມູນ';
+    document.getElementById('cancel-edit-btn').style.display = 'none';
+}
+
+// ຟັງຊັນຄົ້ນຫາ ແລະ ກອງຊັ້ນຮຽນ
+window.filterStudents = function() {
+    const keyword = document.getElementById('search-student-input').value.toLowerCase();
+    const selectedGrade = document.getElementById('filter-grade-select').value;
+    
+    const filtered = allStudentsData.filter(s => {
+        const matchKeyword = (s.name && s.name.toLowerCase().includes(keyword)) || 
+                             (s.id && s.id.toLowerCase().includes(keyword)) ||
+                             (s.phone && s.phone.toLowerCase().includes(keyword));
+        const matchGrade = selectedGrade === "" || s.grade === selectedGrade;
+        return matchKeyword && matchGrade;
+    });
+    
+    renderStudentsTable(filtered);
+}
