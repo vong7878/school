@@ -302,5 +302,48 @@ if (saveAttendanceBtn) {
         }
     });
 }
+document.getElementById('btn-confirm-login').addEventListener('click', function() {
+    const inputId = document.getElementById('login-input-id').value.trim();
 
+    if (!inputId) {
+        alert('ກະລຸນາປ້ອນລະຫັດ!');
+        return;
+    }
+
+    if (currentLoginType === 'teacher') {
+        const foundTeacher = allTeachers.find(t => t.id.toLowerCase() === inputId.toLowerCase());
+        
+        if (foundTeacher || inputId === 'admin') {
+            const teacherName = foundTeacher ? foundTeacher.name : 'ຜູ້ບໍລິຫານ (Admin)';
+            
+            // 💾 ບັນທຶກສະຖານະການລັອກອິນຂອງຄູໄວ້ໃຫ້ຈື່
+            localStorage.setItem('school_user_role', 'teacher');
+            localStorage.setItem('school_user_data', teacherName);
+
+            startApp('teacher', teacherName);
+        } else {
+            alert('❌ ບໍ່ພົບລະຫັດຄູໃນລະບົບ!');
+        }
+    } else {
+        const foundStudent = allStudents.find(s => s.id.toLowerCase() === inputId.toLowerCase());
+
+        if (foundStudent) {
+            // 💾 ບັນທຶກສະຖານະການລັອກອິນຂອງນັກຮຽນໄວ້ໃຫ້ຈື່
+            localStorage.setItem('school_user_role', 'student');
+            localStorage.setItem('school_user_data', JSON.stringify(foundStudent));
+
+            startApp('student', foundStudent);
+        } else {
+            alert('❌ ບໍ່ພົບລະຫັດນັກຮຽນນີ້ໃນລະບົບ!');
+        }
+    }
+});
+window.logout = function() {
+    // 🗑️ ລຶບຂໍ້ມູນການຈື່ລັອກອິນອອກ
+    localStorage.removeItem('school_user_role');
+    localStorage.removeItem('school_user_data');
+
+    document.getElementById('app-container').style.display = 'none';
+    document.getElementById('auth-container').style.display = 'flex';
+}
         `;
