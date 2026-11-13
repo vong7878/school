@@ -13,8 +13,89 @@
             padding: 0;
             background-color: #f4f6f9;
         }
+        /* ຕົບແຕ່ງສ່ວນ Header ດ້ານເທິງ */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .app-title h2 {
+            margin: 0;
+            color: #333;
+            font-size: 20px;
+        }
+        /* ໄອຄອນໂປຣໄຟລ໌ ແລະ ຂໍ້ມູນຜູ້ໃຊ້ */
+        .user-profile-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 6px 15px;
+            border-radius: 30px;
+            border: 1px solid #e9ecef;
+        }
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        #user-display-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+        #user-display-role {
+            font-size: 10px;
+            background: #007bff;
+            color: white;
+            padding: 1px 6px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            width: fit-content;
+            margin-top: 2px;
+        }
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Noto Sans Lao', sans-serif;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+        .logout-btn:hover {
+            background: #c82333;
+        }
     </style>
+    <!-- ກວດສອບ Login ກ່ອນໂຫຼດໜ້າເວັບ -->
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
 </head>
+<body>
+
+    <!-- 🌐 Header ຫຼັກຂອງລະບົບ -->
+    <header class="app-header">
+        <div class="app-title">
+            <h2>🏫 ລະບົບຄຸ້ມຄອງໂຮງຮຽນ</h2>
+        </div>
+
+        <!-- 👤 ປ້າຍສະແດງຊື່ຜູ້ໃຊ້ ແລະ ໄອຄອນຫົວຄົນ -->
+        <div class="user-profile-badge">
+            <span style="font-size: 22px;">👤</span>
+            <div class="user-info">
+                <span id="user-display-name">ກຳລັງໂຫຼດ...</span>
+                <span id="user-display-role">--</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">ອອກຈາກລະບົບ</button>
+        </div>
+    </header>
 <body>
 
     <!-- ຕົວຢ່າງໂຄງສ້າງ Sidebar ແລະ Content ຫຼັງລັອກອິນ -->
