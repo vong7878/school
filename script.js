@@ -862,3 +862,135 @@ if (classFormElement) {
         }
     });
 }
+
+
+
+// ຕົວຢ່າງຟັງຊັ່ນຈັດການຕາຕະລາງຮຽນ (Timetable)
+let timetableList = []; // ເກັບຂໍ້ມູນຈຳລອງ ຫຼື ຈາກ Firebase
+
+// ກວດສອບສິດສະແດງຟອມເພີ່ມ/ແກ້ໄຂ ເມື່ອໂຫຼດໜ້າຈໍ
+window.addEventListener('DOMContentLoaded', () => {
+    const userRole = localStorage.getItem('userRole') || 'student';
+    const formContainer = document.getElementById('class-form-container');
+    const managementCols = document.querySelectorAll('.admin-teacher-col');
+
+    // ຖ້າເປັນ Admin ຫຼື Teacher ໃຫ້ເປີດສິດເພີ່ມ/ແກ້ໄຂ/ລົບ
+    if (userRole === 'admin' || userRole === 'teacher') {
+        if (formContainer) formContainer.style.display = 'block';
+    } else {
+        // ຖ້າເປັນ Student / User ทั่วไป ໃຫ້ເຊື່ອງຟອມ ແລະ ຄໍລຳຈັດການ
+        if (formContainer) formContainer.style.display = 'none';
+        managementCols.forEach(col => col.style.display = 'none');
+    }
+    
+    // โหลดຂໍ້ມູນ (ຖ້າເຊື່ອມຕໍ່ Firebase ໃຫ້ເອີ້ນຟັງຊັ່ນດຶງຂໍ້ມູນຈາກ Firestore ມານີ້)
+    loadTimetables();
+});
+
+// ຟັງຊັ່ນໂຫຼດ ແລະ ສະແດງຂໍ້ມູນຕາຕະລາງ
+function loadTimetables() {
+    // ຂໍ້ມູນຕົວຢ່າງ (Mock Data) ສຳລັບທົດສອບລະບົບ
+    timetableList = [
+        { id: '1', room: 'ມ.4/1', subject: 'ຄະນິດສາດ', day: 'ວັນຈັນ', time: '08:00 - 09:30', teacher: 'ອາຈານ ສົມສັກ' },
+        { id: '2', room: 'ມ.4/1', subject: 'ພາສາລາວ', day: 'ວັນອັງຄານ', time: '09:45 - 11:15', teacher: 'ອາຈານ ວຽງສະຫວັນ' }
+    ];
+    renderTimetableTable(timetableList);
+}
+
+function renderTimetableTable(data) {
+    const tbody = document.getElementById('timetable-table-body');
+    const userRole = localStorage.getItem('userRole') || 'student';
+    const canManage = (userRole === 'admin' || userRole === 'teacher');
+
+    if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: #666;">ບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນ</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = data.map(item => `
+        <tr style="border-bottom: 1px solid #dee2e6;">
+            <td style="padding: 10px; font-weight: bold;">${item.room}</td>
+            <td style="padding: 10px;">${item.subject}</td>
+            <td style="padding: 10px;">${item.day}</td>
+            <td style="padding: 10px;">${item.time}</td>
+            <td style="padding: 10px;">${item.teacher}</td>
+            ${canManage ? `
+                <td style="padding: 10px; text-align: center;">
+                    <button onclick="editTimetable('${item.id}')" style="background: #ffc107; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
+                    <button onclick="deleteTimetable('${item.id}')" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🗑️</button>
+                </td>
+            ` : `<td style="padding: 10px; text-align: center; display: none;"></td>`}
+        </tr>
+    `).join('');
+}
+
+// ບັນທຶກ ຫຼື ເພີ່ມຂໍ້ມູນໃໝ່
+function saveTimetable(event) {
+    event.preventDefault();
+    const docId = document.getElementById('timetable-doc-id').value;
+    const room = document.getElementById('timetable-class-room').value;
+    const subject = document.getElementById('timetable-subject').value;
+    const day = document.getElementById('timetable-day').value;
+    const time = document.getElementById('timetable-time').value;
+    const teacher = document.getElementById('timetable-teacher').value;
+
+    if (docId) {
+        // ແກ້ໄຂຂໍ້ມູນທີ່ມີຢູ່
+        timetableList = timetableList.map(item => item.id === docId ? { id: docId, room, subject, day, time, teacher } : item);
+        alert('✅ ແກ້ໄຂຕາຕະລາງຮຽນສຳເລັດ!');
+    } else {
+        // ເພີ່ມຂໍ້ມູນໃຫມ່
+        const newItem = { id: Date.now().toString(), room, subject, day, time, teacher };
+        timetableList.push(newItem);
+        alert('✅ ເພີ່ມຕາຕະລາງຮຽນສຳເລັດ!');
+    }
+
+    resetTimetableForm();
+    renderTimetableTable(timetableList);
+}
+
+// ນຳຂໍ້ມູນມารຽນແບບໃນຟອມເພື່ອແກ້ໄຂ
+function editTimetable(id) {
+    const item = timetableList.find(i => i.id === id);
+    if (!item) return;
+
+    document.getElementById('timetable-doc-id').value = item.id;
+    document.getElementById('timetable-class-room').value = item.room;
+    document.getElementById('timetable-subject').value = item.subject;
+    document.getElementById('timetable-day').value = item.day;
+    document.getElementById('timetable-time').value = item.time;
+    document.getElementById('timetable-teacher').value = item.teacher;
+
+    document.getElementById('class-form-title').innerText = '✏️ ແກ້ໄຂຕາຕະລາງຮຽນ';
+    document.getElementById('save-timetable-btn').innerText = '💾 ບັນທຶກການແກ້ໄຂ';
+    document.getElementById('cancel-timetable-edit-btn').style.display = 'inline-block';
+}
+
+// ລົບຂໍ້ມູນ
+function deleteTimetable(id) {
+    if (confirm('⚠️ ທ່ານຕ້ອງການລົບຕາຕະລາງນີ້ແທ້ບໍ?')) {
+        timetableList = timetableList.filter(item => item.id !== id);
+        renderTimetableTable(timetableList);
+        alert('🗑️ ລົບສຳເລັດ!');
+    }
+}
+
+// ຣີເຊັດຟອມ
+function resetTimetableForm() {
+    document.getElementById('timetable-form').reset();
+    document.getElementById('timetable-doc-id').value = '';
+    document.getElementById('class-form-title').innerText = '➕ ເພີ່ມຕາຕະລາງຮຽນໃໝ່';
+    document.getElementById('save-timetable-btn').innerText = '💾 ບັນທຶກຕາຕະລາງ';
+    document.getElementById('cancel-timetable-edit-btn').style.display = 'none';
+}
+
+// ຄົ້ນຫາຕາຕະລາງຮຽນ
+function filterTimetables() {
+    const keyword = document.getElementById('search-timetable-input').value.toLowerCase();
+    const filtered = timetableList.filter(item => 
+        item.subject.toLowerCase().includes(keyword) || 
+        item.room.toLowerCase().includes(keyword) || 
+        item.teacher.toLowerCase().includes(keyword)
+    );
+    renderTimetableTable(filtered);
+}
