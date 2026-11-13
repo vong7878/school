@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ສະຫຼຸບວັນຂາດ ແລະ ຫັກຄະແນນນັກຮຽນ</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .report-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .back-btn:hover { background-color: #5a6268; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th { background-color: #f2f2f2; }
+        .absent-count { color: red; font-weight: bold; }
+        .deduct-score { color: #d9534f; font-weight: bold; }
+    </style>
+</head>
+<body style="background-color: #f4f6f9; padding: 20px;">
+
+    <div class="report-container">
+        <a href="index.html" class="back-btn">⬅️ ກັບຄືນໜ້າຫຼັກ</a>
+        <h2>📉 ສະຫຼຸບຍອດວັນຂາດ ແລະ ການຫັກຄະແນນນັກຮຽນ</h2>
+        <p style="color: #666; margin-bottom: 15px;">* ໝາຍເຫດ: ຄິດໄລ່ຫັກຄະແນນ 1 ຄັ້ງ = ຫັກ 1 ຄະແນນ (ສາມາດປັບປ່ຽນໄດ້ຕາມຕ້ອງການ)</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ລະຫັດນັກຮຽນ</th>
+                    <th>ຊື່-ນາມສະກຸນ</th>
+                    <th>ຊັ້ນຮຽນ</th>
+                    <th>ຈຳນວນວັນທີ່ຂາດ (ຄັ້ງ)</th>
+                    <th>ຈຳນວນວັນທີ່ລາ (ຄັ້ງ)</th>
+                    <th>ຄະແນນທີ່ຖືກຫັກ</th>
+                </tr>
+            </thead>
+            <tbody id="summary-table-body">
+                <tr><td colspan="6">ກຳລັງປະມວນຜົນຂໍ້ມູນຈາກ Firebase...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Firebase ແລະ Script ປະມວນຜົນສະຫຼຸບ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
+            authDomain: "my-school-c1104.firebaseapp.com",
+            projectId: "my-school-c1104",
+            storageBucket: "my-school-c1104.appspot.com",
+            messagingSenderId: "339930418459",
+            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+            measurementId: "G-NPNFSW2C72"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadAttendanceSummary() {
+            const tbody = document.getElementById('summary-table-body');
+            tbody.innerHTML = `<tr><td colspan="6">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
+
+            try {
+                // 1. ดึงข้อมูลการเช็คชื่อทั้งหมด
+                const attendanceSnapshot = await getDocs(collection(db, "attendance"));
+                
+                // 2. ดึงข้อมูลนักเรียนทั้งหมดเพื่อเอาชื่อและชั้นเรียนที่ถูกต้อง
+                const studentsSnapshot = await getDocs(collection(db, "students"));
+                const studentsMap = {};
+                studentsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    studentsMap[data.id] = {
+                        name: data.name,
+                        grade: data.grade
+                    };
+                });
+
+                // 3. ປະມວນຜົນລວມຍອດການຂາດ/ລາ ຂອງແต้นັກຮຽນແຕ່ລະຄົນ
+                const summaryData = {};
+
+                attendanceSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const sId = data.studentId;
+
+                    if (!sId) return;
+
+                    if (!summaryData[sId]) {
+                        summaryData[sId] = {
+                            studentId: sId,
+                            name: data.studentName || (studentsMap[sId] ? studentsMap[sId].name : 'ບໍ່ຮູ້ຊື່'),
+                            grade: data.grade || (studentsMap[sId] ? studentsMap[sId].grade : '-'),
+                            absentCount: 0,
+                            leaveCount: 0
+                        };
+                    }
+
+                    if (data.status === 'ຂາດ') {
+                        summaryData[sId].absentCount += 1;
+                    } else if (data.status === 'ລາ') {
+                        summaryData[sId].leaveCount += 1;
+                    }
+                });
+
+                tbody.innerHTML = '';
+                const studentIds = Object.keys(summaryData);
+
+                if (studentIds.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6">ຍັງບໍ່ມີຂໍ້ມູນການຂາດຮຽນໃນລະບົບ</td></tr>`;
+                    return;
+                }
+
+                // 4. ສະແດງຜົນລົງໃນຕາຕະລາງ
+                studentIds.forEach(sId => {
+                    const student = summaryData[sId];
+                    const deductedScore = student.absentCount * 1.0; // ຕັ້ງຄ່າ: ຂາດ 1 ຄັ້ງ ຫັກ 1 ຄະແນນ
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${student.studentId}</td>
+                        <td>${student.name}</td>
+                        <td>${student.grade}</td>
+                        <td><span class="absent-count">${student.absentCount} ຄັ້ງ</span></td>
+                        <td>${student.leaveCount} ຄັ້ງ</td>
+                        <td><span class="deduct-score">-${deductScore} ຄະແນນ</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error("Error loading summary: ", error);
+                tbody.innerHTML = `<tr><td colspan="6">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadAttendanceSummary);
+    </script>
+</body>
+</html>
