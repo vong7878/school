@@ -26,17 +26,17 @@ let allFinancesData = [];
 // ==========================================
 // 4. ຟັງຊັນຄວບຄຸມການສະຫຼັບໜ້າ (Sidebar Navigation)
 // ==========================================
-window.showSection = function(sectionName) {
+window.showSection = function(sectionId) {
+    // ซ่อนทุก section ກ່ອນ
     const sections = document.querySelectorAll('.content-section');
-    sections.forEach(sec => {
-        sec.style.display = 'none';
-    });
+    sections.forEach(sec => sec.style.display = 'none');
 
-    const targetSection = document.getElementById(`section-${sectionName}`);
-    if (targetSection) {
-        targetSection.style.display = 'block';
+    // ສະແດງສະເພາະ section ที่เลือก
+    const target = document.getElementById(sectionId);
+    if (target) {
+        target.style.display = 'block';
     }
-}
+};
 
 // ຟັງຊັນອອກຈາກລະບົບ (Logout)
 window.logout = function() {
@@ -683,6 +683,17 @@ function renderFinancesTable(finances) {
         return;
     }
 
+    window.showSection = function(sectionId) {
+    // ซ่อนทุก section ກ່ອນ
+    const sections = document.querySelectorAll('.content-section');
+    sections.forEach(sec => sec.style.display = 'none');
+
+    // ສະແດງສະເພາະ section ที่เลือก
+    const target = document.getElementById(sectionId);
+    if (target) {
+        target.style.display = 'block';
+    }
+};
     finances.forEach((f) => {
         const amount = parseFloat(f.amount) || 0;
         const statusColor = f.status === 'ຈ່າຍແລ້ວ' ? '#28a745' : '#dc3545';
