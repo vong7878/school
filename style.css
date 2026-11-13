@@ -15,7 +15,6 @@ body {
     min-height: 100vh;
 }
 
-/* Sidebar */
 .sidebar {
     width: 260px;
     background-color: #1e293b;
@@ -46,7 +45,6 @@ body {
     background-color: #3b82f6;
 }
 
-/* Main Content */
 .main-content {
     flex-grow: 1;
     padding: 30px;
@@ -65,7 +63,6 @@ h1 {
     color: #1e293b;
 }
 
-/* Dashboard Cards */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -92,7 +89,6 @@ h1 {
     color: #1e293b;
 }
 
-/* Forms */
 .form-container {
     background: white;
     padding: 20px;
@@ -106,7 +102,7 @@ h1 {
     font-size: 18px;
 }
 
-form {
+form, .filter-box {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 15px;
@@ -139,7 +135,6 @@ input:focus, select:focus {
     background-color: #059669;
 }
 
-/* Table */
 .table-container {
     background: white;
     padding: 20px;
@@ -189,7 +184,6 @@ tr:hover {
     background-color: #dc2626;
 }
 
-/* Responsive ສຳລັບມືຖື */
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
