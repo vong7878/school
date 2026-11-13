@@ -347,3 +347,16 @@ window.logout = function() {
     document.getElementById('auth-container').style.display = 'flex';
 }
         `;
+// ກວດສອບວ່າເຄີຍລັອກອິນໄວ້ແລ້ວບໍ່ ຕອນເປີດເວັບຂຶ້ນມາ
+document.addEventListener('DOMContentLoaded', () => {
+    const savedRole = localStorage.getItem('school_user_role');
+    const savedData = localStorage.getItem('school_user_data');
+
+    if (savedRole && savedData) {
+        if (savedRole === 'teacher') {
+            startApp('teacher', savedData);
+        } else if (savedRole === 'student') {
+            startApp('student', JSON.parse(savedData));
+        }
+    }
+});
