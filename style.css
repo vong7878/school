@@ -192,3 +192,19 @@ tr:hover {
         width: 100%;
     }
 }
+/* ຕົບແຕ່ງ Sidebar ໃຫ້ຕົວຫນັງສືເຫັນຊັດເຈນ */
+.sidebar ul li a, sidebar a {
+    color: #ffffff !important; /* เปลี่ยนເປັນສີຂາວ */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+/* ເວລານຳເມົ້າໄປຊີ້ (Hover) ໃຫ້ມີສີ້ນັ້ນຕ່າງ */
+.sidebar ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
