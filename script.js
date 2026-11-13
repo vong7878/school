@@ -1,7 +1,8 @@
 // 1. ນຳເຂົ້າ Firebase SDK ທີ່ຈຳເປັນ
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+// 📌 ປະກາດ Firebase Firestore Database ໄວ້ເທິງສຸດສະເໝີ
+const db = firebase.firestore();
 // 2. ຕັ້ງຄ່າ Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
@@ -904,46 +905,20 @@ window.applyRolePermissions = function() {
 window.addEventListener('DOMContentLoaded', () => {
     window.applyRolePermissions();
 });
-// 1. ຟັງຊັນບັນທຶກຕາຕະລາງຮຽນລົງ Firebase Firestore
-window.addClass = async function(event) {
-    event.preventDefault();
-    
-    const className = document.getElementById('class-name').value;
-    const classDay = document.getElementById('class-day').value;
-    const classTime = document.getElementById('class-time').value;
-    const classTeacher = document.getElementById('class-teacher').value;
 
-    try {
-        await db.collection('classes').add({
-            className: className,
-            day: classDay,
-            time: classTime,
-            teacher: classTeacher,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        alert('✅ ບັນທຶກຕາຕະລາງຮຽນສຳເລັດ!');
-        document.getElementById('class-form').reset();
-        window.loadClasses(); // โຫລດຂໍ້ມູນໃໝ່
-    } catch (error) {
-        console.error('Error adding class: ', error);
-        alert('❌ เกิดข้อผิดพลาด: ' + error.message);
-    }
-}
-
-// 2. ຟັງຊັນໂຫຼດ ແລະ ສະແດງຕາຕະລາງຮຽນຈາກ Firestore
+// 📥 ໂຫຼດລາຍຊື່ຫ້ອງຮຽນທັງໝົດ
 window.loadClasses = async function() {
     const tbody = document.getElementById('classes-table-body');
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>';
 
     try {
         const snapshot = await db.collection('classes').get();
         tbody.innerHTML = '';
 
         if (snapshot.empty) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນ</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນຫ້ອງຮຽນ</td></tr>';
             return;
         }
 
@@ -952,24 +927,26 @@ window.loadClasses = async function() {
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #eee';
             tr.innerHTML = `
-                <td style="padding: 10px;">${data.className || ''}</td>
-                <td style="padding: 10px;">${data.day || ''}</td>
-                <td style="padding: 10px;">${data.time || ''}</td>
+                <td style="padding: 10px;">${data.grade || ''}</td>
+                <td style="padding: 10px;"><b>${data.className || ''}</b></td>
                 <td style="padding: 10px;">${data.teacher || ''}</td>
                 <td style="padding: 10px;" class="action-col">
-                    <button onclick="deleteClass('${doc.id}')" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">ລົບ</button>
+                    <button onclick="viewClassStudents('${doc.id}', '${data.className}')" style="background: #17a2b8; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">👥 ເບິ່ງນັກຮຽນ</button>
+                    <button onclick="editClass('${doc.id}', '${data.grade}', '${data.className}', '${data.teacher}')" style="background: #ffc107; color: black; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️ ແກ້ໄຂ</button>
+                    <button onclick="deleteClass('${doc.id}')" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🗑️ ລົບ</button>
                 </td>
             `;
             tbody.appendChild(tr);
         });
 
-        // 🎯 ຖ້າຜູ້ໃຊ້ເປັນ Student ໃຫ້ເຊື່ອງຟອມເພີ່ມ ແລະ ປຸ່ມລົບ
+        // 🎯 ຖ້າເປັນ Student ໃຫ້ເຊື່ອງຟອມ ແລະ ປຸ່ມຈັດການ
         const role = localStorage.getItem('userRole');
         if (role === 'student') {
             const formContainer = document.getElementById('class-form-container');
             if (formContainer) formContainer.style.display = 'none';
-
-            document.querySelectorAll('.action-col').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.action-col').forEach(el => {
+                // ให้นັກຮຽນເຫັນສະເພາະປຸ່ມເບິ່ງນັກຮຽນ (ຖ້າຕ້ອງການ) ຫຼຶເຊື່ອງທັງໝົດยกเว้นເບິ່ງ
+            });
         }
 
     } catch (error) {
@@ -977,9 +954,66 @@ window.loadClasses = async function() {
     }
 }
 
-// 3. ຟັງຊັນລົບຕາຕະລາງຮຽນ (ສະເພາະ Admin)
+// 💾 ບັນທຶກ ຫຼື ອັບເດດຫ້ອງຮຽນ
+window.addClass = async function(event) {
+    event.preventDefault();
+    
+    const grade = document.getElementById('class-grade').value;
+    const className = document.getElementById('class-name').value;
+    const teacher = document.getElementById('class-teacher').value;
+    const editId = document.getElementById('class-edit-id') ? document.getElementById('class-edit-id').value : '';
+
+    try {
+        if (editId) {
+            // ອັບເດດຂໍ້ມູນເກົ່າ
+            await db.collection('classes').doc(editId).update({
+                grade: grade,
+                className: className,
+                teacher: teacher,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert('✅ ແກ້ໄຂຂໍ້ມູນຫ້ອງຮຽນສຳເລັດ!');
+            if (document.getElementById('class-edit-id')) document.getElementById('class-edit-id').value = '';
+        } else {
+            // ເພີ່ມຂໍ້ມູນໃຫມ່
+            await db.collection('classes').add({
+                grade: grade,
+                className: className,
+                teacher: teacher,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert('✅ ເພີ່ມຫ້ອງຮຽນສຳເລັດ!');
+        }
+
+        document.getElementById('class-form').reset();
+        window.loadClasses();
+    } catch (error) {
+        console.error('Error saving class: ', error);
+        alert('❌ เกิดข้อผิดพลาด: ' + error.message);
+    }
+}
+
+// ✏️ ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແก້ໄຂ
+window.editClass = function(id, grade, className, teacher) {
+    if (document.getElementById('class-grade')) document.getElementById('class-grade').value = grade;
+    if (document.getElementById('class-name')) document.getElementById('class-name').value = className;
+    if (document.getElementById('class-teacher')) document.getElementById('class-teacher').value = teacher;
+    
+    // ສ້າງ Hidden Input ເກັບ ID ໄວ້ຖ້າຫາກຍັງບໍ່ມີ
+    let editIdInput = document.getElementById('class-edit-id');
+    if (!editIdInput) {
+        editIdInput = document.createElement('input');
+        editIdInput.type = 'hidden';
+        editIdInput.id = 'class-edit-id';
+        document.getElementById('class-form').appendChild(editIdInput);
+    }
+    editIdInput.value = id;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 🗑️ ລົບຫ້ອງຮຽນ
 window.deleteClass = async function(id) {
-    if (!confirm('ຕ້ອງການລົບລາຍການນີ້ແທ້ບໍ?')) return;
+    if (!confirm('ຕ້ອງການລົບຫ້ອງຮຽນນີ້ແທ້ບໍ?')) return;
     try {
         await db.collection('classes').doc(id).delete();
         alert('🗑️ ລົບຂໍ້ມູນສຳເລັດ!');
@@ -990,7 +1024,47 @@ window.deleteClass = async function(id) {
     }
 }
 
-// ເອີ້ນໃຊ້ງານຕອນໂຫຼດໜ້າເວັບ
+// 👥 ເບິ່ງລາຍຊື່ນັກຮຽນໃນຫ້ອງນັ້ນໆ
+window.viewClassStudents = async function(classId, className) {
+    try {
+        const snapshot = await db.collection('students').where('classId', '==', classId).get();
+        let studentListHtml = `<h3>👥 ລາຍຊື່ນັກຮຽນໃນຫ້ອງ: ${className}</h3>`;
+        
+        if (snapshot.empty) {
+            studentListHtml += `<p>ຍັງບໍ່ມີນັກຮຽນໃນຫ້ອງນີ້.</p>`;
+        } else {
+            studentListHtml += `<ul style="padding-left: 20px;">`;
+            snapshot.forEach(doc => {
+                const sData = doc.data();
+                studentListHtml += `<li>${sData.name || 'ບໍ່ມີຊື່'} (ລະຫັດ: ${sData.studentId || '-'})</li>`;
+            });
+            studentListHtml += `</ul>`;
+        }
+
+        // ສະແດງຜົນໃນ Modal ຫຼື Alert / Container ສະເພາະ
+        let modal = document.getElementById('student-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'student-modal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;';
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = `
+            <div style="background: white; padding: 25px; border-radius: 8px; width: 400px; max-width: 90%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                ${studentListHtml}
+                <button onclick="document.getElementById('student-modal').style.display='none'" style="margin-top: 15px; background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; width: 100%;">ປິດ</button>
+            </div>
+        `;
+        modal.style.display = 'flex';
+
+    } catch (error) {
+        console.error('Error loading students: ', error);
+        alert('❌ ບໍ່สามารถໂຫຼດລາຍຊື່ນັກຮຽນໄດ້');
+    }
+}
+
+// ເອີ້ນໂຫຼດຂໍ້ມູນຕອນເປີດໜ້າເວັບ
 window.addEventListener('DOMContentLoaded', () => {
     window.loadClasses();
 });
