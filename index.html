@@ -25,16 +25,17 @@
             <h3>🏫 ລະບົບໂຮງຮຽນ</h3>
             <hr style="border-color: #444; margin-bottom: 15px;">
             
-            <ul style="list-style: none; padding: 0;">
-                <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('dashboard')" style="color: white; text-decoration: none;">📊 1. Dashboard (ພາບລວມ)</a></li>
-                <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('students')" style="color: white; text-decoration: none;">👨‍🎓 2. ຈັດການນັກຮຽນ</a></li>
-                <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('teachers')" style="color: white; text-decoration: none;">👩‍🏫 3. ຈັດການຄູອາຈານ</a></li>
-                <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('classes')" style="color: white; text-decoration: none;">🏫 4. ຈັດການຫ້ອງຮຽນ</a></li>
-                <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('attendance')" style="color: white; text-decoration: none;">📝 5. ຈັດການການມາຮຽນ</a></li>
-                <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('scores')" style="color: white; text-decoration: none;">📈 6. ຈັດການຄະແນນ</a></li>
-                <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('finance')" style="color: white; text-decoration: none;">💰 7. ການເງິນ & ຄ່າຮຽນ</a></li>
-                <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('news')" style="color: white; text-decoration: none;">📢 8. ຂ່າວສານ & ແຈ້ງເຕືອນ</a></li>
-            </ul>
+           <!-- ຕົວຢ່າງການໃສ່ ID ໃຫ້ເມນູ Sidebar -->
+<ul>
+    <li id="menu-dashboard"><a href="#" onclick="showSection('dashboard')">📊 1. Dashboard (ພາບລວມ)</a></li>
+    <li id="menu-students"><a href="#" onclick="showSection('students')">👨‍🎓 2. ຈັດການນັກຮຽນ</a></li>
+    <li id="menu-teachers"><a href="#" onclick="showSection('teachers')">👨‍🏫 3. ຈັດການຄູອາຈານ</a></li>
+    <li id="menu-classes"><a href="#" onclick="showSection('classes')">🏫 4. ຈັດການຫ້ອງຮຽນ</a></li>
+    <li id="menu-attendance"><a href="#" onclick="showSection('attendance')">📋 5. ຈັດການການມາຮຽນ</a></li>
+    <li id="menu-scores"><a href="#" onclick="showSection('scores')">📝 6. ຈັດການຄະແນນ</a></li>
+    <li id="menu-finance"><a href="#" onclick="showSection('finance')">💰 7. ການເງິນ & ຄ່າຮຽນ</a></li>
+    <li id="menu-news"><a href="#" onclick="showSection('news')">📢 8. ຂ່າວສານ & ແຈ້ງເຕືອນ</a></li>
+</ul>
 
             <hr style="border-color: #444; margin: 20px 0;">
             <button onclick="logout()" style="width: 100%; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">🚪 ອອກຈາກລະບົບ</button>
