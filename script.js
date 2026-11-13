@@ -11,15 +11,14 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // =================================================================
-// 1. ວາງຂໍ້ມູນ firebaseConfig ຂອງທ່ານໃສ່ບ່ອນນີ້ (ເອົາມາຈາກ Firebase Console)
-// =================================================================
 const firebaseConfig = {
-    apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    authDomain: "your-project-id.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project-id.appspot.com",
-    messagingSenderId: "123456789012",
-    appId: "1:123456789012:web:abcdef1234567890"
+    apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
+    authDomain: "my-school-c1104.firebaseapp.com",
+    projectId: "my-school-c1104",
+    storageBucket: "my-school-c1104.appspot.com",
+    messagingSenderId: "339930418459",
+    appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+    measurementId: "G-NPNFSW2C72"
 };
 
 // ເລີ່ມຕົ້ນເຊື່ອມຕໍ່ Firebase
