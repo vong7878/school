@@ -123,12 +123,65 @@
         </table>
     </div>
 </div>
+<!-- 4. Classes Management Section -->
+<div id="section-classes" class="content-section" style="display: none;">
+    <h2>🏫 ຈັດການຫ້ອງຮຽນ ແລະ ຊັ້ນຮຽນ</h2>
+    <p>ເພີ່ມ, ແກ້ໄຂ, ລົບ ແລະ ຈັດສັນຫ້ອງຮຽນພ້ອມທັງເບິ່ງລາຍຊື່ນັກຮຽນໃນແຕ່ລະຫ້ອງ.</p>
 
-            <!-- 4. Classes Management Section -->
-            <div id="section-classes" class="content-section" style="display: none;">
-                <h2>🏫 ຈັດການຫ້ອງຮຽນ ແລະ ຊັ້ນຮຽນ</h2>
-                <p>ລະດັບຊັ້ນ, ຫ້ອງຮຽນ ແລະ ຈັດສັນລາຍຊື່ນັກຮຽນ.</p>
-            </div>
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 20px;">
+        
+        <!-- ຝั่งຊ້າຍ: ຟອມເພີ່ມຫ້ອງຮຽນ -->
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <h3>➕ ເພີ່ມຫ້ອງຮຽນໃໝ່</h3>
+            <form id="class-form" style="margin-top: 15px;">
+                <input type="hidden" id="class-doc-id">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະດັບຊັ້ນ:</label>
+                    <select id="class-level" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">-- ເລືອກລະດັບຊັ້ນ --</option>
+                        <option value="ມ.1">ມັດທະຍົມປີທີ 1 (ມ.1)</option>
+                        <option value="ມ.2">ມັດທະຍົມປີທີ 2 (ມ.2)</option>
+                        <option value="ມ.3">ມັດທະຍົມປີທີ 3 (ມ.3)</option>
+                        <option value="ມ.4">ມັດທະຍົມປີທີ 4 (ມ.4)</option>
+                        <option value="ມ.5">ມັດທະຍົມປີທີ 5 (ມ.5)</option>
+                        <option value="ມ.6">ມັດທະຍົມປີທີ 6 (ມ.6)</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ຫ້ອງຮຽນ:</label>
+                    <input type="text" id="class-name" required placeholder="ຕົວຢ່າງ: ມ.4/1" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄູປະຈຳຫ້ອງ:</label>
+                    <input type="text" id="class-teacher" required placeholder="ຊື່-ນາມສະກຸນຄູ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" id="save-class-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຫ້ອງ</button>
+                    <button type="button" id="cancel-class-edit-btn" onclick="resetClassForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ຝັ່ງຂວາ: ຕາຕະລາງສະແດງຫ້ອງຮຽນ -->
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <h3>📋 ລາຍຊື່ຫ້ອງຮຽນທັງໝົດ</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ຊັ້ນຮຽນ</th>
+                        <th>ຊື່ຫ້ອງ</th>
+                        <th>ຄູປະຈຳຫ້ອງ</th>
+                        <th>ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="classes-table-body">
+                    <tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
 
             <!-- 5. Attendance Management Section -->
             <div id="section-attendance" class="content-section" style="display: none;">
