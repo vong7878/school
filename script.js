@@ -232,3 +232,16 @@ if (gradeSelect) {
         saveBtn.style.display = filtered.length > 0 ? 'block' : 'none';
     });
 }
+
+// ຜູກ Event ໃຫ້ປຸ່ມຄລິກເປີດ-ປິດ Modal ຢ່າງເປັນທາງການ
+document.getElementById('btn-open-teacher-login').addEventListener('click', () => {
+    window.openLoginModal('teacher');
+});
+
+document.getElementById('btn-open-student-login').addEventListener('click', () => {
+    window.openLoginModal('student');
+});
+
+document.getElementById('btn-close-modal').addEventListener('click', () => {
+    window.closeLoginModal();
+});
