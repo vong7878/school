@@ -94,17 +94,44 @@
     <h3>📅 ຕາຕະລາງຮຽນ & ຫ້ອງຮຽນ</h3>
     <p>ເພີ່ມ, ແກ້ໄຂ ແລະ ຈັດສັນຕາຕະລາງຮຽນສຳລັບນັກຮຽນແຕ່ລະຫ້ອງ.</p>
 
-    <!-- ຟອມເພີ່ມຕາຕະລາງຮຽນ (ສະແດງສະເພາະ Admin/Teacher) -->
-    <div id="class-form-container" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-        <h4>ເພີ່ມຕາຕະລາງຮຽນໃໝ່</h4>
-        <form id="class-form" onsubmit="addClass(event)" style="display: flex; flex-direction: column; gap: 10px;">
-            <input type="text" id="class-name" placeholder="ຊື່ວິຊາ / ຊັ້ນຮຽນ (ຕົວຢ່າງ: ມ.4/1 - ວິຊາຄະນິດສາດ)" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-            <input type="text" id="class-day" placeholder="ມື້ຮຽນ (ຕົວຢ່າງ: ວັນຈັນ)" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-            <input type="text" id="class-time" placeholder="ເວລາ (ຕົວຢ່າງ: 08:00 - 09:30)" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-            <input type="text" id="class-teacher" placeholder="ຊື່ຄູຜູ້ສອນ" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-            <button type="submit" style="background: #28a745; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 ບັນທຶກຕາຕະລາງ</button>
-        </form>
-    </div>
+   <!-- ຟອມເພີ່ມ/ແກ້ໄຂຕາຕະລາງຮຽນ -->
+<div id="class-form-container" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <h4 id="class-form-title">➕ ເພີ່ມຕາຕະລາງຮຽນໃໝ່</h4>
+    <form id="timetable-form" onsubmit="saveTimetable(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+        <input type="hidden" id="timetable-doc-id">
+        <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ / ຫ້ອງ:</label>
+            <input type="text" id="timetable-class-room" placeholder="ຕົວຢ່າງ: ມ.4/1" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ວິຊາ:</label>
+            <input type="text" id="timetable-subject" placeholder="ຕົວຢ່າງ: ວິຊາຄະນິດສາດ" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ມື້ຮຽນ:</label>
+            <select id="timetable-day" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">-- ເລືອກມື້ --</option>
+                <option value="ວັນຈັນ">ວັນຈັນ</option>
+                <option value="ວັນອັງຄານ">ວັນອັງຄານ</option>
+                <option value="ວັນພຸດ">ວັນພຸດ</option>
+                <option value="ວັນພະຫັດ">ວັນພະຫັດ</option>
+                <option value="ວັນສຸກ">ວັນສຸກ</option>
+            </select>
+        </div>
+        <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ເວລາ:</label>
+            <input type="text" id="timetable-time" placeholder="ຕົວຢ່າງ: 08:00 - 09:30" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄູຜູ້ສອນ:</label>
+            <input type="text" id="timetable-teacher" placeholder="ຊື່-ນາມສະກຸນຄູ" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+            <button type="submit" id="save-timetable-btn" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 ບັນທຶກຕາຕະລາງ</button>
+            <button type="button" id="cancel-timetable-edit-btn" onclick="resetTimetableForm()" style="display: none; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
+        </div>
+    </form>
+</div>
 
     <!-- ຕາຕະລາງສະແດງຂໍ້ມູນ -->
     <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
