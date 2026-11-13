@@ -76,7 +76,6 @@ document.getElementById('btn-confirm-login').addEventListener('click', function(
         }
     }
 });
-
 // ເລີ່ມຕົ້ນລະບົບຫຼັງບ້ານຕາມສິດ
 function startApp(role, userData) {
     document.getElementById('auth-container').style.display = 'none';
