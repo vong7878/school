@@ -785,6 +785,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (window.applyRolePermissions) window.applyRolePermissions();
     if (typeof loadTimetables === 'function') loadTimetables();
     if (typeof loadNews === 'function') loadNews();
+    if (typeof showSection === 'function') {
+        showSection('section-dashboard');
 });
 
 
