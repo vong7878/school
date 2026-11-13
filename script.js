@@ -5,12 +5,10 @@ import {
     addDoc, 
     deleteDoc, 
     doc, 
-    onSnapshot,
-    query,
-    orderBy 
+    onSnapshot 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// =================================================================
+// 🔑 ໃສ່ Firebase Config ຂອງທ່ານທີ່ນີ້
 const firebaseConfig = {
     apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
     authDomain: "my-school-c1104.firebaseapp.com",
@@ -21,15 +19,14 @@ const firebaseConfig = {
     measurementId: "G-NPNFSW2C72"
 };
 
-// ເລີ່ມຕົ້ນເຊື່ອມຕໍ່ Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ອ້າງອີງຫາ Collections ໃນ Firestore
 const studentsCol = collection(db, "students");
 const teachersCol = collection(db, "teachers");
+const attendanceCol = collection(db, "attendance");
 
-let allStudents = []; // ເກັບຂໍ້ມູນຊົ່ວຄາວໄວ້ສຳລັບຄົ້ນຫາ
+let allStudents = [];
 let allTeachers = [];
 
 // ================= ລະບົບສະຫຼັບເມນູ =================
@@ -44,12 +41,10 @@ document.querySelectorAll('.nav-links li').forEach(item => {
     });
 });
 
-// ================= ຈັດການຂໍ້ມູນນັກຮຽນ (Real-time) =================
-
-// ດຶງຂໍ້ມູນນັກຮຽນແບບ Real-time (ອັບເດດອັດຕະໂນມັດເມື່ອຂໍ້ມູນປ່ຽນ)
+// ================= ຈັດການຂໍ້ມູນນັກຮຽນ =================
 onSnapshot(studentsCol, (snapshot) => {
     allStudents = snapshot.docs.map(doc => ({
-        docId: doc.id, // ID ຂອງເອກະສານໃນ Firebase
+        docId: doc.id,
         ...doc.data()
     }));
     renderStudents(allStudents);
@@ -63,22 +58,19 @@ function renderStudents(data) {
     data.forEach((student) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${student.id}</td>
-            <td>${student.name}</td>
-            <td>${student.grade}</td>
-            <td>${student.phone}</td>
+            <td>${student.id || ''}</td>
+            <td>${student.name || ''}</td>
+            <td>${student.grade || ''}</td>
+            <td>${student.phone || ''}</td>
             <td>
                 <button class="btn-delete" data-id="${student.docId}">ລຶບ</button>
             </td>
         `;
-        
-        // ຜູກ Event ປຸ່ມລຶບ
         tr.querySelector('.btn-delete').addEventListener('click', () => deleteStudent(student.docId));
         tbody.appendChild(tr);
     });
 }
 
-// ເພີ່ມຂໍ້ມູນນັກຮຽນລົງ Firebase
 document.getElementById('student-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = this.querySelector('button');
@@ -95,14 +87,13 @@ document.getElementById('student-form').addEventListener('submit', async functio
         });
         this.reset();
     } catch (error) {
-        alert("ເກີດຂໍ້ຜິດພາດໃນການບັນທຶກ: " + error.message);
+        alert("ເກີດຂໍ້ຜິດພາດ: " + error.message);
     } finally {
         btn.disabled = false;
         btn.innerText = '+ ເພີ່ມຂໍ້ມູນ';
     }
 });
 
-// ລຶບຂໍ້ມູນນັກຮຽນອອກຈາກ Firebase
 async function deleteStudent(docId) {
     if (confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນນັກຮຽນຄົນນີ້?')) {
         try {
@@ -113,18 +104,16 @@ async function deleteStudent(docId) {
     }
 }
 
-// ຄົ້ນຫານັກຮຽນ
 document.getElementById('search-student').addEventListener('keyup', function() {
     const keyword = this.value.toLowerCase();
     const filtered = allStudents.filter(s => 
-        s.name.toLowerCase().includes(keyword) || 
-        s.id.toLowerCase().includes(keyword)
+        (s.name && s.name.toLowerCase().includes(keyword)) || 
+        (s.id && s.id.toLowerCase().includes(keyword))
     );
     renderStudents(filtered);
 });
 
-// ================= ຈັດການຂໍ້ມູນຄູອາຈານ (Real-time) =================
-
+// ================= ຈັດການຂໍ້ມູນຄູອາຈານ =================
 onSnapshot(teachersCol, (snapshot) => {
     allTeachers = snapshot.docs.map(doc => ({
         docId: doc.id,
@@ -141,10 +130,10 @@ function renderTeachers(data) {
     data.forEach((teacher) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${teacher.id}</td>
-            <td>${teacher.name}</td>
-            <td>${teacher.subject}</td>
-            <td>${teacher.phone}</td>
+            <td>${teacher.id || ''}</td>
+            <td>${teacher.name || ''}</td>
+            <td>${teacher.subject || ''}</td>
+            <td>${teacher.phone || ''}</td>
             <td>
                 <button class="btn-delete" data-id="${teacher.docId}">ລຶບ</button>
             </td>
@@ -186,3 +175,90 @@ async function deleteTeacher(docId) {
         }
     }
 }
+
+// ================= ລະບົບເຊັກຊື່ມາຮຽນ (Attendance) =================
+const attendanceDateInput = document.getElementById('attendance-date');
+attendanceDateInput.valueAsDate = new Date(); // ຕັ້ງຄ່າວັນທີປັດຈຸບັນ
+
+document.getElementById('select-grade-attendance').addEventListener('change', function() {
+    const selectedGrade = this.value;
+    const tbody = document.getElementById('attendance-student-list');
+    const saveBtn = document.getElementById('save-attendance-btn');
+
+    if (!selectedGrade) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">ກະລຸນາເລືອກຊັ້ນຮຽນກ່ອນ...</td></tr>`;
+        saveBtn.style.display = 'none';
+        return;
+    }
+
+    // กรองเฉพาะนักเรียนในชั้นที่เลือก
+    const filteredStudents = allStudents.filter(s => s.grade === selectedGrade);
+
+    if (filteredStudents.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">ບໍ່ມີຂໍ້ມູນນັກຮຽນໃນຊັ້ນ ${selectedGrade} ນີ້</td></tr>`;
+        saveBtn.style.display = 'none';
+        return;
+    }
+
+    tbody.innerHTML = '';
+    filteredStudents.forEach((student) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${student.id}</td>
+            <td>${student.name}</td>
+            <td>${student.grade}</td>
+            <td>
+                <label><input type="radio" name="status_${student.docId}" value="ມາ" checked> ມາ</label> &nbsp;
+                <label><input type="radio" name="status_${student.docId}" value="ຂາດ"> ຂາດ</label> &nbsp;
+                <label><input type="radio" name="status_${student.docId}" value="ລາ"> ລາ</label>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    saveBtn.style.display = 'block';
+});
+
+// บันทึกผลการเช็คชื่อลง Firebase
+document.getElementById('save-attendance-btn').addEventListener('click', async function() {
+    const selectedGrade = document.getElementById('select-grade-attendance').value;
+    const dateStr = attendanceDateInput.value;
+    const filteredStudents = allStudents.filter(s => s.grade === selectedGrade);
+
+    if (!dateStr) {
+        alert('ກະລຸນາເລືອກວັນທີ!');
+        return;
+    }
+
+    this.disabled = true;
+    this.innerText = 'ກຳລັງບັນທຶກ...';
+
+    try {
+        for (let student of filteredStudents) {
+            const radios = document.getElementsByName(`status_${student.docId}`);
+            let status = 'ມາ';
+            for (let r of radios) {
+                if (r.checked) {
+                    status = r.value;
+                    break;
+                }
+            }
+
+            // บันทึกลง Collection attendance
+            await addDoc(attendanceCol, {
+                studentId: student.id,
+                studentName: student.name,
+                grade: student.grade,
+                status: status,
+                date: dateStr,
+                createdAt: new Date()
+            });
+        }
+        alert('ບັນທຶກການເຊັກຊື່ສຳເລັດຮຽບຮ້ອຍ!');
+    } catch (error) {
+        alert('ເກີດຂໍ້ຜິດພາດ: ' + error.message);
+    } finally {
+        this.disabled = false;
+        this.innerText = '💾 ບັນທຶກການເຊັກຊື່';
+    }
+});
