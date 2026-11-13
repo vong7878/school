@@ -549,6 +549,167 @@ window.filterStudents = function() {
         const matchGrade = selectedGrade === "" || s.grade === selectedGrade;
         return matchKeyword && matchGrade;
     });
+    // ເກັບຂໍ້ມູນຄະແນນທັງໝົດສຳລັບການຄົ້ນຫາ
+let allScoresData = [];
+
+// 1. ໂຫຼດລາຍຊື່ຄະແນນຈາກ Firebase Firestore
+window.loadScores = async function() {
+    const tbody = document.getElementById('scores-table-body');
+    if (!tbody) return;
+    
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
+
+    try {
+        const querySnapshot = await getDocs(collection(db, "scores"));
+        tbody.innerHTML = '';
+        allScoresData = [];
+
+        if (querySnapshot.empty) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນຄະແນນໃນລະບົບ</td></tr>`;
+            return;
+        }
+
+        querySnapshot.forEach((documentSnapshot) => {
+            const data = documentSnapshot.data();
+            data.docId = documentSnapshot.id;
+            allScoresData.push(data);
+        });
+
+        renderScoresTable(allScoresData);
+    } catch (error) {
+        console.error("Error loading scores: ", error);
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
+    }
+}
+
+// 2. ຄິດໄລ່ເກຣດຕາມຄະແນນລວມ
+function calculateGrade(total) {
+    if (total >= 80) return 'A';
+    if (total >= 70) return 'B';
+    if (total >= 60) return 'C';
+    if (total >= 50) return 'D';
+    return 'F';
+}
+
+// 3. ສະແດງຜົນລົງຕາຕະລາງ HTML
+function renderScoresTable(scores) {
+    const tbody = document.getElementById('scores-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (scores.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 15px;">ບໍ່ພົບຂໍ້ມູນທີ່ຄົ້ນຫາ</td></tr>`;
+        return;
+    }
+
+    scores.forEach((s) => {
+        const midterm = parseFloat(s.midterm) || 0;
+        const final = parseFloat(s.final) || 0;
+        const total = midterm + final;
+        const grade = calculateGrade(total);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold;">${s.studentName || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${s.grade || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${s.subject || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${midterm}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${final}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: #28a745;">${total}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: #007bff;">${grade}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">
+                <button onclick="editScore('${s.docId}', '${s.studentName || ''}', '${s.grade || ''}', '${s.subject || ''}', ${midterm}, ${final})" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
+                <button onclick="deleteScore('${s.docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">🗑️</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// 4. ຈັດການການສົ່ງຟອມ (ເພີ່ມ ຫຼື ອັບເດດຄະແນນ)
+const scoreForm = document.getElementById('score-form');
+if (scoreForm) {
+    scoreForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const docId = document.getElementById('score-doc-id').value;
+        const studentName = document.getElementById('score-student-name').value;
+        const grade = document.getElementById('score-grade').value;
+        const subject = document.getElementById('score-subject').value;
+        const midterm = parseFloat(document.getElementById('score-midterm').value);
+        const final = parseFloat(document.getElementById('score-final').value);
+
+        try {
+            if (docId) {
+                // ອັບເດດຂໍ້ມູນ
+                await updateDoc(doc(db, "scores", docId), { studentName, grade, subject, midterm, final });
+                alert('✅ ແກ້ໄຂຄະແນນສຳເລັດ!');
+            } else {
+                // ເພີ່ມໃໝ່
+                await addDoc(collection(db, "scores"), { studentName, grade, subject, midterm, final });
+                alert('✅ ບັນທຶກຄະແນນສຳເລັດ!');
+            }
+            window.resetScoreForm();
+            window.loadScores();
+        } catch (error) {
+            console.error("Error saving score: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
+        }
+    });
+}
+
+// 5. ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແກ້ໄຂ
+window.editScore = function(docId, studentName, grade, subject, midterm, final) {
+    document.getElementById('score-doc-id').value = docId;
+    document.getElementById('score-student-name').value = studentName;
+    document.getElementById('score-grade').value = grade;
+    document.getElementById('score-subject').value = subject;
+    document.getElementById('score-midterm').value = midterm;
+    document.getElementById('score-final').value = final;
+    
+    document.getElementById('score-form-title').innerText = '✏️ ແກ້ໄຂຄະແນນນັກຮຽນ';
+    document.getElementById('save-score-btn').innerText = 'ອັບເດດຄະແນນ';
+    document.getElementById('cancel-score-edit-btn').style.display = 'inline-block';
+}
+
+// 6. ລົບຄະແນນ
+window.deleteScore = async function(docId) {
+    if (confirm('ທ່ານຕ້ອງການລົບລາຍການຄະແນນນີ້ແທ້ບໍ?')) {
+        try {
+            await deleteDoc(doc(db, "scores", docId));
+            alert('✅ ລົບຄະແນນສຳເລັດ!');
+            window.loadScores();
+        } catch (error) {
+            console.error("Error deleting score: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດໃນການລົບ');
+        }
+    }
+}
+
+// 7. ຣີເຊັດຟອມຄະແນນ
+window.resetScoreForm = function() {
+    const form = document.getElementById('score-form');
+    if (form) form.reset();
+    document.getElementById('score-doc-id').value = '';
+    document.getElementById('score-form-title').innerText = '➕ ບັນທຶກຄະແນນນັກຮຽນ';
+    document.getElementById('save-score-btn').innerText = 'ບັນທຶກຄະແນນ';
+    document.getElementById('cancel-score-edit-btn').style.display = 'none';
+}
+
+// 8. ຄົ້ນຫາຄະແນນ
+window.filterScores = function() {
+    const keyword = document.getElementById('search-score-input').value.toLowerCase();
+    const filtered = allScoresData.filter(s => 
+        (s.studentName && s.studentName.toLowerCase().includes(keyword)) || 
+        (s.subject && s.subject.toLowerCase().includes(keyword)) ||
+        (s.grade && s.grade.toLowerCase().includes(keyword))
+    );
+    renderScoresTable(filtered);
+}
+
+// ເອີ້ນໃຊ້ຟັງຊັນໂຫຼດຄະແນນຕອນເປີດໜ້າເວັບ
+window.addEventListener('DOMContentLoaded', () => {
+    window.loadScores();
+});
     
     renderStudentsTable(filtered);
 }
