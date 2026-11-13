@@ -195,3 +195,151 @@ window.filterStudents = function() {
 window.addEventListener('DOMContentLoaded', () => {
     window.loadStudents();
 });
+// ເກັບຂໍ້ມູນຄູທັງໝົດສຳລັບການຄົ້ນຫາ
+let allTeachersData = [];
+
+// 1. ໂຫຼດລາຍຊື່ຄູຈາກ Firebase Firestore
+window.loadTeachers = async function() {
+    const tbody = document.getElementById('teachers-table-body');
+    if (!tbody) return;
+    
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
+
+    try {
+        const querySnapshot = await getDocs(collection(db, "teachers"));
+        tbody.innerHTML = '';
+        allTeachersData = [];
+
+        if (querySnapshot.empty) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນຄູອາຈານໃນລະບົບ</td></tr>`;
+            const dashTeachers = document.getElementById('dash-total-teachers');
+            if (dashTeachers) dashTeachers.innerText = '0 ຄົນ';
+            return;
+        }
+
+        querySnapshot.forEach((documentSnapshot) => {
+            const data = documentSnapshot.data();
+            data.docId = documentSnapshot.id;
+            allTeachersData.push(data);
+        });
+
+        // ອັບເດດຕົວເລກລວມໃນ Dashboard
+        const dashTeachers = document.getElementById('dash-total-teachers');
+        if (dashTeachers) dashTeachers.innerText = allTeachersData.length + ' ຄົນ';
+
+        renderTeachersTable(allTeachersData);
+    } catch (error) {
+        console.error("Error loading teachers: ", error);
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
+    }
+}
+
+// 2. ສະແດງຜົນລົງຕາຕະລາງ HTML
+function renderTeachersTable(teachers) {
+    const tbody = document.getElementById('teachers-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (teachers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ບໍ່ພົບຂໍ້ມູນທີ່ຄົ້ນຫາ</td></tr>`;
+        return;
+    }
+
+    teachers.forEach((teacher) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${teacher.id || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px;">${teacher.name || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${teacher.subject || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">
+                <button onclick="editTeacher('${teacher.docId}', '${teacher.id}', '${teacher.name}', '${teacher.subject}')" style="background: #ffc107; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️ ແກ້ໄຂ</button>
+                <button onclick="deleteTeacher('${teacher.docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🗑️ ລົບ</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// 3. ຈັດການການສົ່ງຟອມ (ເພີ່ມ ຫຼື ອັບເດດຂໍ້ມູນຄູ)
+const teacherForm = document.getElementById('teacher-form');
+if (teacherForm) {
+    teacherForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const docId = document.getElementById('teacher-doc-id').value;
+        const teacherId = document.getElementById('teacher-id').value;
+        const name = document.getElementById('teacher-name').value;
+        const subject = document.getElementById('teacher-subject').value;
+
+        try {
+            if (docId) {
+                // ອັບເດດຂໍ້ມູນທີ່ມີຢູ່ແລ້ວ
+                await updateDoc(doc(db, "teachers", docId), { id: teacherId, name: name, subject: subject });
+                alert('✅ ແກ້ໄຂຂໍ້ມູນຄູສຳເລັດ!');
+            } else {
+                // ເພີ່ມຂໍ້ມູນໃໝ່
+                await addDoc(collection(db, "teachers"), { id: teacherId, name: name, subject: subject });
+                alert('✅ ເພີ່ມຄູອາຈານສຳເລັດ!');
+            }
+            window.resetTeacherForm();
+            window.loadTeachers();
+        } catch (error) {
+            console.error("Error saving teacher: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
+        }
+    });
+}
+
+// 4. ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແກ້ໄຂ
+window.editTeacher = function(docId, id, name, subject) {
+    document.getElementById('teacher-doc-id').value = docId;
+    document.getElementById('teacher-id').value = id;
+    document.getElementById('teacher-name').value = name;
+    document.getElementById('teacher-subject').value = subject;
+    
+    document.getElementById('teacher-form-title').innerText = '✏️ ແກ້ໄຂຂໍ້ມູນຄູອາຈານ';
+    document.getElementById('save-teacher-btn').innerText = 'ອັບເດດຂໍ້ມູນ';
+    document.getElementById('cancel-teacher-edit-btn').style.display = 'inline-block';
+}
+
+// 5. ລົບຂໍ້ມູນຄູ
+window.deleteTeacher = async function(docId) {
+    if (confirm('ທ່ານຕ້ອງການລົບຂໍ້ມູນຄູອາຈານຄົນນີ້ແທ້ບໍ?')) {
+        try {
+            await deleteDoc(doc(db, "teachers", docId));
+            alert('✅ ລົບຂໍ້ມູນສຳເລັດ!');
+            window.loadTeachers();
+        } catch (error) {
+            console.error("Error deleting teacher: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດໃນການລົບ');
+        }
+    }
+}
+
+// 6. ຣີເຊັດຟອມກຣອກຂໍ້ມູນຄູ
+window.resetTeacherForm = function() {
+    const form = document.getElementById('teacher-form');
+    if (form) form.reset();
+    document.getElementById('teacher-doc-id').value = '';
+    document.getElementById('teacher-form-title').innerText = '➕ ເเพີ່ມຂໍ້ມູນຄູອາຈານໃໝ່';
+    document.getElementById('save-teacher-btn').innerText = 'ບັນທຶກຂໍ້ມູນ';
+    document.getElementById('cancel-teacher-edit-btn').style.display = 'none';
+}
+
+// 7. ຟັງຊັນຄົ້ນຫາຄູໃນຕາຕະລາງ
+window.filterTeachers = function() {
+    const inputSearch = document.getElementById('search-teacher-input');
+    if (!inputSearch) return;
+    const keyword = inputSearch.value.toLowerCase();
+    
+    const filtered = allTeachersData.filter(t => 
+        (t.name && t.name.toLowerCase().includes(keyword)) || 
+        (t.id && t.id.toLowerCase().includes(keyword)) ||
+        (t.subject && t.subject.toLowerCase().includes(keyword))
+    );
+    renderTeachersTable(filtered);
+}
+
+// ເອີ້ນໃຊ້ຟັງຊັນໂຫຼດຂໍ້ມູນຄູຕອນເປີດໜ້າເວັບ
+window.addEventListener('DOMContentLoaded', () => {
+    window.loadTeachers();
+});
