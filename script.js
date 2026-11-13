@@ -710,6 +710,168 @@ window.filterScores = function() {
 window.addEventListener('DOMContentLoaded', () => {
     window.loadScores();
 });
+    // ເກັບຂໍ້ມູນການເງິນທັງໝົດສຳລັບການຄົ້ນຫາ
+let allFinancesData = [];
+
+// 1. ໂຫຼດຂໍ້ມູນການເງິນຈາກ Firebase Firestore
+window.loadFinances = async function() {
+    const tbody = document.getElementById('finances-table-body');
+    if (!tbody) return;
+    
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
+
+    try {
+        const querySnapshot = await getDocs(collection(db, "finances"));
+        tbody.innerHTML = '';
+        allFinancesData = [];
+
+        if (querySnapshot.empty) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນການເງິນໃນລະບົບ</td></tr>`;
+            document.getElementById('total-income').innerText = '0 ₭';
+            document.getElementById('total-pending').innerText = '0 ₭';
+            document.getElementById('total-finance-records').innerText = '0 ລາຍການ';
+            return;
+        }
+
+        let totalIncome = 0;
+        let totalPending = 0;
+
+        querySnapshot.forEach((documentSnapshot) => {
+            const data = documentSnapshot.data();
+            data.docId = documentSnapshot.id;
+            allFinancesData.push(data);
+
+            const amount = parseFloat(data.amount) || 0;
+            if (data.status === 'ຈ່າຍແລ້ວ') {
+                totalIncome += amount;
+            } else {
+                totalPending += amount;
+            }
+        });
+
+        // ອັບເດດຍອດລວມໃນ Dashboard ດ້ານເທິງຂອງໂມດູນ
+        document.getElementById('total-income').innerText = totalIncome.toLocaleString() + ' ₭';
+        document.getElementById('total-pending').innerText = totalPending.toLocaleString() + ' ₭';
+        document.getElementById('total-finance-records').innerText = allFinancesData.length + ' ລາຍການ';
+
+        renderFinancesTable(allFinancesData);
+    } catch (error) {
+        console.error("Error loading finances: ", error);
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
+    }
+}
+
+// 2. ສະແດງຜົນລົງຕາຕະລາງ HTML
+function renderFinancesTable(finances) {
+    const tbody = document.getElementById('finances-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (finances.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 15px;">ບໍ່ພົບຂໍ້ມູນທີ່ຄົ້ນຫາ</td></tr>`;
+        return;
+    }
+
+    finances.forEach((f) => {
+        const amount = parseFloat(f.amount) || 0;
+        const statusColor = f.status === 'ຈ່າຍແລ້ວ' ? '#28a745' : '#dc3545';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold;">${f.studentName || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${f.grade || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">${amount.toLocaleString()} ₭</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: ${statusColor};">${f.status || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">
+                <button onclick="editFinance('${f.docId}', '${f.studentName || ''}', '${f.grade || ''}', ${amount}, '${f.status || ''}')" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
+                <button onclick="deleteFinance('${f.docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">🗑️</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// 3. ຈັດການການສົ່ງຟອມ (ເພີ່ມ ຫຼື ອັບເດດຂໍ້ມູນການເງິນ)
+const financeForm = document.getElementById('finance-form');
+if (financeForm) {
+    financeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const docId = document.getElementById('finance-doc-id').value;
+        const studentName = document.getElementById('finance-student-name').value;
+        const grade = document.getElementById('finance-grade').value;
+        const amount = parseFloat(document.getElementById('finance-amount').value);
+        const status = document.getElementById('finance-status').value;
+
+        try {
+            if (docId) {
+                // ອັບເດດຂໍ້ມູນ
+                await updateDoc(doc(db, "finances", docId), { studentName, grade, amount, status });
+                alert('✅ ແກ້ໄຂຂໍ້ມູນການເງິນສຳເລັດ!');
+            } else {
+                // ເພີ່ມໃໝ່
+                await addDoc(collection(db, "finances"), { studentName, grade, amount, status });
+                alert('✅ ບັນທຶກຂໍ້ມູນການເງິນສຳເລັດ!');
+            }
+            window.resetFinanceForm();
+            window.loadFinances();
+        } catch (error) {
+            console.error("Error saving finance: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
+        }
+    });
+}
+
+// 4. ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແກ້ໄຂ
+window.editFinance = function(docId, studentName, grade, amount, status) {
+    document.getElementById('finance-doc-id').value = docId;
+    document.getElementById('finance-student-name').value = studentName;
+    document.getElementById('finance-grade').value = grade;
+    document.getElementById('finance-amount').value = amount;
+    document.getElementById('finance-status').value = status;
+    
+    document.getElementById('finance-form-title').innerText = '✏️ ແກ້ໄຂຂໍ້ມູນການຊຳລະຄ່າຮຽນ';
+    document.getElementById('save-finance-btn').innerText = 'ອັບເດດຂໍ້ມູນ';
+    document.getElementById('cancel-finance-edit-btn').style.display = 'inline-block';
+}
+
+// 5. ລົບຂໍ້ມູນການເງິນ
+window.deleteFinance = async function(docId) {
+    if (confirm('ທ່ານຕ້ອງການລົບລາຍການການເງິນນີ້ແທ້ບໍ?')) {
+        try {
+            await deleteDoc(doc(db, "finances", docId));
+            alert('✅ ລົບຂໍ້ມູນສຳເລັດ!');
+            window.loadFinances();
+        } catch (error) {
+            console.error("Error deleting finance: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດໃນການລົບ');
+        }
+    }
+}
+
+// 6. ຣີເຊັດຟອມການເງິນ
+window.resetFinanceForm = function() {
+    const form = document.getElementById('finance-form');
+    if (form) form.reset();
+    document.getElementById('finance-doc-id').value = '';
+    document.getElementById('finance-form-title').innerText = '➕ ບັນທຶກການຊຳລະຄ່າຮຽນ';
+    document.getElementById('save-finance-btn').innerText = 'ບັນທຶກຂໍ້ມູນ';
+    document.getElementById('cancel-finance-edit-btn').style.display = 'none';
+}
+
+// 7. ຄົ້ນຫາຂໍ້ມູນການເງິນ
+window.filterFinances = function() {
+    const keyword = document.getElementById('search-finance-input').value.toLowerCase();
+    const filtered = allFinancesData.filter(f => 
+        (f.studentName && f.studentName.toLowerCase().includes(keyword)) || 
+        (f.grade && f.grade.toLowerCase().includes(keyword))
+    );
+    renderFinancesTable(filtered);
+}
+
+// ເອີ້ນໃຊ້ຟັງຊັນໂຫຼດຂໍ້ມູນການເງິນຕອນເປີດໜ້າເວັບ
+window.addEventListener('DOMContentLoaded', () => {
+    window.loadFinances();
+});
     
     renderStudentsTable(filtered);
 }
