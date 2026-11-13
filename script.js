@@ -346,12 +346,12 @@ window.loadClasses = async function() {
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${data.level || data.grade || '-'}</td>
-                <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: #007bff;">${data.name || data.className || '-'}</td>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${data.level || '-'}</td>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: #007bff;">${data.name || '-'}</td>
                 <td style="border: 1px solid #ddd; padding: 10px;">${data.teacher || '-'}</td>
                 <td style="border: 1px solid #ddd; padding: 10px; text-align: center;" class="action-col">
-                    <button onclick="viewClassStudents('${docId}', '${data.name || data.className || ''}')" style="background: #17a2b8; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">👥 ເບິ່ງນັກຮຽນ</button>
-                    <button onclick="editClass('${docId}', '${data.level || data.grade || ''}', '${data.name || data.className || ''}', '${data.teacher || ''}')" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
+                    <button onclick="viewClassStudents('${docId}', '${data.name || ''}')" style="background: #17a2b8; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">👥 ເບິ່ງນັກຮຽນ</button>
+                    <button onclick="editClass('${docId}', '${data.level || ''}', '${data.name || ''}', '${data.teacher || ''}')" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
                     <button onclick="deleteClass('${docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">🗑️</button>
                 </td>
             `;
@@ -369,7 +369,6 @@ window.loadClasses = async function() {
         tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
     }
 }
-
 const classForm = document.getElementById('class-form');
 if (classForm) {
     classForm.addEventListener('submit', async (e) => {
