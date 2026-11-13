@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ລາຍງານການເຊັກຊື່ຂາດ-ມາ</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .report-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .back-btn:hover { background-color: #5a6268; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th { background-color: #f2f2f2; }
+        .badge-absent { color: red; font-weight: bold; }
+        .badge-present { color: green; font-weight: bold; }
+        .badge-leave { color: orange; font-weight: bold; }
+    </style>
+</head>
+<body style="background-color: #f4f6f9; padding: 20px;">
+
+    <div class="report-container">
+        <a href="index.html" class="back-btn">⬅️ ກັບຄືນໜ້າຫຼັກ</a>
+        <h2>📊 ປະຫວັດ ແລະ ລາຍຊື່ການເຊັກຊື່ (ຂາດ / ມາ / ລາ)</h2>
+        
+        <div style="margin: 15px 0;">
+            <label for="filter-date"><b>ເລືອກວັນທີ:</b></label>
+            <input type="date" id="filter-date" style="padding: 5px; margin-left: 10px;">
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ວັນທີ</th>
+                    <th>ລະຫັດນັກຮຽນ</th>
+                    <th>ຊື່-ນາມສະກຸນ</th>
+                    <th>ຊັ້ນຮຽນ</th>
+                    <th>ສະຖານະ</th>
+                </tr>
+            </thead>
+            <tbody id="report-table-body">
+                <tr><td colspan="5">ກຳລັງໂຫຼດຂໍ້ມູນຈາກ Firebase...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Firebase ແລະ Script ດึงຂໍ້ມູນ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
+            authDomain: "my-school-c1104.firebaseapp.com",
+            projectId: "my-school-c1104",
+            storageBucket: "my-school-c1104.appspot.com",
+            messagingSenderId: "339930418459",
+            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+            measurementId: "G-NPNFSW2C72"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadAttendanceReport() {
+            const tbody = document.getElementById('report-table-body');
+            tbody.innerHTML = `<tr><td colspan="5">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "attendance"));
+                tbody.innerHTML = '';
+
+                if (querySnapshot.empty) {
+                    tbody.innerHTML = `<tr><td colspan="5">ຍັງไม่มีຂໍ້ມູນການເຊັກຊື່ໃນລະບົບ</td></tr>`;
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    
+                    // ກຳນົດສີສະຖານະ
+                    let statusClass = '';
+                    if (data.status === 'ຂາດ') statusClass = 'badge-absent';
+                    else if (data.status === 'ມາ') statusClass = 'badge-present';
+                    else statusClass = 'badge-leave';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${data.date || '-'}</td>
+                        <td>${data.studentId || '-'}</td>
+                        <td>${data.studentName || '-'}</td>
+                        <td>${data.grade || '-'}</td>
+                        <td><span class="${statusClass}">${data.status || '-'}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Error loading attendance: ", error);
+                tbody.innerHTML = `<tr><td colspan="5">ເກີດข้อผิดพลาดในการໂຫຼດຂໍ້ມູນ</td></tr>`;
+            }
+        }
+
+        // ເອີ້ນໃຊ້ງານຟັງຊັນໂຫຼດຂໍ້ມູນຕອນເປີດໜ້າເວັບ
+        window.addEventListener('DOMContentLoaded', loadAttendanceReport);
+    </script>
+</body>
+</html>
