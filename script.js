@@ -727,3 +727,106 @@ window.addEventListener('DOMContentLoaded', () => {
     if (window.loadScores) window.loadScores();
     if (window.loadFinances) window.loadFinances();
 });
+// ==========================================
+// 11. ລະບົບຄວບຄຸມສິດຜູ້ໃຊ້ (Role-Based Access Control)
+// ==========================================
+window.applyRolePermissions = function() {
+    const role = localStorage.getItem('userRole');
+    const userName = localStorage.getItem('userName') || 'User';
+
+    // ຖ້າຍັງບໍ່ໄດ້ Login ໃຫ້ດີດກັບໄປໜ້າ login.html
+    if (!role) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // ສະແດງຊື່ ແລະ ບົດບາດຜູ້ໃຊ້ຢູ່ໜ້າເວັບ (ຖ້າມີ element id="user-display")
+    const userDisplay = document.getElementById('user-display');
+    if (userDisplay) {
+        userDisplay.innerText = `👤 ${userName} (${role.toUpperCase()})`;
+    }
+
+    // ຟັງຊັນຊ່ວຍເຊື່ອງເມນູ ແລະ ຟອມ/ປຸ່ມແກ້ໄຂ
+    const hideElements = (ids) => {
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+    };
+
+    const makeReadOnly = (formIds) => {
+        formIds.forEach(id => {
+            const form = document.getElementById(id);
+            if (form && form.parentElement) {
+                form.parentElement.style.display = 'none'; // ເຊື່ອງກ່ອງຟອມເພີ່ມ/ແກ້ໄຂ
+            }
+        });
+    };
+
+    // ກຳນົດສິດແຍກຕາມ 5 ບົດບາດ
+    switch (role) {
+        case 'admin':
+            // Admin: ເຫັນທຸກເມນູ ແລະ ຈັດການໄດ້ທຸກຢ່າງ (ບໍ່ເຊື່ອງຫຍັງເລີຍ)
+            break;
+
+        case 'director':
+            // Director (ຜູ້ອຳນວຍການ): ເບິ່ງພາບລວມ ແລະ ລາຍງານໄດ້ທຸກໜ້າ ແຕ່ບໍ່ສາມາດເພີ່ມ/ແກ້ໄຂຂໍ້ມູນ
+            makeReadOnly(['student-form', 'teacher-form', 'class-form', 'score-form', 'finance-form', 'news-form']);
+            break;
+
+        case 'teacher':
+            // Teacher (ຄູອາຈານ): ຈັດການການມາຮຽນ ແລະ ຄະແນນໄດ້, ແຕ່ເຂົ້າເຖິງການເງິນ ແລະ ຈັດການຄູ/ນັກຮຽນບໍ່ໄດ້
+            hideElements(['menu-teachers', 'menu-finance']);
+            makeReadOnly(['student-form', 'class-form', 'news-form']);
+            break;
+
+        case 'student':
+            // Student (ນັກຮຽນ): ເບິ່ງໄດ້ສະເພາະ Dashboard, ຄະແນນ, ຫ້ອງຮຽນ(ຕາຕະລາງ) ແລະ ຂ່າວສານ
+            hideElements(['menu-students', 'menu-teachers', 'menu-attendance', 'menu-finance']);
+            makeReadOnly(['class-form', 'score-form', 'news-form']);
+            window.showSection('scores'); // ເປີດໜ້າຄະແນນໃຫ້ເຫັນທັນທີ
+            break;
+
+        case 'parent':
+            // Parent (ຜູ້ປົກຄອງ): ເບິ່ງໄດ້ສະເພາະ Dashboard, ຄະແນນ, ການເງິນ(ຄ່າຮຽນ) ແລະ ຂ່າວສານ
+            hideElements(['menu-students', 'menu-teachers', 'menu-classes', 'menu-attendance']);
+            makeReadOnly(['score-form', 'finance-form', 'news-form']);
+            window.showSection('scores');
+            break;
+    }
+}
+
+// ປັບປຸງການສະແດງຜົນຕາຕະລາງຄະແນນ: ກອງຂໍ້ມູນໃຫ້ Student/Parent ເຫັນສະເພາະຂອງຕົນເອງ ແລະ ເຊື່ອງປຸ່ມ ແກ້ໄຂ/ລົບ
+const originalRenderScoresTable = renderScoresTable;
+renderScoresTable = function(scores) {
+    const role = localStorage.getItem('userRole');
+    const userName = (localStorage.getItem('userName') || '').toLowerCase();
+
+    // ຖ້າເປັນ Student ຫຼື Parent ໃຫ້ກອງເອົາສະເພາະລາຍຊື່ທີ່ຕົງກັບຊື່ນັກຮຽນ
+    let filteredScores = scores;
+    if (role === 'student' || role === 'parent') {
+        filteredScores = scores.filter(s => s.studentName && s.studentName.toLowerCase().includes(userName));
+    }
+
+    originalRenderScoresTable(filteredScores);
+
+    // ຖ້າບໍ່ແມ່ນ Admin ຫຼື Teacher ໃຫ້ເຊື່ອງປຸ່ມ ✏️ ແລະ 🗑️ ໃນຕາຕະລາງຄະແນນ
+    if (role !== 'admin' && role !== 'teacher') {
+        const tbody = document.getElementById('scores-table-body');
+        if (tbody) {
+            tbody.querySelectorAll('button').forEach(btn => btn.style.display = 'none');
+        }
+    }
+};
+
+// ປັບປຸງຟັງຊັນ Logout ໃຫ້ລ້າງຂໍ້ມູນ Session ທັງໝົດແລ້ວກັບໄປໜ້າ login.html
+window.logout = function() {
+    localStorage.clear();
+    alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
+    window.location.href = 'login.html';
+};
+
+// ເອີ້ນໃຊ້ລະບົບກວດສອບສິດທັນທີເມື່ອໂຫຼດໜ້າເວັບ
+window.addEventListener('DOMContentLoaded', () => {
+    window.applyRolePermissions();
+});
