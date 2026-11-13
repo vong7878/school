@@ -924,29 +924,35 @@ function renderTimetableTable(data) {
     `).join('');
 }
 
-// ບັນທຶກ ຫຼື ເພີ່ມຂໍ້ມູນໃໝ່
-function saveTimetable(event) {
+// ໃຫ້ເອີ້ນໃຊ້ໃນ script.js
+async function saveTimetable(event) {
     event.preventDefault();
-    const docId = document.getElementById('timetable-doc-id').value;
+    
+    // ດຶງຄ່າຈາກ input ຕ່າງໆ
     const room = document.getElementById('timetable-class-room').value;
     const subject = document.getElementById('timetable-subject').value;
     const day = document.getElementById('timetable-day').value;
     const time = document.getElementById('timetable-time').value;
     const teacher = document.getElementById('timetable-teacher').value;
 
-    if (docId) {
-        // ແກ້ໄຂຂໍ້ມູນທີ່ມີຢູ່
-        timetableList = timetableList.map(item => item.id === docId ? { id: docId, room, subject, day, time, teacher } : item);
-        alert('✅ ແກ້ໄຂຕາຕະລາງຮຽນສຳເລັດ!');
-    } else {
-        // ເພີ່ມຂໍ້ມູນໃຫມ່
-        const newItem = { id: Date.now().toString(), room, subject, day, time, teacher };
-        timetableList.push(newItem);
-        alert('✅ ເພີ່ມຕາຕະລາງຮຽນສຳເລັດ!');
-    }
+    try {
+        // ຕົວຢ່າງການບັນທຶກລົງ Firebase Firestore (db ແລະ collection ຕ້ອງຖືກກຳນົດຄ່າໄວ້ແລ້ວໃນ script.js)
+        await db.collection("timetables").add({
+            room: room,
+            subject: subject,
+            day: day,
+            time: time,
+            teacher: teacher,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
-    resetTimetableForm();
-    renderTimetableTable(timetableList);
+        alert('✅ ເພີ່ມຕາຕະລາງຮຽນສຳເລັດ!');
+        document.getElementById('timetable-form').reset();
+        loadTimetablesFromFirebase(); // ຟັງຊັ່ນໂຫຼດຂໍ້ມູນໃໝ່
+    } catch (error) {
+        console.error("Error adding document: ", error);
+        alert('❌ เกิดข้อผิดพลาด: ' + error.message);
+    }
 }
 
 // ນຳຂໍ້ມູນມารຽນແບບໃນຟອມເພື່ອແກ້ໄຂ
@@ -994,3 +1000,26 @@ function filterTimetables() {
     );
     renderTimetableTable(filtered);
 }
+
+document.getElementById('news-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const title = document.getElementById('news-title').value;
+    const content = document.getElementById('news-content').value;
+
+    try {
+        await db.collection("news").add({
+            title: title,
+            content: content,
+            date: new Date().toLocaleDateString('lo-LA'),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert('📢 ເຜີຍແຜ່ປະກາດຂ່າວສານສຳເລັດ!');
+        document.getElementById('news-form').reset();
+        loadNewsFromFirebase(); // ຟັງຊັ່ນໂຫຼດລາຍການຂ່າວມາສະແດງ
+    } catch (error) {
+        console.error("Error adding news: ", error);
+        alert('❌ ເກີດข้อผิดพลาด: ' + error.message);
+    }
+});
