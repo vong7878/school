@@ -3,210 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ສະຫຼຸບວັນຂາດ ແລະ ຫັກຄະແນນນັກຮຽນ</title>
+    <title>ລະບົບຄຸ້ມຄອງໂຮງຮຽນ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <style>
-        .report-container {
-            max-width: 1000px;
-            margin: 30px auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 8px 15px;
-            background-color: #6c757d;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-        .back-btn:hover { background-color: #5a6268; }
-        
-        /* ດີໄຊນ໌ກາດສະຖິຕິ */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .stat-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 5px solid #007bff;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .stat-card.present { border-left-color: #28a745; }
-        .stat-card.absent { border-left-color: #dc3545; }
-        .stat-card.leave { border-left-color: #ffc107; }
-        
-        .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
-        th { background-color: #f2f2f2; }
-        .absent-count { color: red; font-weight: bold; }
-        .deduct-score { color: #d9534f; font-weight: bold; }
-    </style>
 </head>
-<body style="background-color: #f4f6f9; padding: 20px;">
+<body>
 
-    <div class="report-container">
-        <a href="index.html" class="back-btn">⬅️ ກັບຄືນໜ້າຫຼັກ</a>
-        <h2>📉 ສະຖິຕິ ແລະ ສະຫຼຸບຍອດການມາຮຽນ-ຂາດຮຽນ</h2>
+   <!-- ຕົວຢ່າງໂຄງສ້າງ Sidebar ແລະ Content ຫຼັງລັອກອິນ -->
+<div id="app-container" style="display: none; display: flex; height: 100vh;">
+    
+    <!-- 🧭 Sidebar Menu (8 ໂມດູນ) -->
+    <div style="width: 250px; background: #2c3e50; color: white; padding: 20px; overflow-y: auto;">
+        <h3>🏫 ລະບົບໂຮງຮຽນ</h3>
+        <hr style="border-color: #444; margin-bottom: 15px;">
+        
+        <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('dashboard')" style="color: white; text-decoration: none;">📊 1. Dashboard (ພາບລວມ)</a></li>
+            <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('students')" style="color: white; text-decoration: none;">👨‍🎓 2. ຈັດການນັກຮຽນ</a></li>
+            <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('teachers')" style="color: white; text-decoration: none;">👩‍🏫 3. ຈັດການຄູອາຈານ</a></li>
+            <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('classes')" style="color: white; text-decoration: none;">🏫 4. ຈັດການຫ້ອງຮຽນ</a></li>
+            <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('attendance')" style="color: white; text-decoration: none;">📝 5. ຈັດການການມາຮຽນ</a></li>
+            <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('scores')" style="color: white; text-decoration: none;">📈 6. ຈັດການຄະແນນ</a></li>
+            <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('finance')" style="color: white; text-decoration: none;">💰 7. ການເງິນ & ຄ່າຮຽນ</a></li>
+            <li style="margin-bottom: 10px;"><a href="#" onclick="showSection('news')" style="color: white; text-decoration: none;">📢 8. ຂ່າວສານ & ແຈ້ງເຕືອນ</a></li>
+        </ul>
 
-        <!-- 📊 ສ່ວນສະແດງກາດສະຖິຕິລວມ -->
-        <div class="stats-grid">
-            <div class="stat-card present">
-                <div>🟢 มาຮຽນລວມ</div>
-                <div class="stat-number" id="total-present">0 ຄັ້ງ</div>
-            </div>
-            <div class="stat-card absent">
-                <div>🔴 ຂາດຮຽນລວມ</div>
-                <div class="stat-number" id="total-absent">0 ຄັ້ງ</div>
-            </div>
-            <div class="stat-card leave">
-                <div>🟠 ລາຮຽນລວມ</div>
-                <div class="stat-number" id="total-leave">0 ຄັ້ງ</div>
+        <hr style="border-color: #444; margin: 20px 0;">
+        <button onclick="logout()" style="width: 100%; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">🚪 ອອກຈາກລະບົບ</button>
+    </div>
+
+    <!-- 🖥️ Main Content Area (ສະແດງເນື້ອຫາຕາມໂມດູນທີ່ເລືອກ) -->
+    <div style="flex: 1; padding: 30px; overflow-y: auto; background: #f4f6f9;">
+        
+        <!-- 1. Dashboard Section -->
+        <div id="section-dashboard" class="content-section">
+            <h2>📊 Dashboard - ພາບລວມລະບົບ</h2>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px;">
+                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <h4>ນັກຮຽນທັງໝົດ</h4>
+                    <p id="dash-total-students" style="font-size: 24px; font-weight: bold; color: #007bff;">0 ຄົນ</p>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <h4>ຄູອາຈານທັງໝົດ</h4>
+                    <p id="dash-total-teachers" style="font-size: 24px; font-weight: bold; color: #28a745;">0 ຄົນ</p>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <h4>ຫ້ອງຮຽນທັງໝົດ</h4>
+                    <p style="font-size: 24px; font-weight: bold; color: #ffc107;">12 ຫ້ອງ</p>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <h4>ສະຖິຕິມາຮຽນມື້ນີ້</h4>
+                    <p style="font-size: 24px; font-weight: bold; color: #17a2b8;">95%</p>
+                </div>
             </div>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ລະຫັດນັກຮຽນ</th>
-                    <th>ຊື່-ນາມສະກຸນ</th>
-                    <th>ຊັ້ນຮຽນ</th>
-                    <th>ຈຳນວນວັນທີ່ຂາດ (ຄັ້ງ)</th>
-                    <th>ຈຳນວນວັນທີ່ລາ (ຄັ້ງ)</th>
-                    <th>ຄະແນນທີ່ຖືກຫັກ</th>
-                </tr>
-            </thead>
-            <tbody id="summary-table-body">
-                <tr><td colspan="6">ກຳລັງປະມວນຜົນຂໍ້ມູນຈາກ Firebase...</td></tr>
-            </tbody>
-        </table>
+        <!-- 2. Students Management Section -->
+        <div id="section-students" class="content-section" style="display: none;">
+            <h2>👨‍🎓 ຈັດການຂໍ້ມູນນັກຮຽນ</h2>
+            <p>ເພີ່ມ, ແກ້ໄຂ, ລຶບ ແລະ ຄົ້ນຫາຂໍ້ມູນນັກຮຽນໃນລະບົບ.</p>
+            <!-- ຟອມ ແລະ ตารางຈັດການນັກຮຽນ -->
+        </div>
+
+        <!-- 3. Teachers Management Section -->
+        <div id="section-teachers" class="content-section" style="display: none;">
+            <h2>👩‍🏫 ຈັດການຂໍ້ມູນຄູອາຈານ ແລະ ຕາຕະລາງສອນ</h2>
+            <!-- เนื้อหาຈັດການຄູ -->
+        </div>
+
+        <!-- 4. Classes Management Section -->
+        <div id="section-classes" class="content-section" style="display: none;">
+            <h2>🏫 ຈັດການຫ້ອງຮຽນ ແລະ ຊັ້ນຮຽນ</h2>
+            <!-- เนื้อหาຫ້ອງຮຽນ -->
+        </div>
+
+        <!-- 5. Attendance Management Section -->
+        <div id="section-attendance" class="content-section" style="display: none;">
+            <h2>📝 ຈັດການການມາຮຽນ (ມາ, ຂາດ, ມາຊ້າ, ລາພັກ)</h2>
+            <div style="margin-top: 15px;">
+                <a href="attendance-report.html" style="padding: 10px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; margin-right: 10px;">📊 ເບິ່ງປະຫວັດການເຊັກຊື່</a>
+                <a href="attendance-summary.html" style="padding: 10px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">📈 ສະຫຼຸບວັນຂາດ & ຫັກຄະແນນ</a>
+            </div>
+        </div>
+
+        <!-- 6. Scores Management Section -->
+        <div id="section-scores" class="content-section" style="display: none;">
+            <h2>📈 ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</h2>
+            <!-- เนื้อหาຄະແນນ -->
+        </div>
+
+        <!-- 7. Finance Section -->
+        <div id="section-finance" class="content-section" style="display: none;">
+            <h2>💰 ລະບົບການເງິນ ແລະ ຄ່າຮຽນ</h2>
+            <!-- เนื้อหาການເງິນ -->
+        </div>
+
+        <!-- 8. News & Notifications Section -->
+        <div id="section-news" class="content-section" style="display: none;">
+            <h2>📢 ຂ່າວສານ, ປະກາດ ແລະ ປະຕິທິນໂຮງຮຽນ</h2>
+            <!-- เนื้อหาຂ່າວສານ -->
+        </div>
+
     </div>
-
-    <!-- Firebase ແລະ Script ປະມວນຜົນສະຖິຕິ -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
-            authDomain: "my-school-c1104.firebaseapp.com",
-            projectId: "my-school-c1104",
-            storageBucket: "my-school-c1104.appspot.com",
-            messagingSenderId: "339930418459",
-            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
-            measurementId: "G-NPNFSW2C72"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        async function loadAttendanceSummary() {
-            const tbody = document.getElementById('summary-table-body');
-            tbody.innerHTML = `<tr><td colspan="6">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
-
-            try {
-                const attendanceSnapshot = await getDocs(collection(db, "attendance"));
-                const studentsSnapshot = await getDocs(collection(db, "students"));
-                const studentsMap = {};
-                studentsSnapshot.forEach(doc => {
-                    const data = doc.data();
-                    studentsMap[data.id] = {
-                        name: data.name,
-                        grade: data.grade
-                    };
-                });
-
-                const summaryData = {};
-                let overallPresent = 0;
-                let overallAbsent = 0;
-                let overallLeave = 0;
-
-                attendanceSnapshot.forEach(doc => {
-                    const data = doc.data();
-                    const sId = data.studentId;
-
-                    // ນັບສະຖິຕິລວມທັງໝົດ
-                    if (data.status === 'ມາ') overallPresent++;
-                    if (data.status === 'ຂາດ') overallAbsent++;
-                    if (data.status === 'ລາ') overallLeave++;
-
-                    if (!sId) return;
-
-                    if (!summaryData[sId]) {
-                        summaryData[sId] = {
-                            studentId: sId,
-                            name: data.studentName || (studentsMap[sId] ? studentsMap[sId].name : 'ບໍ່ຮູ້ຊື່'),
-                            grade: data.grade || (studentsMap[sId] ? studentsMap[sId].grade : '-'),
-                            absentCount: 0,
-                            leaveCount: 0
-                        };
-                    }
-
-                    if (data.status === 'ຂາດ') {
-                        summaryData[sId].absentCount += 1;
-                    } else if (data.status === 'ລາ') {
-                        summaryData[sId].leaveCount += 1;
-                    }
-                });
-
-                // ອັບເດດຕົວເລກສະຖິຕິລວມຂຶ້ນ Card ດ້ານເທິງ
-                document.getElementById('total-present').innerText = overallPresent + ' ຄັ້ງ';
-                document.getElementById('total-absent').innerText = overallAbsent + ' ຄັ້ງ';
-                document.getElementById('total-leave').innerText = overallLeave + ' ຄັ້ງ';
-
-                tbody.innerHTML = '';
-                const studentIds = Object.keys(summaryData);
-
-                if (studentIds.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6">ຍັງບໍ່ມີຂໍ້ມູນການຂາດຮຽນໃນລະບົບ</td></tr>`;
-                    return;
-                }
-
-                studentIds.forEach(sId => {
-                    const student = summaryData[sId];
-                    const deductScore = student.absentCount * 1.0;
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${student.studentId}</td>
-                        <td>${student.name}</td>
-                        <td>${student.grade}</td>
-                        <td><span class="absent-count">${student.absentCount} ຄັ້ງ</span></td>
-                        <td>${student.leaveCount} ຄັ້ງ</td>
-                        <td><span class="deduct-score">-${deductScore} ຄະແນນ</span></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-
-            } catch (error) {
-                console.error("Error loading summary: ", error);
-                tbody.innerHTML = `<tr><td colspan="6">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', loadAttendanceSummary);
-    </script>
-</body>
-</html>
+</div>
