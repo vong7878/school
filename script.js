@@ -640,9 +640,9 @@ window.loadFinances = async function() {
 
         if (querySnapshot.empty) {
             tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນການເງິນໃນລະບົບ</td></tr>`;
-            document.getElementById('total-income').innerText = '0 ₭';
-            document.getElementById('total-pending').innerText = '0 ₭';
-            document.getElementById('total-finance-records').innerText = '0 ລາຍການ';
+            if(document.getElementById('total-income')) document.getElementById('total-income').innerText = '0 ₭';
+            if(document.getElementById('total-pending')) document.getElementById('total-pending').innerText = '0 ₭';
+            if(document.getElementById('total-finance-records')) document.getElementById('total-finance-records').innerText = '0 ລາຍການ';
             return;
         }
 
@@ -662,9 +662,9 @@ window.loadFinances = async function() {
             }
         });
 
-        document.getElementById('total-income').innerText = totalIncome.toLocaleString() + ' ₭';
-        document.getElementById('total-pending').innerText = totalPending.toLocaleString() + ' ₭';
-        document.getElementById('total-finance-records').innerText = allFinancesData.length + ' ລາຍການ';
+        if(document.getElementById('total-income')) document.getElementById('total-income').innerText = totalIncome.toLocaleString() + ' ₭';
+        if(document.getElementById('total-pending')) document.getElementById('total-pending').innerText = totalPending.toLocaleString() + ' ₭';
+        if(document.getElementById('total-finance-records')) document.getElementById('total-finance-records').innerText = allFinancesData.length + ' ລາຍການ';
 
         renderFinancesTable(allFinancesData);
     } catch (error) {
@@ -683,17 +683,6 @@ function renderFinancesTable(finances) {
         return;
     }
 
-    window.showSection = function(sectionId) {
-    // ซ่อนทุก section ກ່ອນ
-    const sections = document.querySelectorAll('.content-section');
-    sections.forEach(sec => sec.style.display = 'none');
-
-    // ສະແດງສະເພາະ section ที่เลือก
-    const target = document.getElementById(sectionId);
-    if (target) {
-        target.style.display = 'block';
-    }
-};
     finances.forEach((f) => {
         const amount = parseFloat(f.amount) || 0;
         const statusColor = f.status === 'ຈ່າຍແລ້ວ' ? '#28a745' : '#dc3545';
@@ -797,7 +786,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (typeof loadTimetables === 'function') loadTimetables();
     if (typeof loadNews === 'function') loadNews();
 });
-});
 
 
 // ==========================================
@@ -851,10 +839,9 @@ window.applyRolePermissions = function() {
 }
 
 
-    
-  
-
-// 📌 1. ຟັງຊັ່ນບັນທຶກຂ່າວສານລົງ Firestore
+// ==========================================
+// 12. ໂມດູນຈັດການຂ່າວສານ (News Management)
+// ==========================================
 const newsForm = document.getElementById('news-form');
 if (newsForm) {
     newsForm.addEventListener('submit', async (e) => {
@@ -865,9 +852,7 @@ if (newsForm) {
 
         try {
             if (docId) {
-                await updateDoc(doc(db, "news", docId), {
-                    title, content
-                });
+                await updateDoc(doc(db, "news", docId), { title, content });
                 alert('✅ ແກ້ໄຂປະກາດສຳເລັດ!');
             } else {
                 await addDoc(collection(db, "news"), {
@@ -887,7 +872,6 @@ if (newsForm) {
     });
 }
 
-// 📌 2. ຟັງຊັ່ນໂຫຼດລາຍການຂ່າວສານມາສະແດງ
 async function loadNews() {
     const container = document.getElementById('news-container');
     if (!container) return;
@@ -926,7 +910,6 @@ async function loadNews() {
     }
 }
 
-// 📌 3. ແກ້ໄຂຂ່າວ
 function editNews(id, title, content) {
     document.getElementById('news-doc-id').value = id;
     document.getElementById('news-title').value = title;
@@ -937,7 +920,6 @@ function editNews(id, title, content) {
     document.getElementById('cancel-news-edit-btn').style.display = 'inline-block';
 }
 
-// 📌 4. ລົບຂ່າວ
 async function deleteNews(id) {
     if (confirm('⚠️ ທ່ານຕ້ອງການລົບປະກາດນີ້ແທ້ບໍ?')) {
         try {
@@ -950,7 +932,6 @@ async function deleteNews(id) {
     }
 }
 
-// 📌 5. ຣີເຊັດຟອມຂ່າວ
 function resetNewsForm() {
     document.getElementById('news-form').reset();
     document.getElementById('news-doc-id').value = '';
@@ -958,7 +939,7 @@ function resetNewsForm() {
     document.getElementById('save-news-btn').innerText = 'ເຜີຍແຜ່ປະກາດ';
     document.getElementById('cancel-news-edit-btn').style.display = 'none';
 }
-// 📌 ຟັງຊັ່ນສຳລັບເປີດ/ປິດ ແຖບເມນູດ້ານຂ້າງ (Sidebar)
+
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
