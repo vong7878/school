@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ລະບົບຄຸ້ມຄອງໂຮງຮຽນ</title>
+    <title>ລະບົບຄຸ້ມຄອງໂຮງຮຽນ ແລະ ເບິ່ງຄະແນນ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -19,6 +19,7 @@
                 <li data-target="students">👨‍🎓 ຈັດການນັກຮຽນ</li>
                 <li data-target="teachers">👩‍🏫 ຈັດການຄູອາຈານ</li>
                 <li data-target="attendance">📝 ເຊັກຊື່ມາຮຽນ</li>
+                <li data-target="student-portal">🎓 ເບິ່ງຄະແນນ (ນັກຮຽນ)</li>
             </ul>
         </aside>
 
@@ -113,9 +114,9 @@
                 </div>
             </section>
 
-            <!-- 4. ໜ້າເຊັກຊື່ມາຮຽນ (ສຳລັບຄູ) -->
+            <!-- 4. ໜ້າເຊັກຊື່ມາຮຽນ -->
             <section id="attendance" class="section">
-                <h1>ລະບົບເຊັກຊື່ການມາຮຽນຂອງນັກຮຽນ</h1>
+                <h1>ລະບົບເຊັກຊື່ການມາຮຽນ</h1>
                 <div class="form-container">
                     <h3>ເລືອກຊັ້ນຮຽນທີ່ຕ້ອງການເຊັກຊື່</h3>
                     <div class="filter-box">
@@ -147,7 +148,69 @@
                             <tr><td colspan="4" style="text-align: center;">ກະລຸນາເລືອກຊັ້ນຮຽນກ່ອນ...</td></tr>
                         </tbody>
                     </table>
-                    <button id="save-attendance-btn" class="btn-add" style="margin-top: 15px; display: none;">💾 บันทຶກການເຊັກຊື່</button>
+                    <button id="save-attendance-btn" class="btn-add" style="margin-top: 15px; display: none;">💾 ບັນທຶກການເຊັກຊື່</button>
+                </div>
+            </section>
+
+            <!-- 5. ໜ້າລັອກອິນ ແລະ ເບິ່ງຄະແນນສຳລັບນັກຮຽນ -->
+            <section id="student-portal" class="section">
+                <h1>ລະບົບກວດສອບຜົນການຮຽນ</h1>
+                
+                <!-- ຟອມລັອກອິນ -->
+                <div id="student-login-box" class="form-container" style="max-width: 400px; margin: 0 auto;">
+                    <h3>🔑 ເຂົ້າສູ່ລະບົບສຳລັບນັກຮຽນ</h3>
+                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                        <input type="text" id="login-student-id" placeholder="ປ້ອນລະຫັດນັກຮຽນ (ເຊັ່ນ: S001)" required>
+                        <button id="btn-student-login" class="btn-add">ເຂົ້າສູ່ລະບົບ</button>
+                    </div>
+                </div>
+
+                <!-- ຜົນການຮຽນ (ສະແດງຫຼັງລັອກອິນສຳເລັດ) -->
+                <div id="student-dashboard-box" class="table-container" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 8px;">
+                        <div>
+                            <h3 style="color: #1e293b;">ສະບາຍດີ, <span id="lbl-stu-name"></span></h3>
+                            <p style="color: #64748b; margin-top: 5px;">ລະຫັດ: <span id="lbl-stu-id"></span> | ຊັ້ນຮຽນ: <span id="lbl-stu-grade"></span></p>
+                        </div>
+                        <button id="btn-student-logout" class="btn-delete">ອອກຈາກລະບົບ</button>
+                    </div>
+
+                    <h3>📊 ຄະແນນປະຈຳສົກຮຽນ</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ວິຊາສອນ</th>
+                                <th>ຄະແນນກາງພາຄ (40)</th>
+                                <th>ຄະແນນສອບເສັງ (60)</th>
+                                <th>ຄະແນນລວມ (100)</th>
+                                <th>ເກຣດ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-grades-list">
+                            <!-- ຂໍ້ມູນຄະແນນຕົວຢ່າງ -->
+                            <tr>
+                                <td>ຄະນິດສາດ</td>
+                                <td>32</td>
+                                <td>45</td>
+                                <td><b>77</b></td>
+                                <td><span style="color: green; font-weight: bold;">B</span></td>
+                            </tr>
+                            <tr>
+                                <td>ພາສາລາວ - ວັນນະຄະດີ</td>
+                                <td>35</td>
+                                <td>50</td>
+                                <td><b>85</b></td>
+                                <td><span style="color: green; font-weight: bold;">A</span></td>
+                            </tr>
+                            <tr>
+                                <td>ພາສາອັງກິດ</td>
+                                <td>28</td>
+                                <td>40</td>
+                                <td><b>68</b></td>
+                                <td><span style="color: orange; font-weight: bold;">C</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
         </main>
