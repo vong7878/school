@@ -146,6 +146,43 @@
                         <p style="font-size: 24px; font-weight: bold; color: #17a2b8;">95%</p>
                     </div>
                 </div>
+
+                <!-- 📅 ໂມດູນຕາຕະລາງຮຽນ & ຫ້ອງຮຽນ -->
+<div id="classes-section" class="section-content" style="display: none; padding: 20px;">
+    <h3>📅 ຕາຕະລາງຮຽນ & ຫ້ອງຮຽນ</h3>
+    <p>ເພີ່ມ, ແກ້ໄຂ ແລະ ຈັດສັນຕາຕະລາງຮຽນສຳລັບນັກຮຽນແຕ່ລະຫ້ອງ.</p>
+
+    <!-- ຟອມເພີ່ມຕາຕະລາງຮຽນ (ສະແດງສະເພາະ Admin/Teacher) -->
+    <div id="class-form-container" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <h4>ເພີ່ມຕາຕະລາງຮຽນໃໝ່</h4>
+        <form id="class-form" onsubmit="addClass(event)" style="display: flex; flex-direction: column; gap: 10px;">
+            <input type="text" id="class-name" placeholder="ຊື່ວິຊາ / ຊັ້ນຮຽນ (ຕົວຢ່າງ: ມ.4/1 - ວິຊາຄະນິດສາດ)" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <input type="text" id="class-day" placeholder="ມື້ຮຽນ (ຕົວຢ່າງ: ວັນຈັນ)" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <input type="text" id="class-time" placeholder="ເວລາ (ຕົວຢ່າງ: 08:00 - 09:30)" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <input type="text" id="class-teacher" placeholder="ຊື່ຄູຜູ້ສອນ" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <button type="submit" style="background: #28a745; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 ບັນທຶກຕາຕະລາງ</button>
+        </form>
+    </div>
+
+    <!-- ຕາຕະລາງສະແດງຂໍ້ມູນ -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <h4>ລາຍຊື່ຕາຕະລາງຮຽນທັງໝົດ</h4>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <thead>
+                <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6; text-align: left;">
+                    <th style="padding: 10px;">ຊັ້ນຮຽນ / ວິຊາ</th>
+                    <th style="padding: 10px;">ມື້ຮຽນ</th>
+                    <th style="padding: 10px;">ເວລາ</th>
+                    <th style="padding: 10px;">ຄູຜູ້ສອນ</th>
+                    <th style="padding: 10px;" class="action-col">ຈັດການ</th>
+                </tr>
+            </thead>
+            <tbody id="classes-table-body">
+                <!-- ຂໍ້ມູນຈະຖືກດຶງມາສະແດງອັດຕະໂນມັດຈາກ Firebase -->
+            </tbody>
+        </table>
+    </div>
+</div>
             </div>
 
            <!-- 2. Students Management Section -->
