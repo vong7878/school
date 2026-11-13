@@ -1000,26 +1000,107 @@ function filterTimetables() {
     );
     renderTimetableTable(filtered);
 }
+// 📌 1. ຟັງຊັ່ນບັນທຶກຂ່າວສານລົງ Firestore
+const newsForm = document.getElementById('news-form');
+if (newsForm) {
+    newsForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const docId = document.getElementById('news-doc-id').value;
+        const title = document.getElementById('news-title').value;
+        const content = document.getElementById('news-content').value;
 
-document.getElementById('news-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const title = document.getElementById('news-title').value;
-    const content = document.getElementById('news-content').value;
+        try {
+            if (docId) {
+                await updateDoc(doc(db, "news", docId), {
+                    title, content
+                });
+                alert('✅ ແກ້ໄຂປະກາດສຳເລັດ!');
+            } else {
+                await addDoc(collection(db, "news"), {
+                    title, content,
+                    date: new Date().toLocaleDateString('lo-LA'),
+                    createdAt: serverTimestamp()
+                });
+                alert('📢 ເຜີຍແຜ່ປະກາດຂ່າວສານສຳເລັດ!');
+            }
+
+            resetNewsForm();
+            loadNews();
+        } catch (error) {
+            console.error("Error saving news: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
+        }
+    });
+}
+
+// 📌 2. ຟັງຊັ່ນໂຫຼດລາຍການຂ່າວສານມາສະແດງ
+async function loadNews() {
+    const container = document.getElementById('news-container');
+    if (!container) return;
 
     try {
-        await db.collection("news").add({
-            title: title,
-            content: content,
-            date: new Date().toLocaleDateString('lo-LA'),
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        const querySnapshot = await getDocs(collection(db, "news"));
+        let html = '';
+        const userRole = localStorage.getItem('userRole') || 'student';
+        const canManage = (userRole === 'admin' || userRole === 'teacher');
 
-        alert('📢 ເຜີຍແຜ່ປະກາດຂ່າວສານສຳເລັດ!');
-        document.getElementById('news-form').reset();
-        loadNewsFromFirebase(); // ຟັງຊັ່ນໂຫຼດລາຍການຂ່າວມາສະແດງ
+        if (querySnapshot.empty) {
+            container.innerHTML = `<p style="text-align: center; color: #666;">ຍັງບໍ່ມີປະກາດຂ່າວສານໃນລະບົບ</p>`;
+            return;
+        }
+
+        querySnapshot.forEach((docSnap) => {
+            const item = docSnap.data();
+            const id = docSnap.id;
+            html += `
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid #007bff; margin-bottom: 10px;">
+                    <h4 style="margin: 0 0 5px 0; color: #333;">📢 ${item.title}</h4>
+                    <p style="color: #666; font-size: 13px; margin: 0 0 10px 0;">ວັນທີ່: ${item.date || 'ບໍ່ລະບຸ'}</p>
+                    <p style="margin: 0 0 10px 0; white-space: pre-line;">${item.content}</p>
+                    ${canManage ? `
+                        <div style="display: flex; gap: 5px;">
+                            <button onclick="editNews('${id}', '${item.title.replace(/'/g, "\\'")}', '${item.content.replace(/'/g, "\\'")}')" style="background: #ffc107; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">✏️ ແກ້ໄຂ</button>
+                            <button onclick="deleteNews('${id}')" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">🗑️ ລົບ</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+        container.innerHTML = html;
     } catch (error) {
-        console.error("Error adding news: ", error);
-        alert('❌ ເກີດข้อผิดพลาด: ' + error.message);
+        console.error("Error loading news: ", error);
     }
-});
+}
+
+// 📌 3. ແກ້ໄຂຂ່າວ
+function editNews(id, title, content) {
+    document.getElementById('news-doc-id').value = id;
+    document.getElementById('news-title').value = title;
+    document.getElementById('news-content').value = content;
+
+    document.getElementById('news-form-title').innerText = '✏️ ແກ້ໄຂປະກາດຂ່າວສານ';
+    document.getElementById('save-news-btn').innerText = '💾 ບັນທຶກການແກ້ໄຂ';
+    document.getElementById('cancel-news-edit-btn').style.display = 'inline-block';
+}
+
+// 📌 4. ລົບຂ່າວ
+async function deleteNews(id) {
+    if (confirm('⚠️ ທ່ານຕ້ອງການລົບປະກາດນີ້ແທ້ບໍ?')) {
+        try {
+            await deleteDoc(doc(db, "news", id));
+            alert('🗑️ ລົບປະກາດສຳເລັດ!');
+            loadNews();
+        } catch (error) {
+            console.error("Error deleting news: ", error);
+        }
+    }
+}
+
+// 📌 5. ຣີເຊັດຟອມຂ່າວ
+function resetNewsForm() {
+    document.getElementById('news-form').reset();
+    document.getElementById('news-doc-id').value = '';
+    document.getElementById('news-form-title').innerText = '➕ ສ້າງປະກາດຂ່າວສານໃໝ່';
+    document.getElementById('save-news-btn').innerText = 'ເຜີຍແຜ່ປະກາດ';
+    document.getElementById('cancel-news-edit-btn').style.display = 'none';
+}
