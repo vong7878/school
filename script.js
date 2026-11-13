@@ -262,3 +262,41 @@ document.getElementById('save-attendance-btn').addEventListener('click', async f
         this.innerText = '💾 ບັນທຶກການເຊັກຊື່';
     }
 });
+
+
+
+// ... (ໂຄດ Firebase ແລະ ຟັງຊັນເກົ່າທັງໝົດຍັງຄົງຮັກສາໄວ້ຄືເກົ່າ) ...
+
+// ================= ລະບົບລັອກອິນ ແລະ ເບິ່ງຄະແນນຂອງນັກຮຽນ =================
+
+document.getElementById('btn-student-login').addEventListener('click', function() {
+    const inputId = document.getElementById('login-student-id').value.trim();
+
+    if (!inputId) {
+        alert('ກະລຸນາປ້ອນລະຫັດນັກຮຽນ!');
+        return;
+    }
+
+    // ຄົ້ນຫານັກຮຽນຈາກ list ທີ່ມີຢູ່
+    const foundStudent = allStudents.find(s => s.id.toLowerCase() === inputId.toLowerCase());
+
+    if (foundStudent) {
+        // ຖ້າພົບຂໍ້ມູນ: ສະແດງໜ້າ Dashboard ຄະແນນ
+        document.getElementById('student-login-box').style.display = 'none';
+        document.getElementById('student-dashboard-box').style.display = 'block';
+
+        // ສະແດງຂໍ້ມູນສ່ວນຕົວ
+        document.getElementById('lbl-stu-name').innerText = foundStudent.name;
+        document.getElementById('lbl-stu-id').innerText = foundStudent.id;
+        document.getElementById('lbl-stu-grade').innerText = foundStudent.grade;
+    } else {
+        alert('❌ ບໍ່ພົບລະຫັດນັກຮຽນນີ້ໃນระบบ! ກະລຸນາກວດສອບຄືນ.');
+    }
+});
+
+// ປຸ່ມອອກຈາກລະບົບ (Logout)
+document.getElementById('btn-student-logout').addEventListener('click', function() {
+    document.getElementById('student-dashboard-box').style.display = 'none';
+    document.getElementById('student-login-box').style.display = 'block';
+    document.getElementById('login-student-id').value = '';
+});
