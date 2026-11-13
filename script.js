@@ -904,3 +904,93 @@ window.applyRolePermissions = function() {
 window.addEventListener('DOMContentLoaded', () => {
     window.applyRolePermissions();
 });
+// 1. ຟັງຊັນບັນທຶກຕາຕະລາງຮຽນລົງ Firebase Firestore
+window.addClass = async function(event) {
+    event.preventDefault();
+    
+    const className = document.getElementById('class-name').value;
+    const classDay = document.getElementById('class-day').value;
+    const classTime = document.getElementById('class-time').value;
+    const classTeacher = document.getElementById('class-teacher').value;
+
+    try {
+        await db.collection('classes').add({
+            className: className,
+            day: classDay,
+            time: classTime,
+            teacher: classTeacher,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert('✅ ບັນທຶກຕາຕະລາງຮຽນສຳເລັດ!');
+        document.getElementById('class-form').reset();
+        window.loadClasses(); // โຫລດຂໍ້ມູນໃໝ່
+    } catch (error) {
+        console.error('Error adding class: ', error);
+        alert('❌ เกิดข้อผิดพลาด: ' + error.message);
+    }
+}
+
+// 2. ຟັງຊັນໂຫຼດ ແລະ ສະແດງຕາຕະລາງຮຽນຈາກ Firestore
+window.loadClasses = async function() {
+    const tbody = document.getElementById('classes-table-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>';
+
+    try {
+        const snapshot = await db.collection('classes').get();
+        tbody.innerHTML = '';
+
+        if (snapshot.empty) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນ</td></tr>';
+            return;
+        }
+
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #eee';
+            tr.innerHTML = `
+                <td style="padding: 10px;">${data.className || ''}</td>
+                <td style="padding: 10px;">${data.day || ''}</td>
+                <td style="padding: 10px;">${data.time || ''}</td>
+                <td style="padding: 10px;">${data.teacher || ''}</td>
+                <td style="padding: 10px;" class="action-col">
+                    <button onclick="deleteClass('${doc.id}')" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">ລົບ</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // 🎯 ຖ້າຜູ້ໃຊ້ເປັນ Student ໃຫ້ເຊື່ອງຟອມເພີ່ມ ແລະ ປຸ່ມລົບ
+        const role = localStorage.getItem('userRole');
+        if (role === 'student') {
+            const formContainer = document.getElementById('class-form-container');
+            if (formContainer) formContainer.style.display = 'none';
+
+            document.querySelectorAll('.action-col').forEach(el => el.style.display = 'none');
+        }
+
+    } catch (error) {
+        console.error('Error loading classes: ', error);
+    }
+}
+
+// 3. ຟັງຊັນລົບຕາຕະລາງຮຽນ (ສະເພາະ Admin)
+window.deleteClass = async function(id) {
+    if (!confirm('ຕ້ອງການລົບລາຍການນີ້ແທ້ບໍ?')) return;
+    try {
+        await db.collection('classes').doc(id).delete();
+        alert('🗑️ ລົບຂໍ້ມູນສຳເລັດ!');
+        window.loadClasses();
+    } catch (error) {
+        console.error('Error deleting class: ', error);
+        alert('❌ ບໍ່ສາມາດລົບຂໍ້ມູນໄດ້');
+    }
+}
+
+// ເອີ້ນໃຊ້ງານຕອນໂຫຼດໜ້າເວັບ
+window.addEventListener('DOMContentLoaded', () => {
+    window.loadClasses();
+});
