@@ -1115,32 +1115,30 @@ function toggleSidebar() {
 const timetableForm = document.getElementById('timetable-form');
 if (timetableForm) {
     timetableForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        const docId = document.getElementById('timetable-doc-id').value;
+        event.preventDefault(); // 🛑 สำຄັນ: ປ້ອງກັນບໍ່ໃຫ້ໜ້າເວັບຣີເຟຣດ
+        
+        // ດຶງຄ່າຈາກ input ມາເຊັກເບິ່ງກ่อน
         const room = document.getElementById('timetable-class-room').value;
         const subject = document.getElementById('timetable-subject').value;
         const day = document.getElementById('timetable-day').value;
         const time = document.getElementById('timetable-time').value;
         const teacher = document.getElementById('timetable-teacher').value;
 
-        try {
-            if (docId) {
-                await updateDoc(doc(db, "timetables", docId), { room, subject, day, time, teacher });
-                alert('✅ ແກ້ໄຂຕາຕະລາງຮຽນສຳເລັດ!');
-            } else {
-                await addDoc(collection(db, "timetables"), {
-                    room, subject, day, time, teacher,
-                    createdAt: serverTimestamp()
-                });
-                alert('✅ ເພີ່ມຕາຕະລາງຮຽນສຳເລັດ!');
-            }
+        console.log("ກຳລັງສົ່ງຂໍ້ມູນ:", { room, subject, day, time, teacher });
 
-            resetTimetableForm();
-            loadTimetables();
+        try {
+            // ບັນທຶກລົງ Firebase Firestore
+            await addDoc(collection(db, "timetables"), {
+                room, subject, day, time, teacher,
+                createdAt: serverTimestamp()
+            });
+
+            alert('✅ ເພີ່ມຕາຕະລາງຮຽນສຳເລັດ!');
+            timetableForm.reset();
+            loadTimetables(); // ໂຫຼດຕາຕະລາງໃໝ່ມາສະແດງ
         } catch (error) {
-            console.error("Error saving timetable: ", error);
-            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
+            console.error("Error saving: ", error);
+            alert('❌ ບັນທຶກບໍ່ສຳເລັດ: ' + error.message);
         }
     });
 }
