@@ -848,3 +848,59 @@ window.applyRolePermissions = function() {
 
     // (ສ່ວນໂຄດເຊື່ອງເມນູຕາມ Role ຕ່າງໆທີ່ເຮົາຂຶ້ນໄປກ່ອນໜ້ານີ້...)
 };
+
+
+window.applyRolePermissions = function() {
+    const role = localStorage.getItem('userRole');
+    const userName = localStorage.getItem('userName') || 'ນັກຮຽນ';
+
+    if (!role) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // ສະແດງຊື່ ແລະ ບົດບາດ
+    const nameSpan = document.getElementById('user-display-name');
+    const roleSpan = document.getElementById('user-display-role');
+    if (nameSpan) nameSpan.innerText = userName;
+    if (roleSpan) roleSpan.innerText = role;
+
+    // 🎯 ຖ້າເປັນ "ນັກຮຽນ" (student)
+    if (role === 'student') {
+        // 1. ເຊື່ອງເມນູທີ່ນັກຮຽນບໍ່ກ່ຽວຂ້ອງ (ໃຫ້ເຫັນສະເພາະ ຫ້ອງຮຽນ/ຕາຕະລາງ, ການເງິນ/ຊຳລະ ແລະ ຂ່າວສານ)
+        const menusToHide = ['menu-dashboard', 'menu-students', 'menu-teachers', 'menu-attendance', 'menu-scores'];
+        menusToHide.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+
+        // 2. ເຊື່ອງຟອມເພີ່ມ/ແກ້ໄຂທຸກຢ່າງ (ປ້ອງກັນບໍ່ໃຫ້ມີການບັນທຶກຂໍ້ມູນ)
+        const formsToHide = ['student-form', 'teacher-form', 'class-form', 'score-form', 'finance-form', 'news-form'];
+        formsToHide.forEach(id => {
+            const form = document.getElementById(id);
+            if (form) {
+                // ຖ້າຟອມຢູ່ໃນ Card ຫຼື Container ໃຫ້ເຊື່ອງທັງກ່ອງ
+                if (form.parentElement) form.parentElement.style.display = 'none';
+            }
+        });
+
+        // 3. ເຊື່ອງປຸ່ມກະທຳຕ່າງໆ (Add, Edit, Delete buttons) ທົ່ວໜ້າເວັບ
+        document.querySelectorAll('button').forEach(btn => {
+            const text = btn.innerText.toLowerCase();
+            // ยกเว้นປຸ່ມອອກຈາກລະບົບ ແລະ ປຸ່ມຊຳລະເງິນ
+            if (!text.includes('ອອກຈາກລະບົບ') && !text.includes('ຊຳລະ') && !text.includes('จ่าย')) {
+                btn.style.display = 'none';
+            }
+        });
+
+        // 4. ເປີດໃຫ້ເຂົ້າເຖິງສະເພາະໜ້າຫ້ອງຮຽນ (ຕາຕະລາງ) ຫຼື ໜ້າການເງິນເປັນຄ່າເລີ່ມຕົ້ນ
+        if (typeof showSection === 'function') {
+            showSection('classes'); // ຫຼື 'finance'
+        }
+    }
+}
+
+// ເອີ້ນໃຊ້ງານທັນຕອນໂຫຼດໜ້າເວັບ
+window.addEventListener('DOMContentLoaded', () => {
+    window.applyRolePermissions();
+});
