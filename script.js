@@ -1104,3 +1104,10 @@ function resetNewsForm() {
     document.getElementById('save-news-btn').innerText = 'ເຜີຍແຜ່ປະກາດ';
     document.getElementById('cancel-news-edit-btn').style.display = 'none';
 }
+// 📌 ຟັງຊັ່ນສຳລັບເປີດ/ປິດ ແຖບເມນູດ້ານຂ້າງ (Sidebar)
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('collapsed');
+    }
+}
