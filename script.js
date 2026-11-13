@@ -17,20 +17,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ຕົວແປເກັບຂໍ້ມູນນັກຮຽນສຳລັບການຄົ້ນຫາ
+// ຕົວແປເກັບຂໍ້ມູນລວມສຳລັບການຄົ້ນຫາ
 let allStudentsData = [];
+let allTeachersData = [];
+let allScoresData = [];
+let allFinancesData = [];
 
 // ==========================================
 // 4. ຟັງຊັນຄວບຄຸມການສະຫຼັບໜ້າ (Sidebar Navigation)
 // ==========================================
 window.showSection = function(sectionName) {
-    // ປິດການສະແດງຜົນທຸກ section ກ่อน
     const sections = document.querySelectorAll('.content-section');
     sections.forEach(sec => {
         sec.style.display = 'none';
     });
 
-    // ເປີດສະແດງຜົນສະເພາະ section ທີ່ຖືກຄລິກ
     const targetSection = document.getElementById(`section-${sectionName}`);
     if (targetSection) {
         targetSection.style.display = 'block';
@@ -41,19 +42,17 @@ window.showSection = function(sectionName) {
 window.logout = function() {
     localStorage.removeItem('isLoggedIn');
     alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
-    window.location.href = 'index.html'; // ຫຼື ປັບຕາມໜ້າລັອກອິນຂອງທ່ານ
+    window.location.href = 'index.html';
 }
 
 // ==========================================
 // 5. ໂມດູນຈັດການນັກຮຽນ (Students Management)
 // ==========================================
-
-// 5.1 ໂຫຼດລາຍຊື່ນັກຮຽນຈາກ Firebase Firestore
 window.loadStudents = async function() {
     const tbody = document.getElementById('students-table-body');
     if (!tbody) return;
     
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
 
     try {
         const querySnapshot = await getDocs(collection(db, "students"));
@@ -61,7 +60,7 @@ window.loadStudents = async function() {
         allStudentsData = [];
 
         if (querySnapshot.empty) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນນັກຮຽນໃນລະບົບ</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນນັກຮຽນໃນລະບົບ</td></tr>`;
             const dashStudents = document.getElementById('dash-total-students');
             if (dashStudents) dashStudents.innerText = '0 ຄົນ';
             return;
@@ -73,25 +72,23 @@ window.loadStudents = async function() {
             allStudentsData.push(data);
         });
 
-        // ອັບເດດຕົວເລກລວມໃນ Dashboard
         const dashStudents = document.getElementById('dash-total-students');
         if (dashStudents) dashStudents.innerText = allStudentsData.length + ' ຄົນ';
 
         renderStudentsTable(allStudentsData);
     } catch (error) {
         console.error("Error loading students: ", error);
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
     }
 }
 
-// 5.2 ສະແດງຜົນລົງໃນຕາຕະລາງ HTML
 function renderStudentsTable(students) {
     const tbody = document.getElementById('students-table-body');
     if (!tbody) return;
     tbody.innerHTML = '';
 
     if (students.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ບໍ່ພົບຂໍ້ມູນທີ່ຄົ້ນຫາ</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px;">ບໍ່ພົບຂໍ້ມູນນັກຮຽນ</td></tr>`;
         return;
     }
 
@@ -101,16 +98,17 @@ function renderStudentsTable(students) {
             <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${student.id || '-'}</td>
             <td style="border: 1px solid #ddd; padding: 10px;">${student.name || '-'}</td>
             <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${student.grade || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${student.phone || '-'}</td>
+            <td style="border: 1px solid #ddd; padding: 10px;">${student.parent || '-'}</td>
             <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">
-                <button onclick="editStudent('${student.docId}', '${student.id}', '${student.name}', '${student.grade}')" style="background: #ffc107; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️ ແກ້ໄຂ</button>
-                <button onclick="deleteStudent('${student.docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🗑️ ລົບ</button>
+                <button onclick="editStudent('${student.docId}', '${student.id || ''}', '${student.name || ''}', '${student.grade || ''}', '${student.phone || ''}', '${student.parent || ''}')" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
+                <button onclick="deleteStudent('${student.docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">🗑️</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-// 5.3 ຈັດການການສົ່ງຟອມ (ເພີ່ມ ຫຼື ອັບເດດຂໍ້ມູນນັກຮຽນ)
 const studentForm = document.getElementById('student-form');
 if (studentForm) {
     studentForm.addEventListener('submit', async (e) => {
@@ -119,15 +117,15 @@ if (studentForm) {
         const studentId = document.getElementById('student-id').value;
         const name = document.getElementById('student-name').value;
         const grade = document.getElementById('student-grade').value;
+        const phone = document.getElementById('student-phone').value;
+        const parent = document.getElementById('student-parent').value;
 
         try {
             if (docId) {
-                // ອັບເດດຂໍ້ມູນທີ່ມີຢູ່ແລ້ວ
-                await updateDoc(doc(db, "students", docId), { id: studentId, name: name, grade: grade });
-                alert('✅ ແກ້ໄຂຂໍ້ມູນສຳເລັດ!');
+                await updateDoc(doc(db, "students", docId), { id: studentId, name, grade, phone, parent });
+                alert('✅ ແກ້ໄຂຂໍ້ມູນນັກຮຽນສຳເລັດ!');
             } else {
-                // ເພີ່ມຂໍ້ມູນໃຫມ່
-                await addDoc(collection(db, "students"), { id: studentId, name: name, grade: grade });
+                await addDoc(collection(db, "students"), { id: studentId, name, grade, phone, parent });
                 alert('✅ ເພີ່ມນັກຮຽນສຳເລັດ!');
             }
             window.resetStudentForm();
@@ -139,19 +137,19 @@ if (studentForm) {
     });
 }
 
-// 5.4 ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແກ້ໄຂ
-window.editStudent = function(docId, id, name, grade) {
+window.editStudent = function(docId, id, name, grade, phone, parent) {
     document.getElementById('student-doc-id').value = docId;
     document.getElementById('student-id').value = id;
     document.getElementById('student-name').value = name;
     document.getElementById('student-grade').value = grade;
+    document.getElementById('student-phone').value = phone;
+    document.getElementById('student-parent').value = parent;
     
     document.getElementById('student-form-title').innerText = '✏️ ແກ້ໄຂຂໍ້ມູນນັກຮຽນ';
     document.getElementById('save-student-btn').innerText = 'ອັບເດດຂໍ້ມູນ';
     document.getElementById('cancel-edit-btn').style.display = 'inline-block';
 }
 
-// 5.5 ລົບຂໍ້ມູນນັກຮຽນ
 window.deleteStudent = async function(docId) {
     if (confirm('ທ່ານຕ້ອງການລົບຂໍ້ມູນນັກຮຽນນີ້ແທ້ບໍ?')) {
         try {
@@ -165,7 +163,6 @@ window.deleteStudent = async function(docId) {
     }
 }
 
-// 5.6 ຣີເຊັດຟອມກຣອກຂໍ້ມູນ
 window.resetStudentForm = function() {
     const form = document.getElementById('student-form');
     if (form) form.reset();
@@ -175,30 +172,24 @@ window.resetStudentForm = function() {
     document.getElementById('cancel-edit-btn').style.display = 'none';
 }
 
-// 5.7 ຟັງຊັນຄົ້ນຫານັກຮຽນໃນຕາຕະລາງ
 window.filterStudents = function() {
-    const inputSearch = document.getElementById('search-student-input');
-    if (!inputSearch) return;
-    const keyword = inputSearch.value.toLowerCase();
+    const keyword = document.getElementById('search-student-input').value.toLowerCase();
+    const selectedGrade = document.getElementById('filter-grade-select').value;
     
-    const filtered = allStudentsData.filter(s => 
-        (s.name && s.name.toLowerCase().includes(keyword)) || 
-        (s.id && s.id.toLowerCase().includes(keyword)) ||
-        (s.grade && s.grade.toLowerCase().includes(keyword))
-    );
+    const filtered = allStudentsData.filter(s => {
+        const matchKeyword = (s.name && s.name.toLowerCase().includes(keyword)) || 
+                             (s.id && s.id.toLowerCase().includes(keyword)) ||
+                             (s.phone && s.phone.toLowerCase().includes(keyword));
+        const matchGrade = selectedGrade === "" || s.grade === selectedGrade;
+        return matchKeyword && matchGrade;
+    });
     renderStudentsTable(filtered);
 }
 
-// ==========================================
-// 6. ໂຫຼດຂໍ້ມູນເລີ່ມຕົ້ນເມື່ອເປີດໜ້າເວັບ
-// ==========================================
-window.addEventListener('DOMContentLoaded', () => {
-    window.loadStudents();
-});
-// ເກັບຂໍ້ມູນຄູທັງໝົດສຳລັບການຄົ້ນຫາ
-let allTeachersData = [];
 
-// 1. ໂຫຼດລາຍຊື່ຄູຈາກ Firebase Firestore
+// ==========================================
+// 6. ໂມດູນຈັດການຄູອາຈານ (Teachers Management)
+// ==========================================
 window.loadTeachers = async function() {
     const tbody = document.getElementById('teachers-table-body');
     if (!tbody) return;
@@ -223,7 +214,6 @@ window.loadTeachers = async function() {
             allTeachersData.push(data);
         });
 
-        // ອັບເດດຕົວເລກລວມໃນ Dashboard
         const dashTeachers = document.getElementById('dash-total-teachers');
         if (dashTeachers) dashTeachers.innerText = allTeachersData.length + ' ຄົນ';
 
@@ -234,7 +224,6 @@ window.loadTeachers = async function() {
     }
 }
 
-// 2. ສະແດງຜົນລົງຕາຕະລາງ HTML
 function renderTeachersTable(teachers) {
     const tbody = document.getElementById('teachers-table-body');
     if (!tbody) return;
@@ -260,7 +249,6 @@ function renderTeachersTable(teachers) {
     });
 }
 
-// 3. ຈັດການການສົ່ງຟອມ (ເພີ່ມ ຫຼື ອັບເດດຂໍ້ມູນຄູ)
 const teacherForm = document.getElementById('teacher-form');
 if (teacherForm) {
     teacherForm.addEventListener('submit', async (e) => {
@@ -272,12 +260,10 @@ if (teacherForm) {
 
         try {
             if (docId) {
-                // ອັບເດດຂໍ້ມູນທີ່ມີຢູ່ແລ້ວ
-                await updateDoc(doc(db, "teachers", docId), { id: teacherId, name: name, subject: subject });
+                await updateDoc(doc(db, "teachers", docId), { id: teacherId, name, subject });
                 alert('✅ ແກ້ໄຂຂໍ້ມູນຄູສຳເລັດ!');
             } else {
-                // ເພີ່ມຂໍ້ມູນໃໝ່
-                await addDoc(collection(db, "teachers"), { id: teacherId, name: name, subject: subject });
+                await addDoc(collection(db, "teachers"), { id: teacherId, name, subject });
                 alert('✅ ເພີ່ມຄູອາຈານສຳເລັດ!');
             }
             window.resetTeacherForm();
@@ -289,7 +275,6 @@ if (teacherForm) {
     });
 }
 
-// 4. ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແກ້ໄຂ
 window.editTeacher = function(docId, id, name, subject) {
     document.getElementById('teacher-doc-id').value = docId;
     document.getElementById('teacher-id').value = id;
@@ -301,7 +286,6 @@ window.editTeacher = function(docId, id, name, subject) {
     document.getElementById('cancel-teacher-edit-btn').style.display = 'inline-block';
 }
 
-// 5. ລົບຂໍ້ມູນຄູ
 window.deleteTeacher = async function(docId) {
     if (confirm('ທ່ານຕ້ອງການລົບຂໍ້ມູນຄູອາຈານຄົນນີ້ແທ້ບໍ?')) {
         try {
@@ -315,17 +299,15 @@ window.deleteTeacher = async function(docId) {
     }
 }
 
-// 6. ຣີເຊັດຟອມກຣອກຂໍ້ມູນຄູ
 window.resetTeacherForm = function() {
     const form = document.getElementById('teacher-form');
     if (form) form.reset();
     document.getElementById('teacher-doc-id').value = '';
-    document.getElementById('teacher-form-title').innerText = '➕ ເเพີ່ມຂໍ້ມູນຄູອາຈານໃໝ່';
+    document.getElementById('teacher-form-title').innerText = '➕ ເພີ່ມຂໍ້ມູນຄູອາຈານໃໝ່';
     document.getElementById('save-teacher-btn').innerText = 'ບັນທຶກຂໍ້ມູນ';
     document.getElementById('cancel-teacher-edit-btn').style.display = 'none';
 }
 
-// 7. ຟັງຊັນຄົ້ນຫາຄູໃນຕາຕະລາງ
 window.filterTeachers = function() {
     const inputSearch = document.getElementById('search-teacher-input');
     if (!inputSearch) return;
@@ -339,11 +321,10 @@ window.filterTeachers = function() {
     renderTeachersTable(filtered);
 }
 
-// ເອີ້ນໃຊ້ຟັງຊັນໂຫຼດຂໍ້ມູນຄູຕອນເປີດໜ້າເວັບ
-window.addEventListener('DOMContentLoaded', () => {
-    window.loadTeachers();
-});
-// 1. ໂຫຼດລາຍຊື່ຫ້ອງຮຽນຈາກ Firebase Firestore
+
+// ==========================================
+// 7. ໂມດູນຈັດການຫ້ອງຮຽນ (Classes Management)
+// ==========================================
 window.loadClasses = async function() {
     const tbody = document.getElementById('classes-table-body');
     if (!tbody) return;
@@ -375,14 +356,12 @@ window.loadClasses = async function() {
             `;
             tbody.appendChild(tr);
         });
-
     } catch (error) {
         console.error("Error loading classes: ", error);
         tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
     }
 }
 
-// 2. ຈັດການການສົ່ງຟອມ (ເພີ່ມ ຫຼື ອັບເດດຫ້ອງຮຽນ)
 const classForm = document.getElementById('class-form');
 if (classForm) {
     classForm.addEventListener('submit', async (e) => {
@@ -394,12 +373,10 @@ if (classForm) {
 
         try {
             if (docId) {
-                // ອັບເດດຂໍ້ມູນ
-                await updateDoc(doc(db, "classes", docId), { level: level, name: name, teacher: teacher });
+                await updateDoc(doc(db, "classes", docId), { level, name, teacher });
                 alert('✅ ແກ້ໄຂຂໍ້ມູນຫ້ອງຮຽນສຳເລັດ!');
             } else {
-                // ເພີ່ມໃໝ່
-                await addDoc(collection(db, "classes"), { level: level, name: name, teacher: teacher });
+                await addDoc(collection(db, "classes"), { level, name, teacher });
                 alert('✅ ເພີ່ມຫ້ອງຮຽນສຳເລັດ!');
             }
             window.resetClassForm();
@@ -411,7 +388,6 @@ if (classForm) {
     });
 }
 
-// 3. ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແກ້ໄຂ
 window.editClass = function(docId, level, name, teacher) {
     document.getElementById('class-doc-id').value = docId;
     document.getElementById('class-level').value = level;
@@ -422,7 +398,6 @@ window.editClass = function(docId, level, name, teacher) {
     document.getElementById('cancel-class-edit-btn').style.display = 'inline-block';
 }
 
-// 4. ລົບຫ້ອງຮຽນ
 window.deleteClass = async function(docId) {
     if (confirm('ທ່ານຕ້ອງການລົບຫ້ອງຮຽນນີ້ແທ້ບໍ?')) {
         try {
@@ -436,7 +411,6 @@ window.deleteClass = async function(docId) {
     }
 }
 
-// 5. ຣີເຊັດຟອມຫ້ອງຮຽນ
 window.resetClassForm = function() {
     const form = document.getElementById('class-form');
     if (form) form.reset();
@@ -445,114 +419,10 @@ window.resetClassForm = function() {
     document.getElementById('cancel-class-edit-btn').style.display = 'none';
 }
 
-// ເອີ້ນໃຊ້ຟັງຊັນໂຫຼດຂໍ້ມູນຫ້ອງຮຽນຕອນເປີດໜ້າເວັບ
-window.addEventListener('DOMContentLoaded', () => {
-    window.loadClasses();
-});
 
-// ບັນທຶກຂໍ້ມູນນັກຮຽນ (ເພີ່ມ ຫຼື ອັບເດດ)
-const studentForm = document.getElementById('student-form');
-if (studentForm) {
-    studentForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const docId = document.getElementById('student-doc-id').value;
-        const studentId = document.getElementById('student-id').value;
-        const name = document.getElementById('student-name').value;
-        const grade = document.getElementById('student-grade').value;
-        const phone = document.getElementById('student-phone').value;
-        const parent = document.getElementById('student-parent').value;
-
-        try {
-            if (docId) {
-                // ອັບເດດຂໍ້ມູນ
-                await updateDoc(doc(db, "students", docId), { 
-                    id: studentId, name: name, grade: grade, phone: phone, parent: parent 
-                });
-                alert('✅ ແກ້ໄຂຂໍ້ມູນນັກຮຽນສຳເລັດ!');
-            } else {
-                // ເเพີ່ມໃໝ່
-                await addDoc(collection(db, "students"), { 
-                    id: studentId, name: name, grade: grade, phone: phone, parent: parent 
-                });
-                alert('✅ ເພີ່ມນັກຮຽນສຳເລັດ!');
-            }
-            window.resetStudentForm();
-            window.loadStudents();
-        } catch (error) {
-            console.error("Error saving student: ", error);
-            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
-        }
-    });
-}
-
-// ສະແດງຜົນລົງຕາຕະລາງ HTML
-function renderStudentsTable(students) {
-    const tbody = document.getElementById('students-table-body');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-
-    if (students.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px;">ບໍ່ພົບຂໍ້ມູນນັກຮຽນ</td></tr>`;
-        return;
-    }
-
-    students.forEach((student) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${student.id || '-'}</td>
-            <td style="border: 1px solid #ddd; padding: 10px;">${student.name || '-'}</td>
-            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${student.grade || '-'}</td>
-            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${student.phone || '-'}</td>
-            <td style="border: 1px solid #ddd; padding: 10px;">${student.parent || '-'}</td>
-            <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">
-                <button onclick="editStudent('${student.docId}', '${student.id || ''}', '${student.name || ''}', '${student.grade || ''}', '${student.phone || ''}', '${student.parent || ''}')" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
-                <button onclick="deleteStudent('${student.docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">🗑️</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແກ້ໄຂ
-window.editStudent = function(docId, id, name, grade, phone, parent) {
-    document.getElementById('student-doc-id').value = docId;
-    document.getElementById('student-id').value = id;
-    document.getElementById('student-name').value = name;
-    document.getElementById('student-grade').value = grade;
-    document.getElementById('student-phone').value = phone;
-    document.getElementById('student-parent').value = parent;
-    
-    document.getElementById('student-form-title').innerText = '✏️ ແກ້ໄຂຂໍ້ມູນນັກຮຽນ';
-    document.getElementById('save-student-btn').innerText = 'ອັບເດດຂໍ້ມູນ';
-    document.getElementById('cancel-edit-btn').style.display = 'inline-block';
-}
-
-// ຣີເຊັດຟອມນັກຮຽນ
-window.resetStudentForm = function() {
-    const form = document.getElementById('student-form');
-    if (form) form.reset();
-    document.getElementById('student-doc-id').value = '';
-    document.getElementById('student-form-title').innerText = '➕ ເພີ່ມຂໍ້ມູນນັກຮຽນໃໝ່';
-    document.getElementById('save-student-btn').innerText = 'ບັນທຶກຂໍ້ມູນ';
-    document.getElementById('cancel-edit-btn').style.display = 'none';
-}
-
-// ຟັງຊັນຄົ້ນຫາ ແລະ ກອງຊັ້ນຮຽນ
-window.filterStudents = function() {
-    const keyword = document.getElementById('search-student-input').value.toLowerCase();
-    const selectedGrade = document.getElementById('filter-grade-select').value;
-    
-    const filtered = allStudentsData.filter(s => {
-        const matchKeyword = (s.name && s.name.toLowerCase().includes(keyword)) || 
-                             (s.id && s.id.toLowerCase().includes(keyword)) ||
-                             (s.phone && s.phone.toLowerCase().includes(keyword));
-        const matchGrade = selectedGrade === "" || s.grade === selectedGrade;
-        return matchKeyword && matchGrade;
-    });
-    // ເກັບຂໍ້ມູນຄະແນນທັງໝົດສຳລັບການຄົ້ນຫາ
-let allScoresData = [];
-
-// 1. ໂຫຼດລາຍຊື່ຄະແນນຈາກ Firebase Firestore
+// ==========================================
+// 8. ໂມດູນຈັດການຄະແນນ (Scores Management)
+// ==========================================
 window.loadScores = async function() {
     const tbody = document.getElementById('scores-table-body');
     if (!tbody) return;
@@ -582,7 +452,6 @@ window.loadScores = async function() {
     }
 }
 
-// 2. ຄິດໄລ່ເກຣດຕາມຄະແນນລວມ
 function calculateGrade(total) {
     if (total >= 80) return 'A';
     if (total >= 70) return 'B';
@@ -591,7 +460,6 @@ function calculateGrade(total) {
     return 'F';
 }
 
-// 3. ສະແດງຜົນລົງຕາຕະລາງ HTML
 function renderScoresTable(scores) {
     const tbody = document.getElementById('scores-table-body');
     if (!tbody) return;
@@ -626,7 +494,6 @@ function renderScoresTable(scores) {
     });
 }
 
-// 4. ຈັດການການສົ່ງຟອມ (ເພີ່ມ ຫຼື ອັບເດດຄະແນນ)
 const scoreForm = document.getElementById('score-form');
 if (scoreForm) {
     scoreForm.addEventListener('submit', async (e) => {
@@ -640,11 +507,9 @@ if (scoreForm) {
 
         try {
             if (docId) {
-                // ອັບເດດຂໍ້ມູນ
                 await updateDoc(doc(db, "scores", docId), { studentName, grade, subject, midterm, final });
                 alert('✅ ແກ້ໄຂຄະແນນສຳເລັດ!');
             } else {
-                // ເພີ່ມໃໝ່
                 await addDoc(collection(db, "scores"), { studentName, grade, subject, midterm, final });
                 alert('✅ ບັນທຶກຄະແນນສຳເລັດ!');
             }
@@ -657,7 +522,6 @@ if (scoreForm) {
     });
 }
 
-// 5. ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແກ້ໄຂ
 window.editScore = function(docId, studentName, grade, subject, midterm, final) {
     document.getElementById('score-doc-id').value = docId;
     document.getElementById('score-student-name').value = studentName;
@@ -671,7 +535,6 @@ window.editScore = function(docId, studentName, grade, subject, midterm, final) 
     document.getElementById('cancel-score-edit-btn').style.display = 'inline-block';
 }
 
-// 6. ລົບຄະແນນ
 window.deleteScore = async function(docId) {
     if (confirm('ທ່ານຕ້ອງການລົບລາຍການຄະແນນນີ້ແທ້ບໍ?')) {
         try {
@@ -685,7 +548,6 @@ window.deleteScore = async function(docId) {
     }
 }
 
-// 7. ຣີເຊັດຟອມຄະແນນ
 window.resetScoreForm = function() {
     const form = document.getElementById('score-form');
     if (form) form.reset();
@@ -695,7 +557,6 @@ window.resetScoreForm = function() {
     document.getElementById('cancel-score-edit-btn').style.display = 'none';
 }
 
-// 8. ຄົ້ນຫາຄະແນນ
 window.filterScores = function() {
     const keyword = document.getElementById('search-score-input').value.toLowerCase();
     const filtered = allScoresData.filter(s => 
@@ -706,14 +567,10 @@ window.filterScores = function() {
     renderScoresTable(filtered);
 }
 
-// ເອີ້ນໃຊ້ຟັງຊັນໂຫຼດຄະແນນຕອນເປີດໜ້າເວັບ
-window.addEventListener('DOMContentLoaded', () => {
-    window.loadScores();
-});
-    // ເກັບຂໍ້ມູນການເງິນທັງໝົດສຳລັບການຄົ້ນຫາ
-let allFinancesData = [];
 
-// 1. ໂຫຼດຂໍ້ມູນການເງິນຈາກ Firebase Firestore
+// ==========================================
+// 9. ໂມດູນການເງິນ & ຄ່າຮຽນ (Finance Management)
+// ==========================================
 window.loadFinances = async function() {
     const tbody = document.getElementById('finances-table-body');
     if (!tbody) return;
@@ -749,7 +606,6 @@ window.loadFinances = async function() {
             }
         });
 
-        // ອັບເດດຍອດລວມໃນ Dashboard ດ້ານເທິງຂອງໂມດູນ
         document.getElementById('total-income').innerText = totalIncome.toLocaleString() + ' ₭';
         document.getElementById('total-pending').innerText = totalPending.toLocaleString() + ' ₭';
         document.getElementById('total-finance-records').innerText = allFinancesData.length + ' ລາຍການ';
@@ -761,7 +617,6 @@ window.loadFinances = async function() {
     }
 }
 
-// 2. ສະແດງຜົນລົງຕາຕະລາງ HTML
 function renderFinancesTable(finances) {
     const tbody = document.getElementById('finances-table-body');
     if (!tbody) return;
@@ -791,7 +646,6 @@ function renderFinancesTable(finances) {
     });
 }
 
-// 3. ຈັດການການສົ່ງຟອມ (ເພີ່ມ ຫຼື ອັບເດດຂໍ້ມູນການເງິນ)
 const financeForm = document.getElementById('finance-form');
 if (financeForm) {
     financeForm.addEventListener('submit', async (e) => {
@@ -804,11 +658,9 @@ if (financeForm) {
 
         try {
             if (docId) {
-                // ອັບເດດຂໍ້ມູນ
                 await updateDoc(doc(db, "finances", docId), { studentName, grade, amount, status });
                 alert('✅ ແກ້ໄຂຂໍ້ມູນການເງິນສຳເລັດ!');
             } else {
-                // ເພີ່ມໃໝ່
                 await addDoc(collection(db, "finances"), { studentName, grade, amount, status });
                 alert('✅ ບັນທຶກຂໍ້ມູນການເງິນສຳເລັດ!');
             }
@@ -821,7 +673,6 @@ if (financeForm) {
     });
 }
 
-// 4. ນຳຂໍ້ມູນມາໃສ່ຟອມເພື່ອແກ້ໄຂ
 window.editFinance = function(docId, studentName, grade, amount, status) {
     document.getElementById('finance-doc-id').value = docId;
     document.getElementById('finance-student-name').value = studentName;
@@ -834,7 +685,6 @@ window.editFinance = function(docId, studentName, grade, amount, status) {
     document.getElementById('cancel-finance-edit-btn').style.display = 'inline-block';
 }
 
-// 5. ລົບຂໍ້ມູນການເງິນ
 window.deleteFinance = async function(docId) {
     if (confirm('ທ່ານຕ້ອງການລົບລາຍການການເງິນນີ້ແທ້ບໍ?')) {
         try {
@@ -848,7 +698,6 @@ window.deleteFinance = async function(docId) {
     }
 }
 
-// 6. ຣີເຊັດຟອມການເງິນ
 window.resetFinanceForm = function() {
     const form = document.getElementById('finance-form');
     if (form) form.reset();
@@ -858,7 +707,6 @@ window.resetFinanceForm = function() {
     document.getElementById('cancel-finance-edit-btn').style.display = 'none';
 }
 
-// 7. ຄົ້ນຫາຂໍ້ມູນການເງິນ
 window.filterFinances = function() {
     const keyword = document.getElementById('search-finance-input').value.toLowerCase();
     const filtered = allFinancesData.filter(f => 
@@ -868,10 +716,14 @@ window.filterFinances = function() {
     renderFinancesTable(filtered);
 }
 
-// ເອີ້ນໃຊ້ຟັງຊັນໂຫຼດຂໍ້ມູນການເງິນຕອນເປີດໜ້າເວັບ
+
+// ==========================================
+// 10. ໂຫຼດຂໍ້ມູນທັງໝົດຕອນເປີດໜ້າເວັບ
+// ==========================================
 window.addEventListener('DOMContentLoaded', () => {
-    window.loadFinances();
+    if (window.loadStudents) window.loadStudents();
+    if (window.loadTeachers) window.loadTeachers();
+    if (window.loadClasses) window.loadClasses();
+    if (window.loadScores) window.loadScores();
+    if (window.loadFinances) window.loadFinances();
 });
-    
-    renderStudentsTable(filtered);
-}
