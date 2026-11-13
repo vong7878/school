@@ -461,6 +461,12 @@
 </div>
         </div>
     </div>
+    <script>
+    // ກວດສອບວ່າ Login ແລ້ວຫຼືຍັງ ຖ້າຍັງ ໃຫ້ດີດກັບໄປໜ້າ login.html
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = 'login.html';
+    }
+</script>
 
     <script type="module" src="script.js"></script>
 </body>
