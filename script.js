@@ -8,7 +8,6 @@ import {
     onSnapshot 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// 🔑 ໃສ່ Firebase Config ຂອງທ່ານທີ່ນີ້
 const firebaseConfig = {
     apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
     authDomain: "my-school-c1104.firebaseapp.com",
@@ -28,33 +27,121 @@ const attendanceCol = collection(db, "attendance");
 
 let allStudents = [];
 let allTeachers = [];
+let currentLoginType = '';
 
-// ================= ລະບົບສະຫຼັບເມນູ =================
-document.querySelectorAll('.nav-links li').forEach(item => {
-    item.addEventListener('click', function() {
-        const targetId = this.getAttribute('data-target');
-        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-        document.getElementById(targetId).classList.add('active');
+// ================= ລະບົບປ໊ອບອັບລັອກອິນ =================
+window.openLoginModal = function(type) {
+    currentLoginType = type;
+    document.getElementById('login-modal').style.display = 'flex';
+    document.getElementById('login-title').innerText = type === 'teacher' ? '👩‍🏫 ລັອກອິນສຳລັບຄູອາຈານ' : '👨‍🎓 ລັອກອິນສຳລັບນັກຮຽນ';
+    document.getElementById('login-input-id').value = '';
+}
 
-        document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
-        this.classList.add('active');
-    });
+window.closeLoginModal = function() {
+    document.getElementById('login-modal').style.display = 'none';
+}
+
+window.logout = function() {
+    document.getElementById('app-container').style.display = 'none';
+    document.getElementById('auth-container').style.display = 'flex';
+}
+
+// ຢືນຢັນການລັອກອິນ
+document.getElementById('btn-confirm-login').addEventListener('click', function() {
+    const inputId = document.getElementById('login-input-id').value.trim();
+
+    if (!inputId) {
+        alert('ກະລຸນາປ້ອນລະຫັດ!');
+        return;
+    }
+
+    if (currentLoginType === 'teacher') {
+        // ກວດສອບລະຫັດຄູ (ຖ້າປ້ອນ T001 ຫຼື ຜ່ານ Firebase)
+        const foundTeacher = allTeachers.find(t => t.id.toLowerCase() === inputId.toLowerCase());
+        
+        // ຜ່ອນຜັນໃຫ້ລັອກອິນໄດ້ ຖ້າພົບໃນລະບົບ ຫຼື ຕັ້ງ Admin ໄວ້
+        if (foundTeacher || inputId === 'admin') {
+            startApp('teacher', foundTeacher ? foundTeacher.name : 'ຜູ້ບໍລິຫານ (Admin)');
+        } else {
+            alert('❌ ບໍ່ພົບລະຫັດຄູໃນລະບົບ! (ລອງເພີ່ມຂໍ້ມູນຄູກ່ອນ)');
+        }
+    } else {
+        // ກວດສອບລະຫັດນັກຮຽນ
+        const foundStudent = allStudents.find(s => s.id.toLowerCase() === inputId.toLowerCase());
+
+        if (foundStudent) {
+            startApp('student', foundStudent);
+        } else {
+            alert('❌ ບໍ່ພົບລະຫັດນັກຮຽນນີ້ໃນລະບົບ!');
+        }
+    }
 });
 
-// ================= ຈັດການຂໍ້ມູນນັກຮຽນ =================
+// ເລີ່ມຕົ້ນລະບົບຫຼັງບ້ານຕາມສິດ
+function startApp(role, userData) {
+    document.getElementById('auth-container').style.display = 'none';
+    document.getElementById('login-modal').style.display = 'none';
+    document.getElementById('app-container').style.display = 'flex';
+
+    const menu = document.getElementById('sidebar-menu');
+    menu.innerHTML = '';
+
+    if (role === 'teacher') {
+        document.getElementById('user-role-title').innerText = '👩‍🏫 ລະບົບຄູ: ' + userData;
+        menu.innerHTML = `
+            <li class="active" data-target="dashboard">📊 ໜ້າຫຼັກ (Dashboard)</li>
+            <li data-target="students">👨‍🎓 ຈັດການນັກຮຽນ</li>
+            <li data-target="teachers">👩‍🏫 ຈັດການຄູອາຈານ</li>
+            <li data-target="attendance">📝 ເຊັກຊື່ມາຮຽນ</li>
+        `;
+        showSection('dashboard');
+    } else {
+        document.getElementById('user-role-title').innerText = '👨‍🎓 ນັກຮຽນ: ' + userData.name;
+        menu.innerHTML = `
+            <li class="active" data-target="student-portal">🎓 ຜົນການຮຽນ</li>
+        `;
+        
+        // ສະແດງຂໍ້ມູນນັກຮຽນ
+        document.getElementById('lbl-stu-name').innerText = userData.name;
+        document.getElementById('lbl-stu-id').innerText = userData.id;
+        document.getElementById('lbl-stu-grade').innerText = userData.grade;
+        
+        showSection('student-portal');
+    }
+
+    // ຜູກ Event ປ່ຽນໜ້າເມນູ
+    document.querySelectorAll('.nav-links li').forEach(item => {
+        item.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            showSection(targetId);
+            document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+}
+
+function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+}
+
+// ================= Real-time Firebase Data =================
 onSnapshot(studentsCol, (snapshot) => {
-    allStudents = snapshot.docs.map(doc => ({
-        docId: doc.id,
-        ...doc.data()
-    }));
+    allStudents = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
     renderStudents(allStudents);
     document.getElementById('total-students').innerText = allStudents.length + ' ຄົນ';
 });
 
+onSnapshot(teachersCol, (snapshot) => {
+    allTeachers = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
+    renderTeachers(allTeachers);
+    document.getElementById('total-teachers').innerText = allTeachers.length + ' ຄົນ';
+});
+
 function renderStudents(data) {
     const tbody = document.getElementById('student-list');
+    if (!tbody) return;
     tbody.innerHTML = '';
-
     data.forEach((student) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -62,71 +149,17 @@ function renderStudents(data) {
             <td>${student.name || ''}</td>
             <td>${student.grade || ''}</td>
             <td>${student.phone || ''}</td>
-            <td>
-                <button class="btn-delete" data-id="${student.docId}">ລຶບ</button>
-            </td>
+            <td><button class="btn-delete" data-id="${student.docId}">ລຶບ</button></td>
         `;
-        tr.querySelector('.btn-delete').addEventListener('click', () => deleteStudent(student.docId));
+        tr.querySelector('.btn-delete').addEventListener('click', () => deleteDoc(doc(db, "students", student.docId)));
         tbody.appendChild(tr);
     });
 }
 
-document.getElementById('student-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = this.querySelector('button');
-    btn.disabled = true;
-    btn.innerText = 'ກຳລັງບັນທຶກ...';
-
-    try {
-        await addDoc(studentsCol, {
-            id: document.getElementById('stu-id').value,
-            name: document.getElementById('stu-name').value,
-            grade: document.getElementById('stu-grade').value,
-            phone: document.getElementById('stu-phone').value,
-            createdAt: new Date()
-        });
-        this.reset();
-    } catch (error) {
-        alert("ເກີດຂໍ້ຜິດພາດ: " + error.message);
-    } finally {
-        btn.disabled = false;
-        btn.innerText = '+ ເພີ່ມຂໍ້ມູນ';
-    }
-});
-
-async function deleteStudent(docId) {
-    if (confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນນັກຮຽນຄົນນີ້?')) {
-        try {
-            await deleteDoc(doc(db, "students", docId));
-        } catch (error) {
-            alert("ລຶບບໍ່ສຳເລັດ: " + error.message);
-        }
-    }
-}
-
-document.getElementById('search-student').addEventListener('keyup', function() {
-    const keyword = this.value.toLowerCase();
-    const filtered = allStudents.filter(s => 
-        (s.name && s.name.toLowerCase().includes(keyword)) || 
-        (s.id && s.id.toLowerCase().includes(keyword))
-    );
-    renderStudents(filtered);
-});
-
-// ================= ຈັດການຂໍ້ມູນຄູອາຈານ =================
-onSnapshot(teachersCol, (snapshot) => {
-    allTeachers = snapshot.docs.map(doc => ({
-        docId: doc.id,
-        ...doc.data()
-    }));
-    renderTeachers(allTeachers);
-    document.getElementById('total-teachers').innerText = allTeachers.length + ' ຄົນ';
-});
-
 function renderTeachers(data) {
     const tbody = document.getElementById('teacher-list');
+    if (!tbody) return;
     tbody.innerHTML = '';
-
     data.forEach((teacher) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -134,169 +167,68 @@ function renderTeachers(data) {
             <td>${teacher.name || ''}</td>
             <td>${teacher.subject || ''}</td>
             <td>${teacher.phone || ''}</td>
-            <td>
-                <button class="btn-delete" data-id="${teacher.docId}">ລຶບ</button>
-            </td>
+            <td><button class="btn-delete" data-id="${teacher.docId}">ລຶບ</button></td>
         `;
-        tr.querySelector('.btn-delete').addEventListener('click', () => deleteTeacher(teacher.docId));
+        tr.querySelector('.btn-delete').addEventListener('click', () => deleteDoc(doc(db, "teachers", teacher.docId)));
         tbody.appendChild(tr);
     });
 }
+
+// Form Submit ຕ່າງໆ
+document.getElementById('student-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    await addDoc(studentsCol, {
+        id: document.getElementById('stu-id').value,
+        name: document.getElementById('stu-name').value,
+        grade: document.getElementById('stu-grade').value,
+        phone: document.getElementById('stu-phone').value
+    });
+    this.reset();
+});
 
 document.getElementById('teacher-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const btn = this.querySelector('button');
-    btn.disabled = true;
-    btn.innerText = 'ກຳລັງບັນທຶກ...';
-
-    try {
-        await addDoc(teachersCol, {
-            id: document.getElementById('tea-id').value,
-            name: document.getElementById('tea-name').value,
-            subject: document.getElementById('tea-subject').value,
-            phone: document.getElementById('tea-phone').value,
-            createdAt: new Date()
-        });
-        this.reset();
-    } catch (error) {
-        alert("ເກີດຂໍ້ຜິດພາດ: " + error.message);
-    } finally {
-        btn.disabled = false;
-        btn.innerText = '+ ເພີ່ມຂໍ້ມູນ';
-    }
-});
-
-async function deleteTeacher(docId) {
-    if (confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນຄູອາຈານທ່ານນີ້?')) {
-        try {
-            await deleteDoc(doc(db, "teachers", docId));
-        } catch (error) {
-            alert("ລຶບບໍ່ສຳເລັດ: " + error.message);
-        }
-    }
-}
-
-// ================= ລະບົບເຊັກຊື່ມາຮຽນ (Attendance) =================
-const attendanceDateInput = document.getElementById('attendance-date');
-attendanceDateInput.valueAsDate = new Date(); // ຕັ້ງຄ່າວັນທີປັດຈຸບັນ
-
-document.getElementById('select-grade-attendance').addEventListener('change', function() {
-    const selectedGrade = this.value;
-    const tbody = document.getElementById('attendance-student-list');
-    const saveBtn = document.getElementById('save-attendance-btn');
-
-    if (!selectedGrade) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">ກະລຸນາເລືອກຊັ້ນຮຽນກ່ອນ...</td></tr>`;
-        saveBtn.style.display = 'none';
-        return;
-    }
-
-    // กรองเฉพาะนักเรียนในชั้นที่เลือก
-    const filteredStudents = allStudents.filter(s => s.grade === selectedGrade);
-
-    if (filteredStudents.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">ບໍ່ມີຂໍ້ມູນນັກຮຽນໃນຊັ້ນ ${selectedGrade} ນີ້</td></tr>`;
-        saveBtn.style.display = 'none';
-        return;
-    }
-
-    tbody.innerHTML = '';
-    filteredStudents.forEach((student) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${student.id}</td>
-            <td>${student.name}</td>
-            <td>${student.grade}</td>
-            <td>
-                <label><input type="radio" name="status_${student.docId}" value="ມາ" checked> ມາ</label> &nbsp;
-                <label><input type="radio" name="status_${student.docId}" value="ຂາດ"> ຂາດ</label> &nbsp;
-                <label><input type="radio" name="status_${student.docId}" value="ລາ"> ລາ</label>
-            </td>
-        `;
-        tbody.appendChild(tr);
+    await addDoc(teachersCol, {
+        id: document.getElementById('tea-id').value,
+        name: document.getElementById('tea-name').value,
+        subject: document.getElementById('tea-subject').value,
+        phone: document.getElementById('tea-phone').value
     });
-
-    saveBtn.style.display = 'block';
+    this.reset();
 });
 
-// บันทึกผลการเช็คชื่อลง Firebase
-document.getElementById('save-attendance-btn').addEventListener('click', async function() {
-    const selectedGrade = document.getElementById('select-grade-attendance').value;
-    const dateStr = attendanceDateInput.value;
-    const filteredStudents = allStudents.filter(s => s.grade === selectedGrade);
+// Attendance Logic
+const attendanceDateInput = document.getElementById('attendance-date');
+if (attendanceDateInput) attendanceDateInput.valueAsDate = new Date();
 
-    if (!dateStr) {
-        alert('ກະລຸນາເລືອກວັນທີ!');
-        return;
-    }
+const gradeSelect = document.getElementById('select-grade-attendance');
+if (gradeSelect) {
+    gradeSelect.addEventListener('change', function() {
+        const selectedGrade = this.value;
+        const tbody = document.getElementById('attendance-student-list');
+        const saveBtn = document.getElementById('save-attendance-btn');
 
-    this.disabled = true;
-    this.innerText = 'ກຳລັງບັນທຶກ...';
-
-    try {
-        for (let student of filteredStudents) {
-            const radios = document.getElementsByName(`status_${student.docId}`);
-            let status = 'ມາ';
-            for (let r of radios) {
-                if (r.checked) {
-                    status = r.value;
-                    break;
-                }
-            }
-
-            // บันทึกลง Collection attendance
-            await addDoc(attendanceCol, {
-                studentId: student.id,
-                studentName: student.name,
-                grade: student.grade,
-                status: status,
-                date: dateStr,
-                createdAt: new Date()
-            });
+        if (!selectedGrade) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">ກະລຸນາເລືອກຊັ້ນຮຽນກ່ອນ...</td></tr>`;
+            saveBtn.style.display = 'none';
+            return;
         }
-        alert('ບັນທຶກການເຊັກຊື່ສຳເລັດຮຽບຮ້ອຍ!');
-    } catch (error) {
-        alert('ເກີດຂໍ້ຜິດພາດ: ' + error.message);
-    } finally {
-        this.disabled = false;
-        this.innerText = '💾 ບັນທຶກການເຊັກຊື່';
-    }
-});
 
-
-
-// ... (ໂຄດ Firebase ແລະ ຟັງຊັນເກົ່າທັງໝົດຍັງຄົງຮັກສາໄວ້ຄືເກົ່າ) ...
-
-// ================= ລະບົບລັອກອິນ ແລະ ເບິ່ງຄະແນນຂອງນັກຮຽນ =================
-
-document.getElementById('btn-student-login').addEventListener('click', function() {
-    const inputId = document.getElementById('login-student-id').value.trim();
-
-    if (!inputId) {
-        alert('ກະລຸນາປ້ອນລະຫັດນັກຮຽນ!');
-        return;
-    }
-
-    // ຄົ້ນຫານັກຮຽນຈາກ list ທີ່ມີຢູ່
-    const foundStudent = allStudents.find(s => s.id.toLowerCase() === inputId.toLowerCase());
-
-    if (foundStudent) {
-        // ຖ້າພົບຂໍ້ມູນ: ສະແດງໜ້າ Dashboard ຄະແນນ
-        document.getElementById('student-login-box').style.display = 'none';
-        document.getElementById('student-dashboard-box').style.display = 'block';
-
-        // ສະແດງຂໍ້ມູນສ່ວນຕົວ
-        document.getElementById('lbl-stu-name').innerText = foundStudent.name;
-        document.getElementById('lbl-stu-id').innerText = foundStudent.id;
-        document.getElementById('lbl-stu-grade').innerText = foundStudent.grade;
-    } else {
-        alert('❌ ບໍ່ພົບລະຫັດນັກຮຽນນີ້ໃນระบบ! ກະລຸນາກວດສອບຄືນ.');
-    }
-});
-
-// ປຸ່ມອອກຈາກລະບົບ (Logout)
-document.getElementById('btn-student-logout').addEventListener('click', function() {
-    document.getElementById('student-dashboard-box').style.display = 'none';
-    document.getElementById('student-login-box').style.display = 'block';
-    document.getElementById('login-student-id').value = '';
-});
+        const filtered = allStudents.filter(s => s.grade === selectedGrade);
+        tbody.innerHTML = '';
+        filtered.forEach(student => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${student.id}</td>
+                    <td>${student.name}</td>
+                    <td>${student.grade}</td>
+                    <td>
+                        <label><input type="radio" name="status_${student.docId}" value="ມາ" checked> ມາ</label> &nbsp;
+                        <label><input type="radio" name="status_${student.docId}" value="ຂາດ"> ຂາດ</label> &nbsp;
+                        <label><input type="radio" name="status_${student.docId}" value="ລາ"> ລາ</label>
+                    </td>
+                </tr>`;
+        });
+        saveBtn.style.display = filtered.length > 0 ? 'block' : 'none';
+    });
+}
