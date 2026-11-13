@@ -1111,3 +1111,36 @@ function toggleSidebar() {
         sidebar.classList.toggle('collapsed');
     }
 }
+// ດັກການກົດປຸ່ມບັນທຶກຕາຕະລາງຮຽນ
+const timetableForm = document.getElementById('timetable-form');
+if (timetableForm) {
+    timetableForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const docId = document.getElementById('timetable-doc-id').value;
+        const room = document.getElementById('timetable-class-room').value;
+        const subject = document.getElementById('timetable-subject').value;
+        const day = document.getElementById('timetable-day').value;
+        const time = document.getElementById('timetable-time').value;
+        const teacher = document.getElementById('timetable-teacher').value;
+
+        try {
+            if (docId) {
+                await updateDoc(doc(db, "timetables", docId), { room, subject, day, time, teacher });
+                alert('✅ ແກ້ໄຂຕາຕະລາງຮຽນສຳເລັດ!');
+            } else {
+                await addDoc(collection(db, "timetables"), {
+                    room, subject, day, time, teacher,
+                    createdAt: serverTimestamp()
+                });
+                alert('✅ ເພີ່ມຕາຕະລາງຮຽນສຳເລັດ!');
+            }
+
+            resetTimetableForm();
+            loadTimetables();
+        } catch (error) {
+            console.error("Error saving timetable: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
+        }
+    });
+}
