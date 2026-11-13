@@ -66,11 +66,88 @@
                 </div>
             </div>
 
-            <!-- 2. Students Management Section -->
-            <div id="section-students" class="content-section" style="display: none;">
-                <h2>👨‍🎓 ຈັດການຂໍ້ມູນນັກຮຽນ</h2>
-                <p>ລະບົບເພີ່ມ, ແກ້ໄຂ, ລຶບ ແລະ ຄົ້ນຫາຂໍ້ມູນນັກຮຽນໃນຖານຂໍ້ມູນ.</p>
+           <!-- 2. Students Management Section -->
+<div id="section-students" class="content-section" style="display: none;">
+    <h2>👨‍🎓 ຈັດການຂໍ້ມູນນັກຮຽນ</h2>
+    <p>ເພີ່ມ, ແກ້ໄຂ, ລົບ, ກອງຊັ້ນຮຽນ ແລະ ຄົ້ນຫາຂໍ້ມູນນັກຮຽນໃນລະບົບ.</p>
+
+    <!-- ຟອມເພີ່ມ / ແກ້ໄຂ ຂໍ້ມູນນັກຮຽນ -->
+    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <h3 id="student-form-title">➕ ເພີ່ມຂໍ້ມູນນັກຮຽນໃໝ່</h3>
+        <form id="student-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+            <input type="hidden" id="student-doc-id">
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະຫັດນັກຮຽນ:</label>
+                <input type="text" id="student-id" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
             </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່-ນາມສະກຸນ:</label>
+                <input type="text" id="student-name" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ:</label>
+                <select id="student-grade" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">-- ເລືອກຊັ້ນຮຽນ --</option>
+                    <option value="ມ.1">ມ.1</option>
+                    <option value="ມ.2">ມ.2</option>
+                    <option value="ມ.3">ມ.3</option>
+                    <option value="ມ.4">ມ.4</option>
+                    <option value="ມ.5">ມ.5</option>
+                    <option value="ມ.6">ມ.6</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ເບີໂທລະສັບ:</label>
+                <input type="text" id="student-phone" placeholder="ຕົວຢ່າງ: 20xxxxxxxx" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ຜູ້ປົກຄອງ:</label>
+                <input type="text" id="student-parent" placeholder="ຊື່-ນາມສະກຸນ ຜູ້ປົກຄອງ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+                <button type="submit" id="save-student-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຂໍ້ມູນ</button>
+                <button type="button" id="cancel-edit-btn" onclick="resetStudentForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ສ່ວນຄົ້ນຫາ, ກອງຊັ້ນຮຽນ ແລະ ຕາຕະລາງສະແດງຜົນ -->
+    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+            <h3>📋 ລາຍຊື່ນັກຮຽນທັງໝົດ</h3>
+            <div style="display: flex; gap: 10px;">
+                <!-- ປຸ່ມກອງຕາມຊັ້ນຮຽນ -->
+                <select id="filter-grade-select" onchange="filterStudents()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">-- ທຸກຊັ້ນຮຽນ --</option>
+                    <option value="ມ.1">ມ.1</option>
+                    <option value="ມ.2">ມ.2</option>
+                    <option value="ມ.3">ມ.3</option>
+                    <option value="ມ.4">ມ.4</option>
+                    <option value="ມ.5">ມ.5</option>
+                    <option value="ມ.6">ມ.6</option>
+                </select>
+                <!-- ຊ່ອງຄົ້ນຫາ -->
+                <input type="text" id="search-student-input" placeholder="🔍 ค้นຫາຊື່ ຫຼື ລະຫັດ..." onkeyup="filterStudents()" style="padding: 8px; width: 220px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ລະຫັດ</th>
+                    <th>ຊື່-ນາມສະກຸນ</th>
+                    <th>ຊັ້ນຮຽນ</th>
+                    <th>ເບີໂທ</th>
+                    <th>ຜູ້ປົກຄອງ</th>
+                    <th>ຈັດການ</th>
+                </tr>
+            </thead>
+            <tbody id="students-table-body">
+                <tr><td colspan="6" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
            <!-- 3. Teachers Management Section -->
 <div id="section-teachers" class="content-section" style="display: none;">
