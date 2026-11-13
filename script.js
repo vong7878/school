@@ -838,34 +838,6 @@ window.applyRolePermissions = function() {
         }
     }
 }
-// 📌 ຜูก Event Submit ໃຫ້ກັບຟອມຫ້ອງຮຽນໂດຍກົງ (ແກ້ໄຂບັນຫາ addClass is not defined)
-const classFormElement = document.getElementById('class-form');
-if (classFormElement) {
-    classFormElement.addEventListener('submit', async function(e) {
-        e.preventDefault(); // ປ้องกันບໍ່ໃຫ້ໜ້າເວັບເດັ້ງ/ຣີເຟຣຊ
-        
-        const docId = document.getElementById('class-doc-id') ? document.getElementById('class-doc-id').value : '';
-        const level = document.getElementById('class-level') ? document.getElementById('class-level').value : '';
-        const name = document.getElementById('class-name') ? document.getElementById('class-name').value : '';
-        const teacher = document.getElementById('class-teacher') ? document.getElementById('class-teacher').value : '';
-
-        try {
-            if (docId) {
-                await updateDoc(doc(db, "classes", docId), { level, name, teacher });
-                alert('✅ ແກ້ໄຂຂໍ້ມູນຫ້ອງຮຽນສຳເລັດ!');
-            } else {
-                await addDoc(collection(db, "classes"), { level, name, teacher, createdAt: serverTimestamp() });
-                alert('✅ ເພີ່ມຫ້ອງຮຽນສຳເລັດ!');
-            }
-            window.resetClassForm();
-            window.loadClasses();
-        } catch (error) {
-            console.error("Error saving class: ", error);
-            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
-        }
-    });
-}
-
 
 
     
