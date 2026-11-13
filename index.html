@@ -16,8 +16,10 @@
             <p style="color: #64748b; margin-bottom: 30px;">ກະລຸນາເລືອກປະເພດຜູ້ໃຊ້ງານເພື່ອເຂົ້າສູ່ລະບົບ</p>
             
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <button onclick="openLoginModal('teacher')" class="btn-add" style="padding: 12px; font-size: 16px;">👩‍🏫 ເຂົ້າສູ່ລະບົບສຳລັບຄູອາຈານ</button>
-                <button onclick="openLoginModal('student')" class="btn-add" style="padding: 12px; font-size: 16px; background-color: #3b82f6;">👨‍🎓 ເຂົ້າສູ່ລະບົບສຳລັບນັກຮຽນ</button>
+               <div style="display: flex; flex-direction: column; gap: 15px;">
+    <button id="btn-open-teacher-login" class="btn-add" style="padding: 12px; font-size: 16px;">👩‍🏫 ເຂົ້າສູ່ລະບົບສຳລັບຄູອາຈານ</button>
+    <button id="btn-open-student-login" class="btn-add" style="padding: 12px; font-size: 16px; background-color: #3b82f6;">👨‍🎓 ເຂົ້າສູ່ລະບົບສຳລັບນັກຮຽນ</button>
+</div>
             </div>
         </div>
     </div>
@@ -29,7 +31,7 @@
             <input type="text" id="login-input-id" placeholder="ປ້ອນລະຫັດປະຈຳຕົວ..." style="width: 100%; margin-bottom: 15px;" required>
             <div style="display: flex; gap: 10px;">
                 <button id="btn-confirm-login" class="btn-add" style="flex: 1;">ຢືນຢັນເຂົ້າສູ່ລະບົບ</button>
-                <button onclick="closeLoginModal()" class="btn-delete" style="flex: 1;">ກັບຄືນ</button>
+                <button id="btn-close-modal" class="btn-delete" style="flex: 1;">ກັບຄືນ</button>
             </div>
         </div>
     </div>
