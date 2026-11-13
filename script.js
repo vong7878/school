@@ -1068,3 +1068,157 @@ window.viewClassStudents = async function(classId, className) {
 window.addEventListener('DOMContentLoaded', () => {
     window.loadClasses();
 });
+// ==========================================
+// 7. ໂມດູນຈັດການຫ້ອງຮຽນ (Classes Management - Firebase v10 Modular)
+// ==========================================
+window.loadClasses = async function() {
+    const tbody = document.getElementById('classes-table-body');
+    if (!tbody) return;
+    
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
+
+    try {
+        const querySnapshot = await getDocs(collection(db, "classes"));
+        tbody.innerHTML = '';
+
+        if (querySnapshot.empty) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນຫ້ອງຮຽນໃນລະບົບ</td></tr>`;
+            return;
+        }
+
+        querySnapshot.forEach((documentSnapshot) => {
+            const data = documentSnapshot.data();
+            const docId = documentSnapshot.id;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${data.level || data.grade || '-'}</td>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: #007bff;">${data.name || data.className || '-'}</td>
+                <td style="border: 1px solid #ddd; padding: 10px;">${data.teacher || ''}</td>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: center;" class="action-col">
+                    <button onclick="viewClassStudents('${docId}', '${data.name || data.className || ''}')" style="background: #17a2b8; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">👥 ເບິ່ງນັກຮຽນ</button>
+                    <button onclick="editClass('${docId}', '${data.level || data.grade || ''}', '${data.name || data.className || ''}', '${data.teacher || ''}')" style="background: #ffc107; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
+                    <button onclick="deleteClass('${docId}')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">🗑️</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // 🎯 ຖ້າເປັນ Student ໃຫ້ເຊື່ອງຟອມ ແລະ ປຸ່ມຈັດການ
+        const role = localStorage.getItem('userRole');
+        if (role === 'student') {
+            const formContainer = document.getElementById('class-form-container');
+            if (formContainer) formContainer.style.display = 'none';
+        }
+
+    } catch (error) {
+        console.error("Error loading classes: ", error);
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
+    }
+}
+
+const classForm = document.getElementById('class-form');
+if (classForm) {
+    classForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const docId = document.getElementById('class-doc-id') ? document.getElementById('class-doc-id').value : '';
+        const level = document.getElementById('class-level') ? document.getElementById('class-level').value : '';
+        const name = document.getElementById('class-name') ? document.getElementById('class-name').value : '';
+        const teacher = document.getElementById('class-teacher') ? document.getElementById('class-teacher').value : '';
+
+        try {
+            if (docId) {
+                await updateDoc(doc(db, "classes", docId), { level, name, teacher });
+                alert('✅ ແກ້ໄຂຂໍ້ມູນຫ້ອງຮຽນສຳເລັດ!');
+            } else {
+                await addDoc(collection(db, "classes"), { level, name, teacher });
+                alert('✅ ເພີ່ມຫ້ອງຮຽນສຳເລັດ!');
+            }
+            window.resetClassForm();
+            window.loadClasses();
+        } catch (error) {
+            console.error("Error saving class: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + error.message);
+        }
+    });
+}
+
+window.editClass = function(docId, level, name, teacher) {
+    if(document.getElementById('class-doc-id')) document.getElementById('class-doc-id').value = docId;
+    if(document.getElementById('class-level')) document.getElementById('class-level').value = level;
+    if(document.getElementById('class-name')) document.getElementById('class-name').value = name;
+    if(document.getElementById('class-teacher')) document.getElementById('class-teacher').value = teacher;
+    
+    const saveBtn = document.getElementById('save-class-btn');
+    const cancelBtn = document.getElementById('cancel-class-edit-btn');
+    if(saveBtn) saveBtn.innerText = 'ອັບເດດຫ້ອງ';
+    if(cancelBtn) cancelBtn.style.display = 'inline-block';
+}
+
+window.deleteClass = async function(docId) {
+    if (confirm('ທ່ານຕ້ອງການລົບຫ້ອງຮຽນນີ້ແທ້ບໍ?')) {
+        try {
+            await deleteDoc(doc(db, "classes", docId));
+            alert('✅ ລົບຫ້ອງຮຽນສຳເລັດ!');
+            window.loadClasses();
+        } catch (error) {
+            console.error("Error deleting class: ", error);
+            alert('❌ ເກີດຂໍ້ຜິດພາດໃນການລົບ');
+        }
+    }
+}
+
+window.resetClassForm = function() {
+    const form = document.getElementById('class-form');
+    if (form) form.reset();
+    if(document.getElementById('class-doc-id')) document.getElementById('class-doc-id').value = '';
+    const saveBtn = document.getElementById('save-class-btn');
+    const cancelBtn = document.getElementById('cancel-class-edit-btn');
+    if(saveBtn) saveBtn.innerText = 'ບັນທຶກຫ້ອງ';
+    if(cancelBtn) cancelBtn.style.display = 'none';
+}
+
+window.viewClassStudents = async function(classId, className) {
+    try {
+        const querySnapshot = await getDocs(collection(db, 'students'));
+        let studentListHtml = `<h3>👥 ລາຍຊື່ນັກຮຽນໃນຫ້ອງ: ${className}</h3>`;
+        
+        let foundCount = 0;
+        let listHtml = `<ul style="padding-left: 20px; text-align: left;">`;
+        
+        querySnapshot.forEach((docSnap) => {
+            const sData = docSnap.data();
+            if (sData.classId === classId || sData.grade === className) {
+                foundCount++;
+                listHtml += `<li>${sData.name || 'ບໍ່ມີຊື່'} (ລະຫັດ: ${sData.id || sData.studentId || '-'})</li>`;
+            }
+        });
+        listHtml += `</ul>`;
+
+        if (foundCount === 0) {
+            studentListHtml += `<p>ຍັງບໍ່ມີນັກຮຽນໃນຫ້ອງນີ້.</p>`;
+        } else {
+            studentListHtml += listHtml;
+        }
+
+        let modal = document.getElementById('student-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'student-modal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;';
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = `
+            <div style="background: white; padding: 25px; border-radius: 8px; width: 400px; max-width: 90%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                ${studentListHtml}
+                <button onclick="document.getElementById('student-modal').style.display='none'" style="margin-top: 15px; background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; width: 100%;">ປິດ</button>
+            </div>
+        `;
+        modal.style.display = 'flex';
+
+    } catch (error) {
+        console.error('Error loading students: ', error);
+        alert('❌ ບໍ່ສາມາດໂຫຼດລາຍຊື່ນັກຮຽນໄດ້');
+    }
+}
