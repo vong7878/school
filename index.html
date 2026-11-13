@@ -549,6 +549,21 @@
         window.location.href = 'login.html';
     }
 </script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const userName = localStorage.getItem('userName') || 'ຜູ້ໃຊ້ງານ';
+            const userRole = localStorage.getItem('userRole') || 'guest';
+
+            document.getElementById('user-display-name').innerText = userName;
+            document.getElementById('user-display-role').innerText = userRole;
+        });
+
+        function logout() {
+            localStorage.clear();
+            alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
+            window.location.href = 'login.html';
+        }
+    </script>
 
     <script type="module" src="script.js"></script>
 </body>
