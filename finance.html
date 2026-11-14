@@ -94,7 +94,6 @@
             color: #f8fafc;
         }
 
-        /* ແຈ້ງເຕືອນຈ່າຍແລ້ວສຳລັບເທີມນີ້ */
         .paid-banner {
             background: rgba(22, 163, 74, 0.16);
             border: 1px solid #22c55e;
@@ -106,7 +105,6 @@
             display: none;
         }
 
-        /* ແຈ້ງເບີໂທ Admin ຖ້າອະນຸມັດຊ້າ */
         .admin-contact-box {
             background: #0f172a;
             border: 1px dashed #60a5fa;
@@ -130,6 +128,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 16px;
+            align-items: start;
         }
         .qr-box {
             background: #0f172a;
@@ -139,13 +138,22 @@
             text-align: center;
         }
         .qr-box img {
-            width: 170px;
-            height: 170px;
+            width: 175px;
+            height: 175px;
             object-fit: contain;
             border-radius: 10px;
             background: #fff;
             padding: 8px;
             margin-bottom: 10px;
+        }
+        .qr-admin-controls {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #334155;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .form-grid {
@@ -181,8 +189,10 @@
         }
         button:hover { opacity: 0.92; }
         .btn-primary { background: #2563eb; color: #fff; }
+        .btn-add { background: #16a34a; color: #fff; padding: 6px 12px; font-size: 12px; }
+        .btn-edit { background: #eab308; color: #0f172a; padding: 5px 9px; font-size: 12px; }
         .btn-approve { background: #16a34a; color: #fff; padding: 5px 10px; font-size: 12px; }
-        .btn-reject { background: #dc2626; color: #fff; padding: 5px 10px; font-size: 12px; }
+        .btn-del { background: #dc2626; color: #fff; padding: 5px 10px; font-size: 12px; }
         .btn-copy { background: #334155; color: #f8fafc; padding: 6px 11px; font-size: 12px; }
 
         .table-wrap {
@@ -247,6 +257,7 @@
             font-size: 12px;
             font-weight: 600;
         }
+        .admin-only-hide { display: none !important; }
         .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
     </style>
 </head>
@@ -265,24 +276,40 @@
         </div>
     </div>
 
-    <!-- ແຈ້ງວ່າໄດ້ຈ່າຍຄ່າຮຽນສຳລັບເທີມນີ້ໄປແລ້ວ (ສະແດງເມື່ອອະນຸມັດແລ້ວ) -->
+    <!-- ແຈ້ງວ່າໄດ້ຈ່າຍຄ່າຮຽນສຳລັບເທີມນີ້ໄປແລ້ວ -->
     <div class="paid-banner" id="paidTermBanner"></div>
 
-    <!-- ໜ້າ QR Code ກັບ ຕາຕະລາງຄ່າຮຽນ (ຈະຫາຍໄປເມື່ອອະນຸມັດເທີມນີ້ແລ້ວ) -->
+    <!-- ໜ້າ QR Code ກັບ ຕາຕະລາງຄ່າຮຽນ -->
     <section class="card" id="qr-and-fee-section">
         <div class="card-header">
             <h2>🏦 QR Code ຊຳລະຄ່າຮຽນ &amp; ຕາຕະລາງຄ່າຮຽນ</h2>
-            <select id="termSelect" style="width: auto;" onchange="refreshFinanceView()">
-                <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
-                <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
-            </select>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <select id="termSelect" style="width: auto;" onchange="refreshFinanceView()">
+                    <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
+                    <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
+                </select>
+                <button type="button" class="btn-add admin-action" onclick="addFeeItem()">➕ ເພີ່ມຄ່າຮຽນ</button>
+            </div>
         </div>
+
         <div class="qr-fee-grid">
             <div class="qr-box">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SCHOOL-TUITION-PAYMENT" alt="QR Code ຊຳລະຄ່າຮຽນ" />
+                <img id="schoolQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SCHOOL-TUITION-PAYMENT" alt="QR Code ຊຳລະຄ່າຮຽນ" />
                 <div><strong>ສະແກນ QR Code ເພື່ອໂອນຄ່າຮຽນ</strong></div>
                 <div class="note-text">ບັນຊີໂຮງຮຽນ • ແນບສະຫຼິບດ້ານລຸ່ມຫຼັງໂອນສຳເລັດ</div>
+
+                <!-- ປ່ຽນ QR Code ສຳລັບ Admin -->
+                <div class="qr-admin-controls admin-action">
+                    <label for="qrFileInput">🔄 ປ່ຽນຮູບ QR Code (ອັບໂຫຼດໄຟລ໌ຮູບ)</label>
+                    <input type="file" id="qrFileInput" accept="image/*" onchange="changeQrFromFile(event)" />
+                    <label for="qrUrlInput">ຫຼື ວາງລິ້ງຮູບ QR Code</label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="qrUrlInput" placeholder="https://..." />
+                        <button type="button" class="btn-primary" onclick="changeQrFromUrl()">ບັນທຶກ</button>
+                    </div>
+                </div>
             </div>
+
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -291,6 +318,7 @@
                             <th>ຫ້ອງ</th>
                             <th>ເທີມ</th>
                             <th>ຈຳນວນເງິນ</th>
+                            <th class="admin-action" style="width:140px;">ຈັດການ</th>
                         </tr>
                     </thead>
                     <tbody id="feeTableBody"></tbody>
@@ -299,7 +327,7 @@
         </div>
     </section>
 
-    <!-- ຫ້ອງຍ່ອຍອັບໂຫຼດສະຫຼິບການໂອນ ເພື່ອໃຫ້ Admin ອະນຸມັດ -->
+    <!-- ຫ້ອງຍ່ອຍອັບໂຫຼດສະຫຼິບການໂອນ -->
     <section class="card" id="upload-slip-subroom">
         <div class="card-header">
             <h2>📤 ຫ້ອງຍ່ອຍ: ອັບໂຫຼດສະຫຼິບການໂອນ</h2>
@@ -326,7 +354,6 @@
             <button type="submit" class="btn-primary">📤 ສົ່ງສະຫຼິບໃຫ້ Admin ອະນຸມັດ</button>
         </form>
 
-        <!-- ແຈ້ງເບີໂທ Admin ໃຫ້ນັກຮຽນ ຖ້າອະນຸມັດຊ້າ -->
         <div class="admin-contact-box" id="adminDelayContactBox">
             <div>
                 ⏳ <strong>ຖ້າ Admin ອະນຸມັດຊ້າ:</strong> ສາມາດຕິດຕໍ່ສອບຖາມ Admin ໄດ້ໂດຍກົງທີ່ເບີໂທ:
@@ -336,10 +363,10 @@
         </div>
     </section>
 
-    <!-- ຕາຕະລາງກວດສອບສະຫຼິບລໍຖ້າອະນຸມັດ (ສຳລັບ Admin ອະນຸມັດ/ປະຕິເສດ) -->
+    <!-- ຕາຕະລາງກວດສອບໂພດ/ລາຍການທີ່ລາຍງານສະຫຼິບ (Admin ອະນຸມັດ ຫຼື ລົບໄດ້) -->
     <section class="card" id="pending-slips-section">
         <div class="card-header">
-            <h2>🕵️‍♂️ ລາຍການສະຫຼິບການໂອນ (ລໍຖ້າກວດສອບ / ອະນຸມັດ)</h2>
+            <h2>🕵️‍♂️ ລາຍການສະຫຼິບການໂອນທີ່ລາຍງານເຂົ້າມາ</h2>
         </div>
         <div class="table-wrap">
             <table>
@@ -352,7 +379,7 @@
                         <th>ເທີມ</th>
                         <th>ຈຳນວນເງິນ</th>
                         <th>ສະຖານະ</th>
-                        <th id="adminApproveCol">ອະນຸມັດ</th>
+                        <th class="admin-action" style="width: 170px;">ອະນຸມັດ / ລົບ</th>
                     </tr>
                 </thead>
                 <tbody id="pendingSlipsBody"></tbody>
@@ -360,7 +387,7 @@
         </div>
     </section>
 
-    <!-- ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ (ນັກຮຽນ ແລະ ຄູ ເຫັນສະເພາະນັກຮຽນນັ້ນໆທີ່ອະນຸມັດແລ້ວ) -->
+    <!-- ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ -->
     <section class="card" id="paid-history-section">
         <div class="card-header">
             <h2 id="paidHistoryTitle">✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ</h2>
@@ -393,7 +420,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, addDoc, updateDoc, doc
+        getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = window.FIREBASE_CONFIG || null;
@@ -403,10 +430,22 @@
         db = getFirestore(app);
     }
 
+    function getNormalizedRole() {
+        const raw = (
+            localStorage.getItem("userRole") ||
+            localStorage.getItem("role") ||
+            localStorage.getItem("user_role") ||
+            "student"
+        ).trim().toLowerCase();
+        if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
+        if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
+        return "student";
+    }
+
     const ADMIN_PHONE = localStorage.getItem("adminContactPhone") || "020-5555-8899";
     document.getElementById("adminPhoneText").textContent = ADMIN_PHONE;
 
-    const role = (localStorage.getItem("userRole") || "student").toLowerCase();
+    const role = getNormalizedRole();
     const userGrade = localStorage.getItem("userGrade") || "ມ.5";
     const userName = localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
     const isAdmin = role === "admin";
@@ -417,13 +456,139 @@
     document.getElementById("currentUserRole").textContent = role.toUpperCase();
     document.getElementById("currentUserGrade").textContent = userGrade;
 
-    const feeItems = [
-        { item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.5", amount: "1,500,000 ກີບ" },
-        { item: "ຄ່າບຳລຸງຫ້ອງຮຽນ & ອຸປະກອນ", grade: "ມ.5", amount: "200,000 ກີບ" },
-        { item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.6", amount: "1,600,000 ກີບ" },
-        { item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.7", amount: "1,700,000 ກີບ" }
+    // 1. ປ່ຽນ QR Code ໂດຍ Admin
+    const DEFAULT_QR = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SCHOOL-TUITION-PAYMENT";
+    let schoolQrUrl = localStorage.getItem("school_qr_code_url") || DEFAULT_QR;
+    document.getElementById("schoolQrImage").src = schoolQrUrl;
+
+    async function saveQrCodeUrl(newUrl) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
+        schoolQrUrl = newUrl;
+        localStorage.setItem("school_qr_code_url", schoolQrUrl);
+        document.getElementById("schoolQrImage").src = schoolQrUrl;
+
+        if (db) {
+            try {
+                await setDoc(doc(db, "finance_settings", "qr_code"), { url: schoolQrUrl }, { merge: true });
+            } catch (err) {
+                console.error("Firestore QR save error:", err);
+            }
+        }
+        alert("✅ ປ່ຽນ QR Code ສຳເລັດແລ້ວ!");
+    }
+
+    window.changeQrFromFile = async function (e) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const dataUrl = await readFileAsDataUrl(file);
+        await saveQrCodeUrl(dataUrl);
+        e.target.value = "";
+    };
+
+    window.changeQrFromUrl = async function () {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
+        const val = (document.getElementById("qrUrlInput").value || "").trim();
+        if (!val) return alert("ກະລຸນາປ້ອນລິ້ງຮູບ QR Code ກ່ອນ!");
+        await saveQrCodeUrl(val);
+        document.getElementById("qrUrlInput").value = "";
+    };
+
+    // 2. ລາຍການຄ່າຮຽນ (Admin ເພີ່ມ / ແກ້ໄຂ / ລົບ ໄດ້)
+    let feeItems = JSON.parse(localStorage.getItem("school_fee_items") || "null") || [
+        { id: "FEE-1", item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.5", term: "ເທີມ 1 / 2026-2027", amount: "1,500,000 ກີບ" },
+        { id: "FEE-2", item: "ຄ່າບຳລຸງຫ້ອງຮຽນ & ອຸປະກອນ", grade: "ມ.5", term: "ເທີມ 1 / 2026-2027", amount: "200,000 ກີບ" },
+        { id: "FEE-3", item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.6", term: "ເທີມ 1 / 2026-2027", amount: "1,600,000 ກີບ" }
     ];
 
+    function saveFeeItemsLocal() {
+        localStorage.setItem("school_fee_items", JSON.stringify(feeItems));
+    }
+
+    window.addFeeItem = async function () {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມຄ່າຮຽນໄດ້!");
+        const item = prompt("ປ້ອນຊື່ລາຍການຄ່າຮຽນ:", "ຄ່າຮຽນປະຈຳເທີມ");
+        if (!item || !item.trim()) return;
+        const grade = prompt("ປ້ອນຫ້ອງ (ເຊັ່ນ ມ.5):", userGrade);
+        if (!grade || !grade.trim()) return;
+        const term = document.getElementById("termSelect").value || "ເທີມ 1 / 2026-2027";
+        const amount = prompt("ປ້ອນຈຳນວນເງິນ (ເຊັ່ນ 1,500,000 ກີບ):", "1,500,000 ກີບ");
+        if (!amount || !amount.trim()) return;
+
+        const newFee = {
+            id: "FEE-" + Date.now(),
+            item: item.trim(),
+            grade: grade.trim(),
+            term: term.trim(),
+            amount: amount.trim()
+        };
+
+        if (db) {
+            try {
+                const ref = await addDoc(collection(db, "fee_items"), newFee);
+                newFee.firestoreId = ref.id;
+            } catch (err) {
+                console.error("Firestore fee add error:", err);
+            }
+        }
+
+        feeItems.push(newFee);
+        saveFeeItemsLocal();
+        renderFeeTable();
+    };
+
+    window.editFeeItem = async function (id) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂຄ່າຮຽນໄດ້!");
+        const target = feeItems.find((f) => f.id === id);
+        if (!target) return;
+
+        const item = prompt("ແກ້ໄຂຊື່ລາຍການຄ່າຮຽນ:", target.item);
+        if (item === null || !item.trim()) return;
+        const grade = prompt("ແກ້ໄຂຫ້ອງ:", target.grade);
+        if (grade === null || !grade.trim()) return;
+        const amount = prompt("ແກ້ໄຂຈຳນວນເງິນ:", target.amount);
+        if (amount === null || !amount.trim()) return;
+
+        target.item = item.trim();
+        target.grade = grade.trim();
+        target.amount = amount.trim();
+
+        if (db && target.firestoreId) {
+            try {
+                await updateDoc(doc(db, "fee_items", target.firestoreId), {
+                    item: target.item,
+                    grade: target.grade,
+                    amount: target.amount
+                });
+            } catch (err) {
+                console.error("Firestore fee update error:", err);
+            }
+        }
+
+        saveFeeItemsLocal();
+        renderFeeTable();
+    };
+
+    window.deleteFeeItem = async function (id) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບຄ່າຮຽນໄດ້!");
+        const target = feeItems.find((f) => f.id === id);
+        if (!target) return;
+        if (!confirm(`ຢືນຢັນລົບລາຍການຄ່າຮຽນ "${target.item}"?`)) return;
+
+        if (db && target.firestoreId) {
+            try {
+                await deleteDoc(doc(db, "fee_items", target.firestoreId));
+            } catch (err) {
+                console.error("Firestore fee delete error:", err);
+            }
+        }
+
+        feeItems = feeItems.filter((f) => f.id !== id);
+        saveFeeItemsLocal();
+        renderFeeTable();
+    };
+
+    // 3. ລາຍການສະຫຼິບ ແລະ ການຊຳລະ
     let paymentRecords = JSON.parse(localStorage.getItem("school_payment_records") || "null") || [];
 
     function savePaymentsLocal() {
@@ -456,7 +621,6 @@
         const amountVal = Number(document.getElementById("slipAmount").value) || 0;
         const fileInput = document.getElementById("slipFile");
         const file = fileInput.files && fileInput.files[0];
-
         if (!file) return alert("ກະລຸນາເລືອກຮູບສະຫຼິບການໂອນກ່ອນ!");
 
         const slipDataUrl = await readFileAsDataUrl(file);
@@ -512,26 +676,32 @@
         refreshFinanceView();
     };
 
-    window.rejectSlip = async function (recId) {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປະຕິເສດໄດ້!");
+    // Admin ລົບໂພດ / ລາຍການທີ່ລາຍງານສະຫຼິບ
+    window.deleteSlipRecord = async function (recId) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບລາຍການສະຫຼິບໄດ້!");
         const target = paymentRecords.find((r) => r.id === recId);
         if (!target) return;
-
-        target.status = "rejected";
+        if (!confirm(`ຢືນຢັນລົບລາຍການລາຍງານສະຫຼິບຂອງ "${target.studentName}" (${target.term})?`)) return;
 
         if (db && target.firestoreId) {
             try {
-                await updateDoc(doc(db, "payment_records", target.firestoreId), {
-                    status: "rejected"
-                });
+                await deleteDoc(doc(db, "payment_records", target.firestoreId));
             } catch (err) {
-                console.error("Firestore reject error:", err);
+                console.error("Firestore slip delete error:", err);
             }
         }
 
+        paymentRecords = paymentRecords.filter((r) => r.id !== recId);
         savePaymentsLocal();
         refreshFinanceView();
     };
+
+    function applyAdminVisibility() {
+        if (isAdmin) return;
+        document.querySelectorAll(".admin-action").forEach((el) => {
+            el.classList.add("admin-only-hide");
+        });
+    }
 
     function isTermApprovedForStudent(studentName, term) {
         return paymentRecords.some(
@@ -543,27 +713,35 @@
         const tbody = document.getElementById("feeTableBody");
         const selectedTerm = document.getElementById("termSelect").value;
         const filtered = feeItems.filter((f) => f.grade === userGrade || !isStudent);
+        const cols = isAdmin ? 5 : 4;
+
+        if (!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ຍັງບໍ່ມີລາຍການຄ່າຮຽນ</td></tr>`;
+            applyAdminVisibility();
+            return;
+        }
 
         tbody.innerHTML = filtered.map((f) => `
             <tr>
                 <td>${esc(f.item)}</td>
                 <td>${esc(f.grade)}</td>
-                <td>${esc(selectedTerm)}</td>
+                <td>${esc(f.term || selectedTerm)}</td>
                 <td><strong>${esc(f.amount)}</strong></td>
+                ${isAdmin ? `
+                    <td>
+                        <div class="actions">
+                            <button type="button" class="btn-edit" onclick="editFeeItem('${esc(f.id)}')">ແກ້ໄຂ</button>
+                            <button type="button" class="btn-del" onclick="deleteFeeItem('${esc(f.id)}')">ລົບ</button>
+                        </div>
+                    </td>
+                ` : ""}
             </tr>
         `).join("");
+        applyAdminVisibility();
     }
 
     function renderPendingSlips() {
         const tbody = document.getElementById("pendingSlipsBody");
-        const approveCol = document.getElementById("adminApproveCol");
-
-        if (!isAdmin) {
-            approveCol.style.display = "none";
-        } else {
-            approveCol.style.display = "";
-        }
-
         const visibleRows = isAdmin
             ? paymentRecords
             : paymentRecords.filter((r) => r.studentName === userName);
@@ -571,6 +749,7 @@
         const cols = isAdmin ? 8 : 7;
         if (!visibleRows.length) {
             tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ຍັງບໍ່ມີລາຍການສະຫຼິບການໂອນ</td></tr>`;
+            applyAdminVisibility();
             return;
         }
 
@@ -594,13 +773,14 @@
                         <td>
                             <div class="actions">
                                 <button type="button" class="btn-approve" onclick="approveSlip('${esc(r.id)}')">ອະນຸມັດ</button>
-                                <button type="button" class="btn-reject" onclick="rejectSlip('${esc(r.id)}')">ປະຕິເສດ</button>
+                                <button type="button" class="btn-del" onclick="deleteSlipRecord('${esc(r.id)}')">ລົບ</button>
                             </div>
                         </td>
                     ` : ""}
                 </tr>
             `;
         }).join("");
+        applyAdminVisibility();
     }
 
     function populateTeacherStudentDropdown() {
@@ -702,24 +882,29 @@
                 uploadSubroom.style.display = "none";
             }
         }
+
+        applyAdminVisibility();
     };
 
-    async function loadPaymentsFromFirestore() {
+    async function loadFinanceFromFirestore() {
         if (!db) return;
         try {
-            const snap = await getDocs(collection(db, "payment_records"));
-            if (!snap.empty) {
-                paymentRecords = snap.docs.map((d) => ({
-                    id: d.data().id || d.id,
-                    firestoreId: d.id,
-                    ...d.data()
-                }));
-                savePaymentsLocal();
-                refreshFinanceView();
+            const feeSnap = await getDocs(collection(db, "fee_items"));
+            if (!feeSnap.empty) {
+                feeItems = feeSnap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
+                saveFeeItemsLocal();
             }
-        } catch (err) {
-            console.warn("ບໍ່ໄດ້ໂຫຼດ payment_records ຈາກ Firestore:", err.message);
-        }
+        } catch (err) {}
+
+        try {
+            const paySnap = await getDocs(collection(db, "payment_records"));
+            if (!paySnap.empty) {
+                paymentRecords = paySnap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
+                savePaymentsLocal();
+            }
+        } catch (err) {}
+
+        refreshFinanceView();
     }
 
     function esc(str) {
@@ -730,39 +915,9 @@
             .replace(/"/g, "&quot;");
     }
 
+    applyAdminVisibility();
     refreshFinanceView();
-    loadPaymentsFromFirestore();
-    function getNormalizedUserRole() {
-    let rawRole =
-        localStorage.getItem("userRole") ||
-        localStorage.getItem("role") ||
-        localStorage.getItem("user_role") ||
-        "";
-
-    // ກໍລະນີເກັບຂໍ້ມູນຜູ້ໃຊ້ເປັນ JSON object ໃນ localStorage
-    if (!rawRole) {
-        const possibleJsonKeys = ["currentUser", "loggedInUser", "userData", "user"];
-        for (const k of possibleJsonKeys) {
-            try {
-                const parsed = JSON.parse(localStorage.getItem(k) || "null");
-                if (parsed && typeof parsed === "object" && parsed.role) {
-                    rawRole = parsed.role;
-                    break;
-                }
-            } catch (e) {}
-        }
-    }
-
-    const clean = String(rawRole).trim().toLowerCase();
-
-    if (["admin", "administrator", "superadmin", "ແອັດມິນ", "แอดมิน"].includes(clean)) {
-        return "admin";
-    }
-    if (["teacher", "instructor", "ຄູ", "ຄູອາຈານ", "ครู", "อาจารย์"].includes(clean)) {
-        return "teacher";
-    }
-    return "student";
-}
+    loadFinanceFromFirestore();
 </script>
 </body>
 </html>
