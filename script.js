@@ -1,7 +1,8 @@
 // 1. ນຳເຂົ້າ Firebase SDK ທີ່ຈຳເປັນ
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// ໃຫ້ແນ່ໃຈວ່າບໍ່ມີ } ຕົກຄ້າງຢູ່ບ່ອນນີ້
 // 2. ຕັ້ງຄ່າ Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
