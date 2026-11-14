@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ລະບົບຈັດການຫ້ອງຮຽນ, ລາຍຊື່ ແລະ ຕາຕະລາງຮຽນ</title>
+    <title>ລະບົບຈັດການຫ້ອງຮຽນ, ລາຍຊື່ ແລະ ຕາຕະລາງຮຽນ (Admin)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
@@ -12,24 +12,29 @@
         h2 { color: #007bff; margin-bottom: 5px; text-align: center; }
         .subtitle { text-align: center; color: #666; margin-bottom: 20px; font-size: 14px; }
         
-        /* Sub-menu Tabs */
         .tab-menu { display: flex; gap: 10px; border-bottom: 2px solid #dee2e6; margin-bottom: 20px; padding-bottom: 10px; }
         .tab-btn { padding: 10px 20px; background: #e9ecef; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: #495057; transition: 0.2s; }
         .tab-btn.active { background: #007bff; color: white; }
         
-        /* Tab Content Sections */
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .filter-box { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; background: #f8f9fa; padding: 15px; border-radius: 6px; }
-        .filter-box label { font-weight: bold; }
-        .filter-box select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; flex: 1; min-width: 200px; font-size: 14px; }
+        .filter-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 6px; flex-wrap: wrap; gap: 10px; }
+        .filter-left { display: flex; gap: 15px; align-items: center; flex: 1; }
+        .filter-left select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
         
+        .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-add:hover { background: #218838; }
+
         table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
         th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; font-size: 14px; }
         th { background: #f8f9fa; font-weight: bold; color: #495057; }
         td.center, th.center { text-align: center; }
         
+        .action-btn { padding: 5px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 3px; }
+        .btn-edit { background: #ffc107; color: #000; }
+        .btn-del { background: #dc3545; color: white; }
+
         .back-link { display: inline-block; margin-top: 15px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
         .back-link:hover { text-decoration: underline; }
         .total-badge { background: #e7f5ff; color: #007bff; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; display: inline-block; margin-bottom: 15px; }
@@ -45,95 +50,79 @@
 
     <div class="container">
         <h2>🏫 ສູນລວມຈັດການຫ້ອງຮຽນ, ລາຍຊື່ ແລະ ຕາຕະລາງຮຽນ</h2>
-        <p class="subtitle">ຈັດການຂໍ້ມູນຫ້ອງຮຽນ ພ້ອມເນັ້ນຄວາມສຳຄັນທີ່ຫ້ອງ ມ.5</p>
+        <p class="subtitle">ຈັດການຂໍ້ມູນ ແລະ ກວດສອບສະຖານະ (ເນັ້ນຫ້ອງ ມ.5)</p>
 
-        <!-- 📌 ປຸ່ມແທັບຍ່ອຍ (Sub-tabs) -->
         <div class="tab-menu">
-            <button class="tab-btn active" onclick="switchTab(event, 'tab-classes')">🏫 1. ຂໍ້ມູນຫ້ອງຮຽນ</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tab-students')">👥 2. ລາຍຊື່ນັກຮຽນ</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tab-schedule')">📅 3. ຕາຕະລາງຮຽນ</button>
+            <button class="tab-btn active" onclick="switchTab(event, 'tab-students')">👥 1. ລາຍຊື່ນັກຮຽນ</button>
+            <button class="tab-btn" onclick="switchTab(event, 'tab-schedule')">📅 2. ຕາຕະລາງຮຽນ</button>
         </div>
 
-        <!-- TAB 1: ຂໍ້ມູນຫ້ອງຮຽນ -->
-        <div id="tab-classes" class="tab-content active">
-            <h3>🏫 ພາບລວມຫ້ອງຮຽນທັງໝົດ</h3>
-            <p style="color: #666; margin-top: 5px; margin-bottom: 15px;">ລາຍຊື່ຫ້ອງຮຽນພາຍໃນໂຮງຮຽນ (ເນັ້ນຫ້ອງ ມ.5 ຫ້ອງປະຈຳ)</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th class="center" style="width: 80px;">ລຳດັບ</th>
-                        <th>ຊັ້ນ / ຫ້ອງຮຽນ</th>
-                        <th>ครູປະຈຳຊັ້ນ</th>
-                        <th class="center">ຈຳນວນນັກຮຽນ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td class="center">1</td><td><strong>ມ.1</strong></td><td>ອ. ບຸນມີ</td><td class="center">--</td></tr>
-                    <tr><td class="center">2</td><td><strong>ມ.2</strong></td><td>ອ. ວຽງສະຫວັນ</td><td class="center">--</td></tr>
-                    <tr><td class="center">3</td><td><strong>ມ.3</strong></td><td>ອ. ຄຳສຸກ</td><td class="center">--</td></tr>
-                    <tr><td class="center">4</td><td><strong>ມ.4</strong></td><td>ອ. ມາລີ</td><td class="center">--</td></tr>
-                    <tr style="background: #e8f5e9;"><td class="center">5</td><td>⭐ <strong>ມ.5 (ຫ້ອງປະຈຳຂອງທ່ານ)</strong></td><td>ອ. ຜູ້ໃຊ້ງານລະບົບ</td><td class="center" style="color: #28a745; font-weight: bold;">ຫ້ອງຫຼັກ</td></tr>
-                    <tr><td class="center">6</td><td><strong>ມ.6</strong></td><td>ອ. ອາທິດ</td><td class="center">--</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- TAB 2: ລາຍຊື່ນັກຮຽນ -->
-        <div id="tab-students" class="tab-content">
+        <!-- TAB 1: ລາຍຊື່ນັກຮຽນ (ພ້ອມປຸ່ມເພີ່ມ/ລົບສຳລັບ Admin) -->
+        <div id="tab-students" class="tab-content active">
             <div class="filter-box">
-                <label for="grade-select">📚 ເລືອກຊັ້ນຮຽນ:</label>
-                <select id="grade-select" onchange="loadStudentsByClass()">
-                    <option value="ມ.1">ມ.1</option>
-                    <option value="ມ.2">ມ.2</option>
-                    <option value="ມ.3">ມ.3</option>
-                    <option value="ມ.4">ມ.4</option>
-                    <option value="ມ.5" selected>⭐ ມ.5 (ຫ້ອງປະຈຳ)</option>
-                    <option value="ມ.6">ມ.6</option>
-                </select>
+                <div class="filter-left">
+                    <label for="grade-select">📚 ເລືອກຊັ້ນ:</label>
+                    <select id="grade-select" onchange="loadStudentsByClass()">
+                        <option value="ມ.1">ມ.1</option>
+                        <option value="ມ.2">ມ.2</option>
+                        <option value="ມ.3">ມ.3</option>
+                        <option value="ມ.4">ມ.4</option>
+                        <option value="ມ.5" selected>⭐ ມ.5 (ຫ້ອງປະຈຳ)</option>
+                        <option value="ມ.6">ມ.6</option>
+                    </select>
+                </div>
+                <button class="btn-add" onclick="openStudentModal()">➕ ເພີ່ມນັກຮຽນໃໝ່</button>
             </div>
+            
             <span class="total-badge" id="student-total-count">ຈຳນວນນັກຮຽນ: 0 ຄົນ</span>
             <table>
                 <thead>
                     <tr>
-                        <th class="center" style="width: 60px;">ລຳດັບ</th>
-                        <th class="center" style="width: 120px;">ລະຫັດ</th>
+                        <th class="center" style="width: 50px;">ລຳດັບ</th>
+                        <th class="center" style="width: 100px;">ລະຫັດ</th>
                         <th>ຊື່-ນາມສະກຸນ</th>
-                        <th class="center" style="width: 130px;">ເບີໂທລະສັບ</th>
+                        <th class="center" style="width: 120px;">ເບີໂທ</th>
                         <th>ຜູ້ປົກຄອງ</th>
+                        <th class="center" style="width: 100px;">ຈັດການ</th>
                     </tr>
                 </thead>
                 <tbody id="class-students-table-body">
-                    <tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>
+                    <tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- TAB 3: ຕາຕະລາງຮຽນ -->
+        <!-- TAB 2: ຕາຕະລາງຮຽນ (ພ້ອມປຸ່ມເພີ່ມ/ລົບສຳລັບ Admin) -->
         <div id="tab-schedule" class="tab-content">
             <div class="filter-box">
-                <label for="room-select">📚 ເລືອກຫ້ອງ:</label>
-                <select id="room-select" onchange="loadScheduleByRoom()">
-                    <option value="ມ.1">ມ.1</option>
-                    <option value="ມ.2">ມ.2</option>
-                    <option value="ມ.3">ມ.3</option>
-                    <option value="ມ.4">ມ.4</option>
-                    <option value="ມ.5" selected>⭐ ມ.5 (ຫ້ອງປະຈຳ)</option>
-                    <option value="ມ.6">ມ.6</option>
-                </select>
+                <div class="filter-left">
+                    <label for="room-select">📚 ເລືອກຫ້ອງ:</label>
+                    <select id="room-select" onchange="loadScheduleByRoom()">
+                        <option value="ມ.1">ມ.1</option>
+                        <option value="ມ.2">ມ.2</option>
+                        <option value="ມ.3">ມ.3</option>
+                        <option value="ມ.4">ມ.4</option>
+                        <option value="ມ.5" selected>⭐ ມ.5 (ຫ້ອງປະຈຳ)</option>
+                        <option value="ມ.6">ມ.6</option>
+                    </select>
+                </div>
+                <button class="btn-add" onclick="openScheduleModal()">➕ ເພີ່ມຕາຕະລາງໃໝ່</button>
             </div>
+
             <span class="total-badge" id="schedule-total-count">ລາຍການຕາຕະລາງ: 0 ລາຍການ</span>
             <table>
                 <thead>
                     <tr>
-                        <th class="center" style="width: 120px;">ວັນ</th>
-                        <th class="center" style="width: 150px;">ເວລາ</th>
+                        <th class="center" style="width: 100px;">ວັນ</th>
+                        <th class="center" style="width: 120px;">ເວລາ</th>
                         <th>ຊື່ວິຊາ</th>
                         <th>ຄູຜູ້ສອນ</th>
-                        <th class="center" style="width: 100px;">ຫ້ອງຮຽນ</th>
+                        <th class="center" style="width: 80px;">ຫ້ອງ</th>
+                        <th class="center" style="width: 90px;">ຈັດການ</th>
                     </tr>
                 </thead>
                 <tbody id="schedule-table-body">
-                    <tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>
+                    <tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -144,7 +133,7 @@
     <!-- Firebase SDK & Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
@@ -158,12 +147,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        const userRole = localStorage.getItem('userRole') || 'student';
+        const canManage = (userRole === 'admin' || userRole === 'teacher');
+
         window.addEventListener('DOMContentLoaded', () => {
             loadStudentsByClass();
             loadScheduleByRoom();
         });
 
-        // ຟັງຊັນສະຫຼັບ Tabs
         window.switchTab = function(evt, tabId) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -177,30 +168,57 @@
             const tbody = document.getElementById('class-students-table-body');
             const totalBadge = document.getElementById('student-total-count');
             
-            tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>`;
 
             try {
                 const querySnapshot = await getDocs(collection(db, "students"));
                 let list = [];
                 querySnapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    if (data.grade === grade) list.push(data);
+                    if (data.grade === grade) {
+                        data.docId = docSnap.id;
+                        list.push(data);
+                    }
                 });
 
                 totalBadge.innerText = `ຈຳນວນນັກຮຽນຊັ້ນ ${grade}: ${list.length} ຄົນ`;
                 if (list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນໃນຊັ້ນ ${grade}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນໃນຊັ້ນ ${grade}</td></tr>`;
                     return;
                 }
 
                 let html = '';
                 list.forEach((s, idx) => {
-                    html += `<tr><td class="center">${idx+1}</td><td class="center"><strong>${s.id||'-'}</strong></td><td>${s.name||'-'}</td><td class="center">${s.phone||'-'}</td><td>${s.parent||'-'}</td></tr>`;
+                    html += `
+                        <tr>
+                            <td class="center">${idx+1}</td>
+                            <td class="center"><strong>${s.id||'-'}</strong></td>
+                            <td>${s.name||'-'}</td>
+                            <td class="center">${s.phone||'-'}</td>
+                            <td>${s.parent||'-'}</td>
+                            <td class="center">
+                                ${canManage ? `<button class="action-btn btn-del" onclick="deleteStudent('${s.docId}')">🗑️ ລົບ</button>` : '<span style="color:#888; font-size:11px;">ເບິ່ງ</span>'}
+                            </td>
+                        </tr>
+                    `;
                 });
                 tbody.innerHTML = html;
             } catch (e) {
                 console.error(e);
-                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດ</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດ</td></tr>`;
+            }
+        };
+
+        // ຟັງຊັນລົບນັກຮຽນ
+        window.deleteStudent = async function(docId) {
+            if (confirm('⚠️ ທ່ານຕ້ອງການລົບຂໍ້ມູນນັກຮຽນນີ້ແທ້ບໍ?')) {
+                try {
+                    await deleteDoc(doc(db, "students", docId));
+                    alert('✅ ລົບຂໍ້ມູນສຳເລັດ!');
+                    loadStudentsByClass();
+                } catch (e) {
+                    alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
+                }
             }
         };
 
@@ -210,30 +228,93 @@
             const tbody = document.getElementById('schedule-table-body');
             const totalBadge = document.getElementById('schedule-total-count');
             
-            tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>`;
 
             try {
                 const querySnapshot = await getDocs(collection(db, "timetables"));
                 let list = [];
                 querySnapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    if (data.room && data.room.includes(room)) list.push(data);
+                    if (data.room && data.room.includes(room)) {
+                        data.docId = docSnap.id;
+                        list.push(data);
+                    }
                 });
 
-                totalBadge.innerText = `ລາຍການຕາຕະລາງຊັ້ນ ${room}: ${list.length} ລายການ`;
+                totalBadge.innerText = `ລາຍການຕາຕະລາງຊັ້ນ ${room}: ${list.length} ລາຍການ`;
                 if (list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງໃນຊັ້ນ ${room}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງໃນຊັ້ນ ${room}</td></tr>`;
                     return;
                 }
 
                 let html = '';
                 list.forEach(item => {
-                    html += `<tr><td class="center"><strong>${item.day||'-'}</strong></td><td class="center">${item.time||'-'}</td><td>${item.subject||'-'}</td><td>${item.teacher||'-'}</td><td class="center" style="color:#007bff; font-weight:bold;">${item.room||'-'}</td></tr>`;
+                    html += `
+                        <tr>
+                            <td class="center"><strong>${item.day||'-'}</strong></td>
+                            <td class="center">${item.time||'-'}</td>
+                            <td>${item.subject||'-'}</td>
+                            <td>${item.teacher||'-'}</td>
+                            <td class="center" style="color:#007bff; font-weight:bold;">${item.room||'-'}</td>
+                            <td class="center">
+                                ${canManage ? `<button class="action-btn btn-del" onclick="deleteSchedule('${item.docId}')">🗑️ ລົບ</button>` : '<span style="color:#888; font-size:11px;">ເບິ່ງ</span>'}
+                            </td>
+                        </tr>
+                    `;
                 });
                 tbody.innerHTML = html;
             } catch (e) {
                 console.error(e);
-                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດ</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດ</td></tr>`;
+            }
+        };
+
+        // ຟັງຊັນລົບຕາຕະລາງ
+        window.deleteSchedule = async function(docId) {
+            if (confirm('⚠️ ທ່ານຕ້ອງການລົບຕາຕະລາງນີ້ແທ້ບໍ?')) {
+                try {
+                    await deleteDoc(doc(db, "timetables", docId));
+                    alert('✅ ລົບຕາຕະລາງສຳເລັດ!');
+                    loadScheduleByRoom();
+                } catch (e) {
+                    alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
+                }
+            }
+        };
+
+        // ຟັງຊັນເພີ່ມນັກຮຽນຢ່າງງ່າຍ
+        window.openStudentModal = async function() {
+            const name = prompt("ป้อนຊື່-ນາມສະກຸນນັກຮຽນ:");
+            if (!name) return;
+            const id = prompt("ป้อนລະຫັດນັກຮຽນ (ເຊັ່ນ S001):") || 'S999';
+            const grade = document.getElementById('grade-select').value;
+            const phone = prompt("ป้อนເບີໂທລະສັບ:") || '-';
+            const parent = prompt("ป้อนຊື່ຜູ້ປົກຄອງ:") || '-';
+
+            try {
+                await addDoc(collection(db, "students"), { name, id, grade, phone, parent, createdAt: serverTimestamp() });
+                alert('✅ ເພີ່ມນັກຮຽນສຳເລັດ!');
+                loadStudentsByClass();
+            } catch (e) {
+                alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
+            }
+        };
+
+        // ຟັງຊັນເພີ່ມຕາຕະລາງຢ່າງງ່າຍ
+        window.openScheduleModal = async function() {
+            const day = prompt("ป้อนວັນ (ເຊັ່ນ: ວັນຈັນ):");
+            if (!day) return;
+            const time = prompt("ป้อนເວລາ (ເຊັ່ນ: 08:00 - 09:30):") || '08:00 - 09:30';
+            const subject = prompt("ป้อนຊື່ວິຊາ:") || 'ວິຊາ...';
+            const teacher = prompt("ป้อนຊື່ຄູຜູ້ສອນ:") || 'ຄູ...';
+            const room = document.getElementById('room-select').value;
+
+            try {
+                await addDoc(collection(db, "timetables"), { day, time, subject, teacher, room, createdAt: serverTimestamp() });
+                alert('✅ ເພີ່ມຕາຕະລາງສຳເລັດ!');
+                loadScheduleByRoom();
+            } catch (e) {
+                alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
             }
         };
     </script>
