@@ -52,6 +52,30 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        function stripQuotes(val) {
+            return String(val || "")
+                .trim()
+                .replace(/^["']+|["']+$/g, "");
+        }
+
+        function matchUserDoc(data, emailLower, password, defaultRole) {
+            if (!data) return null;
+            const cleanEmail = stripQuotes(data.email).toLowerCase();
+            const cleanPass = stripQuotes(data.password);
+
+            if (cleanEmail === emailLower && cleanPass === password) {
+                return {
+                    ...data,
+                    email: cleanEmail,
+                    password: cleanPass,
+                    role: stripQuotes(data.role || defaultRole).toLowerCase(),
+                    grade: stripQuotes(data.grade || data.room || data.classRoom || "ມ.5"),
+                    name: stripQuotes(data.name || "User")
+                };
+            }
+            return null;
+        }
+
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
@@ -63,12 +87,12 @@
             try {
                 let userData = null;
 
-                // 1. ຄົ້ນຫາໃນ Collection `users` (ສຳລັບ Admin / ຜູ້ບໍລິຫານ)
+                // 1. ຄົ້ນຫາໃນ Collection `users` (ສຳລັບ Admin / ຜູ້ບໍລິຫານ / ຜູ້ໃຊ້ທົ່ວໄປ)
                 const snapshotUsers = await getDocs(collection(db, "users"));
                 snapshotUsers.forEach((doc) => {
-                    const data = doc.data();
-                    if (String(data.email || "").trim().toLowerCase() === emailLower && String(data.password || "") === password) {
-                        userData = data;
+                    if (!userData) {
+                        const matched = matchUserDoc(doc.data(), emailLower, password, "student");
+                        if (matched) userData = matched;
                     }
                 });
 
@@ -76,10 +100,9 @@
                 if (!userData) {
                     const snapshotTeachers = await getDocs(collection(db, "teachers"));
                     snapshotTeachers.forEach((doc) => {
-                        const data = doc.data();
-                        if (String(data.email || "").trim().toLowerCase() === emailLower && String(data.password || "") === password) {
-                            userData = data;
-                            if (!userData.role) userData.role = 'teacher'; // ຖ້າບໍ່ໄດ້ຕັ້ງ role ໃຫ້ເປັນ teacher ໂດຍອັດຕະໂນມັດ
+                        if (!userData) {
+                            const matched = matchUserDoc(doc.data(), emailLower, password, "teacher");
+                            if (matched) userData = matched;
                         }
                     });
                 }
@@ -88,10 +111,9 @@
                 if (!userData) {
                     const snapshotStudents = await getDocs(collection(db, "students"));
                     snapshotStudents.forEach((doc) => {
-                        const data = doc.data();
-                        if (String(data.email || "").trim().toLowerCase() === emailLower && String(data.password || "") === password) {
-                            userData = data;
-                            if (!userData.role) userData.role = 'student'; // ຖ້າບໍ່ໄດ້ຕັ້ງ role ໃຫ້ເປັນ student ໂດຍອັດຕະໂນມັດ
+                        if (!userData) {
+                            const matched = matchUserDoc(doc.data(), emailLower, password, "student");
+                            if (matched) userData = matched;
                         }
                     });
                 }
@@ -102,8 +124,8 @@
                     return;
                 }
 
-                const roleValue = String(userData.role || 'user').trim().toLowerCase();
-                const gradeValue = String(userData.grade || userData.room || userData.classRoom || 'ມ.5').trim();
+                const roleValue = userData.role || 'user';
+                const gradeValue = userData.grade || 'ມ.5';
 
                 // ບັນທຶກສະຖານະ Login, Role ແລະ ຫ້ອງ ລົງ LocalStorage
                 localStorage.setItem('isLoggedIn', 'true');
