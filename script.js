@@ -1062,7 +1062,7 @@ window.deleteTimetable = async function(id) {
             console.error("Error deleting timetable: ", error);
         }
     }
-
+}; // <--- 📌 ເພີ່ມປີກກາ ແລະ semicolon ປິດຟັງຊັນນີ້ໃຫ້ຖືກຕ້ອງ
 
 // 5. ຣີເຊັດຟອມ
 window.resetTimetableForm = function() {
@@ -1072,4 +1072,4 @@ window.resetTimetableForm = function() {
     document.getElementById('class-form-title').innerText = '➕ ເພີ່ມຕາຕະລາງຮຽນໃໝ່';
     document.getElementById('save-timetable-btn').innerText = '💾 ບັນທຶກຕາຕະລາງ';
     document.getElementById('cancel-timetable-edit-btn').style.display = 'none';
-};
+}; // <--- 📌 ປິດຟັງຊັນນີ້ໃຫ້ສົມບູນ
