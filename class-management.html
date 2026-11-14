@@ -1,347 +1,566 @@
 <!DOCTYPE html>
 <html lang="lo">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ລະບົບຈັດການຫ້ອງຮຽນ, ລາຍຊື່ ແລະ ຕາຕະລາງຮຽນ (Admin)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🏫 ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ & ຕາຕະລາງ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
-        body { background: #f4f6f9; color: #333; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-        .container { background: white; width: 100%; max-width: 1000px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-top: 20px; }
-        h2 { color: #007bff; margin-bottom: 5px; text-align: center; }
-        .subtitle { text-align: center; color: #666; margin-bottom: 20px; font-size: 14px; }
-        
-        .tab-menu { display: flex; gap: 10px; border-bottom: 2px solid #dee2e6; margin-bottom: 20px; padding-bottom: 10px; }
-        .tab-btn { padding: 10px 20px; background: #e9ecef; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: #495057; transition: 0.2s; }
-        .tab-btn.active { background: #007bff; color: white; }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .filter-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 6px; flex-wrap: wrap; gap: 10px; }
-        .filter-left { display: flex; gap: 15px; align-items: center; flex: 1; }
-        .filter-left select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-        
-        .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-add:hover { background: #218838; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
-        th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; font-size: 14px; }
-        th { background: #f8f9fa; font-weight: bold; color: #495057; }
-        td.center, th.center { text-align: center; }
-        
-        .action-btn { padding: 5px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 3px; }
-        .btn-edit { background: #ffc107; color: #000; }
-        .btn-del { background: #dc3545; color: white; }
-
-        .back-link { display: inline-block; margin-top: 15px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
-        .back-link:hover { text-decoration: underline; }
-        .total-badge { background: #e7f5ff; color: #007bff; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; display: inline-block; margin-bottom: 15px; }
-    </style>
-    
-    <script>
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = 'login.html';
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Noto Sans Lao', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
         }
-    </script>
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .topbar {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .back-btn {
+            background: #334155;
+            color: #f8fafc;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .back-btn:hover { background: #475569; }
+        .page-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .badge-role { background: #2563eb; color: #fff; }
+        .badge-grade { background: #0f766e; color: #ccfbf1; }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #334155;
+        }
+        .card-header h2 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        select, input {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 7px 11px;
+            font-family: inherit;
+            font-size: 13px;
+        }
+        button {
+            font-family: inherit;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, background 0.2s;
+        }
+        button:hover { opacity: 0.92; }
+        .btn-add { background: #16a34a; color: #fff; }
+        .btn-edit { background: #eab308; color: #0f172a; padding: 5px 9px; font-size: 12px; }
+        .btn-del { background: #dc2626; color: #fff; padding: 5px 9px; font-size: 12px; }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 620px;
+        }
+        th, td {
+            border: 1px solid #334155;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
+        }
+        th {
+            background: #0f172a;
+            color: #93c5fd;
+            font-weight: 700;
+        }
+        td {
+            background: #162032;
+            color: #e2e8f0;
+        }
+        tr:hover td { background: #24334d; }
+        .center { text-align: center; }
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .hidden-section { display: none !important; }
+        .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+    </style>
 </head>
 <body>
-
-    <div class="container">
-        <h2>🏫 ສູນລວມຈັດການຫ້ອງຮຽນ, ລາຍຊື່ ແລະ ຕາຕະລາງຮຽນ</h2>
-        <p class="subtitle">ຈັດການຂໍ້ມູນ ແລະ ກວດສອບສະຖານະ (ເນັ້ນຫ້ອງ ມ.5)</p>
-
-        <div class="tab-menu">
-            <button class="tab-btn active" onclick="switchTab(event, 'tab-students')">👥 1. ລາຍຊື່ນັກຮຽນ</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tab-schedule')">📅 2. ຕາຕະລາງຮຽນ</button>
+<div class="container">
+    <!-- ແຖບດ້ານເທິງ -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
+            <h1 class="page-title">🏫 ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ & ຕາຕະລາງ</h1>
         </div>
-
-        <!-- TAB 1: ລາຍຊື່ນັກຮຽນ (ພ້ອມປຸ່ມເພີ່ມ/ລົບສຳລັບ Admin) -->
-        <div id="tab-students" class="tab-content active">
-            <div class="filter-box">
-                <div class="filter-left">
-                    <label for="grade-select">📚 ເລືອກຊັ້ນ:</label>
-                    <select id="grade-select" onchange="loadStudentsByClass()">
-                        <option value="ມ.1">ມ.1</option>
-                        <option value="ມ.2">ມ.2</option>
-                        <option value="ມ.3">ມ.3</option>
-                        <option value="ມ.4">ມ.4</option>
-                        <option value="ມ.5" selected>⭐ ມ.5 (ຫ້ອງປະຈຳ)</option>
-                        <option value="ມ.6">ມ.6</option>
-                    </select>
-                </div>
-                <button class="btn-add" onclick="openStudentModal()">➕ ເພີ່ມນັກຮຽນໃໝ່</button>
-            </div>
-            
-            <span class="total-badge" id="student-total-count">ຈຳນວນນັກຮຽນ: 0 ຄົນ</span>
-            <table>
-                <thead>
-                    <tr>
-                        <th class="center" style="width: 50px;">ລຳດັບ</th>
-                        <th class="center" style="width: 100px;">ລະຫັດ</th>
-                        <th>ຊື່-ນາມສະກຸນ</th>
-                        <th class="center" style="width: 120px;">ເບີໂທ</th>
-                        <th>ຜູ້ປົກຄອງ</th>
-                        <th class="center" style="width: 100px;">ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="class-students-table-body">
-                    <tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>
-                </tbody>
-            </table>
+        <div class="user-meta">
+            <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
+            <span id="currentUserRole" class="badge badge-role">ROLE</span>
+            <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
         </div>
-
-        <!-- TAB 2: ຕາຕະລາງຮຽນ (ພ້ອມປຸ່ມເພີ່ມ/ລົບສຳລັບ Admin) -->
-        <div id="tab-schedule" class="tab-content">
-            <div class="filter-box">
-                <div class="filter-left">
-                    <label for="room-select">📚 ເລືອກຫ້ອງ:</label>
-                    <select id="room-select" onchange="loadScheduleByRoom()">
-                        <option value="ມ.1">ມ.1</option>
-                        <option value="ມ.2">ມ.2</option>
-                        <option value="ມ.3">ມ.3</option>
-                        <option value="ມ.4">ມ.4</option>
-                        <option value="ມ.5" selected>⭐ ມ.5 (ຫ້ອງປະຈຳ)</option>
-                        <option value="ມ.6">ມ.6</option>
-                    </select>
-                </div>
-                <button class="btn-add" onclick="openScheduleModal()">➕ ເພີ່ມຕາຕະລາງໃໝ່</button>
-            </div>
-
-            <span class="total-badge" id="schedule-total-count">ລາຍການຕາຕະລາງ: 0 ລາຍການ</span>
-            <table>
-                <thead>
-                    <tr>
-                        <th class="center" style="width: 100px;">ວັນ</th>
-                        <th class="center" style="width: 120px;">ເວລາ</th>
-                        <th>ຊື່ວິຊາ</th>
-                        <th>ຄູຜູ້ສອນ</th>
-                        <th class="center" style="width: 80px;">ຫ້ອງ</th>
-                        <th class="center" style="width: 90px;">ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="schedule-table-body">
-                    <tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <a href="index.html" class="back-link">⬅️ ກັບສູ່ໜ້າຫຼັກລະບົບ</a>
     </div>
 
- <!-- Firebase SDK & Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <!-- 1. ລາຍຊື່ນັກຮຽນ -->
+    <section class="card" id="sec-students">
+        <div class="card-header">
+            <h2>👨‍🎓 1. ລາຍຊື່ນັກຮຽນ</h2>
+            <div class="controls">
+                <select id="studentGradeFilter" onchange="renderStudents()">
+                    <option value="ALL">ທຸກຫ້ອງ</option>
+                    <option value="ມ.5">ມ.5</option>
+                    <option value="ມ.6">ມ.6</option>
+                    <option value="ມ.7">ມ.7</option>
+                </select>
+                <input type="text" id="studentSearch" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderStudents()" />
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ລະຫັດນັກຮຽນ</th>
+                        <th>ຊື່ ແລະ ນາມສະກຸນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ສະຖານະ</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody"></tbody>
+            </table>
+        </div>
+    </section>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
-            authDomain: "my-school-c1104.firebaseapp.com",
-            projectId: "my-school-c1104",
-            storageBucket: "my-school-c1104.appspot.com",
-            messagingSenderId: "339930418459",
-            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be"
-        };
+    <!-- 2. ຕາຕະລາງຮຽນ -->
+    <section class="card" id="sec-class-timetable">
+        <div class="card-header">
+            <h2 id="classTimetableTitle">📅 2. ຕາຕະລາງຮຽນ</h2>
+            <div class="controls">
+                <select id="classTimetableGrade" onchange="renderClassTimetable()">
+                    <option value="ມ.5">ຫ້ອງ ມ.5</option>
+                    <option value="ມ.6">ຫ້ອງ ມ.6</option>
+                    <option value="ມ.7">ຫ້ອງ ມ.7</option>
+                </select>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ມື້</th>
+                        <th>ຊົ່ວໂມງ 1<br><small>08:00 - 08:45</small></th>
+                        <th>ຊົ່ວໂມງ 2<br><small>08:50 - 09:35</small></th>
+                        <th>ຊົ່ວໂມງ 3<br><small>09:50 - 10:35</small></th>
+                        <th>ຊົ່ວໂມງ 4<br><small>10:40 - 11:25</small></th>
+                    </tr>
+                </thead>
+                <tbody id="classTimetableBody"></tbody>
+            </table>
+        </div>
+    </section>
 
+    <!-- 3. ຕາຕະລາງສອນ (ຊ່ອນຈາກນັກຮຽນ + ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມ/ແກ້ໄຂ/ລົບໄດ້) -->
+    <section class="card" id="sec-teaching-timetable">
+        <div class="card-header">
+            <h2>👩‍🏫 3. ຕາຕະລາງສອນ</h2>
+            <div class="controls" id="teachingAdminControls">
+                <button type="button" class="btn-add" onclick="openAddTeachingModal()">➕ ເພີ່ມຕາຕະລາງສອນ</button>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ຊື່ຄູຜູ້ສອນ</th>
+                        <th>ວິຊາສອນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ມື້ / ເວລາສອນ</th>
+                        <th id="teachingActionHeader" style="width: 150px;">ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="teachingTimetableBody"></tbody>
+            </table>
+        </div>
+        <div class="note-text">
+            * ສ່ວນທີ 3 (ຕາຕະລາງສອນ) ຖືກຊ່ອນຈາກນັກຮຽນ ແລະ ສະເພາະ Admin ເທົ່ານັ້ນທີ່ສາມາດເພີ່ມ, ແກ້ໄຂ ຫຼື ລົບຂໍ້ມູນໄດ້.
+        </div>
+    </section>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+        getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ຖ້າຕ້ອງການເຊື່ອມ Firestore ແທ້ ໃຫ້ໃສ່ firebaseConfig ຂອງທ່ານ ແລະ ເປີດໃຊ້ງານ db
+    const firebaseConfig = window.FIREBASE_CONFIG || null;
+    let db = null;
+    if (firebaseConfig) {
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-   const userRole = localStorage.getItem('userRole') || 'student';
-const userGrade = localStorage.getItem('userGrade') || 'ມ.5';
-const canManage = (userRole === 'admin' || userRole === 'teacher');
-
-        window.addEventListener('DOMContentLoaded', () => {
-            // ຖ້າບໍ່ແມ່ນ admin ຫຼື teacher ໃຫ້ເຊື່ອງປຸ່ມເພີ່ມທັງໝົດ
-            const roomSelect = document.getElementById('room-select');
-    const gradeSelect = document.getElementById('grade-select');
-            if (!canManage) {
-                document.querySelectorAll('.btn-add').forEach(btn => {
-                    btn.style.display = 'none';
-                });
-                if (roomSelect) {
-            roomSelect.value = userGrade;
-            roomSelect.disabled = true;
-        }
-        if (gradeSelect) {
-            gradeSelect.value = userGrade;
-            gradeSelect.disabled = true;
-        }
+        db = getFirestore(app);
     }
 
-    loadStudentsByClass();
-    loadScheduleByRoom();
-});
-         
+    const role = (localStorage.getItem("userRole") || "student").toLowerCase();
+    const userGrade = localStorage.getItem("userGrade") || "ມ.5";
+    const userName = localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
+    const isAdmin = role === "admin";
+    const isStudent = role === "student";
 
-        window.switchTab = function(evt, tabId) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            evt.currentTarget.classList.add('active');
-        };
+    document.getElementById("currentUserName").textContent = userName;
+    document.getElementById("currentUserRole").textContent = role.toUpperCase();
+    document.getElementById("currentUserGrade").textContent = userGrade;
 
-        // ໂຫຼດລາຍຊື່ນັກຮຽນ
-        window.loadStudentsByClass = async function() {
-            const grade = document.getElementById('grade-select').value;
-            const tbody = document.getElementById('class-students-table-body');
-            const totalBadge = document.getElementById('student-total-count');
-            
-            tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>`;
+    // ຕັ້ງຄ່າສິດສຳລັບສ່ວນທີ 3 (ຕາຕະລາງສອນ): ຊ່ອນຈາກນັກຮຽນ, ສະເພາະ Admin ເພີ່ມ/ແກ້ໄຂ/ລົບໄດ້
+    const teachingSection = document.getElementById("sec-teaching-timetable");
+    const teachingAdminControls = document.getElementById("teachingAdminControls");
+    const teachingActionHeader = document.getElementById("teachingActionHeader");
 
-            try {
-                const querySnapshot = await getDocs(collection(db, "students"));
-                let list = [];
-                querySnapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    if (data.grade === grade) {
-                        data.docId = docSnap.id;
-                        list.push(data);
-                    }
-                });
-
-                totalBadge.innerText = `ຈຳນວນນັກຮຽນຊັ້ນ ${grade}: ${list.length} ຄົນ`;
-                if (list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນໃນຊັ້ນ ${grade}</td></tr>`;
-                    return;
-                }
-
-                let html = '';
-                list.forEach((s, idx) => {
-                    html += `
-                        <tr>
-                            <td class="center">${idx+1}</td>
-                            <td class="center"><strong>${s.id||'-'}</strong></td>
-                            <td>${s.name||'-'}</td>
-                            <td class="center">${s.phone||'-'}</td>
-                            <td>${s.parent||'-'}</td>
-                            <td class="center">
-                                ${canManage ? `<button class="action-btn btn-del" onclick="deleteStudent('${s.docId}')">🗑️ ລົບ</button>` : '<span style="color:#888; font-size:12px;">ເບິ່ງຢ່າງດຽວ</span>'}
-                            </td>
-                        </tr>
-                    `;
-                });
-                tbody.innerHTML = html;
-            } catch (e) {
-                console.error(e);
-                tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດ</td></tr>`;
-            }
-        };
-
-        // ໂຫຼດຕາຕະລາງຮຽນ
-     window.loadScheduleByRoom = async function() {
-    const roomSelect = document.getElementById('room-select');
-    const tbody = document.getElementById('schedule-table-body');
-    const totalBadge = document.getElementById('schedule-total-count');
-
-    // ຖ້າເປັນນັກຮຽນ ໃຫ້ໃຊ້ຫ້ອງຂອງຕົນເອງສະເໝີ (ປ້ອງກັນການແກ້ໄຂຜ່ານ DevTools)
-    const targetRoom = !canManage ? userGrade : roomSelect.value;
-    if (!canManage && roomSelect) {
-        roomSelect.value = targetRoom;
+    if (isStudent) {
+        teachingSection.classList.add("hidden-section");
+    }
+    if (!isAdmin) {
+        teachingAdminControls.style.display = "none";
+        teachingActionHeader.style.display = "none";
     }
 
-    tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>`;
+    // ຂໍ້ມູນຕົວຢ່າງ / ໂຫຼດຈາກ localStorage
+    let studentsData = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
+        { id: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", status: "ປົກກະຕິ" },
+        { id: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", status: "ປົກກະຕິ" },
+        { id: "STD-003", name: "ທ. ອານຸສອນ ວົງສາ", grade: "ມ.5", status: "ປົກກະຕິ" },
+        { id: "STD-004", name: "ນ. ດາລາວັນ ແກ້ວມະນີ", grade: "ມ.6", status: "ປົກກະຕິ" }
+    ];
 
-    try {
-        const querySnapshot = await getDocs(collection(db, "timetables"));
-        let list = [];
-        querySnapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            // ກວດສອບໃຫ້ກົງກັບຫ້ອງເປົ້າໝາຍ (targetRoom)
-            if (data.room && data.room.trim() === targetRoom) {
-                data.docId = docSnap.id;
-                list.push(data);
-            }
+    const classTimetables = {
+        "ມ.5": [
+            { day: "ຈັນ", p1: "ຄະນິດສາດ", p2: "ຟີຊິກສາດ", p3: "ພາສາລາວ", p4: "ພາສາອັງກິດ" },
+            { day: "ອັງຄານ", p1: "ເຄມີສາດ", p2: "ຊີວະສາດ", p3: "ປະຫວັດສາດ", p4: "ໄອທີ / ຄອມ" },
+            { day: "ພຸດ", p1: "ຄະນິດສາດ", p2: "ພູມສາດ", p3: "ພາສາອັງກິດ", p4: "ພະລະສຶກສາ" },
+            { day: "ພະຫັດ", p1: "ຟີຊິກສາດ", p2: "ເຄມີສາດ", p3: "ພາສາລາວ", p4: "ສຶກສາພົນລະເມືອງ" },
+            { day: "ສຸກ", p1: "ຄະນິດສາດ", p2: "ຊີວະສາດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
+        ],
+        "ມ.6": [
+            { day: "ຈັນ", p1: "ພາສາລາວ", p2: "ຄະນິດສາດ", p3: "ຟີຊິກສາດ", p4: "ພາສາອັງກິດ" },
+            { day: "ອັງຄານ", p1: "ຊີວະສາດ", p2: "ເຄມີສາດ", p3: "ພູມສາດ", p4: "ປະຫວັດສາດ" },
+            { day: "ພຸດ", p1: "ຄະນິດສາດ", p2: "ໄອທີ / ຄອມ", p3: "ພາສາອັງກິດ", p4: "ພະລະສຶກສາ" },
+            { day: "ພະຫັດ", p1: "ເຄມີສາດ", p2: "ຟີຊິກສາດ", p3: "ສຶກສາພົນລະເມືອງ", p4: "ພາສາລາວ" },
+            { day: "ສຸກ", p1: "ຊີວະສາດ", p2: "ຄະນິດສາດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
+        ],
+        "ມ.7": [
+            { day: "ຈັນ", p1: "ຄະນິດສາດ", p2: "ພາສາອັງກິດ", p3: "ຟີຊິກສາດ", p4: "ເຄມີສາດ" },
+            { day: "ອັງຄານ", p1: "ພາສາລາວ", p2: "ຊີວະສາດ", p3: "ປະຫວັດສາດ", p4: "ໄອທີ / ຄອມ" },
+            { day: "ພຸດ", p1: "ຟີຊິກສາດ", p2: "ຄະນິດສາດ", p3: "ພູມສາດ", p4: "ພາສາອັງກິດ" },
+            { day: "ພະຫັດ", p1: "ເຄມີສາດ", p2: "ສຶກສາພົນລະເມືອງ", p3: "ຊີວະສາດ", p4: "ພາສາລາວ" },
+            { day: "ສຸກ", p1: "ຄະນິດສາດ", p2: "ພາສາອັງກິດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
+        ]
+    };
+
+    let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [
+        { id: "T-1", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ", subject: "ຄະນິດສາດ", grade: "ມ.5", schedule: "ຈັນ, ພຸດ, ສຸກ (08:00 - 08:45)" },
+        { id: "T-2", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ", subject: "ຟີຊິກສາດ", grade: "ມ.5", schedule: "ຈັນ, ພະຫັດ (08:50 - 09:35)" }
+    ];
+
+    function saveTeachingSchedules() {
+        localStorage.setItem("school_teaching_schedules", JSON.stringify(teachingSchedules));
+    }
+
+    // 1. ສະແດງລາຍຊື່ນັກຮຽນ
+    window.renderStudents = function () {
+        const gradeFilterEl = document.getElementById("studentGradeFilter");
+        const searchVal = (document.getElementById("studentSearch").value || "").trim().toLowerCase();
+        const tbody = document.getElementById("studentsTableBody");
+
+        let selectedGrade = gradeFilterEl.value;
+        if (isStudent) {
+            selectedGrade = userGrade;
+            gradeFilterEl.value = userGrade;
+            gradeFilterEl.disabled = true;
+        }
+
+        const filtered = studentsData.filter((s) => {
+            const matchGrade = selectedGrade === "ALL" || s.grade === selectedGrade;
+            const matchName = !searchVal || s.name.toLowerCase().includes(searchVal) || s.id.toLowerCase().includes(searchVal);
+            return matchGrade && matchName;
         });
 
-        totalBadge.innerText = `ລາຍການຕາຕະລາງຊັ້ນ ${targetRoom}: ${list.length} ລາຍການ`;
-        if (list.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງໃນຊັ້ນ ${targetRoom}</td></tr>`;
+        if (!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="5" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນ</td></tr>`;
             return;
         }
 
-        let html = '';
-        list.forEach(item => {
-            html += `
-                <tr>
-                    <td class="center"><strong>${item.day || '-'}</strong></td>
-                    <td class="center">${item.time || '-'}</td>
-                    <td>${item.subject || '-'}</td>
-                    <td>${item.teacher || '-'}</td>
-                    <td class="center" style="color:#007bff; font-weight:bold;">${item.room || '-'}</td>
-                    <td class="center">
-                        ${canManage ? `<button class="action-btn btn-del" onclick="deleteSchedule('${item.docId}')">🗑️ ລົບ</button>` : '<span style="color:#888; font-size:12px;">ເບິ່ງຢ່າງດຽວ</span>'}
+        tbody.innerHTML = filtered.map((s, idx) => `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${esc(s.id)}</td>
+                <td>${esc(s.name)}</td>
+                <td>${esc(s.grade)}</td>
+                <td>${esc(s.status)}</td>
+            </tr>
+        `).join("");
+    };
+
+    // 2. ສະແດງຕາຕະລາງຮຽນ
+    window.renderClassTimetable = function () {
+        const selectEl = document.getElementById("classTimetableGrade");
+        const titleEl = document.getElementById("classTimetableTitle");
+        const tbody = document.getElementById("classTimetableBody");
+
+        let g = selectEl.value;
+        if (isStudent) {
+            g = userGrade;
+            selectEl.value = userGrade;
+            selectEl.disabled = true;
+        }
+
+        titleEl.textContent = `📅 2. ຕາຕະລາງຮຽນ (${g})`;
+        const rows = classTimetables[g] || classTimetables["ມ.5"];
+
+        tbody.innerHTML = rows.map((r) => `
+            <tr>
+                <td><strong>${esc(r.day)}</strong></td>
+                <td>${esc(r.p1)}</td>
+                <td>${esc(r.p2)}</td>
+                <td>${esc(r.p3)}</td>
+                <td>${esc(r.p4)}</td>
+            </tr>
+        `).join("");
+    };
+
+    // 3. ສະແດງ ແລະ ຈັດການຕາຕະລາງສອນ (ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມ/ແກ້ໄຂ/ລົບໄດ້)
+    window.renderTeachingTimetable = function () {
+        if (isStudent) return;
+        const tbody = document.getElementById("teachingTimetableBody");
+
+        if (!teachingSchedules.length) {
+            tbody.innerHTML = `<tr><td colspan="${isAdmin ? 6 : 5}" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນ</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = teachingSchedules.map((item, idx) => `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${esc(item.teacher)}</td>
+                <td>${esc(item.subject)}</td>
+                <td>${esc(item.grade)}</td>
+                <td>${esc(item.schedule)}</td>
+                ${isAdmin ? `
+                    <td>
+                        <div class="actions">
+                            <button type="button" class="btn-edit" onclick="editTeachingSchedule('${item.id}')">ແກ້ໄຂ</button>
+                            <button type="button" class="btn-del" onclick="deleteTeachingSchedule('${item.id}')">ລົບ</button>
+                        </div>
                     </td>
-                </tr>
-            `;
-        });
-        tbody.innerHTML = html;
-    } catch (e) {
-        console.error(e);
-        tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດ</td></tr>`;
+                ` : ""}
+            </tr>
+        `).join("");
+    };
+
+    window.openAddTeachingModal = async function () {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມຕາຕະລາງສອນໄດ້!");
+
+        const teacher = prompt("ປ້ອນຊື່ຄູຜູ້ສອນ:");
+        if (!teacher || !teacher.trim()) return;
+        const subject = prompt("ປ້ອນວິຊາສອນ:", "ຄະນິດສາດ");
+        if (!subject || !subject.trim()) return;
+        const grade = prompt("ປ້ອນຫ້ອງ (ເຊັ່ນ ມ.5):", userGrade);
+        if (!grade || !grade.trim()) return;
+        const schedule = prompt("ປ້ອນມື້ ແລະ ເວລາສອນ:", "ຈັນ, ພຸດ (08:00 - 08:45)");
+        if (!schedule || !schedule.trim()) return;
+
+        const newItem = {
+            id: "T-" + Date.now(),
+            teacher: teacher.trim(),
+            subject: subject.trim(),
+            grade: grade.trim(),
+            schedule: schedule.trim()
+        };
+
+        if (db) {
+            try {
+                const ref = await addDoc(collection(db, "teaching_schedules"), newItem);
+                newItem.firestoreId = ref.id;
+            } catch (err) {
+                console.error("Firestore add error:", err);
+            }
+        }
+
+        teachingSchedules.push(newItem);
+        saveTeachingSchedules();
+        renderTeachingTimetable();
+    };
+
+    window.editTeachingSchedule = async function (id) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂຕາຕະລາງສອນໄດ້!");
+        const target = teachingSchedules.find((x) => x.id === id);
+        if (!target) return;
+
+        const teacher = prompt("ແກ້ໄຂຊື່ຄູຜູ້ສອນ:", target.teacher);
+        if (teacher === null || !teacher.trim()) return;
+        const subject = prompt("ແກ້ໄຂວິຊາສອນ:", target.subject);
+        if (subject === null || !subject.trim()) return;
+        const grade = prompt("ແກ້ໄຂຫ້ອງ:", target.grade);
+        if (grade === null || !grade.trim()) return;
+        const schedule = prompt("ແກ້ໄຂມື້ ແລະ ເວລາສອນ:", target.schedule);
+        if (schedule === null || !schedule.trim()) return;
+
+        target.teacher = teacher.trim();
+        target.subject = subject.trim();
+        target.grade = grade.trim();
+        target.schedule = schedule.trim();
+
+        if (db && target.firestoreId) {
+            try {
+                await updateDoc(doc(db, "teaching_schedules", target.firestoreId), {
+                    teacher: target.teacher,
+                    subject: target.subject,
+                    grade: target.grade,
+                    schedule: target.schedule
+                });
+            } catch (err) {
+                console.error("Firestore update error:", err);
+            }
+        }
+
+        saveTeachingSchedules();
+        renderTeachingTimetable();
+    };
+
+    window.deleteTeachingSchedule = async function (id) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບຕາຕະລາງສອນໄດ້!");
+        const target = teachingSchedules.find((x) => x.id === id);
+        if (!target) return;
+
+        if (!confirm(`ຢືນຢັນລົບຕາຕະລາງສອນຂອງ "${target.teacher}"?`)) return;
+
+        if (db && target.firestoreId) {
+            try {
+                await deleteDoc(doc(db, "teaching_schedules", target.firestoreId));
+            } catch (err) {
+                console.error("Firestore delete error:", err);
+            }
+        }
+
+        teachingSchedules = teachingSchedules.filter((x) => x.id !== id);
+        saveTeachingSchedules();
+        renderTeachingTimetable();
+    };
+
+    async function loadFromFirestoreIfAvailable() {
+        if (!db) return;
+        try {
+            const stdSnap = await getDocs(collection(db, "students"));
+            if (!stdSnap.empty) {
+                studentsData = stdSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                renderStudents();
+            }
+        } catch (err) {
+            console.warn("ບໍ່ໄດ້ໂຫຼດ students ຈາກ Firestore:", err.message);
+        }
+
+        if (!isStudent) {
+            try {
+                const teachSnap = await getDocs(collection(db, "teaching_schedules"));
+                if (!teachSnap.empty) {
+                    teachingSchedules = teachSnap.docs.map((d) => ({
+                        id: d.data().id || d.id,
+                        firestoreId: d.id,
+                        ...d.data()
+                    }));
+                    saveTeachingSchedules();
+                    renderTeachingTimetable();
+                }
+            } catch (err) {
+                console.warn("ບໍ່ໄດ້ໂຫຼດ teaching_schedules ຈາກ Firestore:", err.message);
+            }
+        }
     }
-};
 
-        // ຟັງຊັນລົບຕ່າງໆ (ປ້ອງກັນສິດເພີ່ມເຕີມ)
-        window.deleteStudent = async function(docId) {
-            if (!canManage) return alert('❌ ທ່ານບໍ່ມີສິດໃນການລົບຂໍ້ມູນ!');
-            if (confirm('⚠️ ທ່ານຕ້ອງການລົບຂໍ້ມູນນັກຮຽນນີ້ແທ້ບໍ?')) {
-                try {
-                    await deleteDoc(doc(db, "students", docId));
-                    alert('✅ ລົບຂໍ້ມູນສຳເລັດ!');
-                    loadStudentsByClass();
-                } catch (e) {
-                    alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
-                }
-            }
-        };
+    function esc(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
 
-        window.deleteSchedule = async function(docId) {
-            if (!canManage) return alert('❌ ທ່ານບໍ່ມີສິດໃນການລົບຂໍ້ມູນ!');
-            if (confirm('⚠️ ທ່ານຕ້ອງການລົບຕາຕະລາງນີ້ແທ້ບໍ?')) {
-                try {
-                    await deleteDoc(doc(db, "timetables", docId));
-                    alert('✅ ລົບຕາຕະລາງສຳເລັດ!');
-                    loadScheduleByRoom();
-                } catch (e) {
-                    alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
-                }
-            }
-        };
+    if (isStudent && ["ມ.5", "ມ.6", "ມ.7"].includes(userGrade)) {
+        document.getElementById("classTimetableGrade").value = userGrade;
+    }
 
-        window.openStudentModal = async function() {
-            if (!canManage) return;
-            const name = prompt("ປ້ອນຊື່-ນາມສະກຸນນັກຮຽນ:");
-            if (!name) return;
-            const id = prompt("ປ້ອນລະຫັດນັກຮຽນ (ເຊັ່ນ S001):") || 'S999';
-            const grade = document.getElementById('grade-select').value;
-            const phone = prompt("ປ້ອນເບີໂທລະສັບ:") || '-';
-            const parent = prompt("ປ້ອນຊື່ຜູ້ປົກຄອງ:") || '-';
-
-            try {
-                await addDoc(collection(db, "students"), { name, id, grade, phone, parent, createdAt: serverTimestamp() });
-                alert('✅ ເພີ່ມນັກຮຽນສຳເລັດ!');
-                loadStudentsByClass();
-            } catch (e) {
-                alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
-            }
-        };
-
-        window.openScheduleModal = async function() {
-            if (!canManage) return;
-            const day = prompt("ປ້ອນວັນ (ເຊັ່ນ: ວັນຈັນ):");
-            if (!day) return;
-            const time = prompt("ປ້ອນເວລາ (ເຊັ່ນ: 08:00 - 09:30):") || '08:00 - 09:30';
-            const subject = prompt("ປ້ອນຊື່ວິຊາ:") || 'ວິຊາ...';
-            const teacher = prompt("ປ້ອນຊື່ຄູຜູ້ສອນ:") || 'ຄູ...';
-            const room = document.getElementById('room-select').value;
-
-            try {
-                await addDoc(collection(db, "timetables"), { day, time, subject, teacher, room, createdAt: serverTimestamp() });
-                alert('✅ ເພີ່ມຕາຕະລາງສຳເລັດ!');
-                loadScheduleByRoom();
-            } catch (e) {
-                alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
-            }
-        };
-    </script>
+    renderStudents();
+    renderClassTimetable();
+    renderTeachingTimetable();
+    loadFromFirestoreIfAvailable();
+</script>
+</body>
+</html>
