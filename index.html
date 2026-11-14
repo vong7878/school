@@ -860,6 +860,185 @@ setTimeout(ensureMenuSixVisibleAndLinked, 200);
 setTimeout(ensureMenuSixVisibleAndLinked, 600);
 setTimeout(ensureMenuSixVisibleAndLinked, 1200); 
 
+const roomTimetablesWithTeacher = {
+        "ມ.5": [
+            {
+                day: "ຈັນ",
+                slots: [
+                    { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
+                    { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
+                    { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" },
+                    { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" }
+                ]
+            },
+            {
+                day: "ອັງຄານ",
+                slots: [
+                    { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
+                    { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
+                    { subject: "ປະຫວັດສາດ", teacher: "ອ. ແສງທອງ ສີບຸນເຮືອງ" },
+                    { subject: "ໄອທີ / ຄອມ", teacher: "ອ. ສາຍສະຖອນ ວົງວິໄລ" }
+                ]
+            },
+            {
+                day: "ພຸດ",
+                slots: [
+                    { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
+                    { subject: "ພູມສາດ", teacher: "ອ. ທອງສຸກ ມະນີວົງ" },
+                    { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" },
+                    { subject: "ພະລະສຶກສາ", teacher: "ອ. ສົມພອນ ດວງມາລາ" }
+                ]
+            },
+            {
+                day: "ພະຫັດ",
+                slots: [
+                    { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
+                    { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
+                    { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" },
+                    { subject: "ສຶກສາພົນລະເມືອງ", teacher: "ອ. ຄຳດີ ສຸວັນນະວົງ" }
+                ]
+            },
+            {
+                day: "ສຸກ",
+                slots: [
+                    { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
+                    { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
+                    { subject: "ກິດຈະກຳຫ້ອງ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.5" },
+                    { subject: "ສະຫຼຸບປະຈຳອາທິດ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.5" }
+                ]
+            }
+        ],
+        "ມ.6": [
+            {
+                day: "ຈັນ",
+                slots: [
+                    { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" },
+                    { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
+                    { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
+                    { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" }
+                ]
+            },
+            {
+                day: "ອັງຄານ",
+                slots: [
+                    { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
+                    { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
+                    { subject: "ພູມສາດ", teacher: "ອ. ທອງສຸກ ມະນີວົງ" },
+                    { subject: "ປະຫວັດສາດ", teacher: "ອ. ແສງທອງ ສີບຸນເຮືອງ" }
+                ]
+            },
+            {
+                day: "ພຸດ",
+                slots: [
+                    { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
+                    { subject: "ໄອທີ / ຄອມ", teacher: "ອ. ສາຍສະຖອນ ວົງວິໄລ" },
+                    { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" },
+                    { subject: "ພະລະສຶກສາ", teacher: "ອ. ສົມພອນ ດວງມາລາ" }
+                ]
+            },
+            {
+                day: "ພະຫັດ",
+                slots: [
+                    { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
+                    { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
+                    { subject: "ສຶກສາພົນລະເມືອງ", teacher: "ອ. ຄຳດີ ສຸວັນນະວົງ" },
+                    { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" }
+                ]
+            },
+            {
+                day: "ສຸກ",
+                slots: [
+                    { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
+                    { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
+                    { subject: "ກິດຈະກຳຫ້ອງ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.6" },
+                    { subject: "ສະຫຼຸບປະຈຳອາທິດ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.6" }
+                ]
+            }
+        ],
+        "ມ.7": [
+            {
+                day: "ຈັນ",
+                slots: [
+                    { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
+                    { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" },
+                    { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
+                    { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" }
+                ]
+            },
+            {
+                day: "ອັງຄານ",
+                slots: [
+                    { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" },
+                    { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
+                    { subject: "ປະຫວັດສາດ", teacher: "ອ. ແສງທອງ ສີບຸນເຮືອງ" },
+                    { subject: "ໄອທີ / ຄອມ", teacher: "ອ. ສາຍສະຖອນ ວົງວິໄລ" }
+                ]
+            },
+            {
+                day: "ພຸດ",
+                slots: [
+                    { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
+                    { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
+                    { subject: "ພູມສາດ", teacher: "ອ. ທອງສຸກ ມະນີວົງ" },
+                    { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" }
+                ]
+            },
+            {
+                day: "ພະຫັດ",
+                slots: [
+                    { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
+                    { subject: "ສຶກສາພົນລະເມືອງ", teacher: "ອ. ຄຳດີ ສຸວັນນະວົງ" },
+                    { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
+                    { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" }
+                ]
+            },
+            {
+                day: "ສຸກ",
+                slots: [
+                    { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
+                    { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" },
+                    { subject: "ກິດຈະກຳຫ້ອງ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.7" },
+                    { subject: "ສະຫຼຸບປະຈຳອາທິດ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.7" }
+                ]
+            }
+        ]
+    };
+
+    function formatSlotWithTeacher(slot) {
+        if (!slot) return "-";
+        if (typeof slot === "string") return slot;
+        const subj = slot.subject || "-";
+        const tch = slot.teacher ? `<br><small style="color:#93c5fd;">👩‍🏫 ${slot.teacher}</small>` : "";
+        return `<div><strong>${subj}</strong>${tch}</div>`;
+    }
+
+    function renderStudentTimetableWithTeachers() {
+        const role = (localStorage.getItem("userRole") || "student").toLowerCase();
+        const userGrade = localStorage.getItem("userGrade") || "ມ.5";
+        if (role !== "student") return;
+
+        const cleanRoom = roomTimetablesWithTeacher[userGrade] ? userGrade : "ມ.5";
+        const titleEl = document.getElementById("student-timetable-title");
+        const badgeEl = document.getElementById("student-timetable-badge");
+        const tbody = document.getElementById("student-timetable-body");
+
+        if (titleEl) titleEl.textContent = `📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ ${cleanRoom}`;
+        if (badgeEl) badgeEl.textContent = `ຫ້ອງ: ${cleanRoom}`;
+        if (!tbody) return;
+
+        const rows = roomTimetablesWithTeacher[cleanRoom];
+        tbody.innerHTML = rows.map(r => `
+            <tr>
+                <td><strong>${r.day}</strong></td>
+                ${r.slots.map(s => `<td>${formatSlotWithTeacher(s)}</td>`).join("")}
+            </tr>
+        `).join("");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        renderStudentTimetableWithTeachers();
+        setTimeout(renderStudentTimetableWithTeachers, 300);
+    });        
 </script>
 <script type="module" src="script.js"></script>
 <!-- <script type="module" src="timetable.js"></script> -->
