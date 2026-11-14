@@ -218,51 +218,58 @@
         };
 
         // ໂຫຼດຕາຕະລາງຮຽນ
-        window.loadScheduleByRoom = async function() {
-            const room = document.getElementById('room-select').value;
-            const tbody = document.getElementById('schedule-table-body');
-            const totalBadge = document.getElementById('schedule-total-count');
-            
-            tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>`;
+     window.loadScheduleByRoom = async function() {
+    const roomSelect = document.getElementById('room-select');
+    const tbody = document.getElementById('schedule-table-body');
+    const totalBadge = document.getElementById('schedule-total-count');
 
-            try {
-                const querySnapshot = await getDocs(collection(db, "timetables"));
-                let list = [];
-                querySnapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    if (data.room && data.room.includes(room)) {
-                        data.docId = docSnap.id;
-                        list.push(data);
-                    }
-                });
+    // ຖ້າເປັນນັກຮຽນ ໃຫ້ໃຊ້ຫ້ອງຂອງຕົນເອງສະເໝີ (ປ້ອງກັນການແກ້ໄຂຜ່ານ DevTools)
+    const targetRoom = !canManage ? userGrade : roomSelect.value;
+    if (!canManage && roomSelect) {
+        roomSelect.value = targetRoom;
+    }
 
-                totalBadge.innerText = `ລາຍການຕາຕະລາງຊັ້ນ ${room}: ${list.length} ລາຍການ`;
-                if (list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງໃນຊັ້ນ ${room}</td></tr>`;
-                    return;
-                }
+    tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດ...</td></tr>`;
 
-                let html = '';
-                list.forEach(item => {
-                    html += `
-                        <tr>
-                            <td class="center"><strong>${item.day||'-'}</strong></td>
-                            <td class="center">${item.time||'-'}</td>
-                            <td>${item.subject||'-'}</td>
-                            <td>${item.teacher||'-'}</td>
-                            <td class="center" style="color:#007bff; font-weight:bold;">${item.room||'-'}</td>
-                            <td class="center">
-                                ${canManage ? `<button class="action-btn btn-del" onclick="deleteSchedule('${item.docId}')">🗑️ ລົບ</button>` : '<span style="color:#888; font-size:12px;">ເບິ່ງຢ່າງດຽວ</span>'}
-                            </td>
-                        </tr>
-                    `;
-                });
-                tbody.innerHTML = html;
-            } catch (e) {
-                console.error(e);
-                tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດ</td></tr>`;
+    try {
+        const querySnapshot = await getDocs(collection(db, "timetables"));
+        let list = [];
+        querySnapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            // ກວດສອບໃຫ້ກົງກັບຫ້ອງເປົ້າໝາຍ (targetRoom)
+            if (data.room && data.room.trim() === targetRoom) {
+                data.docId = docSnap.id;
+                list.push(data);
             }
-        };
+        });
+
+        totalBadge.innerText = `ລາຍການຕາຕະລາງຊັ້ນ ${targetRoom}: ${list.length} ລາຍການ`;
+        if (list.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງໃນຊັ້ນ ${targetRoom}</td></tr>`;
+            return;
+        }
+
+        let html = '';
+        list.forEach(item => {
+            html += `
+                <tr>
+                    <td class="center"><strong>${item.day || '-'}</strong></td>
+                    <td class="center">${item.time || '-'}</td>
+                    <td>${item.subject || '-'}</td>
+                    <td>${item.teacher || '-'}</td>
+                    <td class="center" style="color:#007bff; font-weight:bold;">${item.room || '-'}</td>
+                    <td class="center">
+                        ${canManage ? `<button class="action-btn btn-del" onclick="deleteSchedule('${item.docId}')">🗑️ ລົບ</button>` : '<span style="color:#888; font-size:12px;">ເບິ່ງຢ່າງດຽວ</span>'}
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    } catch (e) {
+        console.error(e);
+        tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດ</td></tr>`;
+    }
+};
 
         // ຟັງຊັນລົບຕ່າງໆ (ປ້ອງກັນສິດເພີ່ມເຕີມ)
         window.deleteStudent = async function(docId) {
