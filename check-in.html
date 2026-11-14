@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>📋 5. ຈັດການການມາຮຽນ</title>
+    <title>📋 5. ຈັດການການມາຮຽນ (ເຕັມ 20)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
         * { box-sizing: border-box; }
@@ -69,6 +69,7 @@
         }
         .badge-role { background: #2563eb; color: #fff; }
         .badge-grade { background: #0f766e; color: #ccfbf1; }
+        .badge-fb { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
 
         .card {
             background: #1e293b;
@@ -119,6 +120,7 @@
         }
         button:hover { opacity: 0.92; }
         .btn-save { background: #16a34a; color: #fff; }
+        .btn-sync { background: #0284c7; color: #fff; }
         .btn-del { background: #dc2626; color: #fff; padding: 5px 9px; font-size: 12px; }
 
         .deduct-info {
@@ -132,6 +134,16 @@
         .deduct-val {
             color: #f87171;
             font-weight: 700;
+        }
+        .score-pill {
+            background: rgba(37, 99, 235, 0.22);
+            color: #93c5fd;
+            border: 1px solid #3b82f6;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 12px;
+            display: inline-block;
         }
 
         .table-wrap {
@@ -183,13 +195,13 @@
 </head>
 <body>
 <div class="container">
-    <!-- ແຖບດ້ານເທິງ -->
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
-            <h1 class="page-title">📋 5. ຈັດການການມາຮຽນ</h1>
+            <h1 class="page-title">📋 5. ຈັດການການມາຮຽນ (ຄະແນນເຕັມ 20)</h1>
         </div>
         <div class="user-meta">
+            <span id="fbSyncBadge" class="badge badge-fb">🔥 Firebase: ກຳລັງເຊື່ອມຕໍ່...</span>
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
             <span id="currentUserRole" class="badge badge-role">ROLE</span>
             <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
@@ -201,6 +213,10 @@
         <div class="card-header">
             <h2>📝 1. ກວດລາຍຊື່ນັກຮຽນຂາດຮຽນ</h2>
             <div class="controls">
+                <select id="checkTerm" onchange="renderAll()">
+                    <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
+                    <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
+                </select>
                 <input type="date" id="checkDate" onchange="renderCheckAbsentList()" />
                 <select id="checkGrade" onchange="renderCheckAbsentList()">
                     <option value="ມ.5">ຫ້ອງ ມ.5</option>
@@ -232,6 +248,33 @@
             </table>
         </div>
         <div class="note-text" id="checkAbsentPermissionNote"></div>
+    </section>
+
+    <!-- ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ (ຄະແນນເຕັມ 20) -->
+    <section class="card" id="room-term-score-summary">
+        <div class="card-header">
+            <h2 id="termScoreTitle">🎯 ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ (ຄະແນນເຕັມ 20)</h2>
+            <div class="controls">
+                <span class="deduct-info">ຄະແນນເຕັມ: <strong>20 ຄະແນນ</strong> • ຕັດ <strong>-2 ຄະແນນ</strong> / ຄັ້ງທີ່ຂາດ</span>
+                <button type="button" class="btn-sync" onclick="loadAbsentFromFirestore(true)">🔄 ໂຫຼດຈາກ Firebase</button>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ເທີມ</th>
+                        <th>ຈຳນວນຄັ້ງຂາດ</th>
+                        <th>ຄະແນນທີ່ຖືກຕັດ</th>
+                        <th>ຄະແນນມາຮຽນ (ເຕັມ 20)</th>
+                    </tr>
+                </thead>
+                <tbody id="termScoreSummaryBody"></tbody>
+            </table>
+        </div>
     </section>
 
     <!-- 2. ສະຫຼຸບວັນຂາດປະຈຳອາທິດພ້ອມຕັດຄະແນນ -->
@@ -293,7 +336,7 @@
         </div>
     </section>
 
-    <!-- 4. ກວດເບິ່ງລາຍຊື່ຄົນຂາດໃນຊົ່ວໂມງນັ້ນ (ນັກຮຽນເບິ່ງໄດ້ສະເພາະຫ້ອງຕົນເອງ + ກວດຢ້ອນຫຼັງໄດ້) -->
+    <!-- 4. ກວດເບິ່ງລາຍຊື່ຄົນຂາດໃນຊົ່ວໂມງນັ້ນ -->
     <section class="card" id="room-4-period-absent">
         <div class="card-header">
             <h2>🕒 4. ກວດເບິ່ງລາຍຊື່ຄົນຂາດໃນຊົ່ວໂມງນັ້ນ (ກວດຢ້ອນຫຼັງໄດ້)</h2>
@@ -333,17 +376,29 @@
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, addDoc, deleteDoc, doc
+        getFirestore, collection, getDocs, setDoc, deleteDoc, doc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = window.FIREBASE_CONFIG || null;
-    let db = null;
-    if (firebaseConfig) {
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-    }
+    const DEFAULT_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
+        authDomain: "my-school-c1104.firebaseapp.com",
+        projectId: "my-school-c1104",
+        storageBucket: "my-school-c1104.firebasestorage.app",
+        messagingSenderId: "339930418459",
+        appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+        measurementId: "G-NPNFSW2C72"
+    };
+
+    const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
+    window.FIREBASE_CONFIG = firebaseConfig;
+
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const MAX_TERM_SCORE = 20;
+    const DEDUCT_PER_ABSENT = 2;
 
     const role = (localStorage.getItem("userRole") || "student").toLowerCase();
     const userGrade = localStorage.getItem("userGrade") || "ມ.5";
@@ -352,13 +407,16 @@
     const isTeacher = role === "teacher";
     const isStudent = role === "student";
     const canMarkAttendance = isAdmin || isTeacher;
-    const DEDUCT_PER_ABSENT = 2;
 
     document.getElementById("currentUserName").textContent = userName;
     document.getElementById("currentUserRole").textContent = role.toUpperCase();
     document.getElementById("currentUserGrade").textContent = userGrade;
 
-    // ລາຍຊື່ນັກຮຽນ (ດຶງຈາກ localStorage ຖ້າມີ)
+    function updateSyncBadge(text) {
+        const el = document.getElementById("fbSyncBadge");
+        if (el) el.textContent = text;
+    }
+
     const studentsList = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
         { id: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5" },
         { id: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5" },
@@ -370,10 +428,11 @@
     const todayStr = new Date().toISOString().slice(0, 10);
     const currentMonthStr = todayStr.slice(0, 7);
 
-    // ບັນທຶກການຂາດຮຽນ (ເກັບໃນ localStorage + Firestore)
     let absentRecords = JSON.parse(localStorage.getItem("school_absent_records") || "null") || [
         {
             id: "ABS-1",
+            firestoreId: "ABS-1",
+            term: "ເທີມ 1 / 2026-2027",
             date: todayStr,
             grade: "ມ.5",
             period: "ຊົ່ວໂມງທີ 1",
@@ -387,7 +446,48 @@
         localStorage.setItem("school_absent_records", JSON.stringify(absentRecords));
     }
 
-    // ຕັ້ງຄ່າສິດຕາມ Role
+    function getTermScoreForStudent(studentId, studentName, grade, term) {
+        const count = absentRecords.filter((r) => {
+            const matchTerm = (r.term || "ເທີມ 1 / 2026-2027") === term;
+            const matchGrade = r.grade === grade;
+            const matchStudent = (studentId && r.studentId === studentId) || (studentName && r.studentName === studentName);
+            return matchTerm && matchGrade && matchStudent;
+        }).length;
+
+        const deducted = count * DEDUCT_PER_ABSENT;
+        const score = Math.max(0, Math.min(MAX_TERM_SCORE, MAX_TERM_SCORE - deducted));
+        return { count, deducted, score };
+    }
+
+    async function syncTermAttendanceScoresToFirestore(term, gradeVal) {
+        const roomStudents = studentsList.filter((s) => s.grade === gradeVal);
+        const summaries = roomStudents.map((s) => {
+            const info = getTermScoreForStudent(s.id, s.name, s.grade, term);
+            return {
+                studentId: s.id,
+                studentName: s.name,
+                grade: s.grade,
+                term,
+                absentCount: info.count,
+                deducted: info.deducted,
+                attendanceScore: info.score,
+                maxScore: MAX_TERM_SCORE,
+                updatedAt: new Date().toISOString()
+            };
+        });
+
+        localStorage.setItem("school_attendance_scores_20", JSON.stringify(summaries));
+
+        for (const item of summaries) {
+            const docId = encodeURIComponent(`${item.studentId}_${item.grade}_${item.term}`);
+            try {
+                await setDoc(doc(db, "attendance_scores", docId), item, { merge: true });
+            } catch (err) {
+                console.warn("ບໍ່ໄດ້ບັນທຶກ attendance_scores:", err.message);
+            }
+        }
+    }
+
     function setupRoleLocks() {
         const validGrade = ["ມ.5", "ມ.6", "ມ.7"].includes(userGrade) ? userGrade : "ມ.5";
 
@@ -406,10 +506,9 @@
                 "* ສິດເບິ່ງຢ່າງດຽວ: ສະເພາະ Admin ແລະ ຄູອາຈານເທົ່ານັ້ນທີ່ບັນທຶກການຂາດຮຽນໄດ້.";
         } else {
             document.getElementById("checkAbsentPermissionNote").textContent =
-                "* ໝາຍເຫດ: ໝາຍເລືອກຊ່ອງ 'ຂາດຮຽນ' ໃຫ້ນັກຮຽນທີ່ຂາດ ແລ້ວກົດ 'ບັນທຶກການຂາດຮຽນ'.";
+                "* ໝາຍເຫດ: ໝາຍເລືອກຊ່ອງ 'ຂາດຮຽນ' ໃຫ້ນັກຮຽນທີ່ຂາດ ແລ້ວກົດ 'ບັນທຶກການຂາດຮຽນ' (ບັນທຶກລົງ Firebase ອັດຕະໂນມັດ).";
         }
 
-        // ສຳລັບນັກຮຽນ: ລັອກໃຫ້ເຫັນ ແລະ ກວດໄດ້ສະເພາະຫ້ອງຂອງຕົນເອງເທົ່ານັ້ນ
         if (isStudent) {
             ["checkGrade", "weeklyGrade", "monthlyGrade", "historyGrade"].forEach((id) => {
                 const el = document.getElementById(id);
@@ -425,8 +524,8 @@
         }
     }
 
-    // 1. ກວດລາຍຊື່ນັກຮຽນຂາດຮຽນ
     window.renderCheckAbsentList = function () {
+        const termVal = document.getElementById("checkTerm").value;
         const dateVal = document.getElementById("checkDate").value || todayStr;
         const gradeVal = isStudent ? userGrade : document.getElementById("checkGrade").value;
         const periodVal = document.getElementById("checkPeriod").value;
@@ -440,7 +539,12 @@
 
         tbody.innerHTML = roomStudents.map((s, idx) => {
             const existing = absentRecords.find(
-                (r) => r.date === dateVal && r.grade === gradeVal && r.period === periodVal && r.studentId === s.id
+                (r) =>
+                    (r.term || "ເທີມ 1 / 2026-2027") === termVal &&
+                    r.date === dateVal &&
+                    r.grade === gradeVal &&
+                    r.period === periodVal &&
+                    r.studentId === s.id
             );
             const checkedAttr = existing ? "checked" : "";
             const reasonVal = existing ? existing.reason || "" : "";
@@ -463,9 +567,40 @@
         }).join("");
     };
 
+    window.renderTermScoreSummary = function () {
+        const termVal = document.getElementById("checkTerm").value;
+        const gradeVal = isStudent ? userGrade : document.getElementById("checkGrade").value;
+        document.getElementById("termScoreTitle").textContent =
+            `🎯 ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ (${termVal}) — ຄະແນນເຕັມ ${MAX_TERM_SCORE}`;
+
+        const tbody = document.getElementById("termScoreSummaryBody");
+        const roomStudents = studentsList.filter((s) => s.grade === gradeVal);
+
+        if (!roomStudents.length) {
+            tbody.innerHTML = `<tr><td colspan="7" class="center">ບໍ່ມີຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(gradeVal)}</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = roomStudents.map((s, idx) => {
+            const info = getTermScoreForStudent(s.id, s.name, s.grade, termVal);
+            return `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${esc(s.name)}</td>
+                    <td>${esc(s.grade)}</td>
+                    <td>${esc(termVal)}</td>
+                    <td><span class="${info.count > 0 ? "status-absent" : "status-present"}">${info.count} ຄັ້ງ</span></td>
+                    <td><strong class="deduct-val">-${info.deducted}</strong></td>
+                    <td><span class="score-pill">${info.score} / ${MAX_TERM_SCORE}</span></td>
+                </tr>
+            `;
+        }).join("");
+    };
+
     window.saveAbsentRecords = async function () {
         if (!canMarkAttendance) return alert("ສະເພາະ Admin ແລະ ຄູອາຈານເທົ່ານັ້ນທີ່ບັນທຶກໄດ້!");
 
+        const termVal = document.getElementById("checkTerm").value;
         const dateVal = document.getElementById("checkDate").value || todayStr;
         const gradeVal = document.getElementById("checkGrade").value;
         const periodVal = document.getElementById("checkPeriod").value;
@@ -473,9 +608,29 @@
         const checkboxes = Array.from(document.querySelectorAll(".absent-cb"));
         const reasons = Array.from(document.querySelectorAll(".absent-reason"));
 
-        // ລຶບບັນທຶກເກົ່າຂອງວັນ + ຫ້ອງ + ຊົ່ວໂມງນັ້ນອອກກ່ອນ ແລ້ວບັນທຶກໃໝ່
+        const oldRecords = absentRecords.filter(
+            (r) =>
+                (r.term || "ເທີມ 1 / 2026-2027") === termVal &&
+                r.date === dateVal &&
+                r.grade === gradeVal &&
+                r.period === periodVal
+        );
+
+        for (const oldRec of oldRecords) {
+            const docId = oldRec.firestoreId || oldRec.id;
+            try {
+                await deleteDoc(doc(db, "absent_records", docId));
+            } catch (err) {}
+        }
+
         absentRecords = absentRecords.filter(
-            (r) => !(r.date === dateVal && r.grade === gradeVal && r.period === periodVal)
+            (r) =>
+                !(
+                    (r.term || "ເທີມ 1 / 2026-2027") === termVal &&
+                    r.date === dateVal &&
+                    r.grade === gradeVal &&
+                    r.period === periodVal
+                )
         );
 
         for (const cb of checkboxes) {
@@ -484,9 +639,12 @@
                 const sname = cb.getAttribute("data-sname");
                 const rInput = reasons.find((el) => el.getAttribute("data-sid") === sid);
                 const reasonText = (rInput ? rInput.value : "").trim() || "ຂາດຮຽນ";
+                const recId = `ABS-${termVal.replace(/[^a-zA-Z0-9]/g, "")}-${dateVal}-${periodVal.replace(/\s+/g, "")}-${sid}`;
 
                 const newRec = {
-                    id: "ABS-" + Date.now() + "-" + sid,
+                    id: recId,
+                    firestoreId: recId,
+                    term: termVal,
                     date: dateVal,
                     grade: gradeVal,
                     period: periodVal,
@@ -494,29 +652,26 @@
                     studentName: sname,
                     reason: reasonText
                 };
-                absentRecords.push(newRec);
 
-                if (db) {
-                    try {
-                        await addDoc(collection(db, "absent_records"), newRec);
-                    } catch (err) {
-                        console.error("Firestore save absent error:", err);
-                    }
+                absentRecords.push(newRec);
+                try {
+                    await setDoc(doc(db, "absent_records", recId), newRec);
+                } catch (err) {
+                    console.error("Firestore save absent error:", err);
                 }
             }
         }
 
         saveLocalRecords();
-        alert(`✅ ບັນທຶກການຂາດຮຽນ (${dateVal} • ${gradeVal} • ${periodVal}) ສຳເລັດ!`);
-        renderWeeklySummary();
-        renderMonthlySummary();
-        renderPeriodAbsentHistory();
+        await syncTermAttendanceScoresToFirestore(termVal, gradeVal);
+        updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId} (ບັນທຶກແລ້ວ)`);
+        alert(`✅ ບັນທຶກການຂາດຮຽນ ແລະ ຄະແນນມາຮຽນ (ເຕັມ 20) ສຳເລັດ!`);
+        renderAll();
     };
 
-    // ຄຳນວນຊ່ວງວັນຂອງອາທິດປັດຈຸບັນ (ຈັນ - ອາທິດ)
     function getCurrentWeekRange() {
         const now = new Date();
-        const day = now.getDay(); // 0=Sun, 1=Mon...
+        const day = now.getDay();
         const diffToMon = day === 0 ? -6 : 1 - day;
         const monday = new Date(now);
         monday.setDate(now.getDate() + diffToMon);
@@ -529,7 +684,6 @@
         return { start: monday, end: sunday };
     }
 
-    // 2. ສະຫຼຸບວັນຂາດປະຈຳອາທິດພ້ອມຕັດຄະແນນ
     window.renderWeeklySummary = function () {
         const gradeVal = isStudent ? userGrade : document.getElementById("weeklyGrade").value;
         const tbody = document.getElementById("weeklySummaryBody");
@@ -561,7 +715,6 @@
         }).join("");
     };
 
-    // 3. ສະຫຼຸບວັນຂາດປະຈຳເດືອນພ້ອມຕັດຄະແນນ
     window.renderMonthlySummary = function () {
         const monthVal = document.getElementById("monthlyPicker").value || currentMonthStr;
         const gradeVal = isStudent ? userGrade : document.getElementById("monthlyGrade").value;
@@ -591,7 +744,6 @@
         }).join("");
     };
 
-    // 4. ກວດເບິ່ງລາຍຊື່ຄົນຂາດໃນຊົ່ວໂມງນັ້ນ (ກວດຢ້ອນຫຼັງໄດ້ + ນັກຮຽນເຫັນສະເພາະຫ້ອງຕົນເອງ)
     window.renderPeriodAbsentHistory = function () {
         const dateVal = document.getElementById("historyDate").value;
         const gradeVal = isStudent ? userGrade : document.getElementById("historyGrade").value;
@@ -634,57 +786,30 @@
         if (!target) return;
         if (!confirm(`ຢືນຢັນລົບລາຍການຂາດຂອງ "${target.studentName}"?`)) return;
 
-        if (db && target.firestoreId) {
-            try {
-                await deleteDoc(doc(db, "absent_records", target.firestoreId));
-            } catch (err) {
-                console.error("Firestore delete absent error:", err);
-            }
+        const docId = target.firestoreId || target.id;
+        try {
+            await deleteDoc(doc(db, "absent_records", docId));
+        } catch (err) {
+            console.error("Firestore delete absent error:", err);
         }
 
         absentRecords = absentRecords.filter((r) => r.id !== recId);
         saveLocalRecords();
+        const termVal = document.getElementById("checkTerm").value;
+        await syncTermAttendanceScoresToFirestore(termVal, target.grade);
+        renderAll();
+    };
+
+    window.renderAll = function () {
         renderCheckAbsentList();
+        renderTermScoreSummary();
         renderWeeklySummary();
         renderMonthlySummary();
         renderPeriodAbsentHistory();
     };
 
-    async function loadAbsentFromFirestore() {
-        if (!db) return;
+    window.loadAbsentFromFirestore = async function (showAlert = false) {
         try {
             const snap = await getDocs(collection(db, "absent_records"));
             if (!snap.empty) {
-                absentRecords = snap.docs.map((d) => ({
-                    id: d.data().id || d.id,
-                    firestoreId: d.id,
-                    ...d.data()
-                }));
-                saveLocalRecords();
-                renderCheckAbsentList();
-                renderWeeklySummary();
-                renderMonthlySummary();
-                renderPeriodAbsentHistory();
-            }
-        } catch (err) {
-            console.warn("ບໍ່ໄດ້ໂຫຼດ absent_records ຈາກ Firestore:", err.message);
-        }
-    }
-
-    function esc(str) {
-        return String(str || "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;");
-    }
-
-    setupRoleLocks();
-    renderCheckAbsentList();
-    renderWeeklySummary();
-    renderMonthlySummary();
-    renderPeriodAbsentHistory();
-    loadAbsentFromFirestore();
-</script>
-</body>
-</html>
+                absentRecords = snap.docs.map((d
