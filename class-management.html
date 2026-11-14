@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🏫 ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ & ຕາຕະລາງ</title>
+    <title>🏫 ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ &amp; ຕາຕະລາງ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
         * { box-sizing: border-box; }
@@ -15,7 +15,7 @@
             padding: 16px;
         }
         .container {
-            max-width: 1140px;
+            max-width: 1180px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
@@ -60,6 +60,7 @@
             align-items: center;
             gap: 8px;
             font-size: 13px;
+            flex-wrap: wrap;
         }
         .badge {
             padding: 4px 10px;
@@ -130,7 +131,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 620px;
+            min-width: 680px;
         }
         th, td {
             border: 1px solid #334155;
@@ -151,6 +152,7 @@
         .center { text-align: center; }
         .actions { display: flex; gap: 6px; flex-wrap: wrap; }
         .hidden-section { display: none !important; }
+        .admin-only-hide { display: none !important; }
         .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
     </style>
 </head>
@@ -160,7 +162,7 @@
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
-            <h1 class="page-title">🏫 ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ & ຕາຕະລາງ</h1>
+            <h1 class="page-title">🏫 ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ &amp; ຕາຕະລາງ</h1>
         </div>
         <div class="user-meta">
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
@@ -181,6 +183,7 @@
                     <option value="ມ.7">ມ.7</option>
                 </select>
                 <input type="text" id="studentSearch" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderStudents()" />
+                <button type="button" class="btn-add admin-action" onclick="addStudent()">➕ ເພີ່ມນັກຮຽນ</button>
             </div>
         </div>
         <div class="table-wrap">
@@ -192,6 +195,7 @@
                         <th>ຊື່ ແລະ ນາມສະກຸນ</th>
                         <th>ຫ້ອງ</th>
                         <th>ສະຖານະ</th>
+                        <th class="admin-action" style="width: 150px;">ຈັດການ</th>
                     </tr>
                 </thead>
                 <tbody id="studentsTableBody"></tbody>
@@ -209,6 +213,7 @@
                     <option value="ມ.6">ຫ້ອງ ມ.6</option>
                     <option value="ມ.7">ຫ້ອງ ມ.7</option>
                 </select>
+                <button type="button" class="btn-add admin-action" onclick="addClassTimetableRow()">➕ ເພີ່ມແຖວຕາຕະລາງຮຽນ</button>
             </div>
         </div>
         <div class="table-wrap">
@@ -220,6 +225,7 @@
                         <th>ຊົ່ວໂມງ 2<br><small>08:50 - 09:35</small></th>
                         <th>ຊົ່ວໂມງ 3<br><small>09:50 - 10:35</small></th>
                         <th>ຊົ່ວໂມງ 4<br><small>10:40 - 11:25</small></th>
+                        <th class="admin-action" style="width: 150px;">ຈັດການ</th>
                     </tr>
                 </thead>
                 <tbody id="classTimetableBody"></tbody>
@@ -231,8 +237,8 @@
     <section class="card" id="sec-teaching-timetable">
         <div class="card-header">
             <h2>👩‍🏫 3. ຕາຕະລາງສອນ</h2>
-            <div class="controls" id="teachingAdminControls">
-                <button type="button" class="btn-add" onclick="openAddTeachingModal()">➕ ເພີ່ມຕາຕະລາງສອນ</button>
+            <div class="controls">
+                <button type="button" class="btn-add admin-action" onclick="openAddTeachingModal()">➕ ເພີ່ມຕາຕະລາງສອນ</button>
             </div>
         </div>
         <div class="table-wrap">
@@ -244,7 +250,7 @@
                         <th>ວິຊາສອນ</th>
                         <th>ຫ້ອງ</th>
                         <th>ມື້ / ເວລາສອນ</th>
-                        <th id="teachingActionHeader" style="width: 150px;">ຈັດການ</th>
+                        <th class="admin-action" style="width: 150px;">ຈັດການ</th>
                     </tr>
                 </thead>
                 <tbody id="teachingTimetableBody"></tbody>
@@ -262,7 +268,6 @@
         getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // ຖ້າຕ້ອງການເຊື່ອມ Firestore ແທ້ ໃຫ້ໃສ່ firebaseConfig ຂອງທ່ານ ແລະ ເປີດໃຊ້ງານ db
     const firebaseConfig = window.FIREBASE_CONFIG || null;
     let db = null;
     if (firebaseConfig) {
@@ -280,61 +285,31 @@
     document.getElementById("currentUserRole").textContent = role.toUpperCase();
     document.getElementById("currentUserGrade").textContent = userGrade;
 
-    // ຕັ້ງຄ່າສິດສຳລັບສ່ວນທີ 3 (ຕາຕະລາງສອນ): ຊ່ອນຈາກນັກຮຽນ, ສະເພາະ Admin ເພີ່ມ/ແກ້ໄຂ/ລົບໄດ້
-    const teachingSection = document.getElementById("sec-teaching-timetable");
-    const teachingAdminControls = document.getElementById("teachingAdminControls");
-    const teachingActionHeader = document.getElementById("teachingActionHeader");
-
+    // ຊ່ອນສ່ວນທີ 3 ຈາກນັກຮຽນ
     if (isStudent) {
-        teachingSection.classList.add("hidden-section");
-    }
-    if (!isAdmin) {
-        teachingAdminControls.style.display = "none";
-        teachingActionHeader.style.display = "none";
+        document.getElementById("sec-teaching-timetable").classList.add("hidden-section");
     }
 
-    // ຂໍ້ມູນຕົວຢ່າງ / ໂຫຼດຈາກ localStorage
+    // ຊ່ອນປຸ່ມ/ຄໍລຳຈັດການ ຖ້າບໍ່ແມ່ນ Admin
+    function applyAdminOnlyUI() {
+        if (isAdmin) return;
+        document.querySelectorAll(".admin-action").forEach((el) => {
+            el.classList.add("admin-only-hide");
+        });
+    }
+
+    // -------------------- 1. ລາຍຊື່ນັກຮຽນ --------------------
     let studentsData = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
-        { id: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", status: "ປົກກະຕິ" },
-        { id: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", status: "ປົກກະຕິ" },
-        { id: "STD-003", name: "ທ. ອານຸສອນ ວົງສາ", grade: "ມ.5", status: "ປົກກະຕິ" },
-        { id: "STD-004", name: "ນ. ດາລາວັນ ແກ້ວມະນີ", grade: "ມ.6", status: "ປົກກະຕິ" }
+        { id: "STD-001", code: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", status: "ປົກກະຕິ" },
+        { id: "STD-002", code: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", status: "ປົກກະຕິ" },
+        { id: "STD-003", code: "STD-003", name: "ທ. ອານຸສອນ ວົງສາ", grade: "ມ.5", status: "ປົກກະຕິ" },
+        { id: "STD-004", code: "STD-004", name: "ນ. ດາລາວັນ ແກ້ວມະນີ", grade: "ມ.6", status: "ປົກກະຕິ" }
     ];
 
-    const classTimetables = {
-        "ມ.5": [
-            { day: "ຈັນ", p1: "ຄະນິດສາດ", p2: "ຟີຊິກສາດ", p3: "ພາສາລາວ", p4: "ພາສາອັງກິດ" },
-            { day: "ອັງຄານ", p1: "ເຄມີສາດ", p2: "ຊີວະສາດ", p3: "ປະຫວັດສາດ", p4: "ໄອທີ / ຄອມ" },
-            { day: "ພຸດ", p1: "ຄະນິດສາດ", p2: "ພູມສາດ", p3: "ພາສາອັງກິດ", p4: "ພະລະສຶກສາ" },
-            { day: "ພະຫັດ", p1: "ຟີຊິກສາດ", p2: "ເຄມີສາດ", p3: "ພາສາລາວ", p4: "ສຶກສາພົນລະເມືອງ" },
-            { day: "ສຸກ", p1: "ຄະນິດສາດ", p2: "ຊີວະສາດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
-        ],
-        "ມ.6": [
-            { day: "ຈັນ", p1: "ພາສາລາວ", p2: "ຄະນິດສາດ", p3: "ຟີຊິກສາດ", p4: "ພາສາອັງກິດ" },
-            { day: "ອັງຄານ", p1: "ຊີວະສາດ", p2: "ເຄມີສາດ", p3: "ພູມສາດ", p4: "ປະຫວັດສາດ" },
-            { day: "ພຸດ", p1: "ຄະນິດສາດ", p2: "ໄອທີ / ຄອມ", p3: "ພາສາອັງກິດ", p4: "ພະລະສຶກສາ" },
-            { day: "ພະຫັດ", p1: "ເຄມີສາດ", p2: "ຟີຊິກສາດ", p3: "ສຶກສາພົນລະເມືອງ", p4: "ພາສາລາວ" },
-            { day: "ສຸກ", p1: "ຊີວະສາດ", p2: "ຄະນິດສາດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
-        ],
-        "ມ.7": [
-            { day: "ຈັນ", p1: "ຄະນິດສາດ", p2: "ພາສາອັງກິດ", p3: "ຟີຊິກສາດ", p4: "ເຄມີສາດ" },
-            { day: "ອັງຄານ", p1: "ພາສາລາວ", p2: "ຊີວະສາດ", p3: "ປະຫວັດສາດ", p4: "ໄອທີ / ຄອມ" },
-            { day: "ພຸດ", p1: "ຟີຊິກສາດ", p2: "ຄະນິດສາດ", p3: "ພູມສາດ", p4: "ພາສາອັງກິດ" },
-            { day: "ພະຫັດ", p1: "ເຄມີສາດ", p2: "ສຶກສາພົນລະເມືອງ", p3: "ຊີວະສາດ", p4: "ພາສາລາວ" },
-            { day: "ສຸກ", p1: "ຄະນິດສາດ", p2: "ພາສາອັງກິດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
-        ]
-    };
-
-    let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [
-        { id: "T-1", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ", subject: "ຄະນິດສາດ", grade: "ມ.5", schedule: "ຈັນ, ພຸດ, ສຸກ (08:00 - 08:45)" },
-        { id: "T-2", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ", subject: "ຟີຊິກສາດ", grade: "ມ.5", schedule: "ຈັນ, ພະຫັດ (08:50 - 09:35)" }
-    ];
-
-    function saveTeachingSchedules() {
-        localStorage.setItem("school_teaching_schedules", JSON.stringify(teachingSchedules));
+    function saveStudents() {
+        localStorage.setItem("school_students_list", JSON.stringify(studentsData));
     }
 
-    // 1. ສະແດງລາຍຊື່ນັກຮຽນ
     window.renderStudents = function () {
         const gradeFilterEl = document.getElementById("studentGradeFilter");
         const searchVal = (document.getElementById("studentSearch").value || "").trim().toLowerCase();
@@ -349,27 +324,160 @@
 
         const filtered = studentsData.filter((s) => {
             const matchGrade = selectedGrade === "ALL" || s.grade === selectedGrade;
-            const matchName = !searchVal || s.name.toLowerCase().includes(searchVal) || s.id.toLowerCase().includes(searchVal);
+            const codeVal = s.code || s.id || "";
+            const matchName = !searchVal ||
+                (s.name || "").toLowerCase().includes(searchVal) ||
+                codeVal.toLowerCase().includes(searchVal);
             return matchGrade && matchName;
         });
 
+        const cols = isAdmin ? 6 : 5;
         if (!filtered.length) {
-            tbody.innerHTML = `<tr><td colspan="5" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນ</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນ</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = filtered.map((s, idx) => `
-            <tr>
-                <td>${idx + 1}</td>
-                <td>${esc(s.id)}</td>
-                <td>${esc(s.name)}</td>
-                <td>${esc(s.grade)}</td>
-                <td>${esc(s.status)}</td>
-            </tr>
-        `).join("");
+        tbody.innerHTML = filtered.map((s, idx) => {
+            const codeVal = s.code || s.id || "-";
+            return `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${esc(codeVal)}</td>
+                    <td>${esc(s.name)}</td>
+                    <td>${esc(s.grade)}</td>
+                    <td>${esc(s.status || "ປົກກະຕິ")}</td>
+                    ${isAdmin ? `
+                        <td>
+                            <div class="actions">
+                                <button type="button" class="btn-edit" onclick="editStudent('${s.id}')">ແກ້ໄຂ</button>
+                                <button type="button" class="btn-del" onclick="deleteStudent('${s.id}')">ລົບ</button>
+                            </div>
+                        </td>
+                    ` : ""}
+                </tr>
+            `;
+        }).join("");
+        applyAdminOnlyUI();
     };
 
-    // 2. ສະແດງຕາຕະລາງຮຽນ
+    window.addStudent = async function () {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມນັກຮຽນໄດ້!");
+        const code = prompt("ປ້ອນລະຫັດນັກຮຽນ:", "STD-" + String(studentsData.length + 1).padStart(3, "0"));
+        if (!code || !code.trim()) return;
+        const name = prompt("ປ້ອນຊື່ ແລະ ນາມສະກຸນນັກຮຽນ:");
+        if (!name || !name.trim()) return;
+        const grade = prompt("ປ້ອນຫ້ອງ (ເຊັ່ນ ມ.5):", userGrade);
+        if (!grade || !grade.trim()) return;
+        const status = prompt("ສະຖານະ:", "ປົກກະຕິ") || "ປົກກະຕິ";
+
+        const item = {
+            id: "S-" + Date.now(),
+            code: code.trim(),
+            name: name.trim(),
+            grade: grade.trim(),
+            status: status.trim()
+        };
+
+        if (db) {
+            try {
+                const ref = await addDoc(collection(db, "students"), item);
+                item.firestoreId = ref.id;
+            } catch (err) {
+                console.error("Firestore student add error:", err);
+            }
+        }
+
+        studentsData.push(item);
+        saveStudents();
+        renderStudents();
+    };
+
+    window.editStudent = async function (id) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂນັກຮຽນໄດ້!");
+        const target = studentsData.find((s) => s.id === id);
+        if (!target) return;
+
+        const code = prompt("ແກ້ໄຂລະຫັດນັກຮຽນ:", target.code || target.id);
+        if (code === null || !code.trim()) return;
+        const name = prompt("ແກ້ໄຂຊື່ ແລະ ນາມສະກຸນ:", target.name);
+        if (name === null || !name.trim()) return;
+        const grade = prompt("ແກ້ໄຂຫ້ອງ:", target.grade);
+        if (grade === null || !grade.trim()) return;
+        const status = prompt("ແກ້ໄຂສະຖານະ:", target.status || "ປົກກະຕິ");
+        if (status === null || !status.trim()) return;
+
+        target.code = code.trim();
+        target.name = name.trim();
+        target.grade = grade.trim();
+        target.status = status.trim();
+
+        if (db && target.firestoreId) {
+            try {
+                await updateDoc(doc(db, "students", target.firestoreId), {
+                    code: target.code,
+                    name: target.name,
+                    grade: target.grade,
+                    status: target.status
+                });
+            } catch (err) {
+                console.error("Firestore student update error:", err);
+            }
+        }
+
+        saveStudents();
+        renderStudents();
+    };
+
+    window.deleteStudent = async function (id) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບນັກຮຽນໄດ້!");
+        const target = studentsData.find((s) => s.id === id);
+        if (!target) return;
+        if (!confirm(`ຢືນຢັນລົບນັກຮຽນ "${target.name}"?`)) return;
+
+        if (db && target.firestoreId) {
+            try {
+                await deleteDoc(doc(db, "students", target.firestoreId));
+            } catch (err) {
+                console.error("Firestore student delete error:", err);
+            }
+        }
+
+        studentsData = studentsData.filter((s) => s.id !== id);
+        saveStudents();
+        renderStudents();
+    };
+
+    // -------------------- 2. ຕາຕະລາງຮຽນ --------------------
+    const defaultClassTimetables = {
+        "ມ.5": [
+            { id: "C5-1", day: "ຈັນ", p1: "ຄະນິດສາດ", p2: "ຟີຊິກສາດ", p3: "ພາສາລາວ", p4: "ພາສາອັງກິດ" },
+            { id: "C5-2", day: "ອັງຄານ", p1: "ເຄມີສາດ", p2: "ຊີວະສາດ", p3: "ປະຫວັດສາດ", p4: "ໄອທີ / ຄອມ" },
+            { id: "C5-3", day: "ພຸດ", p1: "ຄະນິດສາດ", p2: "ພູມສາດ", p3: "ພາສາອັງກິດ", p4: "ພະລະສຶກສາ" },
+            { id: "C5-4", day: "ພະຫັດ", p1: "ຟີຊິກສາດ", p2: "ເຄມີສາດ", p3: "ພາສາລາວ", p4: "ສຶກສາພົນລະເມືອງ" },
+            { id: "C5-5", day: "ສຸກ", p1: "ຄະນິດສາດ", p2: "ຊີວະສາດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
+        ],
+        "ມ.6": [
+            { id: "C6-1", day: "ຈັນ", p1: "ພາສາລາວ", p2: "ຄະນິດສາດ", p3: "ຟີຊິກສາດ", p4: "ພາສາອັງກິດ" },
+            { id: "C6-2", day: "ອັງຄານ", p1: "ຊີວະສາດ", p2: "ເຄມີສາດ", p3: "ພູມສາດ", p4: "ປະຫວັດສາດ" },
+            { id: "C6-3", day: "ພຸດ", p1: "ຄະນິດສາດ", p2: "ໄອທີ / ຄອມ", p3: "ພາສາອັງກິດ", p4: "ພະລະສຶກສາ" },
+            { id: "C6-4", day: "ພະຫັດ", p1: "ເຄມີສາດ", p2: "ຟີຊິກສາດ", p3: "ສຶກສາພົນລະເມືອງ", p4: "ພາສາລາວ" },
+            { id: "C6-5", day: "ສຸກ", p1: "ຊີວະສາດ", p2: "ຄະນິດສາດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
+        ],
+        "ມ.7": [
+            { id: "C7-1", day: "ຈັນ", p1: "ຄະນິດສາດ", p2: "ພາສາອັງກິດ", p3: "ຟີຊິກສາດ", p4: "ເຄມີສາດ" },
+            { id: "C7-2", day: "ອັງຄານ", p1: "ພາສາລາວ", p2: "ຊີວະສາດ", p3: "ປະຫວັດສາດ", p4: "ໄອທີ / ຄອມ" },
+            { id: "C7-3", day: "ພຸດ", p1: "ຟີຊິກສາດ", p2: "ຄະນິດສາດ", p3: "ພູມສາດ", p4: "ພາສາອັງກິດ" },
+            { id: "C7-4", day: "ພະຫັດ", p1: "ເຄມີສາດ", p2: "ສຶກສາພົນລະເມືອງ", p3: "ຊີວະສາດ", p4: "ພາສາລາວ" },
+            { id: "C7-5", day: "ສຸກ", p1: "ຄະນິດສາດ", p2: "ພາສາອັງກິດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
+        ]
+    };
+
+    let classTimetables = JSON.parse(localStorage.getItem("school_class_timetables") || "null") || defaultClassTimetables;
+
+    function saveClassTimetables() {
+        localStorage.setItem("school_class_timetables", JSON.stringify(classTimetables));
+    }
+
     window.renderClassTimetable = function () {
         const selectEl = document.getElementById("classTimetableGrade");
         const titleEl = document.getElementById("classTimetableTitle");
@@ -382,8 +490,16 @@
             selectEl.disabled = true;
         }
 
+        if (!classTimetables[g]) classTimetables[g] = [];
         titleEl.textContent = `📅 2. ຕາຕະລາງຮຽນ (${g})`;
-        const rows = classTimetables[g] || classTimetables["ມ.5"];
+        const rows = classTimetables[g];
+        const cols = isAdmin ? 6 : 5;
+
+        if (!rows.length) {
+            tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນ</td></tr>`;
+            applyAdminOnlyUI();
+            return;
+        }
 
         tbody.innerHTML = rows.map((r) => `
             <tr>
@@ -392,17 +508,100 @@
                 <td>${esc(r.p2)}</td>
                 <td>${esc(r.p3)}</td>
                 <td>${esc(r.p4)}</td>
+                ${isAdmin ? `
+                    <td>
+                        <div class="actions">
+                            <button type="button" class="btn-edit" onclick="editClassTimetableRow('${esc(g)}', '${esc(r.id)}')">ແກ້ໄຂ</button>
+                            <button type="button" class="btn-del" onclick="deleteClassTimetableRow('${esc(g)}', '${esc(r.id)}')">ລົບ</button>
+                        </div>
+                    </td>
+                ` : ""}
             </tr>
         `).join("");
+        applyAdminOnlyUI();
     };
 
-    // 3. ສະແດງ ແລະ ຈັດການຕາຕະລາງສອນ (ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມ/ແກ້ໄຂ/ລົບໄດ້)
+    window.addClassTimetableRow = function () {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມຕາຕະລາງຮຽນໄດ້!");
+        const g = document.getElementById("classTimetableGrade").value || "ມ.5";
+        if (!classTimetables[g]) classTimetables[g] = [];
+
+        const day = prompt("ປ້ອນມື້ (ເຊັ່ນ ຈັນ, ອັງຄານ, ເສົາ):", "ເສົາ");
+        if (!day || !day.trim()) return;
+        const p1 = prompt("ຊົ່ວໂມງ 1:", "ວິຊາເສີມ") || "-";
+        const p2 = prompt("ຊົ່ວໂມງ 2:", "ວິຊາເສີມ") || "-";
+        const p3 = prompt("ຊົ່ວໂມງ 3:", "ກິດຈະກຳ") || "-";
+        const p4 = prompt("ຊົ່ວໂມງ 4:", "ສະຫຼຸບ") || "-";
+
+        classTimetables[g].push({
+            id: "C-" + Date.now(),
+            day: day.trim(),
+            p1: p1.trim(),
+            p2: p2.trim(),
+            p3: p3.trim(),
+            p4: p4.trim()
+        });
+        saveClassTimetables();
+        renderClassTimetable();
+    };
+
+    window.editClassTimetableRow = function (g, rowId) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂຕາຕະລາງຮຽນໄດ້!");
+        const rows = classTimetables[g] || [];
+        const target = rows.find((x) => x.id === rowId);
+        if (!target) return;
+
+        const day = prompt("ແກ້ໄຂມື້:", target.day);
+        if (day === null || !day.trim()) return;
+        const p1 = prompt("ແກ້ໄຂຊົ່ວໂມງ 1:", target.p1);
+        if (p1 === null) return;
+        const p2 = prompt("ແກ້ໄຂຊົ່ວໂມງ 2:", target.p2);
+        if (p2 === null) return;
+        const p3 = prompt("ແກ້ໄຂຊົ່ວໂມງ 3:", target.p3);
+        if (p3 === null) return;
+        const p4 = prompt("ແກ້ໄຂຊົ່ວໂມງ 4:", target.p4);
+        if (p4 === null) return;
+
+        target.day = day.trim();
+        target.p1 = p1.trim();
+        target.p2 = p2.trim();
+        target.p3 = p3.trim();
+        target.p4 = p4.trim();
+
+        saveClassTimetables();
+        renderClassTimetable();
+    };
+
+    window.deleteClassTimetableRow = function (g, rowId) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບຕາຕະລາງຮຽນໄດ້!");
+        const rows = classTimetables[g] || [];
+        const target = rows.find((x) => x.id === rowId);
+        if (!target) return;
+        if (!confirm(`ຢືນຢັນລົບແຖວມື້ "${target.day}" ຂອງຫ້ອງ ${g}?`)) return;
+
+        classTimetables[g] = rows.filter((x) => x.id !== rowId);
+        saveClassTimetables();
+        renderClassTimetable();
+    };
+
+    // -------------------- 3. ຕາຕະລາງສອນ --------------------
+    let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [
+        { id: "T-1", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ", subject: "ຄະນິດສາດ", grade: "ມ.5", schedule: "ຈັນ, ພຸດ, ສຸກ (08:00 - 08:45)" },
+        { id: "T-2", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ", subject: "ຟີຊິກສາດ", grade: "ມ.5", schedule: "ຈັນ, ພະຫັດ (08:50 - 09:35)" }
+    ];
+
+    function saveTeachingSchedules() {
+        localStorage.setItem("school_teaching_schedules", JSON.stringify(teachingSchedules));
+    }
+
     window.renderTeachingTimetable = function () {
         if (isStudent) return;
         const tbody = document.getElementById("teachingTimetableBody");
+        const cols = isAdmin ? 6 : 5;
 
         if (!teachingSchedules.length) {
-            tbody.innerHTML = `<tr><td colspan="${isAdmin ? 6 : 5}" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນ</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນ</td></tr>`;
+            applyAdminOnlyUI();
             return;
         }
 
@@ -423,6 +622,7 @@
                 ` : ""}
             </tr>
         `).join("");
+        applyAdminOnlyUI();
     };
 
     window.openAddTeachingModal = async function () {
@@ -450,7 +650,7 @@
                 const ref = await addDoc(collection(db, "teaching_schedules"), newItem);
                 newItem.firestoreId = ref.id;
             } catch (err) {
-                console.error("Firestore add error:", err);
+                console.error("Firestore teaching add error:", err);
             }
         }
 
@@ -487,7 +687,7 @@
                     schedule: target.schedule
                 });
             } catch (err) {
-                console.error("Firestore update error:", err);
+                console.error("Firestore teaching update error:", err);
             }
         }
 
@@ -499,14 +699,13 @@
         if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບຕາຕະລາງສອນໄດ້!");
         const target = teachingSchedules.find((x) => x.id === id);
         if (!target) return;
-
         if (!confirm(`ຢືນຢັນລົບຕາຕະລາງສອນຂອງ "${target.teacher}"?`)) return;
 
         if (db && target.firestoreId) {
             try {
                 await deleteDoc(doc(db, "teaching_schedules", target.firestoreId));
             } catch (err) {
-                console.error("Firestore delete error:", err);
+                console.error("Firestore teaching delete error:", err);
             }
         }
 
@@ -520,7 +719,12 @@
         try {
             const stdSnap = await getDocs(collection(db, "students"));
             if (!stdSnap.empty) {
-                studentsData = stdSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                studentsData = stdSnap.docs.map((d) => ({
+                    id: d.data().id || d.id,
+                    firestoreId: d.id,
+                    ...d.data()
+                }));
+                saveStudents();
                 renderStudents();
             }
         } catch (err) {
@@ -557,6 +761,7 @@
         document.getElementById("classTimetableGrade").value = userGrade;
     }
 
+    applyAdminOnlyUI();
     renderStudents();
     renderClassTimetable();
     renderTeachingTimetable();
