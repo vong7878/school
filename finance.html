@@ -423,29 +423,26 @@
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-        getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, setDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+    getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const DEFAULT_FIREBASE_CONFIG = {
-        apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
-        authDomain: "my-school-c1104.firebaseapp.com",
-        projectId: "my-school-c1104",
-        storageBucket: "my-school-c1104.firebasestorage.app",
-        messagingSenderId: "339930418459",
-        appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
-        measurementId: "G-NPNFSW2C72"
-    };
+const DEFAULT_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
+    authDomain: "my-school-c1104.firebaseapp.com",
+    projectId: "my-school-c1104",
+    storageBucket: "my-school-c1104.firebasestorage.app",
+    messagingSenderId: "339930418459",
+    appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+    measurementId: "G-NPNFSW2C72"
+};
 
-    const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
-    window.FIREBASE_CONFIG = firebaseConfig;
+const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
+window.FIREBASE_CONFIG = firebaseConfig;
 
-    let db = null;
-    if (firebaseConfig) {
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-    }
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
     function getNormalizedRole() {
         const raw = (
