@@ -686,3 +686,11 @@ body {
 #mainContent button[onclick*="delete"] {
     display: none !important;
 }
+#menu-scores,
+#menu-scores a,
+a[href*="scores.html"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
