@@ -665,3 +665,24 @@ body {
 .dark-table tr:hover td {
     background: #24334d;
 }
+.role-view-badge {
+    background: #334155;
+    color: #cbd5e1;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ເຊື່ອງປຸ່ມ ເພີ່ມ / ແກ້ໄຂ / ລົບ ທັງໝົດໃນໜ້າ index.html */
+#mainContent .btn-add,
+#mainContent .btn-edit,
+#mainContent .btn-del,
+#mainContent [data-action="add"],
+#mainContent [data-action="edit"],
+#mainContent [data-action="delete"],
+#mainContent button[onclick*="add"],
+#mainContent button[onclick*="edit"],
+#mainContent button[onclick*="delete"] {
+    display: none !important;
+}
