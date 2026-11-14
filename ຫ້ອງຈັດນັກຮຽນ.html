@@ -264,7 +264,7 @@
             <h1 class="page-title">🎓 ຫ້ອງຈັດການນັກຮຽນ</h1>
         </div>
         <div class="user-meta">
-            <span id="fbSyncBadge" class="badge badge-fb">🔥 Firebase: ກຳລັງເຊື່ອມຕໍ່...</span>
+            
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
             <span id="currentUserRole" class="badge badge-role-student">STUDENT</span>
             <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
@@ -293,7 +293,7 @@
                     <option value="ມ.6">ຫ້ອງ ມ.6</option>
                     <option value="ມ.7">ຫ້ອງ ມ.7</option>
                 </select>
-                <button type="button" class="btn-sync" onclick="loadStudentsFromFirestore(true)">🔄 ໂຫຼດຈາກ Firebase</button>
+                <button type="button" class="btn-sync" onclick="loadStudentsFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
             </div>
         </div>
 
@@ -675,7 +675,7 @@
             updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId} (ບັນທຶກແລ້ວ)`);
         } catch (err) {
             console.error("Firestore student save error:", err);
-            alert("❌ ບັນທຶກລົງ Firebase ບໍ່ສຳເລັດ: " + err.message);
+            alert("❌ ບັນທຶກລົງ ບໍ່ສຳເລັດ: " + err.message);
         }
 
         const idx = studentsData.findIndex((s) => s.id === docId);
@@ -728,7 +728,7 @@
             }
             updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId}`);
             renderStudentsTable();
-            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນນັກຮຽນຈາກ Firebase ສຳເລັດ!");
+            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນນັກຮຽນສຳເລັດ!");
         } catch (err) {
             console.warn("Firestore students load error:", err.message);
             updateSyncBadge("⚠️ Offline (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
