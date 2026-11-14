@@ -110,7 +110,7 @@
             border: 1px dashed #60a5fa;
             border-radius: 12px;
             padding: 12px 14px;
-            margin-top: 12px;
+            margin-top: 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -188,7 +188,13 @@
             cursor: pointer;
         }
         button:hover { opacity: 0.92; }
-        .btn-primary { background: #2563eb; color: #fff; }
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
         .btn-add { background: #16a34a; color: #fff; padding: 6px 12px; font-size: 12px; }
         .btn-edit { background: #eab308; color: #0f172a; padding: 5px 9px; font-size: 12px; }
         .btn-approve { background: #16a34a; color: #fff; padding: 5px 10px; font-size: 12px; }
@@ -260,8 +266,8 @@
         .admin-only-hide { display: none !important; }
         .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
         body[data-role="admin"] #upload-slip-subroom {
-    display: none !important;
-}
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -339,49 +345,44 @@
     </section>
 
     <section class="card" id="upload-slip-subroom">
-    <div class="card-header">
-        <h2>📤 ຫ້ອງຍ່ອຍ: ອັບໂຫຼດສະຫຼິບການໂອນ</h2>
-    </div>
-
-    <form id="slipUploadForm" onsubmit="submitSlipUpload(event)">
-        <div class="form-grid">
-            <div>
-                <label for="slipTerm">ເທີມທີ່ຊຳລະ</label>
-                <select id="slipTerm">
-                    <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
-                    <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
-                </select>
-            </div>
-            <div>
-                <label for="slipAmount">ຈຳນວນເງິນທີ່ໂອນ (ກີບ)</label>
-                <input type="number" id="slipAmount" value="1500000" min="1000" required />
-            </div>
-            <div>
-                <label for="slipFile">ເລືອກຮູບສະຫຼິບການໂອນ</label>
-                <input type="file" id="slipFile" accept="image/*" required />
-            </div>
+        <div class="card-header">
+            <h2>📤 ຫ້ອງຍ່ອຍ: ອັບໂຫຼດສະຫຼິບການໂອນ</h2>
         </div>
 
-        <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <button
-                type="submit"
-                id="btnSubmitSlip"
-                class="btn-primary"
-                style="display: inline-flex !important; visibility: visible !important; opacity: 1 !important;"
-            >
-                📤 ສົ່ງສະຫຼິບໃຫ້ Admin ອະນຸມັດ
-            </button>
-        </div>
-    </form>
+        <form id="slipUploadForm" onsubmit="submitSlipUpload(event)">
+            <div class="form-grid">
+                <div>
+                    <label for="slipTerm">ເທີມທີ່ຊຳລະ</label>
+                    <select id="slipTerm">
+                        <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
+                        <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="slipAmount">ຈຳນວນເງິນທີ່ໂອນ (ກີບ)</label>
+                    <input type="number" id="slipAmount" value="1500000" min="1000" required />
+                </div>
+                <div>
+                    <label for="slipFile">ເລືອກຮູບສະຫຼິບການໂອນ</label>
+                    <input type="file" id="slipFile" accept="image/*" required />
+                </div>
+            </div>
 
-    <div class="admin-contact-box" id="adminDelayContactBox">
-        <div>
-            ⏳ <strong>ຖ້າ Admin ອະນຸມັດຊ້າ:</strong> ສາມາດຕິດຕໍ່ສອບຖາມ Admin ໄດ້ໂດຍກົງທີ່ເບີໂທ:
-            <span class="phone-highlight" id="adminPhoneText">020-5555-8899</span>
+            <div id="slipSubmitBtnWrap" style="margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <button type="submit" id="btnSubmitSlip" class="btn-primary">
+                    📤 ສົ່ງສະຫຼິບໃຫ້ Admin ອະນຸມັດ
+                </button>
+            </div>
+        </form>
+
+        <div class="admin-contact-box" id="adminDelayContactBox">
+            <div>
+                ⏳ <strong>ຖ້າ Admin ອະນຸມັດຊ້າ:</strong> ສາມາດຕິດຕໍ່ສອບຖາມ Admin ໄດ້ໂດຍກົງທີ່ເບີໂທ:
+                <span class="phone-highlight" id="adminPhoneText">020-5555-8899</span>
+            </div>
+            <button type="button" class="btn-copy" onclick="copyAdminPhone()">📋 ຄັດລອກເບີໂທ</button>
         </div>
-        <button type="button" class="btn-copy" onclick="copyAdminPhone()">📋 ຄັດລອກເບີໂທ</button>
-    </div>
-</section>
+    </section>
 
     <section class="card" id="pending-slips-section">
         <div class="card-header">
@@ -436,26 +437,26 @@
 </div>
 
 <script type="module">
-  import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-    getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, setDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+        getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const DEFAULT_FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
-    authDomain: "my-school-c1104.firebaseapp.com",
-    projectId: "my-school-c1104",
-    storageBucket: "my-school-c1104.firebasestorage.app",
-    messagingSenderId: "339930418459",
-    appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
-    measurementId: "G-NPNFSW2C72"
-};
+    const DEFAULT_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
+        authDomain: "my-school-c1104.firebaseapp.com",
+        projectId: "my-school-c1104",
+        storageBucket: "my-school-c1104.firebasestorage.app",
+        messagingSenderId: "339930418459",
+        appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+        measurementId: "G-NPNFSW2C72"
+    };
 
-const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
-window.FIREBASE_CONFIG = firebaseConfig;
+    const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
+    window.FIREBASE_CONFIG = firebaseConfig;
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     function getNormalizedRole() {
         const raw = (
@@ -478,6 +479,7 @@ const db = getFirestore(app);
     const isAdmin = role === "admin";
     const isTeacher = role === "teacher";
     const isStudent = role === "student";
+
     document.body.setAttribute("data-role", role);
     document.getElementById("currentUserName").textContent = userName;
     document.getElementById("currentUserRole").textContent = role.toUpperCase();
@@ -485,8 +487,11 @@ const db = getFirestore(app);
 
     const DEFAULT_QR = "https://quickchart.io/qr?text=SCHOOL-TUITION-PAYMENT&size=200";
     let schoolQrUrl = localStorage.getItem("school_qr_code_url") || DEFAULT_QR;
+    const savedCaption = localStorage.getItem("school_qr_caption");
     const qrImgEl = document.getElementById("schoolQrImage");
+    const qrCapEl = document.getElementById("qrCaptionText");
     if (qrImgEl) qrImgEl.src = schoolQrUrl;
+    if (qrCapEl && savedCaption) qrCapEl.textContent = savedCaption;
 
     function compressImageFileToDataUrl(file, maxSize = 400) {
         return new Promise((resolve, reject) => {
@@ -675,15 +680,6 @@ const db = getFirestore(app);
         }
         alert(`📞 ເບີໂທ Admin: ${ADMIN_PHONE}`);
     };
-
-    function readFileAsDataUrl(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
 
     window.submitSlipUpload = async function (e) {
         e.preventDefault();
@@ -942,6 +938,7 @@ const db = getFirestore(app);
         const qrFeeSection = document.getElementById("qr-and-fee-section");
         const uploadSubroom = document.getElementById("upload-slip-subroom");
         const paidBanner = document.getElementById("paidTermBanner");
+        const btnSubmitSlip = document.getElementById("btnSubmitSlip");
 
         renderFeeTable();
         renderPendingSlips();
@@ -952,20 +949,29 @@ const db = getFirestore(app);
             const alreadyPaidTerm = isTermApprovedForStudent(userName, selectedTerm);
 
             if (alreadyPaidTerm) {
-                qrFeeSection.style.display = "none";
-                uploadSubroom.style.display = "none";
-                paidBanner.style.display = "block";
-                paidBanner.textContent = `✅ ໄດ້ຈ່າຍຄ່າຮຽນສຳລັບເທີມນີ້ (${selectedTerm}) ໄປແລ້ວ — ລະບົບໄດ້ປິດໜ້າ QR Code ແລະ ຕາຕະລາງຄ່າຮຽນສຳລັບເທີມນີ້ແລ້ວ.`;
+                if (qrFeeSection) qrFeeSection.style.setProperty("display", "none", "important");
+                if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
+                if (paidBanner) {
+                    paidBanner.style.setProperty("display", "block", "important");
+                    paidBanner.textContent = `✅ ໄດ້ຈ່າຍຄ່າຮຽນສຳລັບເທີມນີ້ (${selectedTerm}) ໄປແລ້ວ — ລະບົບໄດ້ປິດໜ້າ QR Code ແລະ ຕາຕະລາງຄ່າຮຽນສຳລັບເທີມນີ້ແລ້ວ.`;
+                }
             } else {
-                qrFeeSection.style.display = "block";
-                uploadSubroom.style.display = "block";
-                paidBanner.style.display = "none";
+                if (qrFeeSection) qrFeeSection.style.setProperty("display", "block", "important");
+                if (uploadSubroom) uploadSubroom.style.setProperty("display", "block", "important");
+                if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
+                if (btnSubmitSlip) {
+                    btnSubmitSlip.style.setProperty("display", "inline-flex", "important");
+                    btnSubmitSlip.style.setProperty("visibility", "visible", "important");
+                    btnSubmitSlip.style.setProperty("opacity", "1", "important");
+                }
             }
+        } else if (isAdmin) {
+            if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
+            if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
+            if (qrFeeSection) qrFeeSection.style.setProperty("display", "block", "important");
         } else {
-            paidBanner.style.display = "none";
-            if (isTeacher) {
-                uploadSubroom.style.display = "none";
-            }
+            if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
+            if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
         }
 
         applyAdminVisibility();
@@ -981,7 +987,10 @@ const db = getFirestore(app);
                 const img = document.getElementById("schoolQrImage");
                 if (img) img.src = schoolQrUrl;
                 const cap = document.getElementById("qrCaptionText");
-                if (cap && qrSnap.data().caption) cap.textContent = qrSnap.data().caption;
+                if (cap && qrSnap.data().caption) {
+                    cap.textContent = qrSnap.data().caption;
+                    localStorage.setItem("school_qr_caption", qrSnap.data().caption);
+                }
             }
         } catch (err) {}
 
@@ -1015,117 +1024,6 @@ const db = getFirestore(app);
     applyAdminVisibility();
     refreshFinanceView();
     loadFinanceFromFirestore();
-    window.refreshFinanceView = function () {
-    const selectedTerm = document.getElementById("termSelect").value;
-    const qrFeeSection = document.getElementById("qr-and-fee-section");
-    const uploadSubroom = document.getElementById("upload-slip-subroom");
-    const paidBanner = document.getElementById("paidTermBanner");
-
-    renderFeeTable();
-    renderPendingSlips();
-    renderPaidHistory();
-
-    if (isStudent) {
-        document.getElementById("slipTerm").value = selectedTerm;
-        const alreadyPaidTerm = isTermApprovedForStudent(userName, selectedTerm);
-
-        if (alreadyPaidTerm) {
-            if (qrFeeSection) qrFeeSection.style.setProperty("display", "none", "important");
-            if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
-            if (paidBanner) {
-                paidBanner.style.setProperty("display", "block", "important");
-                paidBanner.textContent = `✅ ໄດ້ຈ່າຍຄ່າຮຽນສຳລັບເທີມນີ້ (${selectedTerm}) ໄປແລ້ວ — ລະບົບໄດ້ປິດໜ້າ QR Code ແລະ ຕາຕະລາງຄ່າຮຽນສຳລັບເທີມນີ້ແລ້ວ.`;
-            }
-        } else {
-            if (qrFeeSection) qrFeeSection.style.setProperty("display", "block", "important");
-            // ເປີດຫ້ອງຍ່ອຍສົ່ງສະຫຼິບສະເພາະໜ້ານັກຮຽນ
-            if (uploadSubroom) uploadSubroom.style.setProperty("display", "block", "important");
-            if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
-        }
-    } else if (isAdmin) {
-        // ໜ້າ Admin: ເຊື່ອງຫ້ອງສົ່ງສະຫຼິບ; ເປີດສະເພາະລາຍການກວດສອບທີ່ມີປຸ່ມ ອະນຸມັດ / ລົບ
-        if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
-        if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
-        if (qrFeeSection) qrFeeSection.style.setProperty("display", "block", "important");
-    } else {
-        // ໜ້າ Teacher: ເຊື່ອງຫ້ອງສົ່ງສະຫຼິບ
-        if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
-        if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
-    }
-
-    applyAdminVisibility();
-};
-    (function ensureSubmitSlipButtonVisible() {
-    const form = document.getElementById("slipUploadForm");
-    if (!form) return;
-    let btn = document.getElementById("btnSubmitSlip");
-    if (!btn) {
-        btn = document.createElement("button");
-        btn.type = "submit";
-        btn.id = "btnSubmitSlip";
-        btn.className = "btn-primary";
-        btn.textContent = "📤 ສົ່ງສະຫຼິບໃຫ້ Admin ອະນຸມັດ";
-        const wrap = document.createElement("div");
-        wrap.style.marginTop = "12px";
-        wrap.appendChild(btn);
-        form.appendChild(wrap);
-    }
-    btn.style.setProperty("display", "inline-flex", "important");
-    btn.style.setProperty("visibility", "visible", "important");
-    btn.style.setProperty("opacity", "1", "important");
-})();
-    <script>
-(function forceShowSlipSubmitButton() {
-    function showBtn() {
-        const form = document.getElementById("slipUploadForm");
-        if (!form) return;
-
-        let btn = document.getElementById("btnSubmitSlip");
-        if (!btn) {
-            btn = document.createElement("button");
-            btn.type = "submit";
-            btn.id = "btnSubmitSlip";
-            btn.className = "btn-primary";
-            btn.textContent = "📤 ສົ່ງສະຫຼິບໃຫ້ Admin ອະນຸມັດ";
-            const wrap = document.createElement("div");
-            wrap.id = "slipSubmitBtnWrap";
-            wrap.style.marginTop = "12px";
-            wrap.appendChild(btn);
-            form.appendChild(wrap);
-        }
-
-        const wrap = btn.closest("#slipSubmitBtnWrap") || btn.parentElement;
-        if (wrap) {
-            wrap.style.setProperty("display", "block", "important");
-            wrap.style.setProperty("visibility", "visible", "important");
-            wrap.style.setProperty("opacity", "1", "important");
-        }
-
-        btn.removeAttribute("hidden");
-        btn.style.setProperty("display", "inline-flex", "important");
-        btn.style.setProperty("visibility", "visible", "important");
-        btn.style.setProperty("opacity", "1", "important");
-        btn.style.setProperty("pointer-events", "auto", "important");
-    }
-
-    showBtn();
-    window.addEventListener("DOMContentLoaded", showBtn);
-    window.addEventListener("load", showBtn);
-    setTimeout(showBtn, 300);
-    setTimeout(showBtn, 1000);
-
-    const observer = new MutationObserver(() => {
-        showBtn();
-    });
-    observer.observe(document.documentElement, {
-        attributes: true,
-        childList: true,
-        subtree: true,
-        attributeFilter: ["style", "class", "hidden"]
-    });
-})();
 </script>
-
-
 </body>
 </html>
