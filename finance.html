@@ -259,6 +259,9 @@
         }
         .admin-only-hide { display: none !important; }
         .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+        body[data-role="admin"] #upload-slip-subroom {
+    display: none !important;
+}
     </style>
 </head>
 <body>
@@ -465,7 +468,7 @@ const db = getFirestore(app);
     const isAdmin = role === "admin";
     const isTeacher = role === "teacher";
     const isStudent = role === "student";
-
+    document.body.setAttribute("data-role", role);
     document.getElementById("currentUserName").textContent = userName;
     document.getElementById("currentUserRole").textContent = role.toUpperCase();
     document.getElementById("currentUserGrade").textContent = userGrade;
@@ -1002,6 +1005,46 @@ const db = getFirestore(app);
     applyAdminVisibility();
     refreshFinanceView();
     loadFinanceFromFirestore();
+    window.refreshFinanceView = function () {
+    const selectedTerm = document.getElementById("termSelect").value;
+    const qrFeeSection = document.getElementById("qr-and-fee-section");
+    const uploadSubroom = document.getElementById("upload-slip-subroom");
+    const paidBanner = document.getElementById("paidTermBanner");
+
+    renderFeeTable();
+    renderPendingSlips();
+    renderPaidHistory();
+
+    if (isStudent) {
+        document.getElementById("slipTerm").value = selectedTerm;
+        const alreadyPaidTerm = isTermApprovedForStudent(userName, selectedTerm);
+
+        if (alreadyPaidTerm) {
+            if (qrFeeSection) qrFeeSection.style.setProperty("display", "none", "important");
+            if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
+            if (paidBanner) {
+                paidBanner.style.setProperty("display", "block", "important");
+                paidBanner.textContent = `✅ ໄດ້ຈ່າຍຄ່າຮຽນສຳລັບເທີມນີ້ (${selectedTerm}) ໄປແລ້ວ — ລະບົບໄດ້ປິດໜ້າ QR Code ແລະ ຕາຕະລາງຄ່າຮຽນສຳລັບເທີມນີ້ແລ້ວ.`;
+            }
+        } else {
+            if (qrFeeSection) qrFeeSection.style.setProperty("display", "block", "important");
+            // ເປີດຫ້ອງຍ່ອຍສົ່ງສະຫຼິບສະເພາະໜ້ານັກຮຽນ
+            if (uploadSubroom) uploadSubroom.style.setProperty("display", "block", "important");
+            if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
+        }
+    } else if (isAdmin) {
+        // ໜ້າ Admin: ເຊື່ອງຫ້ອງສົ່ງສະຫຼິບ; ເປີດສະເພາະລາຍການກວດສອບທີ່ມີປຸ່ມ ອະນຸມັດ / ລົບ
+        if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
+        if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
+        if (qrFeeSection) qrFeeSection.style.setProperty("display", "block", "important");
+    } else {
+        // ໜ້າ Teacher: ເຊື່ອງຫ້ອງສົ່ງສະຫຼິບ
+        if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
+        if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
+    }
+
+    applyAdminVisibility();
+};
 </script>
 <script type="module" src="script.js"></script>
 </body>
