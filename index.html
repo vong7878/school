@@ -517,48 +517,71 @@
     </section>
 </main>
     <script>
-   const timetablesByRoom = {
-    "ມ.5": [
-        { day: "ຈັນ", p1: "ຄະນິດສາດ", p2: "ຟີຊິກສາດ", p3: "ພາສາລາວ", p4: "ພາສາອັງກິດ" },
-        { day: "ອັງຄານ", p1: "ເຄມີສາດ", p2: "ຊີວະສາດ", p3: "ປະຫວັດສາດ", p4: "ໄອທີ / ຄອມ" },
-        { day: "ພຸດ", p1: "ຄະນິດສາດ", p2: "ພູມສາດ", p3: "ພາສາອັງກິດ", p4: "ພະລະສຶກສາ" },
-        { day: "ພະຫັດ", p1: "ຟີຊິກສາດ", p2: "ເຄມີສາດ", p3: "ພາສາລາວ", p4: "ສຶກສາພົນລະເມືອງ" },
-        { day: "ສຸກ", p1: "ຄະນິດສາດ", p2: "ຊີວະສາດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
-    ],
-    "ມ.6": [
-        { day: "ຈັນ", p1: "ພາສາລາວ", p2: "ຄະນິດສາດ", p3: "ຟີຊິກສາດ", p4: "ພາສາອັງກິດ" },
-        { day: "ອັງຄານ", p1: "ຊີວະສາດ", p2: "ເຄມີສາດ", p3: "ພູມສາດ", p4: "ປະຫວັດສາດ" },
-        { day: "ພຸດ", p1: "ຄະນິດສາດ", p2: "ໄອທີ / ຄອມ", p3: "ພາສາອັງກິດ", p4: "ພະລະສຶກສາ" },
-        { day: "ພະຫັດ", p1: "ເຄມີສາດ", p2: "ຟີຊິກສາດ", p3: "ສຶກສາພົນລະເມືອງ", p4: "ພາສາລາວ" },
-        { day: "ສຸກ", p1: "ຊີວະສາດ", p2: "ຄະນິດສາດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
-    ],
-    "ມ.7": [
-        { day: "ຈັນ", p1: "ຄະນິດສາດ", p2: "ພາສາອັງກິດ", p3: "ຟີຊິກສາດ", p4: "ເຄມີສາດ" },
-        { day: "ອັງຄານ", p1: "ພາສາລາວ", p2: "ຊີວະສາດ", p3: "ປະຫວັດສາດ", p4: "ໄອທີ / ຄອມ" },
-        { day: "ພຸດ", p1: "ຟີຊິກສາດ", p2: "ຄະນິດສາດ", p3: "ພູມສາດ", p4: "ພາສາອັງກິດ" },
-        { day: "ພະຫັດ", p1: "ເຄມີສາດ", p2: "ສຶກສາພົນລະເມືອງ", p3: "ຊີວະສາດ", p4: "ພາສາລາວ" },
-        { day: "ສຸກ", p1: "ຄະນິດສາດ", p2: "ພາສາອັງກິດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
-    ]
-};
+  // ຂໍ້ມູນຕາຕະລາງສອນທັງໝົດ (ຫຼື ໂຫຼດຈາກ localStorage['school_teaching_schedules'] ຖ້າມີ)
+const defaultTeachingData = [
+    { teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ", subject: "ຄະນິດສາດ", grade: "ມ.5", schedule: "ຈັນ, ພຸດ, ສຸກ (08:00 - 08:45)" },
+    { teacher: "ອ. ສຸກສາຄອນ ແສງດາວ", subject: "ຟີຊິກສາດ", grade: "ມ.5", schedule: "ຈັນ, ພະຫັດ (08:50 - 09:35)" },
+    { teacher: "Vongvilay SAISATHONE", subject: "ໄອທີ / ຄອມ", grade: "ມ.5", schedule: "ອັງຄານ (10:40 - 11:25)" }
+];
 
-function renderStudentOwnRoomTimetable(room) {
-    const cleanRoom = timetablesByRoom[room] ? room : "ມ.5";
-    const titleEl = document.getElementById("student-timetable-title");
-    const badgeEl = document.getElementById("student-timetable-badge");
-    const tbody = document.getElementById("student-timetable-body");
+function getAllTeachingSchedules() {
+    try {
+        const saved = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null");
+        if (Array.isArray(saved) && saved.length > 0) {
+            return saved;
+        }
+    } catch (e) {}
+    return defaultTeachingData;
+}
 
-    if (titleEl) titleEl.textContent = `📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ ${cleanRoom}`;
-    if (badgeEl) badgeEl.textContent = `ຫ້ອງ: ${cleanRoom}`;
+function normalizeText(str) {
+    return String(str || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function renderOwnTeachingSchedule(currentUserName) {
+    const tbody = document.getElementById("index-teaching-body");
+    const titleEl = document.getElementById("teaching-panel-title");
+    const badgeEl = document.getElementById("teaching-owner-badge");
+
+    if (titleEl) {
+        titleEl.textContent = `👩‍🏫 ຕາຕະລາງສອນຂອງຂ້ອຍ (${currentUserName})`;
+    }
+    if (badgeEl) {
+        badgeEl.textContent = "ສະເພາະຊົ່ວໂມງສອນຂອງຕົນເອງ";
+    }
     if (!tbody) return;
 
-    const rows = timetablesByRoom[cleanRoom];
-    tbody.innerHTML = rows.map(r => `
+    const allSchedules = getAllTeachingSchedules();
+    const targetName = normalizeText(currentUserName);
+
+    // ກອງສະເພາະລາຍການທີ່ຊື່ຜູ້ສອນກົງກັບຜູ້ໃຊ້ປັດຈຸບັນ
+    const mySchedules = allSchedules.filter(item => {
+        const itemTeacher = normalizeText(item.teacher);
+        return itemTeacher && targetName && (
+            itemTeacher === targetName ||
+            itemTeacher.includes(targetName) ||
+            targetName.includes(itemTeacher)
+        );
+    });
+
+    if (mySchedules.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align: center; color: #94a3b8;">
+                    ຍັງບໍ່ມີຊົ່ວໂມງສອນທີ່ບັນທຶກໄວ້ສຳລັບ "${escapeHtmlText(currentUserName)}"
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = mySchedules.map((item, idx) => `
         <tr>
-            <td><strong>${r.day}</strong></td>
-            <td>${r.p1}</td>
-            <td>${r.p2}</td>
-            <td>${r.p3}</td>
-            <td>${r.p4}</td>
+            <td>${idx + 1}</td>
+            <td>${escapeHtmlText(item.teacher)}</td>
+            <td>${escapeHtmlText(item.subject)}</td>
+            <td>${escapeHtmlText(item.grade)}</td>
+            <td>${escapeHtmlText(item.schedule)}</td>
         </tr>
     `).join("");
 }
@@ -566,22 +589,22 @@ function renderStudentOwnRoomTimetable(room) {
 function applyIndexRoleRules() {
     const role = (localStorage.getItem("userRole") || "student").toLowerCase();
     const userGrade = localStorage.getItem("userGrade") || "ມ.5";
+    const userName = localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
 
     const teachingPanel = document.getElementById("teaching-schedule-panel");
     const studentPanel = document.getElementById("student-room-timetable-panel");
 
     if (role === "admin" || role === "teacher") {
-        // ແອັດມິນ ແລະ ຄູອາຈານ: ສະແດງຕາຕະລາງສອນ (ເຊື່ອງປຸ່ມ ເພີ່ມ/ແກ້ໄຂ/ລົບ)
         if (teachingPanel) teachingPanel.style.display = "block";
         if (studentPanel) studentPanel.style.display = "none";
+        renderOwnTeachingSchedule(userName);
     } else {
-        // ນັກຮຽນ: ສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງຕົນເອງ (ບໍ່ເຫັນຫ້ອງອື່ນ + ເຊື່ອງປຸ່ມ ເພີ່ມ/ແກ້ໄຂ/ລົບ)
         if (teachingPanel) teachingPanel.style.display = "none";
         if (studentPanel) studentPanel.style.display = "block";
         renderStudentOwnRoomTimetable(userGrade);
     }
 
-    // ເຊື່ອງປຸ່ມ ເພີ່ມ / ແກ້ໄຂ / ລົບ ເພີ່ມເຕີມຜ່ານ JS
+    // ເຊື່ອງປຸ່ມ ເພີ່ມ / ແກ້ໄຂ / ລົບ ທັງໝົດໃນໜ້າ index.html
     document.querySelectorAll("#mainContent button").forEach(btn => {
         const txt = (btn.textContent || "").trim();
         if (txt.includes("ເພີ່ມ") || txt.includes("ແກ້ໄຂ") || txt.includes("ລົບ")) {
