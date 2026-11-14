@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📝 6. ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Noto Sans Lao', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
+        }
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .topbar {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .back-btn {
+            background: #334155;
+            color: #f8fafc;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .back-btn:hover { background: #475569; }
+        .page-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .badge-role { background: #2563eb; color: #fff; }
+        .badge-grade { background: #0f766e; color: #ccfbf1; }
+
+        /* ແຖບຫ້ອງນ້ອຍທັງ 5 */
+        .subrooms-nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 10px;
+        }
+        .subroom-btn {
+            background: #0f172a;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .subroom-btn:hover {
+            background: #24334d;
+            color: #f8fafc;
+        }
+        .subroom-btn.active {
+            background: #2563eb;
+            border-color: #3b82f6;
+            color: #ffffff;
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #334155;
+        }
+        .card-header h2 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        input, select {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 7px 11px;
+            font-family: inherit;
+            font-size: 13px;
+        }
+        button {
+            font-family: inherit;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover { opacity: 0.92; }
+        .btn-add { background: #16a34a; color: #fff; }
+        .btn-edit { background: #eab308; color: #0f172a; padding: 5px 9px; font-size: 12px; }
+        .btn-del { background: #dc2626; color: #fff; padding: 5px 9px; font-size: 12px; }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 640px;
+        }
+        th, td {
+            border: 1px solid #334155;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
+        }
+        th {
+            background: #0f172a;
+            color: #93c5fd;
+            font-weight: 700;
+        }
+        td {
+            background: #162032;
+            color: #e2e8f0;
+        }
+        tr:hover td { background: #24334d; }
+        .center { text-align: center; }
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .grade-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 12px;
+            background: rgba(56, 189, 248, 0.18);
+            color: #7dd3fc;
+            border: 1px solid #38bdf8;
+        }
+        .grade-a {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+            border-color: #22c55e;
+        }
+        .grade-f {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border-color: #ef4444;
+        }
+        .admin-only-hide { display: none !important; }
+        .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- ແຖບດ້ານເທິງ -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
+            <h1 class="page-title">📝 6. ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</h1>
+        </div>
+        <div class="user-meta">
+            <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
+            <span id="currentUserRole" class="badge badge-role">ROLE</span>
+            <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
+        </div>
+    </div>
+
+    <!-- ແຖບເລືອກຫ້ອງນ້ອຍທັງ 5 ຫ້ອງ -->
+    <nav class="subrooms-nav" aria-label="ຫ້ອງນ້ອຍຈັດການຄະແນນ">
+        <button type="button" class="subroom-btn active" data-subroom="attendance" onclick="switchSubroom('attendance')">
+            1. ຄະແນນການມາຮຽນ
+        </button>
+        <button type="button" class="subroom-btn" data-subroom="homework" onclick="switchSubroom('homework')">
+            2. ຄະແນນບົດຝຶກຫັດ
+        </button>
+        <button type="button" class="subroom-btn" data-subroom="midterm" onclick="switchSubroom('midterm')">
+            3. ຄະແນນສອບເສັງກາງພາກ
+        </button>
+        <button type="button" class="subroom-btn" data-subroom="annual" onclick="switchSubroom('annual')">
+            4. ຄະແນນສະເລ່ຍໝົດປີ
+        </button>
+        <button type="button" class="subroom-btn" data-subroom="grade" onclick="switchSubroom('grade')">
+            5. ຈັດເກຣດ
+        </button>
+    </nav>
+
+    <!-- ຫ້ອງນ້ອຍທີ 1: ຄະແນນການມາຮຽນ -->
+    <section class="card subroom-panel" id="panel-attendance">
+        <div class="card-header">
+            <h2 id="title-attendance">📌 1. ຄະແນນການມາຮຽນ</h2>
+            <div class="controls">
+                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
+                <button type="button" class="btn-add admin-action" onclick="addStudentScoreRow()">➕ ເພີ່ມນັກຮຽນ</button>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ຈຳນວນຄັ້ງຂາດ</th>
+                        <th>ຄະແນນການມາຮຽນ (ເຕັມ 20)</th>
+                        <th class="admin-action" style="width: 150px;">ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-attendance"></tbody>
+            </table>
+        </div>
+        <div class="note-text">* ຄະແນນການມາຮຽນຄຳນວນຈາກ 20 ຄະແນນ (ຫັກຄັ້ງລະ 2 ຄະແນນຕາມການຂາດຮຽນ, ຕ່ຳສຸດ 0) ແລະ Admin ສາມາດແກ້ໄຂ/ລົບໄດ້.</div>
+    </section>
+
+    <!-- ຫ້ອງນ້ອຍທີ 2: ຄະແນນບົດຝຶກຫັດ -->
+    <section class="card subroom-panel" id="panel-homework" style="display: none;">
+        <div class="card-header">
+            <h2 id="title-homework">📘 2. ຄະແນນບົດຝຶກຫັດ</h2>
+            <div class="controls">
+                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
+                <button type="button" class="btn-add admin-action" onclick="addStudentScoreRow()">➕ ເພີ່ມນັກຮຽນ</button>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ຄະແນນບົດຝຶກຫັດ (ເຕັມ 30)</th>
+                        <th class="admin-action" style="width: 150px;">ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-homework"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ຫ້ອງນ້ອຍທີ 3: ຄະແນນສອບເສັງກາງພາກ -->
+    <section class="card subroom-panel" id="panel-midterm" style="display: none;">
+        <div class="card-header">
+            <h2 id="title-midterm">📄 3. ຄະແນນສອບເສັງກາງພາກ</h2>
+            <div class="controls">
+                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
+                <button type="button" class="btn-add admin-action" onclick="addStudentScoreRow()">➕ ເພີ່ມນັກຮຽນ</button>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ຄະແນນສອບເສັງກາງພາກ (ເຕັມ 50)</th>
+                        <th class="admin-action" style="width: 150px;">ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-midterm"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ຫ້ອງນ້ອຍທີ 4: ຄະແນນສະເລ່ຍໝົດປີ -->
+    <section class="card subroom-panel" id="panel-annual" style="display: none;">
+        <div class="card-header">
+            <h2 id="title-annual">📈 4. ຄະແນນສະເລ່ຍໝົດປີ</h2>
+            <div class="controls">
+                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ການມາຮຽນ (20)</th>
+                        <th>ບົດຝຶກຫັດ (30)</th>
+                        <th>ກາງພາກ (50)</th>
+                        <th>ຄະແນນສະເລ່ຍໝົດປີ</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-annual"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ຫ້ອງນ້ອຍທີ 5: ຈັດເກຣດ -->
+    <section class="card subroom-panel" id="panel-grade" style="display: none;">
+        <div class="card-header">
+            <h2 id="title-grade">🏅 5. ຈັດເກຣດ</h2>
+            <div class="controls">
+                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ຄະແນນສະເລ່ຍໝົດປີ</th>
+                        <th>ເກຣດທີ່ໄດ້</th>
+                        <th>ໝາຍເຫດຜົນການຮຽນ</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-grade"></tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+        getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = window.FIREBASE_CONFIG || null;
+    let db = null;
+    if (firebaseConfig) {
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+    }
+
+    const role = (localStorage.getItem("userRole") || "student").toLowerCase();
+    const userGrade = localStorage.getItem("userGrade") || "ມ.5";
+    const userName = localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
+    const isAdmin = role === "admin";
+
+    document.getElementById("currentUserName").textContent = userName;
+    document.getElementById("currentUserRole").textContent = role.toUpperCase();
+    document.getElementById("currentUserGrade").textContent = userGrade;
+
+    // ອັບເດດຫົວຂໍ້ຫ້ອງນ້ອຍໃຫ້ລະບຸຫ້ອງຂອງຕົນເອງຊັດເຈນ
+    ["attendance", "homework", "midterm", "annual", "grade"].forEach((key) => {
+        const titleEl = document.getElementById("title-" + key);
+        if (titleEl) {
+            titleEl.textContent = `${titleEl.textContent} (${userGrade})`;
+        }
+    });
+
+    // ດຶງຈຳນວນຂາດຮຽນຈາກ school_absent_records ຖ້າມີ
+    const absentRecords = JSON.parse(localStorage.getItem("school_absent_records") || "[]");
+    function getAbsentCountForStudent(studentId, studentName, grade) {
+        return absentRecords.filter((r) => {
+            const sameGrade = !r.grade || r.grade === grade;
+            const matchId = studentId && r.studentId === studentId;
+            const matchName = studentName && r.studentName === studentName;
+            return sameGrade && (matchId || matchName);
+        }).length;
+    }
+
+    // ຂໍ້ມູນຄະແນນນັກຮຽນ
+    let scoresData = JSON.parse(localStorage.getItem("school_student_scores") || "null") || [
+        { id: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", attendanceScore: null, homeworkScore: 26, midtermScore: 42 },
+        { id: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", attendanceScore: null, homeworkScore: 28, midtermScore: 45 },
+        { id: "STD-003", name: "ທ. ອານຸສອນ ວົງສາ", grade: "ມ.5", attendanceScore: null, homeworkScore: 22, midtermScore: 36 },
+        { id: "STD-004", name: "ນ. ດາລາວັນ ແກ້ວມະນີ", grade: "ມ.6", attendanceScore: 20, homeworkScore: 27, midtermScore: 44 }
+    ];
+
+    function saveScoresLocal() {
+        localStorage.setItem("school_student_scores", JSON.stringify(scoresData));
+    }
+
+    function getAttendanceScore(item) {
+        if (typeof item.attendanceScore === "number" && !Number.isNaN(item.attendanceScore)) {
+            return Math.max(0, Math.min(20, item.attendanceScore));
+        }
+        const absentCount = getAbsentCountForStudent(item.id, item.name, item.grade);
+        return Math.max(0, 20 - absentCount * 2);
+    }
+
+    function calcAverageScore(item) {
+        const att = getAttendanceScore(item);
+        const hw = Math.max(0, Math.min(30, Number(item.homeworkScore) || 0));
+        const mid = Math.max(0, Math.min(50, Number(item.midtermScore) || 0));
+        return Number((att + hw + mid).toFixed(1));
+    }
+
+    function getGradeInfo(avg) {
+        if (avg >= 80) return { grade: "A", remark: "ດີເລີດ", cls: "grade-a" };
+        if (avg >= 75) return { grade: "B+", remark: "ດີຫຼາຍ", cls: "" };
+        if (avg >= 70) return { grade: "B", remark: "ດີ", cls: "" };
+        if (avg >= 65) return { grade: "C+", remark: "ພໍໃຊ້ (ຂ້ອນຂ້າງດີ)", cls: "" };
+        if (avg >= 60) return { grade: "C", remark: "ພໍໃຊ້", cls: "" };
+        if (avg >= 55) return { grade: "D+", remark: "ຜ່ານເກນ", cls: "" };
+        if (avg >= 50) return { grade: "D", remark: "ຄວນປັບປຸງ", cls: "" };
+        return { grade: "F", remark: "ບໍ່ຜ່ານ / ຕ້ອງສ້ອມແຊມ", cls: "grade-f" };
+    }
+
+    window.switchSubroom = function (subroomKey) {
+        document.querySelectorAll(".subroom-btn").forEach((btn) => {
+            btn.classList.toggle("active", btn.getAttribute("data-subroom") === subroomKey);
+        });
+        document.querySelectorAll(".subroom-panel").forEach((panel) => {
+            panel.style.display = panel.id === "panel-" + subroomKey ? "block" : "none";
+        });
+    };
+
+    function applyAdminPermissions() {
+        if (isAdmin) return;
+        document.querySelectorAll(".admin-action").forEach((el) => {
+            el.classList.add("admin-only-hide");
+        });
+    }
+
+    function getFilteredRoomStudents() {
+        const searchInputs = Array.from(document.querySelectorAll(".score-search"));
+        const activeQuery = (
+            searchInputs.map((i) => i.value.trim().toLowerCase()).find((v) => v.length > 0) || ""
+        );
+
+        // ທັງ Admin ແລະ Student ເບິ່ງໄດ້ສະເພາະນັກຮຽນໃນຫ້ອງຕົນເອງ (userGrade)
+        return scoresData.filter((s) => {
+            const sameGrade = s.grade === userGrade;
+            const matchName = !activeQuery || (s.name || "").toLowerCase().includes(activeQuery);
+            return sameGrade && matchName;
+        });
+    }
+
+    window.renderAllRooms = function () {
+        const list = getFilteredRoomStudents();
+        const colsWithAction = isAdmin ? 6 : 5;
+
+        // 1. ຄະແນນການມາຮຽນ
+        const tbAtt = document.getElementById("tbody-attendance");
+        if (!list.length) {
+            tbAtt.innerHTML = `<tr><td colspan="${colsWithAction}" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
+        } else {
+            tbAtt.innerHTML = list.map((s, idx) => {
+                const absCount = getAbsentCountForStudent(s.id, s.name, s.grade);
+                const attScore = getAttendanceScore(s);
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${esc(s.name)}</td>
+                        <td>${esc(s.grade)}</td>
+                        <td>${absCount} ຄັ້ງ</td>
+                        <td><strong>${attScore}</strong> / 20</td>
+                        ${isAdmin ? `
+                            <td>
+                                <div class="actions">
+                                    <button type="button" class="btn-edit" onclick="editStudentScore('${s.id}')">ແກ້ໄຂ</button>
+                                    <button type="button" class="btn-del" onclick="deleteStudentScore('${s.id}')">ລົບ</button>
+                                </div>
+                            </td>
+                        ` : ""}
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        // 2. ຄະແນນບົດຝຶກຫັດ
+        const tbHw = document.getElementById("tbody-homework");
+        if (!list.length) {
+            tbHw.innerHTML = `<tr><td colspan="${isAdmin ? 5 : 4}" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
+        } else {
+            tbHw.innerHTML = list.map((s, idx) => `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${esc(s.name)}</td>
+                    <td>${esc(s.grade)}</td>
+                    <td><strong>${Number(s.homeworkScore) || 0}</strong> / 30</td>
+                    ${isAdmin ? `
+                        <td>
+                            <div class="actions">
+                                <button type="button" class="btn-edit" onclick="editStudentScore('${s.id}')">ແກ້ໄຂ</button>
+                                <button type="button" class="btn-del" onclick="deleteStudentScore('${s.id}')">ລົບ</button>
+                            </div>
+                        </td>
+                    ` : ""}
+                </tr>
+            `).join("");
+        }
+
+        // 3. ຄະແນນສອບເສັງກາງພາກ
+        const tbMid = document.getElementById("tbody-midterm");
+        if (!list.length) {
+            tbMid.innerHTML = `<tr><td colspan="${isAdmin ? 5 : 4}" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
+        } else {
+            tbMid.innerHTML = list.map((s, idx) => `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${esc(s.name)}</td>
+                    <td>${esc(s.grade)}</td>
+                    <td><strong>${Number(s.midtermScore) || 0}</strong> / 50</td>
+                    ${isAdmin ? `
+                        <td>
+                            <div class="actions">
+                                <button type="button" class="btn-edit" onclick="editStudentScore('${s.id}')">ແກ້ໄຂ</button>
+                                <button type="button" class="btn-del" onclick="deleteStudentScore('${s.id}')">ລົບ</button>
+                            </div>
+                        </td>
+                    ` : ""}
+                </tr>
+            `).join("");
+        }
+
+        // 4. ຄະແນນສະເລ່ຍໝົດປີ
+        const tbAnnual = document.getElementById("tbody-annual");
+        if (!list.length) {
+            tbAnnual.innerHTML = `<tr><td colspan="7" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
+        } else {
+            tbAnnual.innerHTML = list.map((s, idx) => {
+                const att = getAttendanceScore(s);
+                const hw = Number(s.homeworkScore) || 0;
+                const mid = Number(s.midtermScore) || 0;
+                const avg = calcAverageScore(s);
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${esc(s.name)}</td>
+                        <td>${esc(s.grade)}</td>
+                        <td>${att}</td>
+                        <td>${hw}</td>
+                        <td>${mid}</td>
+                        <td><strong>${avg}</strong> / 100</td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        // 5. ຈັດເກຣດ
+        const tbGrade = document.getElementById("tbody-grade");
+        if (!list.length) {
+            tbGrade.innerHTML = `<tr><td colspan="6" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
+        } else {
+            tbGrade.innerHTML = list.map((s, idx) => {
+                const avg = calcAverageScore(s);
+                const gInfo = getGradeInfo(avg);
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${esc(s.name)}</td>
+                        <td>${esc(s.grade)}</td>
+                        <td><strong>${avg}</strong></td>
+                        <td><span class="grade-pill ${gInfo.cls}">${gInfo.grade}</span></td>
+                        <td>${esc(gInfo.remark)}</td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        applyAdminPermissions();
+    };
+
+    window.addStudentScoreRow = async function () {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມຄະແນນໄດ້!");
+
+        const name = prompt(`ປ້ອນຊື່ນັກຮຽນ (ຫ້ອງ ${userGrade}):`);
+        if (!name || !name.trim()) return;
+
+        const hwInput = prompt("ປ້ອນຄະແນນບົດຝຶກຫັດ (0 - 30):", "25");
+        if (hwInput === null) return;
+        const midInput = prompt("ປ້ອນຄະແນນສອບເສັງກາງພາກ (0 - 50):", "40");
+        if (midInput === null) return;
+
+        const newItem = {
+            id: "STD-" + Date.now(),
+            name: name.trim(),
+            grade: userGrade,
+            attendanceScore: null,
+            homeworkScore: Math.max(0, Math.min(30, Number(hwInput) || 0)),
+            midtermScore: Math.max(0, Math.min(50, Number(midInput) || 0))
+        };
+
+        if (db) {
+            try {
+                const ref = await addDoc(collection(db, "student_scores"), newItem);
+                newItem.firestoreId = ref.id;
+            } catch (err) {
+                console.error("Firestore score add error:", err);
+            }
+        }
+
+        scoresData.push(newItem);
+        saveScoresLocal();
+        renderAllRooms();
+    };
+
+    window.editStudentScore = async function (id) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂຄະແນນໄດ້!");
+        const target = scoresData.find((s) => s.id === id);
+        if (!target) return;
+
+        const currentAtt = getAttendanceScore(target);
+        const attInput = prompt(`ແກ້ໄຂຄະແນນການມາຮຽນ (0 - 20) ຂອງ "${target.name}":`, String(currentAtt));
+        if (attInput === null) return;
+
+        const hwInput = prompt(`ແກ້ໄຂຄະແນນບົດຝຶກຫັດ (0 - 30) ຂອງ "${target.name}":`, String(target.homeworkScore || 0));
+        if (hwInput === null) return;
+
+        const midInput = prompt(`ແກ້ໄຂຄະແນນສອບເສັງກາງພາກ (0 - 50) ຂອງ "${target.name}":`, String(target.midtermScore || 0));
+        if (midInput === null) return;
+
+        target.attendanceScore = Math.max(0, Math.min(20, Number(attInput) || 0));
+        target.homeworkScore = Math.max(0, Math.min(30, Number(hwInput) || 0));
+        target.midtermScore = Math.max(0, Math.min(50, Number(midInput) || 0));
+
+        if (db && target.firestoreId) {
+            try {
+                await updateDoc(doc(db, "student_scores", target.firestoreId), {
+                    attendanceScore: target.attendanceScore,
+                    homeworkScore: target.homeworkScore,
+                    midtermScore: target.midtermScore
+                });
+            } catch (err) {
+                console.error("Firestore score update error:", err);
+            }
+        }
+
+        saveScoresLocal();
+        renderAllRooms();
+    };
+
+    window.deleteStudentScore = async function (id) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບຄະແນນໄດ້!");
+        const target = scoresData.find((s) => s.id === id);
+        if (!target) return;
+        if (!confirm(`ຢືນຢັນລົບຂໍ້ມູນຄະແນນຂອງ "${target.name}"?`)) return;
+
+        if (db && target.firestoreId) {
+            try {
+                await deleteDoc(doc(db, "student_scores", target.firestoreId));
+            } catch (err) {
+                console.error("Firestore score delete error:", err);
+            }
+        }
+
+        scoresData = scoresData.filter((s) => s.id !== id);
+        saveScoresLocal();
+        renderAllRooms();
+    };
+
+    async function loadScoresFromFirestore() {
+        if (!db) return;
+        try {
+            const snap = await getDocs(collection(db, "student_scores"));
+            if (!snap.empty) {
+                scoresData = snap.docs.map((d) => ({
+                    id: d.data().id || d.id,
+                    firestoreId: d.id,
+                    ...d.data()
+                }));
+                saveScoresLocal();
+                renderAllRooms();
+            }
+        } catch (err) {
+            console.warn("ບໍ່ໄດ້ໂຫຼດ student_scores ຈາກ Firestore:", err.message);
+        }
+    }
+
+    function esc(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    applyAdminPermissions();
+    renderAllRooms();
+    loadScoresFromFirestore();
+</script>
+</body>
+</html>
