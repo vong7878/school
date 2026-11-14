@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="lo">
 <head>
@@ -15,7 +14,8 @@
         }
     </script>
 </head>
-    
+<body>
+
 <div class="topbar">
     <button type="button" class="menu-toggle-btn" id="menuToggleBtn" onclick="toggleMenuBar(event)" aria-label="ເປີດ/ປິດ ເມນູ">
         ☰
@@ -45,445 +45,442 @@
 
     <ul class="menubar-list">
         <li id="menu-dashboard"><a href="#" onclick="showSection('section-dashboard'); closeMenuBar();">📊 1. Dashboard (ພາບລວມ)</a></li>
-      <a href="ຫ້ອງຈັດນັກຮຽນ.html" id="sidebar-room-2" class="nav-item" style="display:flex;align-items:center;gap:10px;color:#e2e8f0;text-decoration:none;padding:10px 14px;border-radius:10px;">
-    <span>🎓</span>
-    <span>2. ຈັດການນັກຮຽນ</span>
-
-      <a href="ຫ້ອງຈັດການຄູ.html" class="nav-item" style="display:flex;align-items:center;gap:10px;color:#e2e8f0;text-decoration:none;padding:10px 14px;border-radius:10px;">
-    <span>👩‍🏫</span>
-    <span>3. ຫ້ອງຈັດການຄູ</span>
-</a>
+        <a href="ຫ້ອງຈັດນັກຮຽນ.html" id="sidebar-room-2" class="nav-item" style="display:flex;align-items:center;gap:10px;color:#e2e8f0;text-decoration:none;padding:10px 14px;border-radius:10px;">
+            <span>🎓</span>
+            <span>2. ຈັດການນັກຮຽນ</span>
+        </a>
+        <a href="ຫ້ອງຈັດການຄູ.html" class="nav-item" style="display:flex;align-items:center;gap:10px;color:#e2e8f0;text-decoration:none;padding:10px 14px;border-radius:10px;">
+            <span>👩‍🏫</span>
+            <span>3. ຫ້ອງຈັດການຄູ</span>
+        </a>
         <li id="menu-classes"><a href="class-management.html">🏫 4. ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ &amp; ຕາຕະລາງ</a></li>
         <li id="menu-attendance"><a href="check-in.html">📋 5. ຈັດການການມາຮຽນ</a></li>
-       <li id="menu-scores"><a href="scores.html" onclick="if(typeof closeMenuBar==='function') closeMenuBar();">📝 6. ຈັດການຄະແນນ</a></li>
+        <li id="menu-scores"><a href="scores.html" onclick="if(typeof closeMenuBar==='function') closeMenuBar();">📝 6. ຈັດການຄະແນນ</a></li>
         <li id="menu-finance"><a href="finance.html">💰 7. ການເງິນ &amp; ຊຳລະຄ່າຮຽນ</a></li>
         <a href="ຂ່າວສານແລະແຈ້ງເຕືອນ.html" id="sidebar-room-8" class="nav-item" style="display:flex;align-items:center;gap:10px;color:#e2e8f0;text-decoration:none;padding:10px 14px;border-radius:10px;">
-    <span>📢</span>
-    <span>8. ຂ່າວສານ &amp; ແຈ້ງເຕືອນ</span>
-</a>
+            <span>📢</span>
+            <span>8. ຂ່າວສານ &amp; ແຈ້ງເຕືອນ</span>
+        </a>
         <li id="menu-teachers-room" class="menu-highlight"><a href="teachers-room.html">👩‍🏫 9. ລາຍຊື່ຄູປະຈຳຫ້ອງ</a></li>
-          <a href="ຫ້ອງຮຽນ.html" id="menu-classrooms" class="nav-item" style="display:flex;align-items:center;gap:10px;color:#e2e8f0;text-decoration:none;padding:10px 14px;border-radius:10px;">
-    <span>🏫</span>
-    <span>10. ຫ້ອງຮຽນ</span>
-</a>
+        <a href="ຫ້ອງຮຽນ.html" id="menu-classrooms" class="nav-item" style="display:flex;align-items:center;gap:10px;color:#e2e8f0;text-decoration:none;padding:10px 14px;border-radius:10px;">
+            <span>🏫</span>
+            <span>10. ຫ້ອງຮຽນ</span>
+        </a>
     </ul>
 </aside>
-  <!-- 🖥️ Main Content Area (ສະແດງເນື້ອຫາຕາມໂມດູນທີ່ເລືອກ) -->
-        <div style="flex: 1; padding: 30px; overflow-y: auto; background: #f4f6f9;">
-            
-            <!-- 1. Dashboard Section -->
-            <div id="section-dashboard" class="content-section">
-                <h2>📊 Dashboard - ພາບລວມລະບົບ</h2>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px;">
-                    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <h4>ນັກຮຽນທັງໝົດ</h4>
-                        <p id="dash-total-students" style="font-size: 24px; font-weight: bold; color: #007bff;">0 ຄົນ</p>
-                    </div>
-                    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <h4>ຄູອາຈານທັງໝົດ</h4>
-                        <p id="dash-total-teachers" style="font-size: 24px; font-weight: bold; color: #28a745;">0 ຄົນ</p>
-                    </div>
-                    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <h4>ຫ້ອງຮຽນທັງໝົດ</h4>
-                        <p style="font-size: 24px; font-weight: bold; color: #ffc107;">12 ຫ້ອງ</p>
-                    </div>
-                    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <h4>ສະຖິຕິມາຮຽນ</h4>
-                        <p style="font-size: 24px; font-weight: bold; color: #17a2b8;">95%</p>
-                    </div>
-                </div>
+
+<!-- 🖥️ Main Content Area (ສະແດງເນື້ອຫາຕາມໂມດູນທີ່ເລືອກ) -->
+<div style="flex: 1; padding: 30px; overflow-y: auto; background: #f4f6f9;">
+    
+    <!-- 1. Dashboard Section -->
+    <div id="section-dashboard" class="content-section">
+        <h2>📊 Dashboard - ພາບລວມລະບົບ</h2>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px;">
+            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4>ນັກຮຽນທັງໝົດ</h4>
+                <p id="dash-total-students" style="font-size: 24px; font-weight: bold; color: #007bff;">0 ຄົນ</p>
             </div>
-
-            <!-- 2. Students Management Section -->
-            <div id="section-students" class="content-section" style="display: none;">
-                <h2>👨‍🎓 ຈັດການຂໍ້ມູນນັກຮຽນ</h2>
-                <p>ເພີ່ມ, ແກ້ໄຂ, ລົບ, ກອງຊັ້ນຮຽນ ແລະ ຄົ້ນຫາຂໍ້ມູນນັກຮຽນໃນລະບົບ.</p>
-
-                <!-- ຟອມເພີ່ມ / ແກ້ໄຂ ຂໍ້ມູນນັກຮຽນ -->
-                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                    <h3 id="student-form-title">➕ ເພີ່ມຂໍ້ມູນນັກຮຽນໃໝ່</h3>
-                    <form id="student-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-                        <input type="hidden" id="student-doc-id">
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະຫັດນັກຮຽນ:</label>
-                            <input type="text" id="student-id" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່-ນາມສະກຸນ:</label>
-                            <input type="text" id="student-name" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ:</label>
-                            <select id="student-grade" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                                <option value="">-- ເລືອກຊັ້ນຮຽນ --</option>
-                                <option value="ມ.1">ມ.1</option>
-                                <option value="ມ.2">ມ.2</option>
-                                <option value="ມ.3">ມ.3</option>
-                                <option value="ມ.4">ມ.4</option>
-                                <option value="ມ.5">ມ.5</option>
-                                <option value="ມ.6">ມ.6</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ເບີໂທລະສັບ:</label>
-                            <input type="text" id="student-phone" placeholder="ຕົວຢ່າງ: 20xxxxxxxx" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ຜູ້ປົກຄອງ:</label>
-                            <input type="text" id="student-parent" placeholder="ຊື່-ນາມສະກຸນ ຜູ້ປົກຄອງ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
-                            <button type="submit" id="save-student-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຂໍ້ມູນ</button>
-                            <button type="button" id="cancel-edit-btn" onclick="resetStudentForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- ສ່ວນຄົ້ນຫາ, ກອງຊັ້ນຮຽນ ແລະ ຕາຕະລາງສະແດງຜົນ -->
-                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                        <h3>📋 ລາຍຊື່ນັກຮຽນທັງໝົດ</h3>
-                        <div style="display: flex; gap: 10px;">
-                            <select id="filter-grade-select" onchange="filterStudents()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                                <option value="">-- ທຸກຊັ້ນຮຽນ --</option>
-                                <option value="ມ.1">ມ.1</option>
-                                <option value="ມ.2">ມ.2</option>
-                                <option value="ມ.3">ມ.3</option>
-                                <option value="ມ.4">ມ.4</option>
-                                <option value="ມ.5">ມ.5</option>
-                                <option value="ມ.6">ມ.6</option>
-                            </select>
-                            <input type="text" id="search-student-input" placeholder="🔍 ค้นຫາຊື່ ຫຼື ລະຫັດ..." onkeyup="filterStudents()" style="padding: 8px; width: 220px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                    </div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ລະຫັດ</th>
-                                <th>ຊື່-ນາມສະກຸນ</th>
-                                <th>ຊັ້ນຮຽນ</th>
-                                <th>ເບີໂທ</th>
-                                <th>ຜູ້ປົກຄອງ</th>
-                                <th>ຈັດການ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="students-table-body">
-                            <tr><td colspan="6" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4>ຄູອາຈານທັງໝົດ</h4>
+                <p id="dash-total-teachers" style="font-size: 24px; font-weight: bold; color: #28a745;">0 ຄົນ</p>
             </div>
-
-            <!-- 3. Teachers Management Section -->
-            <div id="section-teachers" class="content-section" style="display: none;">
-                <h2>👩‍🏫 ຈັດການຂໍ້ມູນຄູອາຈານ</h2>
-                <p>ເພີ່ມ, ແກ້ໄຂ, ລົບ ແລະ ຈັດການວິຊາທີ່ສອນຂອງຄູອາຈານໃນລະບົບ.</p>
-                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                    <h3 id="teacher-form-title">➕ ເພີ່ມຂໍ້ມູນຄູອາຈານໃໝ່</h3>
-                    <form id="teacher-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-                        <input type="hidden" id="teacher-doc-id">
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະຫັດຄູ:</label>
-                            <input type="text" id="teacher-id" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່-ນາມສະກຸນ:</label>
-                            <input type="text" id="teacher-name" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ວິຊາທີ່ສອນ:</label>
-                            <input type="text" id="teacher-subject" required placeholder="ຕົວຢ່າງ: ວິຊາຄະນິດສາດ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div style="display: flex; align-items: flex-end; gap: 10px;">
-                            <button type="submit" id="save-teacher-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຂໍ້ມູນ</button>
-                            <button type="button" id="cancel-teacher-edit-btn" onclick="resetTeacherForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3>📋 ລາຍຊື່ຄູອາຈານທັງໝົດ</h3>
-                        <input type="text" id="search-teacher-input" placeholder="🔍 ຄົ້ນຫາຊື່, ລະຫັດ ຫຼື ວິຊາ..." onkeyup="filterTeachers()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ລະຫັດຄູ</th>
-                                <th>ຊື່-ນາມສະກຸນ</th>
-                                <th>ວິຊາທີ່ສອນ</th>
-                                <th>ຈັດການ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="teachers-table-body">
-                            <tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4>ຫ້ອງຮຽນທັງໝົດ</h4>
+                <p style="font-size: 24px; font-weight: bold; color: #ffc107;">12 ຫ້ອງ</p>
             </div>
-            
-            <!-- 4. Classes & Timetable Management Section -->
-            <div id="section-classes" class="content-section" style="display: none;">
-                <h2>📅 ຈັດການຕາຕະລາງຮຽນ & ຫ້ອງຮຽນ</h2>
-                <p>ເບິ່ງ, ເພີ່ມ, ແກ້ໄຂ ແລະ ລົບຕາຕະລາງຮຽນ (ສຳລັບຄູອາຈານ ແລະ ແອັດມິນ).</p>
-
-                <div id="class-form-container" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: none;">
-                    <h4 id="class-form-title">➕ ເພີ່ມຕາຕະລາງຮຽນໃໝ່</h4>
-                    <form id="timetable-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-                        <input type="hidden" id="timetable-doc-id">
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ / ຫ້ອງ:</label>
-                            <input type="text" id="timetable-class-room" placeholder="ຕົວຢ່າງ: ມ.4/1" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ວິຊາ:</label>
-                            <input type="text" id="timetable-subject" placeholder="ຕົວຢ່າງ: ວິຊາຄະນິດສາດ" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ມື້ຮຽນ:</label>
-                            <select id="timetable-day" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                <option value="">-- ເລືອກມື້ --</option>
-                                <option value="ວັນຈັນ">ວັນຈັນ</option>
-                                <option value="ວັນອັງຄານ">ວັນອັງຄານ</option>
-                                <option value="ວັນພຸດ">ວັນພຸດ</option>
-                                <option value="ວັນພະຫັດ">ວັນພະຫັດ</option>
-                                <option value="ວັນສຸກ">ວັນສຸກ</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ເວລາ:</label>
-                            <input type="text" id="timetable-time" placeholder="ຕົວຢ່າງ: 08:00 - 09:30" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄູຜູ້ສອນ:</label>
-                            <input type="text" id="timetable-teacher" placeholder="ຊື່-ນາມສະກຸນຄູ" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        </div>
-                        <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
-                            <button type="button" id="save-timetable-btn" onclick="saveTimetableData(event)" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 ບັນທຶກຕາຕະລາງ</button>
-                            <button type="button" id="cancel-timetable-edit-btn" onclick="resetTimetableForm()" style="display: none; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                        <h3>📋 ຕາຕະລາງຮຽນທັງໝົດ</h3>
-                        <input type="text" id="search-timetable-input" placeholder="🔍 ຄົ້ນຫາວິຊາ, ຫ້ອງ ຫຼື ຄູ..." onkeyup="filterTimetables()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                        <thead>
-                            <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6; text-align: left;">
-                                <th style="padding: 10px;">ຊັ້ນ / ຫ້ອງ</th>
-                                <th style="padding: 10px;">ຊື່ວິຊາ</th>
-                                <th style="padding: 10px;">ມື້ຮຽນ</th>
-                                <th style="padding: 10px;">ເວລາ</th>
-                                <th style="padding: 10px;">ຄູຜູ້ສອນ</th>
-                                <th style="padding: 10px; text-align: center;">ຈັດການ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="timetable-table-body">
-                            <tr><td colspan="6" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4>ສະຖິຕິມາຮຽນ</h4>
+                <p style="font-size: 24px; font-weight: bold; color: #17a2b8;">95%</p>
             </div>
-
-          <!-- 5. Attendance Management Section -->
-<div id="section-attendance" class="content-section" style="display: none;">
-    <h2>📝 ຈັດການການມາຮຽນ (ມາ, ຂາດ, ມາຊ້າ, ລາພັກ)</h2>
-    <p style="margin-top: 10px; color: #666;">ເລືອກລະບົບເຊັກຊື່ ແລະ ກວດສອບປະຫວັດການມາຮຽນຂອງນັກຮຽນ.</p>
-
-    <div style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
-        <!-- 📌 ລິ້ງໄປໜ້າ check-in.html ທີ່ສ້າງຂຶ້ນໃໝ່ -->
-        <a href="check-in.html" style="padding: 12px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">⭐ ເປີດລະບົບເຊັກຊື່ (ລວມ ມ.5)</a>
-        <a href="attendance-report.html" style="padding: 12px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">📊 ເບິ່ງປະຫວັດການເຊັກຊື່</a>
-        <a href="attendance-summary.html" style="padding: 12px 20px; background: #17a2b8; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">📈 ສະຫຼຸບວັນຂາດ & ຫັກຄະແນນ</a>
-    </div>
-</div>
-
-            <!-- 6. Scores Management Section -->
-            <div id="section-scores" class="content-section" style="display: none;">
-                <h2>📈 ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</h2>
-                <p>ບັນທຶກ, ປະເມີນ ແລະ ຈັດການຄະແນນສອບເສັງຂອງນັກຮຽນໃນແຕ່ລະວິຊາ.</p>
-                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                    <h3 id="score-form-title">➕ ບັນທຶກຄະແນນນັກຮຽນ</h3>
-                    <form id="score-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-                        <input type="hidden" id="score-doc-id">
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະຫັດ ຫຼື ຊື່ນັກຮຽນ:</label>
-                            <input type="text" id="score-student-name" required placeholder="ຊື່ ຫຼື ລະຫັດນັກຮຽນ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ:</label>
-                            <select id="score-grade" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                                <option value="">-- ເລືອກຊັ້ນຮຽນ --</option>
-                                <option value="ມ.1">ມ.1</option>
-                                <option value="ມ.2">ມ.2</option>
-                                <option value="ມ.3">ມ.3</option>
-                                <option value="ມ.4">ມ.4</option>
-                                <option value="ມ.5">ມ.5</option>
-                                <option value="ມ.6">ມ.6</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ວິຊາສອນ:</label>
-                            <input type="text" id="score-subject" required placeholder="ຕົວຢ່າງ: ຄະນິດສາດ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄະແນນເກັບ (40):</label>
-                            <input type="number" id="score-midterm" required min="0" max="40" placeholder="0-40" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄະແນນສອບເສັງ (60):</label>
-                            <input type="number" id="score-final" required min="0" max="60" placeholder="0-60" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
-                            <button type="submit" id="save-score-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຄະແນນ</button>
-                            <button type="button" id="cancel-score-edit-btn" onclick="resetScoreForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                        <h3>📋 ຕາຕະລາງສະຫຼຸບຄະແນນນັກຮຽນ</h3>
-                        <input type="text" id="search-score-input" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ ຫຼື ວິຊາ..." onkeyup="filterScores()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ຊື່ນັກຮຽນ</th>
-                                <th>ຊັ້ນຮຽນ</th>
-                                <th>ວິຊາ</th>
-                                <th>ຄະແນນເກັບ (40)</th>
-                                <th>ສອບເສັງ (60)</th>
-                                <th>ລວມ (100)</th>
-                                <th>ເກຣດ</th>
-                                <th>ຈັດການ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="scores-table-body">
-                            <tr><td colspan="8" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 7. Finance Management Section -->
-            <div id="section-finance" class="content-section" style="display: none;">
-                <h2>💰 ລະບົບການເງິນ & ຄ່າຮຽນ</h2>
-                <p>ຕິດຕາມການຊຳລະຄ່າຮຽນ, ບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ ແລະ ສະຖານະການເງິນຂອງໂຮງຮຽນ.</p>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
-                    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <h4>ລາຍຮັບຄ່າຮຽນລວມ</h4>
-                        <p id="total-income" style="font-size: 24px; font-weight: bold; color: #28a745;">0 ₭</p>
-                    </div>
-                    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <h4>ຍອດຄ້າງຊຳລະ</h4>
-                        <p id="total-pending" style="font-size: 24px; font-weight: bold; color: #dc3545;">0 ₭</p>
-                    </div>
-                    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <h4>ລາຍການທັງໝົດ</h4>
-                        <p id="total-finance-records" style="font-size: 24px; font-weight: bold; color: #007bff;">0 ລາຍການ</p>
-                    </div>
-                </div>
-
-                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                    <h3 id="finance-form-title">➕ ບັນທຶກການຊຳລະຄ່າຮຽນ</h3>
-                    <form id="finance-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-                        <input type="hidden" id="finance-doc-id">
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ນັກຮຽນ:</label>
-                            <input type="text" id="finance-student-name" required placeholder="ຊື່-ນາມສະກຸນນັກຮຽນ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ:</label>
-                            <select id="finance-grade" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                                <option value="">-- ເລືອກຊັ້ນຮຽນ --</option>
-                                <option value="ມ.1">ມ.1</option>
-                                <option value="ມ.2">ມ.2</option>
-                                <option value="ມ.3">ມ.3</option>
-                                <option value="ມ.4">ມ.4</option>
-                                <option value="ມ.5">ມ.5</option>
-                                <option value="ມ.6">ມ.6</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຈຳນວນເງິນ (ກີບ):</label>
-                            <input type="number" id="finance-amount" required placeholder="ຕົວຢ່າງ: 500000" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ສະຖານະຊຳລະ:</label>
-                            <select id="finance-status" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                                <option value="ຈ່າຍແລ້ວ">✅ ຈ່າຍແລ້ວ</option>
-                                <option value="ຄ້າງຈ່າຍ">❌ ຄ້າງຈ່າຍ</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
-                            <button type="submit" id="save-finance-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຂໍ້ມູນ</button>
-                            <button type="button" id="cancel-finance-edit-btn" onclick="resetFinanceForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                        <h3>📋 ປະຫວັດການຊຳລະຄ່າຮຽນ</h3>
-                        <input type="text" id="search-finance-input" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." onkeyup="filterFinances()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ຊື່ນັກຮຽນ</th>
-                                <th>ຊັ້ນຮຽນ</th>
-                                <th>ຈຳນວນເງິນ</th>
-                                <th>ສະຖານະ</th>
-                                <th>ຈັດການ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="finances-table-body">
-                            <tr><td colspan="5" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 8. News Management Section -->
-            <div id="section-news" class="content-section" style="display: none;">
-                <h2>📢 ຂ່າວສານ & ແຈ້ງເຕືອນ</h2>
-                <p>ປະກາດຂ່າວສານ, ກິດຈະກຳ ແລະ ສົ່ງການແຈ້ງເຕືອນສຳຄັນພາຍໃນໂຮງຮຽນ.</p>
-                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                    <h3 id="news-form-title">➕ ສ້າງປະກາດຂ່າວສານໃໝ່</h3>
-                    <form id="news-form" style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px;">
-                        <input type="hidden" id="news-doc-id">
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຫົວຂໍ້ຂ່າວ / ປະກາດ:</label>
-                            <input type="text" id="news-title" required placeholder="ຕົວຢ່າງ: ປະກາດວັນພັກບຸນປີໃຫມ່ລາວ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">ເນື້ອໃນລະອຽດ:</label>
-                            <textarea id="news-content" required rows="4" placeholder="ຂຽນรายละเอียดເນື້ອໃນປະກາດ..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="submit" id="save-news-btn" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ເຜີຍແຜ່ປະກາດ</button>
-                            <button type="button" id="cancel-news-edit-btn" onclick="resetNewsForm()" style="display: none; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <h3>📋 ລາຍການປະກາດທັງໝົດ</h3>
-                    <div id="news-container" style="margin-top: 15px; display: grid; gap: 15px;">
-                        <p style="text-align: center; color: #666;">ກຳລັງໂຫຼດຂໍ້ມູນ...</p>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
+
+    <!-- 2. Students Management Section -->
+    <div id="section-students" class="content-section" style="display: none;">
+        <h2>👨‍🎓 ຈັດການຂໍ້ມູນນັກຮຽນ</h2>
+        <p>ເພີ່ມ, ແກ້ໄຂ, ລົບ, ກອງຊັ້ນຮຽນ ແລະ ຄົ້ນຫາຂໍ້ມູນນັກຮຽນໃນລະບົບ.</p>
+
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3 id="student-form-title">➕ ເພີ່ມຂໍ້ມູນນັກຮຽນໃໝ່</h3>
+            <form id="student-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                <input type="hidden" id="student-doc-id">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະຫັດນັກຮຽນ:</label>
+                    <input type="text" id="student-id" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່-ນາມສະກຸນ:</label>
+                    <input type="text" id="student-name" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ:</label>
+                    <select id="student-grade" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">-- ເລືອກຊັ້ນຮຽນ --</option>
+                        <option value="ມ.1">ມ.1</option>
+                        <option value="ມ.2">ມ.2</option>
+                        <option value="ມ.3">ມ.3</option>
+                        <option value="ມ.4">ມ.4</option>
+                        <option value="ມ.5">ມ.5</option>
+                        <option value="ມ.6">ມ.6</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ເບີໂທລະສັບ:</label>
+                    <input type="text" id="student-phone" placeholder="ຕົວຢ່າງ: 20xxxxxxxx" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ຜູ້ປົກຄອງ:</label>
+                    <input type="text" id="student-parent" placeholder="ຊື່-ນາມສະກຸນ ຜູ້ປົກຄອງ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+                    <button type="submit" id="save-student-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຂໍ້ມູນ</button>
+                    <button type="button" id="cancel-edit-btn" onclick="resetStudentForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3>📋 ລາຍຊື່ນັກຮຽນທັງໝົດ</h3>
+                <div style="display: flex; gap: 10px;">
+                    <select id="filter-grade-select" onchange="filterStudents()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">-- ທຸກຊັ້ນຮຽນ --</option>
+                        <option value="ມ.1">ມ.1</option>
+                        <option value="ມ.2">ມ.2</option>
+                        <option value="ມ.3">ມ.3</option>
+                        <option value="ມ.4">ມ.4</option>
+                        <option value="ມ.5">ມ.5</option>
+                        <option value="ມ.6">ມ.6</option>
+                    </select>
+                    <input type="text" id="search-student-input" placeholder="🔍 ค้นຫາຊື່ ຫຼື ລະຫັດ..." onkeyup="filterStudents()" style="padding: 8px; width: 220px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ລະຫັດ</th>
+                        <th>ຊື່-ນາມສະກຸນ</th>
+                        <th>ຊັ້ນຮຽນ</th>
+                        <th>ເບີໂທ</th>
+                        <th>ຜູ້ປົກຄອງ</th>
+                        <th>ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="students-table-body">
+                    <tr><td colspan="6" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 3. Teachers Management Section -->
+    <div id="section-teachers" class="content-section" style="display: none;">
+        <h2>👩‍🏫 ຈັດການຂໍ້ມູນຄູອາຈານ</h2>
+        <p>ເພີ່ມ, ແກ້ໄຂ, ລົບ ແລະ ຈັດການວິຊາທີ່ສອນຂອງຄູອາຈານໃນລະບົບ.</p>
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3 id="teacher-form-title">➕ ເພີ່ມຂໍ້ມູນຄູອາຈານໃໝ່</h3>
+            <form id="teacher-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                <input type="hidden" id="teacher-doc-id">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະຫັດຄູ:</label>
+                    <input type="text" id="teacher-id" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່-ນາມສະກຸນ:</label>
+                    <input type="text" id="teacher-name" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ວິຊາທີ່ສອນ:</label>
+                    <input type="text" id="teacher-subject" required placeholder="ຕົວຢ່າງ: ວິຊາຄະນິດສາດ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="display: flex; align-items: flex-end; gap: 10px;">
+                    <button type="submit" id="save-teacher-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຂໍ້ມູນ</button>
+                    <button type="button" id="cancel-teacher-edit-btn" onclick="resetTeacherForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>📋 ລາຍຊື່ຄູອາຈານທັງໝົດ</h3>
+                <input type="text" id="search-teacher-input" placeholder="🔍 ຄົ້ນຫາຊື່, ລະຫັດ ຫຼື ວິຊາ..." onkeyup="filterTeachers()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ລະຫັດຄູ</th>
+                        <th>ຊື່-ນາມສະກຸນ</th>
+                        <th>ວິຊາທີ່ສອນ</th>
+                        <th>ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="teachers-table-body">
+                    <tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- 4. Classes & Timetable Management Section -->
+    <div id="section-classes" class="content-section" style="display: none;">
+        <h2>📅 ຈັດການຕາຕະລາງຮຽນ & ຫ້ອງຮຽນ</h2>
+        <p>ເບິ່ງ, ເພີ່ມ, ແກ້ໄຂ ແລະ ລົບຕາຕະລາງຮຽນ (ສຳລັບຄູອາຈານ ແລະ ແອັດມິນ).</p>
+
+        <div id="class-form-container" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: none;">
+            <h4 id="class-form-title">➕ ເພີ່ມຕາຕະລາງຮຽນໃໝ່</h4>
+            <form id="timetable-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                <input type="hidden" id="timetable-doc-id">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ / ຫ້ອງ:</label>
+                    <input type="text" id="timetable-class-room" placeholder="ຕົວຢ່າງ: ມ.4/1" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ວິຊາ:</label>
+                    <input type="text" id="timetable-subject" placeholder="ຕົວຢ່າງ: ວິຊາຄະນິດສາດ" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ມື້ຮຽນ:</label>
+                    <select id="timetable-day" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        <option value="">-- ເລືອກມື້ --</option>
+                        <option value="ວັນຈັນ">ວັນຈັນ</option>
+                        <option value="ວັນອັງຄານ">ວັນອັງຄານ</option>
+                        <option value="ວັນພຸດ">ວັນພຸດ</option>
+                        <option value="ວັນພະຫັດ">ວັນພະຫັດ</option>
+                        <option value="ວັນສຸກ">ວັນສຸກ</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ເວລາ:</label>
+                    <input type="text" id="timetable-time" placeholder="ຕົວຢ່າງ: 08:00 - 09:30" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄູຜູ້ສອນ:</label>
+                    <input type="text" id="timetable-teacher" placeholder="ຊື່-ນາມສະກຸນຄູ" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+                    <button type="button" id="save-timetable-btn" onclick="saveTimetableData(event)" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 ບັນທຶກຕາຕະລາງ</button>
+                    <button type="button" id="cancel-timetable-edit-btn" onclick="resetTimetableForm()" style="display: none; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3>📋 ຕາຕະລາງຮຽນທັງໝົດ</h3>
+                <input type="text" id="search-timetable-input" placeholder="🔍 ຄົ້ນຫາວິຊາ, ຫ້ອງ ຫຼື ຄູ..." onkeyup="filterTimetables()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                <thead>
+                    <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6; text-align: left;">
+                        <th style="padding: 10px;">ຊັ້ນ / ຫ້ອງ</th>
+                        <th style="padding: 10px;">ຊື່ວິຊາ</th>
+                        <th style="padding: 10px;">ມື້ຮຽນ</th>
+                        <th style="padding: 10px;">ເວລາ</th>
+                        <th style="padding: 10px;">ຄູຜູ້ສອນ</th>
+                        <th style="padding: 10px; text-align: center;">ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="timetable-table-body">
+                    <tr><td colspan="6" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 5. Attendance Management Section -->
+    <div id="section-attendance" class="content-section" style="display: none;">
+        <h2>📝 ຈັດການການມາຮຽນ (ມາ, ຂາດ, ມາຊ້າ, ລາພັກ)</h2>
+        <p style="margin-top: 10px; color: #666;">ເລືອກລະບົບເຊັກຊື່ ແລະ ກວດສອບປະຫວັດການມາຮຽນຂອງນັກຮຽນ.</p>
+
+        <div style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+            <a href="check-in.html" style="padding: 12px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">⭐ ເປີດລະບົບເຊັກຊື່ (ລວມ ມ.5)</a>
+            <a href="attendance-report.html" style="padding: 12px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">📊 ເບິ່ງປະຫວັດການເຊັກຊື່</a>
+            <a href="attendance-summary.html" style="padding: 12px 20px; background: #17a2b8; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">📈 ສະຫຼຸບວັນຂາດ & ຫັກຄະແນນ</a>
+        </div>
+    </div>
+
+    <!-- 6. Scores Management Section -->
+    <div id="section-scores" class="content-section" style="display: none;">
+        <h2>📈 ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</h2>
+        <p>ບັນທຶກ, ປະເມີນ ແລະ ຈັດການຄະແນນສອບເສັງຂອງນັກຮຽນໃນແຕ່ລະວິຊາ.</p>
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3 id="score-form-title">➕ ບັນທຶກຄະແນນນັກຮຽນ</h3>
+            <form id="score-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                <input type="hidden" id="score-doc-id">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະຫັດ ຫຼື ຊື່ນັກຮຽນ:</label>
+                    <input type="text" id="score-student-name" required placeholder="ຊື່ ຫຼື ລະຫັດນັກຮຽນ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ:</label>
+                    <select id="score-grade" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">-- ເລືອກຊັ້ນຮຽນ --</option>
+                        <option value="ມ.1">ມ.1</option>
+                        <option value="ມ.2">ມ.2</option>
+                        <option value="ມ.3">ມ.3</option>
+                        <option value="ມ.4">ມ.4</option>
+                        <option value="ມ.5">ມ.5</option>
+                        <option value="ມ.6">ມ.6</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ວິຊາສອນ:</label>
+                    <input type="text" id="score-subject" required placeholder="ຕົວຢ່າງ: ຄະນິດສາດ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄະແນນເກັບ (40):</label>
+                    <input type="number" id="score-midterm" required min="0" max="40" placeholder="0-40" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄະແນນສອບເສັງ (60):</label>
+                    <input type="number" id="score-final" required min="0" max="60" placeholder="0-60" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+                    <button type="submit" id="save-score-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຄະແນນ</button>
+                    <button type="button" id="cancel-score-edit-btn" onclick="resetScoreForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3>📋 ຕາຕະລາງສະຫຼຸບຄະແນນນັກຮຽນ</h3>
+                <input type="text" id="search-score-input" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ ຫຼື ວິຊາ..." onkeyup="filterScores()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຊັ້ນຮຽນ</th>
+                        <th>ວິຊາ</th>
+                        <th>ຄະແນນເກັບ (40)</th>
+                        <th>ສອບເສັງ (60)</th>
+                        <th>ລວມ (100)</th>
+                        <th>ເກຣດ</th>
+                        <th>ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="scores-table-body">
+                    <tr><td colspan="8" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 7. Finance Management Section -->
+    <div id="section-finance" class="content-section" style="display: none;">
+        <h2>💰 ລະບົບການເງິນ & ຄ່າຮຽນ</h2>
+        <p>ຕິດຕາມການຊຳລະຄ່າຮຽນ, ບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ ແລະ ສະຖານະການເງິນຂອງໂຮງຮຽນ.</p>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
+            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4>ລາຍຮັບຄ່າຮຽນລວມ</h4>
+                <p id="total-income" style="font-size: 24px; font-weight: bold; color: #28a745;">0 ₭</p>
+            </div>
+            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4>ຍອດຄ້າງຊຳລະ</h4>
+                <p id="total-pending" style="font-size: 24px; font-weight: bold; color: #dc3545;">0 ₭</p>
+            </div>
+            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4>ລາຍການທັງໝົດ</h4>
+                <p id="total-finance-records" style="font-size: 24px; font-weight: bold; color: #007bff;">0 ລາຍການ</p>
+            </div>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3 id="finance-form-title">➕ ບັນທຶກການຊຳລະຄ່າຮຽນ</h3>
+            <form id="finance-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                <input type="hidden" id="finance-doc-id">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ນັກຮຽນ:</label>
+                    <input type="text" id="finance-student-name" required placeholder="ຊື່-ນາມສະກຸນນັກຮຽນ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ:</label>
+                    <select id="finance-grade" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">-- ເລືອກຊັ້ນຮຽນ --</option>
+                        <option value="ມ.1">ມ.1</option>
+                        <option value="ມ.2">ມ.2</option>
+                        <option value="ມ.3">ມ.3</option>
+                        <option value="ມ.4">ມ.4</option>
+                        <option value="ມ.5">ມ.5</option>
+                        <option value="ມ.6">ມ.6</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຈຳນວນເງິນ (ກີບ):</label>
+                    <input type="number" id="finance-amount" required placeholder="ຕົວຢ່າງ: 500000" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ສະຖານະຊຳລະ:</label>
+                    <select id="finance-status" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="ຈ່າຍແລ້ວ">✅ ຈ່າຍແລ້ວ</option>
+                        <option value="ຄ້າງຈ່າຍ">❌ ຄ້າງຈ່າຍ</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+                    <button type="submit" id="save-finance-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຂໍ້ມູນ</button>
+                    <button type="button" id="cancel-finance-edit-btn" onclick="resetFinanceForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3>📋 ປະຫວັດການຊຳລະຄ່າຮຽນ</h3>
+                <input type="text" id="search-finance-input" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." onkeyup="filterFinances()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຊັ້ນຮຽນ</th>
+                        <th>ຈຳນວນເງິນ</th>
+                        <th>ສະຖານະ</th>
+                        <th>ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="finances-table-body">
+                    <tr><td colspan="5" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 8. News Management Section -->
+    <div id="section-news" class="content-section" style="display: none;">
+        <h2>📢 ຂ່າວສານ & ແຈ້ງເຕືອນ</h2>
+        <p>ປະກາດຂ່າວສານ, ກິດຈະກຳ ແລະ ສົ່ງການແຈ້ງເຕືອນສຳຄັນພາຍໃນໂຮງຮຽນ.</p>
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3 id="news-form-title">➕ ສ້າງປະກາດຂ່າວສານໃໝ່</h3>
+            <form id="news-form" style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px;">
+                <input type="hidden" id="news-doc-id">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຫົວຂໍ້ຂ່າວ / ປະກາດ:</label>
+                    <input type="text" id="news-title" required placeholder="ຕົວຢ່າງ: ປະກາດວັນພັກບຸນປີໃຫມ່ລາວ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">ເນື້ອໃນລະອຽດ:</label>
+                    <textarea id="news-content" required rows="4" placeholder="ຂຽນรายละเอียดເນື້ອໃນປະກາດ..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" id="save-news-btn" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ເຜີຍແຜ່ປະກາດ</button>
+                    <button type="button" id="cancel-news-edit-btn" onclick="resetNewsForm()" style="display: none; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <h3>📋 ລາຍການປະກາດທັງໝົດ</h3>
+            <div id="news-container" style="margin-top: 15px; display: grid; gap: 15px;">
+                <p style="text-align: center; color: #666;">ກຳລັງໂຫຼດຂໍ້ມູນ...</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
 <main class="main-content" id="mainContent">
-  <main class="main-content" id="mainContent">
     <!-- 👩‍🏫 ສຳລັບ Admin ແລະ ຄູອາຈານ: ສະແດງຕາຕະລາງສອນສະເພາະຊົ່ວໂມງສອນຂອງຕົນເອງ -->
     <section class="panel-card" id="teaching-schedule-panel" style="display: none;">
         <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
@@ -540,8 +537,15 @@
         </div>
     </section>
 </main>
-    <script>
-// ຂໍ້ມູນຕາຕະລາງສອນທັງໝົດ (ຫຼື ໂຫຼດຈາກ localStorage['school_teaching_schedules'] ຖ້າມີ)
+
+<script>
+function cleanStorageValue(val) {
+    return String(val || "")
+        .trim()
+        .replace(/^["']+|["']+$/g, "")
+        .trim();
+}
+
 const defaultTeachingData = [
     { teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ", subject: "ຄະນິດສາດ", grade: "ມ.5", schedule: "ຈັນ, ພຸດ, ສຸກ (08:00 - 08:45)" },
     { teacher: "ອ. ສຸກສາຄອນ ແສງດາວ", subject: "ຟີຊິກສາດ", grade: "ມ.5", schedule: "ຈັນ, ພະຫັດ (08:50 - 09:35)" },
@@ -567,11 +571,26 @@ function getAllTeachingSchedules() {
 }
 
 function normalizeText(str) {
-    return String(str || "").trim().toLowerCase().replace(/\s+/g, " ");
+    return cleanStorageValue(str).toLowerCase().replace(/\s+/g, " ");
+}
+
+function getCurrentRoleClean() {
+    const raw = localStorage.getItem("userRole") || localStorage.getItem("role") || "student";
+    return cleanStorageValue(raw).toLowerCase() || "student";
+}
+
+function getCurrentGradeClean() {
+    const raw =
+        localStorage.getItem("userGrade") ||
+        localStorage.getItem("studentGrade") ||
+        localStorage.getItem("grade") ||
+        "ມ.5";
+    const cleaned = cleanStorageValue(raw);
+    return cleaned || "ມ.5";
 }
 
 function isStaffRole() {
-    const role = (localStorage.getItem("userRole") || "student").trim().toLowerCase();
+    const role = getCurrentRoleClean();
     return role === "admin" || role === "teacher";
 }
 
@@ -595,7 +614,6 @@ function renderOwnTeachingSchedule(currentUserName) {
     const allSchedules = getAllTeachingSchedules();
     const targetName = normalizeText(currentUserName);
 
-    // ກອງສະເພາະລາຍການທີ່ຊື່ຜູ້ສອນກົງກັບຜູ້ໃຊ້ປັດຈຸບັນ
     const mySchedules = allSchedules.filter(item => {
         const itemTeacher = normalizeText(item.teacher);
         return itemTeacher && targetName && (
@@ -628,9 +646,14 @@ function renderOwnTeachingSchedule(currentUserName) {
 }
 
 function applyIndexRoleRules() {
-    const role = (localStorage.getItem("userRole") || "student").toLowerCase();
-    const userGrade = localStorage.getItem("userGrade") || "ມ.5";
-    const userName = localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
+    const role = getCurrentRoleClean();
+    const userGrade = getCurrentGradeClean();
+    const userName = cleanStorageValue(localStorage.getItem("userName")) || "ຜູ້ໃຊ້ງານ";
+
+    localStorage.setItem("userRole", role);
+    localStorage.setItem("role", role);
+    localStorage.setItem("userGrade", userGrade);
+    localStorage.setItem("userName", userName);
 
     const teachingPanel = document.getElementById("teaching-schedule-panel");
     const studentPanel = document.getElementById("student-room-timetable-panel");
@@ -642,12 +665,9 @@ function applyIndexRoleRules() {
     } else {
         if (teachingPanel) teachingPanel.style.display = "none";
         if (studentPanel) studentPanel.style.display = "block";
-        if (typeof renderStudentOwnRoomTimetable === "function") {
-            renderStudentOwnRoomTimetable(userGrade);
-        }
+        renderStudentTimetableWithTeachers();
     }
 
-    // ເຊື່ອງປຸ່ມ ເພີ່ມ / ແກ້ໄຂ / ລົບ ທັງໝົດໃນໜ້າ index.html (ຍົກເວັ້ນປຸ່ມ ລາຍລະອຽດ)
     document.querySelectorAll("#mainContent button").forEach(btn => {
         if (btn.id === "btn-schedule-detail-staff" || btn.id === "btn-schedule-detail-student" || btn.closest("#scheduleDetailModal")) {
             return;
@@ -661,11 +681,6 @@ function applyIndexRoleRules() {
     ensureScheduleDetailUi();
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-    applyIndexRoleRules();
-});
-
-// ກວດສອບວ່າ Login ແລ້ວຫຼືຍັງ
 if (localStorage.getItem('isLoggedIn') !== 'true') {
     window.location.href = 'login.html';
 }
@@ -698,7 +713,6 @@ function getToggleButtons() {
     });
 }
 
-// ຮັບປະກັນວ່າປຸ່ມ 3 ຂີດສະແດງສະເໝີ ບໍ່ວ່າຈະເປັນ admin, teacher ຫຼື student
 function ensureToggleButtonVisible() {
     getToggleButtons().forEach(btn => {
         btn.classList.remove('hidden', 'hide', 'd-none');
@@ -718,15 +732,11 @@ function setSidebarOpen(isOpen) {
     const backdrop = getBackdropEl();
     ensureToggleButtonVisible();
 
-    if (!sidebar) {
-        console.warn('ບໍ່ພົບ Element Sidebar (#slideMenubar / .slide-menubar)');
-        return;
-    }
+    if (!sidebar) return;
 
     sidebar.classList.toggle('open', isOpen);
     sidebar.classList.remove('collapsed', 'hidden', 'hide', 'd-none');
 
-    // ບັງຄັບ Style ໃຫ້ Sidebar ເລື່ອນເຂົ້າ/ອອກຊັດເຈນ ບໍ່ຖືກ CSS ອື່ນທັບ
     sidebar.style.setProperty('display', 'block', 'important');
     sidebar.style.setProperty('position', 'fixed', 'important');
     sidebar.style.setProperty('top', '0', 'important');
@@ -779,36 +789,6 @@ function logout() {
     window.location.href = 'login.html';
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    const userName = localStorage.getItem('userName') || 'ຜູ້ໃຊ້ງານ';
-    const userRole = localStorage.getItem('userRole') || 'student';
-
-    const nameEl = document.getElementById('user-display-name');
-    const roleEl = document.getElementById('user-display-role');
-    if (nameEl) nameEl.innerText = userName;
-    if (roleEl) roleEl.innerText = userRole;
-
-    // ຕັ້ງຄ່າເລີ່ມຕົ້ນໃຫ້ Sidebar ປິດຢູ່ ແລະ ປຸ່ມ 3 ຂີດສະແດງສະເໝີ
-    setSidebarOpen(false);
-    ensureToggleButtonVisible();
-
-    // ຜູກ click ໂດຍກົງໃຫ້ປຸ່ມ 3 ຂີດທຸກປຸ່ມ
-    getToggleButtons().forEach(btn => {
-        btn.removeAttribute('onclick');
-        btn.addEventListener('click', window.toggleMenuBar);
-    });
-
-    const backdrop = getBackdropEl();
-    if (backdrop) {
-        backdrop.addEventListener('click', window.closeMenuBar);
-    }
-
-    // ກັນ script.js ຫຼື code ອື່ນມາເຊື່ອງປຸ່ມ 3 ຂີດຫຼັງໂຫຼດສຳເລັດ
-    setTimeout(ensureToggleButtonVisible, 300);
-    setTimeout(ensureToggleButtonVisible, 1000);
-});
-
-// ບັງຄັບໃຫ້ເມນູທີ 5 (ຈັດການການມາຮຽນ) ໃນ Sidebar ສະແດງສະເໝີ ບໍ່ຊ່ອນສຳລັບນັກຮຽນ
 function ensureAttendanceMenuVisibleForStudent() {
     const candidates = Array.from(
         document.querySelectorAll('#menu-attendance, #slideMenubar li, .menubar-list li, aside li, #slideMenubar a, .menubar-list a, aside a')
@@ -839,15 +819,6 @@ function ensureAttendanceMenuVisibleForStudent() {
         }
     });
 }
-
-window.addEventListener('DOMContentLoaded', () => {
-    ensureAttendanceMenuVisibleForStudent();
-
-    // ກັນ script.js ຫຼື ໂຄດກວດສິດ Role ມາເຊື່ອງເມນູທີ 5 ພາຍຫຼັງ
-    setTimeout(ensureAttendanceMenuVisibleForStudent, 200);
-    setTimeout(ensureAttendanceMenuVisibleForStudent, 600);
-    setTimeout(ensureAttendanceMenuVisibleForStudent, 1200);
-});
 
 function ensureMenuSixVisibleAndLinked() {
     const candidates = Array.from(
@@ -896,16 +867,6 @@ function ensureMenuSixVisibleAndLinked() {
         }
     });
 }
-
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", ensureMenuSixVisibleAndLinked);
-} else {
-    ensureMenuSixVisibleAndLinked();
-}
-
-setTimeout(ensureMenuSixVisibleAndLinked, 200);
-setTimeout(ensureMenuSixVisibleAndLinked, 600);
-setTimeout(ensureMenuSixVisibleAndLinked, 1200);
 
 const roomTimetablesWithTeacher = {
     "ມ.5": [
@@ -1060,11 +1021,13 @@ function formatSlotWithTeacher(slot) {
 }
 
 function renderStudentTimetableWithTeachers() {
-    const role = (localStorage.getItem("userRole") || "student").toLowerCase();
-    const userGrade = localStorage.getItem("userGrade") || "ມ.5";
-    if (role !== "student") return;
+    const role = getCurrentRoleClean();
+    if (role === "admin" || role === "teacher") return;
 
-    const cleanRoom = roomTimetablesWithTeacher[userGrade] ? userGrade : "ມ.5";
+    const rawGrade = getCurrentGradeClean();
+    const cleanRoom = roomTimetablesWithTeacher[rawGrade] ? rawGrade : "ມ.5";
+    localStorage.setItem("userGrade", cleanRoom);
+
     const titleEl = document.getElementById("student-timetable-title");
     const badgeEl = document.getElementById("student-timetable-badge");
     const tbody = document.getElementById("student-timetable-body");
@@ -1073,7 +1036,7 @@ function renderStudentTimetableWithTeachers() {
     if (badgeEl) badgeEl.textContent = `ຫ້ອງ: ${cleanRoom}`;
     if (!tbody) return;
 
-    const rows = roomTimetablesWithTeacher[cleanRoom];
+    const rows = roomTimetablesWithTeacher[cleanRoom] || roomTimetablesWithTeacher["ມ.5"];
     tbody.innerHTML = rows.map(r => `
         <tr>
             <td><strong>${r.day}</strong></td>
@@ -1084,7 +1047,9 @@ function renderStudentTimetableWithTeachers() {
     ensureScheduleDetailUi();
 }
 
-// --- ປຸ່ມນ້ອຍ「ລາຍລະອຽດ」ທຸກຊົ່ວໂມງ (2 ປະເພດ: ທັງໝົດໃນເທີມ & ສຳລັບມື້ນີ້) ---
+window.renderStudentOwnRoomTimetable = renderStudentTimetableWithTeachers;
+window.renderStudentTimetableWithTeachers = renderStudentTimetableWithTeachers;
+
 const SCHEDULE_PERIOD_LABELS = [
     "ຊົ່ວໂມງທີ 1 (08:00 - 08:45)",
     "ຊົ່ວໂມງທີ 2 (08:50 - 09:35)",
@@ -1092,7 +1057,7 @@ const SCHEDULE_PERIOD_LABELS = [
     "ຊົ່ວໂມງທີ 4 (10:40 - 11:25)"
 ];
 
-let selectedScheduleDetailType = "term"; // "term" | "today"
+let selectedScheduleDetailType = "term";
 
 function getTodayDayShort() {
     const dayMap = {
@@ -1110,7 +1075,7 @@ function getTodayDayShort() {
 function getAllDetailedHours() {
     const staff = isStaffRole();
     const userName = normalizeText(localStorage.getItem("userName") || "");
-    const userGrade = localStorage.getItem("userGrade") || "ມ.5";
+    const userGrade = getCurrentGradeClean();
     const rows = [];
 
     if (staff) {
@@ -1293,16 +1258,50 @@ function ensureScheduleDetailUi() {
     });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+function initIndexView() {
+    const userName = cleanStorageValue(localStorage.getItem('userName')) || 'ຜູ້ໃຊ້ງານ';
+    const userRole = getCurrentRoleClean();
+
+    const nameEl = document.getElementById('user-display-name');
+    const roleEl = document.getElementById('user-display-role');
+    if (nameEl) nameEl.innerText = userName;
+    if (roleEl) roleEl.innerText = userRole;
+
+    applyIndexRoleRules();
     renderStudentTimetableWithTeachers();
+    ensureAttendanceMenuVisibleForStudent();
+    ensureMenuSixVisibleAndLinked();
     ensureScheduleDetailUi();
-    setTimeout(() => {
-        renderStudentTimetableWithTeachers();
-        ensureScheduleDetailUi();
-    }, 300);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    initIndexView();
+    setSidebarOpen(false);
+    ensureToggleButtonVisible();
+
+    getToggleButtons().forEach(btn => {
+        btn.removeAttribute('onclick');
+        btn.addEventListener('click', window.toggleMenuBar);
+    });
+
+    const backdrop = getBackdropEl();
+    if (backdrop) {
+        backdrop.addEventListener('click', window.closeMenuBar);
+    }
+
+    [250, 700, 1400].forEach(ms => {
+        setTimeout(() => {
+            initIndexView();
+            ensureToggleButtonVisible();
+        }, ms);
+    });
+});
+
+window.addEventListener('load', () => {
+    initIndexView();
+    ensureToggleButtonVisible();
 });
 </script>
 <script type="module" src="script.js"></script>
-<!-- <script type="module" src="timetable.js"></script> -->
 </body>
 </html>
