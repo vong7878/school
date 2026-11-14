@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🏫 ຫ້ອງຮຽນ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Noto Sans Lao', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
+        }
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .topbar {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .back-btn {
+            background: #334155;
+            color: #f8fafc;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .back-btn:hover { background: #475569; }
+        .page-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .badge-role-admin { background: #dc2626; color: #fff; }
+        .badge-role-teacher { background: #7c3aed; color: #fff; }
+        .badge-role-student { background: #2563eb; color: #fff; }
+        .badge-fb { display: none !important; }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #334155;
+        }
+        .card-header h2 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        input, select, textarea {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 8px 11px;
+            font-family: inherit;
+            font-size: 13px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 70px;
+            resize: vertical;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        button {
+            font-family: inherit;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 13px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover { opacity: 0.92; }
+        .btn-primary { background: #16a34a; color: #fff; }
+        .btn-secondary { background: #475569; color: #fff; }
+        .btn-sync { background: #0284c7; color: #fff; }
+        .btn-edit { background: #eab308; color: #0f172a; padding: 5px 10px; font-size: 12px; }
+        .btn-del { background: #dc2626; color: #fff; padding: 5px 10px; font-size: 12px; }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+        }
+        th, td {
+            border: 1px solid #334155;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
+        }
+        th {
+            background: #0f172a;
+            color: #93c5fd;
+            font-weight: 700;
+        }
+        td {
+            background: #162032;
+            color: #e2e8f0;
+        }
+        tr:hover td { background: #24334d; }
+        .center { text-align: center; }
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .admin-only-hide { display: none !important; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="topbar">
+        <div class="topbar-left">
+            <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
+            <h1 class="page-title">🏫 ຫ້ອງຮຽນ</h1>
+        </div>
+        <div class="user-meta">
+            <span id="fbSyncBadge" class="badge badge-fb"></span>
+            <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
+            <span id="currentUserRole" class="badge badge-role-student">STUDENT</span>
+        </div>
+    </div>
+
+    <!-- ຟອມຈັດການຫ້ອງຮຽນ (ສະເພາະແອັດມິນ) -->
+    <section class="card admin-only" id="adminClassroomSection" style="display: none;">
+        <div class="card-header">
+            <h2 id="classroomFormTitle">➕ ເພີ່ມ / ແກ້ໄຂ ຫ້ອງຮຽນ</h2>
+            <span class="badge badge-role-admin">ສະເພາະແອັດມິນ (ADMIN)</span>
+        </div>
+
+        <form id="classroomForm" onsubmit="handleClassroomSubmit(event)">
+            <input type="hidden" id="editingRoomId" value="" />
+            <div class="form-grid">
+                <div>
+                    <label for="roomNameInput">ຊື່ຫ້ອງຮຽນ</label>
+                    <input type="text" id="roomNameInput" placeholder="ເຊັ່ນ: ມ.5, ມ.6, ມ.7" required />
+                </div>
+                <div>
+                    <label for="roomAdvisorInput">ຄູປະຈຳຫ້ອງ</label>
+                    <input type="text" id="roomAdvisorInput" placeholder="ເຊັ່ນ: ອ. ສົມພອນ ວົງສາ" required />
+                </div>
+                <div>
+                    <label for="roomBuildingInput">ອາຄານ / ຊັ້ນ</label>
+                    <input type="text" id="roomBuildingInput" placeholder="ເຊັ່ນ: ອາຄານ A - ຊັ້ນ 2" />
+                </div>
+                <div>
+                    <label for="roomCountInput">ຈຳນວນນັກຮຽນ (ຄົນ)</label>
+                    <input type="number" id="roomCountInput" min="0" value="30" />
+                </div>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label for="roomNoteInput">ໝາຍເຫດ / ລາຍລະອຽດຫ້ອງ</label>
+                <textarea id="roomNoteInput" placeholder="ລາຍລະອຽດເພີ່ມເຕີມຂອງຫ້ອງຮຽນ..."></textarea>
+            </div>
+            <div class="controls">
+                <button type="submit" class="btn-primary">💾 ບັນທຶກຫ້ອງຮຽນ</button>
+                <button type="button" class="btn-secondary" onclick="resetClassroomForm()">↩ ລ້າງຟອມ</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- ຕາຕະລາງຫ້ອງຮຽນທັງໝົດ -->
+    <section class="card">
+        <div class="card-header">
+            <h2>📋 ລາຍການຫ້ອງຮຽນທັງໝົດ</h2>
+            <div class="controls">
+                <input type="text" id="searchRoomInput" placeholder="ຄົ້ນຫາຊື່ຫ້ອງ, ຄູປະຈຳຫ້ອງ..." oninput="renderClassroomsTable()" />
+                <button type="button" class="btn-sync" onclick="loadClassroomsFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນໃໝ່</button>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 55px;">ລ/ດ</th>
+                        <th>ຊື່ຫ້ອງ</th>
+                        <th>ຄູປະຈຳຫ້ອງ</th>
+                        <th>ອາຄານ / ຊັ້ນ</th>
+                        <th>ຈຳນວນນັກຮຽນ</th>
+                        <th>ໝາຍເຫດ</th>
+                        <th class="admin-only" style="width: 150px;">ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="classroomsTableBody"></tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+    function resolveRole() {
+        try {
+            const raw = (
+                localStorage.getItem("userRole") ||
+                localStorage.getItem("role") ||
+                localStorage.getItem("user_role") ||
+                "student"
+            ).trim().toLowerCase();
+            if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
+            if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
+        } catch (e) {}
+        return "student";
+    }
+
+    const role = resolveRole();
+    const isAdmin = role === "admin";
+    const userName = (function () {
+        try {
+            return localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
+        } catch (e) {
+            return "ຜູ້ໃຊ້ງານ";
+        }
+    })();
+
+    const DEFAULT_ROOMS = [
+        { id: "ROOM-M5", firestoreId: "ROOM-M5", name: "ມ.5", advisor: "ອ. ຄຳຜາຍ ສີສະຫວັດ", building: "ອາຄານ A - ຊັ້ນ 1", studentCount: 32, note: "ຫ້ອງຮຽນ ມ.5 ປົກກະຕິ" },
+        { id: "ROOM-M6", firestoreId: "ROOM-M6", name: "ມ.6", advisor: "ອ. ສຸກສາຄອນ ແສງດາວ", building: "ອາຄານ A - ຊັ້ນ 2", studentCount: 28, note: "ຫ້ອງຮຽນ ມ.6 ປົກກະຕິ" },
+        { id: "ROOM-M7", firestoreId: "ROOM-M7", name: "ມ.7", advisor: "ອ. ສາຍສະຖອນ ວົງວິໄລ", building: "ອາຄານ B - ຊັ້ນ 2", studentCount: 26, note: "ຫ້ອງຮຽນ ມ.7 ກຽມສອບເສັງ" }
+    ];
+
+    let classroomsData = (function () {
+        try {
+            return JSON.parse(localStorage.getItem("school_classrooms_data") || "null") || DEFAULT_ROOMS;
+        } catch (e) {
+            return DEFAULT_ROOMS;
+        }
+    })();
+
+    function saveClassroomsLocal() {
+        try {
+            localStorage.setItem("school_classrooms_data", JSON.stringify(classroomsData));
+        } catch (e) {}
+    }
+
+    function applyRoomRoleUi() {
+        document.querySelectorAll(".admin-only").forEach((el) => {
+            if (isAdmin) {
+                el.classList.remove("admin-only-hide");
+                el.style.display = el.tagName === "TH" || el.tagName === "TD" ? "table-cell" : "block";
+            } else {
+                el.classList.add("admin-only-hide");
+                el.style.setProperty("display", "none", "important");
+            }
+        });
+    }
+
+    function esc(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    function resetClassroomForm() {
+        document.getElementById("classroomFormTitle").textContent = "➕ ເພີ່ມ / ແກ້ໄຂ ຫ້ອງຮຽນ";
+        document.getElementById("editingRoomId").value = "";
+        document.getElementById("classroomForm").reset();
+        document.getElementById("roomCountInput").value = "30";
+    }
+
+    function startEditClassroom(id) {
+        if (!isAdmin) return alert("❌ ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ແກ້ໄຂຫ້ອງຮຽນໄດ້!");
+        const target = classroomsData.find((r) => r.id === id);
+        if (!target) return;
+        document.getElementById("classroomFormTitle").textContent = `✏️ ແກ້ໄຂຫ້ອງ: ${target.name}`;
+        document.getElementById("editingRoomId").value = target.id;
+        document.getElementById("roomNameInput").value = target.name || "";
+        document.getElementById("roomAdvisorInput").value = target.advisor || "";
+        document.getElementById("roomBuildingInput").value = target.building || "";
+        document.getElementById("roomCountInput").value = target.studentCount ?? 0;
+        document.getElementById("roomNoteInput").value = target.note || "";
+    }
+
+    async function handleClassroomSubmit(e) {
+        e.preventDefault();
+        if (!isAdmin) return alert("❌ ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ບັນທຶກຫ້ອງຮຽນໄດ້!");
+
+        const editingId = document.getElementById("editingRoomId").value.trim();
+        const name = document.getElementById("roomNameInput").value.trim();
+        const advisor = document.getElementById("roomAdvisorInput").value.trim();
+        const building = document.getElementById("roomBuildingInput").value.trim();
+        const studentCount = Number(document.getElementById("roomCountInput").value || 0);
+        const note = document.getElementById("roomNoteInput").value.trim();
+
+        if (!name || !advisor) return;
+
+        const docId = editingId || ("ROOM-" + name.replace(/\s+/g, "-"));
+        const record = {
+            id: docId,
+            firestoreId: docId,
+            name,
+            advisor,
+            building,
+            studentCount,
+            note,
+            updatedAt: new Date().toISOString()
+        };
+
+        if (window.fbRoomsApi && window.fbRoomsApi.saveRoom) {
+            await window.fbRoomsApi.saveRoom(docId, record);
+        }
+
+        const idx = classroomsData.findIndex((r) => r.id === docId);
+        if (idx >= 0) classroomsData[idx] = record;
+        else classroomsData.push(record);
+
+        saveClassroomsLocal();
+        resetClassroomForm();
+        renderClassroomsTable();
+        alert("✅ ບັນທຶກຂໍ້ມູນຫ້ອງຮຽນສຳເລັດ!");
+    }
+
+    async function deleteClassroom(id) {
+        if (!isAdmin) return alert("❌ ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ລົບຫ້ອງຮຽນໄດ້!");
+        const target = classroomsData.find((r) => r.id === id);
+        if (!target) return;
+        if (!confirm(`ຢືນຢັນລົບຫ້ອງ "${target.name}"?`)) return;
+
+        if (window.fbRoomsApi && window.fbRoomsApi.deleteRoom) {
+            await window.fbRoomsApi.deleteRoom(target.firestoreId || target.id);
+        }
+
+        classroomsData = classroomsData.filter((r) => r.id !== id);
+        saveClassroomsLocal();
+        renderClassroomsTable();
+    }
+
+    function renderClassroomsTable() {
+        const q = (document.getElementById("searchRoomInput").value || "").trim().toLowerCase();
+        const tbody = document.getElementById("classroomsTableBody");
+        if (!tbody) return;
+
+        const filtered = classroomsData.filter((r) => {
+            const hay = `${r.name || ""} ${r.advisor || ""} ${r.building || ""} ${r.note || ""}`.toLowerCase();
+            return !q || hay.includes(q);
+        });
+
+        const colSpan = isAdmin ? 7 : 6;
+        if (!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="${colSpan}" class="center">ບໍ່ພົບຂໍ້ມູນຫ້ອງຮຽນ</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map((r, idx) => `
+            <tr>
+                <td>${idx + 1}</td>
+                <td><strong>${esc(r.name)}</strong></td>
+                <td>${esc(r.advisor)}</td>
+                <td>${esc(r.building || "-")}</td>
+                <td>${Number(r.studentCount || 0)} ຄົນ</td>
+                <td>${esc(r.note || "-")}</td>
+                ${isAdmin ? `
+                    <td>
+                        <div class="actions">
+                            <button type="button" class="btn-edit" onclick="startEditClassroom('${esc(r.id)}')">ແກ້ໄຂ</button>
+                            <button type="button" class="btn-del" onclick="deleteClassroom('${esc(r.id)}')">ລົບ</button>
+                        </div>
+                    </td>
+                ` : ""}
+            </tr>
+        `).join("");
+
+        applyRoomRoleUi();
+    }
+
+    async function loadClassroomsFromFirestore(showAlert = false) {
+        if (window.fbRoomsApi && window.fbRoomsApi.loadRooms) {
+            await window.fbRoomsApi.loadRooms(showAlert);
+        } else {
+            renderClassroomsTable();
+            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຫ້ອງຮຽນສຳເລັດ!");
+        }
+    }
+
+    const roleBadge = document.getElementById("currentUserRole");
+    if (roleBadge) {
+        roleBadge.textContent = role.toUpperCase();
+        roleBadge.className = `badge badge-role-${role}`;
+    }
+    const nameEl = document.getElementById("currentUserName");
+    if (nameEl) nameEl.textContent = userName;
+
+    applyRoomRoleUi();
+    renderClassroomsTable();
+</script>
+
+<script type="module">
+    try {
+        const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+        const {
+            getFirestore, collection, getDocs, setDoc, deleteDoc, doc, onSnapshot
+        } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
+            authDomain: "my-school-c1104.firebaseapp.com",
+            projectId: "my-school-c1104",
+            storageBucket: "my-school-c1104.firebasestorage.app",
+            messagingSenderId: "339930418459",
+            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+            measurementId: "G-NPNFSW2C72"
+        };
+
+        const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
+        const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const COLLECTION_NAME = "classrooms";
+
+        window.fbRoomsApi = {
+            async saveRoom(docId, record) {
+                await setDoc(doc(db, COLLECTION_NAME, docId), record, { merge: true });
+            },
+            async deleteRoom(docId) {
+                await deleteDoc(doc(db, COLLECTION_NAME, docId));
+            },
+            async loadRooms(showAlert = false) {
+                const snap = await getDocs(collection(db, COLLECTION_NAME));
+                if (!snap.empty) {
+                    classroomsData = snap.docs.map((d) => ({
+                        id: d.data().id || d.id,
+                        firestoreId: d.id,
+                        ...d.data()
+                    }));
+                    saveClassroomsLocal();
+                }
+                renderClassroomsTable();
+                if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຫ້ອງຮຽນສຳເລັດ!");
+            }
+        };
+
+        onSnapshot(collection(db, COLLECTION_NAME), (snap) => {
+            if (!snap.empty) {
+                classroomsData = snap.docs.map((d) => ({
+                    id: d.data().id || d.id,
+                    firestoreId: d.id,
+                    ...d.data()
+                }));
+                saveClassroomsLocal();
+                renderClassroomsTable();
+            }
+        });
+    } catch (err) {
+        console.warn("Firebase classrooms fallback:", err);
+    }
+</script>
+</body>
+</html>
