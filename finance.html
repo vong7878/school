@@ -1074,7 +1074,58 @@ const db = getFirestore(app);
     btn.style.setProperty("visibility", "visible", "important");
     btn.style.setProperty("opacity", "1", "important");
 })();
+    <script>
+(function forceShowSlipSubmitButton() {
+    function showBtn() {
+        const form = document.getElementById("slipUploadForm");
+        if (!form) return;
+
+        let btn = document.getElementById("btnSubmitSlip");
+        if (!btn) {
+            btn = document.createElement("button");
+            btn.type = "submit";
+            btn.id = "btnSubmitSlip";
+            btn.className = "btn-primary";
+            btn.textContent = "📤 ສົ່ງສະຫຼິບໃຫ້ Admin ອະນຸມັດ";
+            const wrap = document.createElement("div");
+            wrap.id = "slipSubmitBtnWrap";
+            wrap.style.marginTop = "12px";
+            wrap.appendChild(btn);
+            form.appendChild(wrap);
+        }
+
+        const wrap = btn.closest("#slipSubmitBtnWrap") || btn.parentElement;
+        if (wrap) {
+            wrap.style.setProperty("display", "block", "important");
+            wrap.style.setProperty("visibility", "visible", "important");
+            wrap.style.setProperty("opacity", "1", "important");
+        }
+
+        btn.removeAttribute("hidden");
+        btn.style.setProperty("display", "inline-flex", "important");
+        btn.style.setProperty("visibility", "visible", "important");
+        btn.style.setProperty("opacity", "1", "important");
+        btn.style.setProperty("pointer-events", "auto", "important");
+    }
+
+    showBtn();
+    window.addEventListener("DOMContentLoaded", showBtn);
+    window.addEventListener("load", showBtn);
+    setTimeout(showBtn, 300);
+    setTimeout(showBtn, 1000);
+
+    const observer = new MutationObserver(() => {
+        showBtn();
+    });
+    observer.observe(document.documentElement, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+        attributeFilter: ["style", "class", "hidden"]
+    });
+})();
 </script>
-<script type="module" src="script.js"></script>
+</script>
+
 </body>
 </html>
