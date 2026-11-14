@@ -766,6 +766,11 @@
     renderClassTimetable();
     renderTeachingTimetable();
     loadFromFirestoreIfAvailable();
+    function formatClassCell(subject, teacher) {
+    const subjText = esc(subject || "-");
+    const tchText = teacher ? `<br><small style="color:#93c5fd;">👩‍🏫 ${esc(teacher)}</small>` : "";
+    return `<div><strong>${subjText}</strong>${tchText}</div>`;
+}
 </script>
 </body>
 </html>
