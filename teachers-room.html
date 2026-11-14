@@ -7,21 +7,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
-        body { background: #f4f6f9; color: #333; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { background: white; width: 100%; max-width: 850px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
-        h2 { color: #007bff; margin-bottom: 10px; text-align: center; }
-        .subtitle { text-align: center; color: #666; margin-bottom: 25px; font-size: 14px; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
-        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; font-size: 14px; }
+        body { background: #f4f6f9; color: #333; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        .container { background: white; width: 100%; max-width: 900px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-top: 20px; }
+        h2 { color: #007bff; margin-bottom: 8px; text-align: center; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 20px; font-size: 14px; }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: #f8f9fa; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; }
+        .badge-info { background: #e7f5ff; color: #007bff; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; }
+
+        .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .btn-add:hover { background: #218838; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
+        th, td { border: 1px solid #dee2e6; padding: 11px; text-align: left; font-size: 14px; }
         th { background: #f8f9fa; font-weight: bold; color: #495057; }
         td.center, th.center { text-align: center; }
-        
+
         .highlight-row { background: #e8f5e9; font-weight: bold; }
-        .back-link { display: inline-block; margin-top: 15px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
+
+        .action-btn { padding: 5px 9px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 4px; font-weight: bold; }
+        .btn-edit { background: #ffc107; color: #000; }
+        .btn-edit:hover { background: #e0a800; }
+        .btn-del { background: #dc3545; color: white; }
+        .btn-del:hover { background: #c82333; }
+
+        .back-link { display: inline-block; margin-top: 10px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
         .back-link:hover { text-decoration: underline; }
     </style>
-    
+
     <script>
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = 'login.html';
@@ -32,60 +45,208 @@
 
     <div class="container">
         <h2>👩‍🏫 ຜັງລາຍຊື່ຄູປະຈຳຫ້ອງ (ຊັ້ນຮຽນຕ່າງໆ)</h2>
-        <p class="subtitle">ກວດສອບຊື່ຄູອາຈານທີ່ຮັບຜິດຊອບເປັນຄູປະຈຳຊັ້ນ/ຫ້ອງ</p>
+        <p class="subtitle" id="user-role-subtitle">ກວດສອບຊື່ຄູອາຈານທີ່ຮັບຜິດຊອບເປັນຄູປະຈຳຊັ້ນ/ຫ້ອງ</p>
+
+        <div class="top-bar">
+            <span class="badge-info" id="room-total-count">ຈຳນວນຫ້ອງ: 0 ຫ້ອງ</span>
+            <!-- ປຸ່ມເພີ່ມ: ສະແດງສະເພາະ Admin ເທົ່ານັ້ນ -->
+            <button class="btn-add" id="btn-add-room" onclick="addHomeroomTeacher()" style="display: none;">➕ ເພີ່ມຄູປະຈຳຫ້ອງ</button>
+        </div>
 
         <table>
             <thead>
                 <tr>
-                    <th class="center" style="width: 80px;">ລຳດັບ</th>
-                    <th class="center" style="width: 150px;">ຊັ້ນ / ຫ້ອງຮຽນ</th>
+                    <th class="center" style="width: 70px;">ລຳດັບ</th>
+                    <th class="center" style="width: 160px;">ຊັ້ນ / ຫ້ອງຮຽນ</th>
                     <th>ຊື່-ນາມສະກຸນ ຄູປະຈຳຫ້ອງ</th>
                     <th class="center" style="width: 150px;">ເບີໂທລະສັບ</th>
+                    <th class="center" style="width: 140px;" id="th-action">ຈັດການ</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td class="center">1</td>
-                    <td class="center"><strong>ມ.1</strong></td>
-                    <td>ອ. ບຸນມີ ສຸວັນນະລາດ</td>
-                    <td class="center">020 5511xxxx</td>
-                </tr>
-                <tr>
-                    <td class="center">2</td>
-                    <td class="center"><strong>ມ.2</strong></td>
-                    <td>ອ. ວຽງສະຫວັນ ພົມມະວົງ</td>
-                    <td class="center">020 5522xxxx</td>
-                </tr>
-                <tr>
-                    <td class="center">3</td>
-                    <td class="center"><strong>ມ.3</strong></td>
-                    <td>ອ. ຄຳສຸກ ວົງສາ</td>
-                    <td class="center">020 5533xxxx</td>
-                </tr>
-                <tr>
-                    <td class="center">4</td>
-                    <td class="center"><strong>ມ.4</strong></td>
-                    <td>ອ. ມາລີ ຈັນທະວົງ</td>
-                    <td class="center">020 5544xxxx</td>
-                </tr>
-                <!-- 🌟 ເນັ້ນຫ້ອງ ມ.5 ຕາມທີ່ທ່ານຕ້ອງການ -->
-                <tr class="highlight-row">
-                    <td class="center">5</td>
-                    <td class="center">⭐ ມ.5 (ຫ້ອງປະຈຳ)</td>
-                    <td style="color: #2e7d32;">ອ. [ຊື່ຂອງທ່ານ / ຜູ້ໃຊ້ງານລະບົບ]</td>
-                    <td class="center">0943782971</td>
-                </tr>
-                <tr>
-                    <td class="center">6</td>
-                    <td class="center"><strong>ມ.6</strong></td>
-                    <td>ອ. ອາທິດ ໄຊຍະວົງ</td>
-                    <td class="center">020 5566xxxx</td>
-                </tr>
+            <tbody id="homeroom-table-body">
+                <tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
             </tbody>
         </table>
 
         <a href="index.html" class="back-link">⬅️ ກັບສູ່ໜ້າຫຼັກລະບົບ</a>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
+            authDomain: "my-school-c1104.firebaseapp.com",
+            projectId: "my-school-c1104",
+            storageBucket: "my-school-c1104.appspot.com",
+            messagingSenderId: "339930418459",
+            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ກວດສອບສິດ: ສະເພາະ admin ເທົ່ານັ້ນທີ່ເພີ່ມ, ແກ້ໄຂ, ລົບໄດ້
+        const userRole = (localStorage.getItem('userRole') || 'student').toLowerCase();
+        const userName = localStorage.getItem('userName') || 'User';
+        const isAdmin = (userRole === 'admin');
+
+        // ຂໍ້ມູນເລີ່ມຕົ້ນ ຖ້າຍັງບໍ່ມີໃນ Firestore
+        const defaultRooms = [
+            { grade: "ມ.1", teacherName: "ອ. ບຸນມີ ສຸວັນນະລາດ", phone: "020 5511xxxx", order: 1 },
+            { grade: "ມ.2", teacherName: "ອ. ວຽງສະຫວັນ ພົມມະວົງ", phone: "020 5522xxxx", order: 2 },
+            { grade: "ມ.3", teacherName: "ອ. ຄຳສຸກ ວົງສາ", phone: "020 5533xxxx", order: 3 },
+            { grade: "ມ.4", teacherName: "ອ. ມາລີ ຈັນທະວົງ", phone: "020 5544xxxx", order: 4 },
+            { grade: "ມ.5", teacherName: "ອ. ຜູ້ຮັບຜິດຊອບຫ້ອງ ມ.5", phone: "0943782971", order: 5 },
+            { grade: "ມ.6", teacherName: "ອ. ອາທິດ ໄຊຍະວົງ", phone: "020 5566xxxx", order: 6 }
+        ];
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('user-role-subtitle').innerText = `ຜູ້ໃຊ້ງານ: ${userName} (${userRole.toUpperCase()})`;
+
+            if (isAdmin) {
+                document.getElementById('btn-add-room').style.display = 'inline-block';
+            } else {
+                document.getElementById('th-action').style.display = 'none';
+            }
+
+            await loadHomeroomTeachers();
+        });
+
+        window.loadHomeroomTeachers = async function() {
+            const tbody = document.getElementById('homeroom-table-body');
+            const totalBadge = document.getElementById('room-total-count');
+            tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
+
+            try {
+                const colRef = collection(db, "homeroom_teachers");
+                let snapshot = await getDocs(colRef);
+
+                // ຖ້າຍັງບໍ່ມີຂໍ້ມູນໃນ Firestore ເລີຍ ໃຫ້ສ້າງຂໍ້ມູນຕົ້ນຕໍ ມ.1 - ມ.6 ອັດຕະໂນມັດ
+                if (snapshot.empty) {
+                    for (const item of defaultRooms) {
+                        await addDoc(colRef, { ...item, createdAt: serverTimestamp() });
+                    }
+                    snapshot = await getDocs(colRef);
+                }
+
+                let list = [];
+                snapshot.forEach(docSnap => {
+                    list.push({ docId: docSnap.id, ...docSnap.data() });
+                });
+
+                list.sort((a, b) => (a.order || 99) - (b.order || 99) || String(a.grade).localeCompare(String(b.grade)));
+
+                totalBadge.innerText = `ຈຳນວນຫ້ອງ: ${list.length} ຫ້ອງ`;
+
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຄູປະຈຳຫ້ອງ</td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                list.forEach((item, idx) => {
+                    const isM5 = String(item.grade || '').includes('ມ.5');
+                    const rowClass = isM5 ? 'class="highlight-row"' : '';
+                    const gradeLabel = isM5 ? `⭐ ${item.grade} (ຫ້ອງປະຈຳ)` : `<strong>${item.grade || '-'}</strong>`;
+                    const nameStyle = isM5 ? 'style="color: #2e7d32;"' : '';
+
+                    const actionCell = isAdmin
+                        ? `<td class="center">
+                               <button class="action-btn btn-edit" onclick="editHomeroomTeacher('${item.docId}', '${escapeAttr(item.grade)}', '${escapeAttr(item.teacherName)}', '${escapeAttr(item.phone)}', ${item.order || idx + 1})">✏️ ແກ້ໄຂ</button>
+                               <button class="action-btn btn-del" onclick="deleteHomeroomTeacher('${item.docId}', '${escapeAttr(item.grade)}')">🗑️ ລົບ</button>
+                           </td>`
+                        : '';
+
+                    html += `
+                        <tr ${rowClass}>
+                            <td class="center">${idx + 1}</td>
+                            <td class="center">${gradeLabel}</td>
+                            <td ${nameStyle}>${item.teacherName || '-'}</td>
+                            <td class="center">${item.phone || '-'}</td>
+                            ${actionCell}
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ: ${err.message}</td></tr>`;
+            }
+        };
+
+        // ເພີ່ມຄູປະຈຳຫ້ອງ (ສະເພາະ Admin)
+        window.addHomeroomTeacher = async function() {
+            if (!isAdmin) return alert('❌ ສະເພາະແອັດມິນ (Admin) ເທົ່ານັ້ນທີ່ເພີ່ມຂໍ້ມູນໄດ້!');
+
+            const grade = prompt("ປ້ອນຊັ້ນ / ຫ້ອງຮຽນ (ເຊັ່ນ: ມ.5 ຫຼື ມ.5/1):");
+            if (!grade) return;
+            const teacherName = prompt("ປ້ອນຊື່-ນາມສະກຸນ ຄູປະຈຳຫ້ອງ:");
+            if (!teacherName) return;
+            const phone = prompt("ປ້ອນເບີໂທລະສັບ:") || "-";
+            const order = Number(prompt("ປ້ອນລຳດັບການສະແດງຜົນ (ຕົວເລກ):", "7")) || 99;
+
+            try {
+                await addDoc(collection(db, "homeroom_teachers"), {
+                    grade: grade.trim(),
+                    teacherName: teacherName.trim(),
+                    phone: phone.trim(),
+                    order,
+                    createdAt: serverTimestamp()
+                });
+                alert('✅ ເພີ່ມຂໍ້ມູນຄູປະຈຳຫ້ອງສຳເລັດ!');
+                loadHomeroomTeachers();
+            } catch (err) {
+                alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + err.message);
+            }
+        };
+
+        // ແກ້ໄຂຄູປະຈຳຫ້ອງ (ສະເພາະ Admin)
+        window.editHomeroomTeacher = async function(docId, oldGrade, oldName, oldPhone, oldOrder) {
+            if (!isAdmin) return alert('❌ ສະເພາະແອັດມິນ (Admin) ເທົ່ານັ້ນທີ່ແກ້ໄຂຂໍ້ມູນໄດ້!');
+
+            const grade = prompt("ແກ້ໄຂຊັ້ນ / ຫ້ອງຮຽນ:", oldGrade);
+            if (!grade) return;
+            const teacherName = prompt("ແກ້ໄຂຊື່-ນາມສະກຸນ ຄູປະຈຳຫ້ອງ:", oldName);
+            if (!teacherName) return;
+            const phone = prompt("ແກ້ໄຂເບີໂທລະສັບ:", oldPhone) || "-";
+            const order = Number(prompt("ແກ້ໄຂລຳດັບການສະແດງຜົນ:", oldOrder)) || oldOrder || 99;
+
+            try {
+                await updateDoc(doc(db, "homeroom_teachers", docId), {
+                    grade: grade.trim(),
+                    teacherName: teacherName.trim(),
+                    phone: phone.trim(),
+                    order,
+                    updatedAt: serverTimestamp()
+                });
+                alert('✅ ແກ້ໄຂຂໍ້ມູນສຳເລັດ!');
+                loadHomeroomTeachers();
+            } catch (err) {
+                alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + err.message);
+            }
+        };
+
+        // ລົບຄູປະຈຳຫ້ອງ (ສະເພາະ Admin)
+        window.deleteHomeroomTeacher = async function(docId, grade) {
+            if (!isAdmin) return alert('❌ ສະເພາະແອັດມິນ (Admin) ເທົ່ານັ້ນທີ່ລົບຂໍ້ມູນໄດ້!');
+
+            if (confirm(`⚠️ ທ່ານຕ້ອງການລົບຂໍ້ມູນຄູປະຈຳຫ້ອງ "${grade}" ແທ້ບໍ?`)) {
+                try {
+                    await deleteDoc(doc(db, "homeroom_teachers", docId));
+                    alert('✅ ລົບຂໍ້ມູນສຳເລັດ!');
+                    loadHomeroomTeachers();
+                } catch (err) {
+                    alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + err.message);
+                }
+            }
+        };
+
+        function escapeAttr(str) {
+            return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+    </script>
 </body>
 </html>
