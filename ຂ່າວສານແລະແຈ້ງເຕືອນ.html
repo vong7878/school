@@ -1,1 +1,875 @@
 
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📢 ຂ່າວສານ ແລະ ແຈ້ງເຕືອນ — ໂຮງຮຽນ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Noto Sans Lao', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
+        }
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .topbar {
+            background: linear-gradient(135deg, #1e293b 0%, #172554 100%);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .home-btn {
+            background: #334155;
+            color: #f8fafc;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .home-btn:hover { background: #475569; }
+        .page-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .page-subtitle {
+            margin: 2px 0 0;
+            font-size: 12px;
+            color: #93c5fd;
+        }
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .badge-role-admin { background: #dc2626; color: #fff; }
+        .badge-role-teacher { background: #7c3aed; color: #fff; }
+        .badge-role-student { background: #2563eb; color: #fff; }
+        .badge-role-guest { background: #0f766e; color: #ccfbf1; }
+        .badge-fb { display: none !important; }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #334155;
+        }
+        .card-header h2 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        input, select, textarea {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-family: inherit;
+            font-size: 13px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            resize: vertical;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        button {
+            font-family: inherit;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover { opacity: 0.92; }
+
+        .btn-publish { background: #16a34a; color: #fff; }
+        .btn-secondary { background: #475569; color: #fff; }
+        .btn-sync { background: #0284c7; color: #fff; }
+        .btn-like {
+            background: rgba(239, 68, 68, 0.16);
+            color: #fca5a5;
+            border: 1px solid #ef4444;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-like.liked {
+            background: #ef4444;
+            color: #fff;
+        }
+        .btn-share {
+            background: #2563eb;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-edit { background: #eab308; color: #0f172a; padding: 6px 10px; font-size: 12px; }
+        .btn-del { background: #dc2626; color: #fff; padding: 6px 10px; font-size: 12px; }
+
+        .preview-box {
+            margin-bottom: 14px;
+            background: #0f172a;
+            border: 1px dashed #475569;
+            border-radius: 12px;
+            padding: 12px;
+            display: none;
+        }
+        .preview-box img {
+            max-width: 100%;
+            max-height: 280px;
+            border-radius: 10px;
+            display: block;
+            object-fit: cover;
+        }
+
+        .feed-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .post-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+        }
+        .post-hero-img {
+            width: 100%;
+            max-height: 440px;
+            object-fit: cover;
+            display: block;
+            background: #0f172a;
+        }
+        .post-body {
+            padding: 18px 20px;
+        }
+        .post-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .post-tags {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .cat-badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .cat-news { background: rgba(37, 99, 235, 0.22); color: #93c5fd; border: 1px solid #3b82f6; }
+        .cat-alert { background: rgba(239, 68, 68, 0.22); color: #fca5a5; border: 1px solid #ef4444; }
+        .cat-event { background: rgba(16, 185, 129, 0.22); color: #6ee7b7; border: 1px solid #10b981; }
+        .post-date {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .post-title {
+            margin: 0 0 8px;
+            font-size: 19px;
+            font-weight: 700;
+            color: #f8fafc;
+            line-height: 1.4;
+        }
+        .post-content {
+            margin: 0 0 14px;
+            font-size: 14px;
+            color: #cbd5e1;
+            line-height: 1.7;
+            white-space: pre-line;
+        }
+        .post-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 12px;
+            border-top: 1px solid #334155;
+        }
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .share-bar {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .share-bar.open { display: flex; }
+        .share-chip {
+            text-decoration: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        .share-fb { background: #1877f2; }
+        .share-wa { background: #16a34a; }
+        .share-tg { background: #0284c7; }
+        .share-line { background: #06c755; color: #052e16; }
+        .share-copy { background: #475569; }
+
+        .admin-only-hide { display: none !important; }
+        .empty-state {
+            text-align: center;
+            padding: 36px 16px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="index.html" class="home-btn">🏠 ໜ້າຫຼັກລະບົບ</a>
+            <div>
+                <h1 class="page-title">📢 ຂ່າວສານ ແລະ ແຈ້ງເຕືອນ</h1>
+                <p class="page-subtitle">ເປີດໃຫ້ນັກຮຽນ, ຄູ ແລະ ບຸກຄົນພາຍນອກເຂົ້າອ່ານ, ກົດໄລ ແລະ ແຊໄດ້ໂດຍບໍ່ຕ້ອງລັອກອິນ</p>
+            </div>
+        </div>
+        <div class="user-meta">
+            <span id="fbSyncBadge" class="badge badge-fb"></span>
+            <span id="currentUserName">ຜູ້ເຂົ້າຊົມທົ່ວໄປ</span>
+            <span id="currentUserRole" class="badge badge-role-guest">PUBLIC</span>
+            <span id="currentUserGrade" class="badge badge-role-student" style="display: none;"></span>
+        </div>
+    </header>
+
+    <section class="card admin-only" id="adminPostSection" style="display: none;">
+        <div class="card-header">
+            <h2 id="postFormTitle">✍️ ໂພສຂ່າວສານ / ແຈ້ງເຕືອນໃໝ່</h2>
+            <span class="badge badge-role-admin">ສະເພາະແອັດມິນ (ADMIN)</span>
+        </div>
+
+        <form id="newsPostForm" onsubmit="handleSavePost(event)">
+            <input type="hidden" id="editingPostId" value="" />
+            <div class="form-grid">
+                <div>
+                    <label for="postTitleInput">ຫົວຂໍ້ຂ່າວ / ແຈ້ງເຕືອນ</label>
+                    <input type="text" id="postTitleInput" placeholder="ເຊັ່ນ: ແຈ້ງເຕືອນການເປີດພາກຮຽນໃໝ່" required />
+                </div>
+                <div>
+                    <label for="postCategorySelect">ປະເພດຂ່າວ</label>
+                    <select id="postCategorySelect">
+                        <option value="news">📰 ຂ່າວສານທົ່ວໄປ</option>
+                        <option value="alert">🚨 ແຈ້ງເຕືອນດ່ວນ</option>
+                        <option value="event">🎉 ກິດຈະກຳໂຮງຮຽນ</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="postImageFileInput">ອັບໂຫຼດຮູບພາບງາມໆ (ຈາກເຄື່ອງ)</label>
+                    <input type="file" id="postImageFileInput" accept="image/*" onchange="handleImageFileChange(event)" />
+                </div>
+                <div>
+                    <label for="postImageUrlInput">ຫຼື ໃສ່ລິ້ງຮູບພາບ (URL)</label>
+                    <input type="url" id="postImageUrlInput" placeholder="https://..." oninput="handleImageUrlChange()" />
+                </div>
+            </div>
+
+            <div class="preview-box" id="imagePreviewBox">
+                <img id="imagePreviewImg" src="" alt="ຕົວຢ່າງຮູບພາບ" />
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label for="postContentInput">ລາຍລະອຽດຂ່າວ / ຂໍ້ຄວາມແຈ້ງເຕືອນ</label>
+                <textarea id="postContentInput" placeholder="ຂຽນລາຍລະອຽດຂ່າວສານ ຫຼື ຂໍ້ຄວາມແຈ້ງເຕືອນ..." required></textarea>
+            </div>
+
+            <div class="controls">
+                <button type="submit" class="btn-publish" id="btnPublishPost">🚀 ໂພສຂ່າວ / ແຈ້ງເຕືອນ</button>
+                <button type="button" class="btn-secondary" onclick="resetPostForm()">↩ ລ້າງຟອມ</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h2>📰 ກະດານຂ່າວສານ ແລະ ແຈ້ງເຕືອນ</h2>
+            <div class="controls">
+                <input type="text" id="searchNewsInput" placeholder="ຄົ້ນຫາຫົວຂໍ້ ຫຼື ເນື້ອຫາ..." oninput="renderPostsFeed()" />
+                <select id="filterCategorySelect" onchange="renderPostsFeed()">
+                    <option value="">ທຸກປະເພດ</option>
+                    <option value="news">📰 ຂ່າວສານທົ່ວໄປ</option>
+                    <option value="alert">🚨 ແຈ້ງເຕືອນດ່ວນ</option>
+                    <option value="event">🎉 ກິດຈະກຳໂຮງຮຽນ</option>
+                </select>
+                <button type="button" class="btn-sync" onclick="loadPostsFromFirestore(true)">🔄 ໂຫຼດຂ່າວໃໝ່</button>
+            </div>
+        </div>
+
+        <div class="feed-list" id="postsFeedList"></div>
+    </section>
+</div>
+
+<!-- Script ຫຼັກ (Render ທັນທີ ບໍ່ເພິ່ງ Module) -->
+<script>
+    function resolveRole() {
+        try {
+            const raw = (
+                localStorage.getItem("userRole") ||
+                localStorage.getItem("role") ||
+                localStorage.getItem("user_role") ||
+                ""
+            ).trim().toLowerCase();
+            if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
+            if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
+            if (["student", "ນັກຮຽນ", "นักเรียน"].includes(raw)) return "student";
+        } catch (e) {}
+        return "guest";
+    }
+
+    const role = resolveRole();
+    const isAdmin = role === "admin";
+    const userName = (function () {
+        try {
+            return localStorage.getItem("userName") || (isAdmin ? "ແອັດມິນ" : "ຜູ້ເຂົ້າຊົມທົ່ວໄປ");
+        } catch (e) {
+            return isAdmin ? "ແອັດມິນ" : "ຜູ້ເຂົ້າຊົມທົ່ວໄປ";
+        }
+    })();
+    const userGrade = (function () {
+        try {
+            return localStorage.getItem("userGrade") || "";
+        } catch (e) {
+            return "";
+        }
+    })();
+
+    const SAMPLE_POSTS = [
+        {
+            id: "NEWS-001",
+            firestoreId: "NEWS-001",
+            title: "ຍິນດີຕ້ອນຮັບສູ່ລະບົບຂ່າວສານ ແລະ ແຈ້ງເຕືອນໂຮງຮຽນ",
+            category: "news",
+            content: "ນັກຮຽນ, ຜູ້ປົກຄອງ ແລະ ບຸກຄົນພາຍນອກສາມາດຕິດຕາມຂ່າວສານ, ປະກາດສຳຄັນ ແລະ ແຈ້ງເຕືອນຕ່າງໆຂອງໂຮງຮຽນໄດ້ທີ່ໜ້ານີ້ ພ້ອມກົດໄລ ແລະ ແຊຕໍ່ໄປຍັງແພລດຟອມຕ່າງໆໄດ້ທັນທີ.",
+            imageUrl: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80",
+            likes: 12,
+            shares: 4,
+            authorName: "ແອັດມິນໂຮງຮຽນ",
+            createdAt: "2026-11-14T08:00:00.000Z"
+        },
+        {
+            id: "NEWS-002",
+            firestoreId: "NEWS-002",
+            title: "ແຈ້ງເຕືອນ: ກວດການມາຮຽນ ແລະ ລະບຽບຫ້ອງຮຽນປະຈຳເທີມ",
+            category: "alert",
+            content: "ຂໍໃຫ້ນັກຮຽນທຸກຫ້ອງເຂົ້າຮຽນໃຫ້ທັນເວລາຕາມຕາຕະລາງຊົ່ວໂມງ. ການຂາດຮຽນໂດຍບໍ່ມີເຫດຜົນຈະຖືກບັນທຶກ ແລະ ຄຳນວນຄະແນນການມາຮຽນປະຈຳເທີມ.",
+            imageUrl: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
+            likes: 8,
+            shares: 2,
+            authorName: "ແອັດມິນໂຮງຮຽນ",
+            createdAt: "2026-11-14T10:30:00.000Z"
+        }
+    ];
+
+    let postsData = (function () {
+        try {
+            return JSON.parse(localStorage.getItem("school_news_posts") || "null") || SAMPLE_POSTS;
+        } catch (e) {
+            return SAMPLE_POSTS;
+        }
+    })();
+
+    let likedIds = (function () {
+        try {
+            return JSON.parse(localStorage.getItem("school_liked_posts") || "[]");
+        } catch (e) {
+            return [];
+        }
+    })();
+
+    let currentImageData = "";
+
+    function savePostsLocal() {
+        try {
+            localStorage.setItem("school_news_posts", JSON.stringify(postsData));
+        } catch (e) {}
+    }
+
+    function saveLikedLocal() {
+        try {
+            localStorage.setItem("school_liked_posts", JSON.stringify(likedIds));
+        } catch (e) {}
+    }
+
+    function applyAdminVisibility() {
+        document.querySelectorAll(".admin-only").forEach((el) => {
+            if (isAdmin) {
+                el.classList.remove("admin-only-hide");
+                el.style.display = "block";
+            } else {
+                el.classList.add("admin-only-hide");
+                el.style.setProperty("display", "none", "important");
+            }
+        });
+    }
+
+    function setImagePreview(src) {
+        currentImageData = src || "";
+        const box = document.getElementById("imagePreviewBox");
+        const img = document.getElementById("imagePreviewImg");
+        if (currentImageData) {
+            img.src = currentImageData;
+            box.style.display = "block";
+        } else {
+            img.src = "";
+            box.style.display = "none";
+        }
+    }
+
+    function handleImageFileChange(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = new Image();
+            img.onload = function () {
+                const maxW = 1000;
+                const scale = img.width > maxW ? maxW / img.width : 1;
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.round(img.width * scale);
+                canvas.height = Math.round(img.height * scale);
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                document.getElementById("postImageUrlInput").value = "";
+                setImagePreview(canvas.toDataURL("image/jpeg", 0.78));
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function handleImageUrlChange() {
+        setImagePreview(document.getElementById("postImageUrlInput").value.trim());
+    }
+
+    function resetPostForm() {
+        document.getElementById("postFormTitle").textContent = "✍️ ໂພສຂ່າວສານ / ແຈ້ງເຕືອນໃໝ່";
+        document.getElementById("editingPostId").value = "";
+        document.getElementById("newsPostForm").reset();
+        setImagePreview("");
+    }
+
+    function startEditPost(postId) {
+        if (!isAdmin) return alert("❌ ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ແກ້ໄຂໂພສໄດ້!");
+        const target = postsData.find((p) => p.id === postId);
+        if (!target) return;
+        document.getElementById("postFormTitle").textContent = `✏️ ແກ້ໄຂໂພສ: ${target.title}`;
+        document.getElementById("editingPostId").value = target.id;
+        document.getElementById("postTitleInput").value = target.title || "";
+        document.getElementById("postCategorySelect").value = target.category || "news";
+        document.getElementById("postContentInput").value = target.content || "";
+        const imgVal = target.imageUrl || "";
+        document.getElementById("postImageUrlInput").value = imgVal.startsWith("http") ? imgVal : "";
+        setImagePreview(imgVal);
+        document.getElementById("adminPostSection").scrollIntoView({ behavior: "smooth" });
+    }
+
+    async function handleSavePost(e) {
+        e.preventDefault();
+        if (!isAdmin) return alert("❌ ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ໂພສຂ່າວໄດ້!");
+
+        const editingId = document.getElementById("editingPostId").value.trim();
+        const title = document.getElementById("postTitleInput").value.trim();
+        const category = document.getElementById("postCategorySelect").value;
+        const content = document.getElementById("postContentInput").value.trim();
+        const urlInput = document.getElementById("postImageUrlInput").value.trim();
+        const imageUrl = urlInput || currentImageData || "";
+
+        if (!title || !content) return;
+
+        const existing = editingId ? postsData.find((p) => p.id === editingId) : null;
+        const docId = editingId || ("NEWS-" + Date.now());
+
+        const record = {
+            id: docId,
+            firestoreId: docId,
+            title,
+            category,
+            content,
+            imageUrl,
+            likes: existing ? Number(existing.likes || 0) : 0,
+            shares: existing ? Number(existing.shares || 0) : 0,
+            authorName: userName,
+            createdAt: existing ? existing.createdAt : new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        if (window.fbNewsApi && window.fbNewsApi.savePost) {
+            await window.fbNewsApi.savePost(docId, record);
+        }
+
+        const idx = postsData.findIndex((p) => p.id === docId);
+        if (idx >= 0) postsData[idx] = record;
+        else postsData.unshift(record);
+
+        savePostsLocal();
+        resetPostForm();
+        renderPostsFeed();
+        alert("✅ ໂພສຂ່າວ / ແຈ້ງເຕືອນສຳເລັດ!");
+    }
+
+    async function deletePost(postId) {
+        if (!isAdmin) return alert("❌ ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ລົບໂພສໄດ້!");
+        const target = postsData.find((p) => p.id === postId);
+        if (!target) return;
+        if (!confirm(`ຢືນຢັນລົບໂພສ "${target.title}"?`)) return;
+
+        if (window.fbNewsApi && window.fbNewsApi.deletePost) {
+            await window.fbNewsApi.deletePost(target.firestoreId || target.id);
+        }
+
+        postsData = postsData.filter((p) => p.id !== postId);
+        savePostsLocal();
+        renderPostsFeed();
+    }
+
+    async function toggleLikePost(postId) {
+        const target = postsData.find((p) => p.id === postId);
+        if (!target) return;
+
+        const alreadyLiked = likedIds.includes(postId);
+        const delta = alreadyLiked ? -1 : 1;
+
+        if (alreadyLiked) likedIds = likedIds.filter((id) => id !== postId);
+        else likedIds.push(postId);
+        saveLikedLocal();
+
+        target.likes = Math.max(0, Number(target.likes || 0) + delta);
+        savePostsLocal();
+        renderPostsFeed();
+
+        if (window.fbNewsApi && window.fbNewsApi.incrementLike) {
+            await window.fbNewsApi.incrementLike(target.firestoreId || target.id, delta);
+        }
+    }
+
+    function toggleShareBar(postId) {
+        const bar = document.getElementById(`share-bar-${postId}`);
+        if (bar) bar.classList.toggle("open");
+    }
+
+    async function triggerSharePlatform(postId, platform) {
+        const target = postsData.find((p) => p.id === postId);
+        if (!target) return;
+
+        const shareUrl = window.location.href;
+        const shareText = `📢 ${target.title}\n${target.content.slice(0, 140)}...`;
+        const encUrl = encodeURIComponent(shareUrl);
+        const encText = encodeURIComponent(shareText);
+
+        if (platform === "facebook") {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encUrl}&quote=${encText}`, "_blank", "noopener");
+        } else if (platform === "whatsapp") {
+            window.open(`https://api.whatsapp.com/send?text=${encText}%20${encUrl}`, "_blank", "noopener");
+        } else if (platform === "telegram") {
+            window.open(`https://t.me/share/url?url=${encUrl}&text=${encText}`, "_blank", "noopener");
+        } else if (platform === "line") {
+            window.open(`https://social-plugins.line.me/lineit/share?url=${encUrl}`, "_blank", "noopener");
+        } else if (platform === "copy") {
+            try {
+                await navigator.clipboard.writeText(`${target.title}\n${shareUrl}`);
+                alert("📋 ຄັດລອກຂ່າວ ແລະ ລິ້ງສຳເລັດແລ້ວ!");
+            } catch (e) {
+                prompt("ຄັດລອກລິ້ງຂ່າວ:", shareUrl);
+            }
+        }
+
+        target.shares = Number(target.shares || 0) + 1;
+        savePostsLocal();
+        renderPostsFeed();
+
+        if (window.fbNewsApi && window.fbNewsApi.incrementShare) {
+            await window.fbNewsApi.incrementShare(target.firestoreId || target.id);
+        }
+    }
+
+    function formatCatBadge(cat) {
+        if (cat === "alert") return `<span class="cat-badge cat-alert">🚨 ແຈ້ງເຕືອນດ່ວນ</span>`;
+        if (cat === "event") return `<span class="cat-badge cat-event">🎉 ກິດຈະກຳໂຮງຮຽນ</span>`;
+        return `<span class="cat-badge cat-news">📰 ຂ່າວສານທົ່ວໄປ</span>`;
+    }
+
+    function formatDateLo(isoStr) {
+        if (!isoStr) return "";
+        const d = new Date(isoStr);
+        if (Number.isNaN(d.getTime())) return isoStr;
+        return d.toLocaleString("lo-LA", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    function esc(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    function escAttr(str) {
+        return String(str || "").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
+
+    function renderPostsFeed() {
+        const q = ((document.getElementById("searchNewsInput") && document.getElementById("searchNewsInput").value) || "").trim().toLowerCase();
+        const catFilter = (document.getElementById("filterCategorySelect") && document.getElementById("filterCategorySelect").value) || "";
+        const container = document.getElementById("postsFeedList");
+        if (!container) return;
+
+        const sorted = [...postsData].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        const filtered = sorted.filter((p) => {
+            const matchCat = !catFilter || p.category === catFilter;
+            const hay = `${p.title || ""} ${p.content || ""} ${p.authorName || ""}`.toLowerCase();
+            const matchQuery = !q || hay.includes(q);
+            return matchCat && matchQuery;
+        });
+
+        if (!filtered.length) {
+            container.innerHTML = `<div class="empty-state">ບໍ່ມີຂ່າວສານ ຫຼື ແຈ້ງເຕືອນທີ່ກົງກັບການຄົ້ນຫາ.</div>`;
+            return;
+        }
+
+        container.innerHTML = filtered.map((p) => {
+            const isLiked = likedIds.includes(p.id);
+            const imgHtml = p.imageUrl
+                ? `<img src="${escAttr(p.imageUrl)}" alt="${escAttr(p.title)}" class="post-hero-img" loading="lazy" />`
+                : "";
+
+            return `
+                <article class="post-card">
+                    ${imgHtml}
+                    <div class="post-body">
+                        <div class="post-top">
+                            <div class="post-tags">
+                                ${formatCatBadge(p.category)}
+                                <span class="post-date">✍️ ${esc(p.authorName || "ແອັດມິນ")} • 🕒 ${esc(formatDateLo(p.createdAt))}</span>
+                            </div>
+                            ${isAdmin ? `
+                                <div class="controls">
+                                    <button type="button" class="btn-edit" onclick="startEditPost('${esc(p.id)}')">ແກ້ໄຂ</button>
+                                    <button type="button" class="btn-del" onclick="deletePost('${esc(p.id)}')">ລົບ</button>
+                                </div>
+                            ` : ""}
+                        </div>
+
+                        <h3 class="post-title">${esc(p.title)}</h3>
+                        <p class="post-content">${esc(p.content)}</p>
+
+                        <div class="post-footer">
+                            <div class="post-actions">
+                                <button type="button" class="btn-like ${isLiked ? "liked" : ""}" onclick="toggleLikePost('${esc(p.id)}')">
+                                    <span>${isLiked ? "❤️" : "🤍"} ຖືກໃຈ</span>
+                                    <span>(${Number(p.likes || 0)})</span>
+                                </button>
+                                <button type="button" class="btn-share" onclick="toggleShareBar('${esc(p.id)}')">
+                                    <span>📤 ແຊຂ່າວ</span>
+                                    <span>(${Number(p.shares || 0)})</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="share-bar" id="share-bar-${esc(p.id)}">
+                            <span style="font-size:12px;color:#94a3b8;">ແຊໄປຫາ:</span>
+                            <button type="button" class="share-chip share-fb" onclick="triggerSharePlatform('${esc(p.id)}', 'facebook')">Facebook</button>
+                            <button type="button" class="share-chip share-wa" onclick="triggerSharePlatform('${esc(p.id)}', 'whatsapp')">WhatsApp</button>
+                            <button type="button" class="share-chip share-tg" onclick="triggerSharePlatform('${esc(p.id)}', 'telegram')">Telegram</button>
+                            <button type="button" class="share-chip share-line" onclick="triggerSharePlatform('${esc(p.id)}', 'line')">LINE</button>
+                            <button type="button" class="share-chip share-copy" onclick="triggerSharePlatform('${esc(p.id)}', 'copy')">📋 ຄັດລອກລິ້ງ</button>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }).join("");
+
+        applyAdminVisibility();
+    }
+
+    async function loadPostsFromFirestore(showAlert = false) {
+        if (window.fbNewsApi && window.fbNewsApi.loadPosts) {
+            await window.fbNewsApi.loadPosts(showAlert);
+        } else if (showAlert) {
+            renderPostsFeed();
+            alert("✅ ໂຫຼດຂ່າວສານສຳເລັດ!");
+        }
+    }
+
+    // ຕັ້ງຄ່າ Badge ຜູ້ໃຊ້ ແລະ Render ທັນທີ
+    const roleEl = document.getElementById("currentUserRole");
+    if (roleEl) {
+        roleEl.textContent = role === "guest" ? "PUBLIC" : role.toUpperCase();
+        roleEl.className = `badge badge-role-${role}`;
+    }
+    const nameEl = document.getElementById("currentUserName");
+    if (nameEl) nameEl.textContent = userName;
+    if (userGrade && role !== "guest") {
+        const gradeEl = document.getElementById("currentUserGrade");
+        if (gradeEl) {
+            gradeEl.textContent = userGrade;
+            gradeEl.style.display = "inline-block";
+        }
+    }
+
+    applyAdminVisibility();
+    renderPostsFeed();
+</script>
+
+<!-- Module ເຊື່ອມຕໍ່ Firebase Firestore (my-school-c1104) -->
+<script type="module">
+    try {
+        const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+        const {
+            getFirestore, collection, getDocs, setDoc, updateDoc, deleteDoc, doc, onSnapshot, increment
+        } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
+            authDomain: "my-school-c1104.firebaseapp.com",
+            projectId: "my-school-c1104",
+            storageBucket: "my-school-c1104.firebasestorage.app",
+            messagingSenderId: "339930418459",
+            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+            measurementId: "G-NPNFSW2C72"
+        };
+
+        const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
+        const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const COLLECTION_NAME = "news_announcements";
+
+        window.fbNewsApi = {
+            async savePost(docId, record) {
+                await setDoc(doc(db, COLLECTION_NAME, docId), record, { merge: true });
+            },
+            async deletePost(docId) {
+                await deleteDoc(doc(db, COLLECTION_NAME, docId));
+            },
+            async incrementLike(docId, delta) {
+                await updateDoc(doc(db, COLLECTION_NAME, docId), { likes: increment(delta) });
+            },
+            async incrementShare(docId) {
+                await updateDoc(doc(db, COLLECTION_NAME, docId), { shares: increment(1) });
+            },
+            async loadPosts(showAlert = false) {
+                const snap = await getDocs(collection(db, COLLECTION_NAME));
+                if (!snap.empty) {
+                    postsData = snap.docs.map((d) => ({
+                        id: d.data().id || d.id,
+                        firestoreId: d.id,
+                        ...d.data()
+                    }));
+                    savePostsLocal();
+                }
+                renderPostsFeed();
+                if (showAlert) alert("✅ ໂຫຼດຂ່າວສານ ແລະ ແຈ້ງເຕືອນສຳເລັດ!");
+            }
+        };
+
+        onSnapshot(collection(db, COLLECTION_NAME), (snap) => {
+            if (!snap.empty) {
+                postsData = snap.docs.map((d) => ({
+                    id: d.data().id || d.id,
+                    firestoreId: d.id,
+                    ...d.data()
+                }));
+                savePostsLocal();
+                renderPostsFeed();
+            }
+        });
+    } catch (err) {
+        console.warn("Firebase module fallback:", err);
+    }
+</script>
+</body>
+</html>
