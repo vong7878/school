@@ -536,7 +536,7 @@
         </div>
     </section>
 </main>
-<script>
+    <script>
 // ຂໍ້ມູນຕາຕະລາງສອນທັງໝົດ (ຫຼື ໂຫຼດຈາກ localStorage['school_teaching_schedules'] ຖ້າມີ)
 const defaultTeachingData = [
     { teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ", subject: "ຄະນິດສາດ", grade: "ມ.5", schedule: "ຈັນ, ພຸດ, ສຸກ (08:00 - 08:45)" },
@@ -571,7 +571,7 @@ function isStaffRole() {
     return role === "admin" || role === "teacher";
 }
 
-function getActionLabel() {
+function getActionWord() {
     return isStaffRole() ? "ສອນ" : "ຮຽນ";
 }
 
@@ -591,6 +591,7 @@ function renderOwnTeachingSchedule(currentUserName) {
     const allSchedules = getAllTeachingSchedules();
     const targetName = normalizeText(currentUserName);
 
+    // ກອງສະເພາະລາຍການທີ່ຊື່ຜູ້ສອນກົງກັບຜູ້ໃຊ້ປັດຈຸບັນ
     const mySchedules = allSchedules.filter(item => {
         const itemTeacher = normalizeText(item.teacher);
         return itemTeacher && targetName && (
@@ -644,14 +645,16 @@ function applyIndexRoleRules() {
 
     // ເຊື່ອງປຸ່ມ ເພີ່ມ / ແກ້ໄຂ / ລົບ ທັງໝົດໃນໜ້າ index.html (ຍົກເວັ້ນປຸ່ມ ລາຍລະອຽດ)
     document.querySelectorAll("#mainContent button").forEach(btn => {
-        if (btn.id === "btn-schedule-detail" || btn.closest("#scheduleDetailModal")) return;
+        if (btn.id === "btn-schedule-detail-staff" || btn.id === "btn-schedule-detail-student" || btn.closest("#scheduleDetailModal")) {
+            return;
+        }
         const txt = (btn.textContent || "").trim();
         if (txt.includes("ເພີ່ມ") || txt.includes("ແກ້ໄຂ") || txt.includes("ລົບ")) {
             btn.style.display = "none";
         }
     });
 
-    injectDetailButtonAndModal();
+    ensureScheduleDetailUi();
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -719,6 +722,7 @@ function setSidebarOpen(isOpen) {
     sidebar.classList.toggle('open', isOpen);
     sidebar.classList.remove('collapsed', 'hidden', 'hide', 'd-none');
 
+    // ບັງຄັບ Style ໃຫ້ Sidebar ເລື່ອນເຂົ້າ/ອອກຊັດເຈນ ບໍ່ຖືກ CSS ອື່ນທັບ
     sidebar.style.setProperty('display', 'block', 'important');
     sidebar.style.setProperty('position', 'fixed', 'important');
     sidebar.style.setProperty('top', '0', 'important');
@@ -780,9 +784,11 @@ window.addEventListener('DOMContentLoaded', () => {
     if (nameEl) nameEl.innerText = userName;
     if (roleEl) roleEl.innerText = userRole;
 
+    // ຕັ້ງຄ່າເລີ່ມຕົ້ນໃຫ້ Sidebar ປິດຢູ່ ແລະ ປຸ່ມ 3 ຂີດສະແດງສະເໝີ
     setSidebarOpen(false);
     ensureToggleButtonVisible();
 
+    // ຜູກ click ໂດຍກົງໃຫ້ປຸ່ມ 3 ຂີດທຸກປຸ່ມ
     getToggleButtons().forEach(btn => {
         btn.removeAttribute('onclick');
         btn.addEventListener('click', window.toggleMenuBar);
@@ -793,6 +799,7 @@ window.addEventListener('DOMContentLoaded', () => {
         backdrop.addEventListener('click', window.closeMenuBar);
     }
 
+    // ກັນ script.js ຫຼື code ອື່ນມາເຊື່ອງປຸ່ມ 3 ຂີດຫຼັງໂຫຼດສຳເລັດ
     setTimeout(ensureToggleButtonVisible, 300);
     setTimeout(ensureToggleButtonVisible, 1000);
 });
@@ -831,6 +838,8 @@ function ensureAttendanceMenuVisibleForStudent() {
 
 window.addEventListener('DOMContentLoaded', () => {
     ensureAttendanceMenuVisibleForStudent();
+
+    // ກັນ script.js ຫຼື ໂຄດກວດສິດ Role ມາເຊື່ອງເມນູທີ 5 ພາຍຫຼັງ
     setTimeout(ensureAttendanceMenuVisibleForStudent, 200);
     setTimeout(ensureAttendanceMenuVisibleForStudent, 600);
     setTimeout(ensureAttendanceMenuVisibleForStudent, 1200);
@@ -1067,20 +1076,22 @@ function renderStudentTimetableWithTeachers() {
             ${r.slots.map(s => `<td>${formatSlotWithTeacher(s)}</td>`).join("")}
         </tr>
     `).join("");
+
+    ensureScheduleDetailUi();
 }
 
-// --- ສ່ວນປຸ່ມນ້ອຍ「ລາຍລະອຽດ」ທຸກຊົ່ວໂມງ (2 ປະເພດ: ທັງໝົດໃນເທີມ & ສຳລັບມື້ນີ້) ---
-const PERIOD_TIMES = [
+// --- ປຸ່ມນ້ອຍ「ລາຍລະອຽດ」ທຸກຊົ່ວໂມງ (2 ປະເພດ: ທັງໝົດໃນເທີມ & ສຳລັບມື້ນີ້) ---
+const SCHEDULE_PERIOD_LABELS = [
     "ຊົ່ວໂມງທີ 1 (08:00 - 08:45)",
     "ຊົ່ວໂມງທີ 2 (08:50 - 09:35)",
     "ຊົ່ວໂມງທີ 3 (09:50 - 10:35)",
     "ຊົ່ວໂມງທີ 4 (10:40 - 11:25)"
 ];
 
-let activeDetailMode = "term"; // "term" | "today"
+let selectedScheduleDetailType = "term"; // "term" | "today"
 
-function getTodayDayName() {
-    const map = {
+function getTodayDayShort() {
+    const dayMap = {
         0: "ອາທິດ",
         1: "ຈັນ",
         2: "ອັງຄານ",
@@ -1089,117 +1100,144 @@ function getTodayDayName() {
         5: "ສຸກ",
         6: "ເສົາ"
     };
-    return map[new Date().getDay()] || "ຈັນ";
+    return dayMap[new Date().getDay()] || "ຈັນ";
 }
 
-function buildDetailedHoursList() {
+function getAllDetailedHours() {
     const staff = isStaffRole();
     const userName = normalizeText(localStorage.getItem("userName") || "");
     const userGrade = localStorage.getItem("userGrade") || "ມ.5";
-    const list = [];
+    const rows = [];
 
     if (staff) {
-        // ດຶງທຸກຊົ່ວໂມງຈາກຕາຕະລາງຫ້ອງທັງໝົດ (ມ.5, ມ.6, ມ.7) ທີ່ຄູ/ແອັດມິນສອນ
         Object.keys(roomTimetablesWithTeacher).forEach(gradeKey => {
-            (roomTimetablesWithTeacher[gradeKey] || []).forEach(dayObj => {
-                (dayObj.slots || []).forEach((slot, idx) => {
-                    const tName = normalizeText(slot.teacher || "");
-                    const matchOwner = !userName || !tName || tName.includes(userName) || userName.includes(tName);
-                    if (matchOwner) {
-                        list.push({
-                            day: `ວັນ${dayObj.day}`,
-                            shortDay: dayObj.day,
-                            period: PERIOD_TIMES[idx] || `ຊົ່ວໂມງທີ ${idx + 1}`,
-                            subject: slot.subject || "-",
+            (roomTimetablesWithTeacher[gradeKey] || []).forEach(dayItem => {
+                (dayItem.slots || []).forEach((slot, idx) => {
+                    const subj = typeof slot === "string" ? slot : (slot.subject || "-");
+                    const tch = typeof slot === "string" ? "" : (slot.teacher || "-");
+                    const match = !userName || !normalizeText(tch) || normalizeText(tch).includes(userName) || userName.includes(normalizeText(tch));
+                    if (match) {
+                        rows.push({
+                            day: `ວັນ${dayItem.day}`,
+                            shortDay: dayItem.day,
+                            period: SCHEDULE_PERIOD_LABELS[idx] || `ຊົ່ວໂມງທີ ${idx + 1}`,
+                            subject: subj,
                             grade: gradeKey,
-                            teacher: slot.teacher || "-"
+                            teacher: tch
                         });
                     }
                 });
             });
         });
-
-        // ຖ້າບໍ່ມີໃນ roomTimetablesWithTeacher ໃຫ້ແປງຈາກ getAllTeachingSchedules()
-        if (!list.length) {
-            getAllTeachingSchedules().forEach(item => {
-                const tName = normalizeText(item.teacher || "");
-                if (!userName || !tName || tName.includes(userName) || userName.includes(tName)) {
-                    list.push({
-                        day: item.schedule || "-",
-                        shortDay: item.schedule || "",
-                        period: "ຊົ່ວໂມງສອນ",
-                        subject: item.subject || "-",
-                        grade: item.grade || userGrade,
-                        teacher: item.teacher || "-"
-                    });
-                }
-            });
-        }
     } else {
-        // ນັກຮຽນ: ເອົາທຸກມື້ ທຸກຊົ່ວໂມງຂອງຫ້ອງຕົນເອງ
         const cleanRoom = roomTimetablesWithTeacher[userGrade] ? userGrade : "ມ.5";
-        (roomTimetablesWithTeacher[cleanRoom] || []).forEach(dayObj => {
-            (dayObj.slots || []).forEach((slot, idx) => {
-                list.push({
-                    day: `ວັນ${dayObj.day}`,
-                    shortDay: dayObj.day,
-                    period: PERIOD_TIMES[idx] || `ຊົ່ວໂມງທີ ${idx + 1}`,
-                    subject: slot.subject || "-",
+        (roomTimetablesWithTeacher[cleanRoom] || []).forEach(dayItem => {
+            (dayItem.slots || []).forEach((slot, idx) => {
+                const subj = typeof slot === "string" ? slot : (slot.subject || "-");
+                const tch = typeof slot === "string" ? "-" : (slot.teacher || "-");
+                rows.push({
+                    day: `ວັນ${dayItem.day}`,
+                    shortDay: dayItem.day,
+                    period: SCHEDULE_PERIOD_LABELS[idx] || `ຊົ່ວໂມງທີ ${idx + 1}`,
+                    subject: subj,
                     grade: cleanRoom,
-                    teacher: slot.teacher || "-"
+                    teacher: tch
                 });
             });
         });
     }
 
-    return list;
+    return rows;
 }
 
-function updateDetailModalTexts() {
-    const word = getActionLabel();
-    const tabTerm = document.getElementById("detail-tab-term");
-    const tabToday = document.getElementById("detail-tab-today");
-    const thPeriod = document.getElementById("detail-th-period");
+function createScheduleDetailModalIfMissing() {
+    if (document.getElementById("scheduleDetailModal")) return;
+    const word = getActionWord();
+    const modal = document.createElement("div");
+    modal.id = "scheduleDetailModal";
+    modal.style.cssText = "display:none;position:fixed;inset:0;background:rgba(2,6,23,0.82);z-index:200000;padding:16px;align-items:center;justify-content:center;";
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) window.closeScheduleDetailModal();
+    });
 
-    if (tabTerm) tabTerm.textContent = `ຕາຕະລາງ${word}ທັງໝົດໃນເທີມ`;
-    if (tabToday) tabToday.textContent = `ຕາຕະລາງ${word}ສຳລັບມື້ນີ້`;
-    if (thPeriod) thPeriod.textContent = `ຊົ່ວໂມງ${word}`;
+    modal.innerHTML = `
+        <div style="width:100%;max-width:920px;max-height:88vh;overflow-y:auto;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:16px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,0.55);">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid #334155;flex-wrap:wrap;">
+                <h3 id="scheduleDetailModalTitle" style="margin:0;font-size:17px;font-weight:700;color:#f8fafc;">ຕາຕະລາງ${escapeHtmlText(word)}ທັງໝົດໃນເທີມ</h3>
+                <button type="button" onclick="window.closeScheduleDetailModal()" style="background:#334155;color:#f8fafc;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600;">✕ ປິດ</button>
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+                <button type="button" id="schedule-tab-term" onclick="window.switchScheduleDetailType('term')" style="background:#2563eb;color:#ffffff;border:1px solid #3b82f6;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600;">
+                    ຕາຕະລາງ${escapeHtmlText(word)}ທັງໝົດໃນເທີມ
+                </button>
+                <button type="button" id="schedule-tab-today" onclick="window.switchScheduleDetailType('today')" style="background:#0f172a;color:#cbd5e1;border:1px solid #334155;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600;">
+                    ຕາຕະລາງ${escapeHtmlText(word)}ສຳລັບມື້ນີ້
+                </button>
+            </div>
+
+            <div style="width:100%;overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;min-width:600px;">
+                    <thead>
+                        <tr>
+                            <th style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;width:55px;">ລ/ດ</th>
+                            <th style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;">ມື້</th>
+                            <th id="schedule-th-period" style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;">ຊົ່ວໂມງ${escapeHtmlText(word)}</th>
+                            <th style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;">ວິຊາ</th>
+                            <th style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;">ຫ້ອງ</th>
+                            <th style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;">ຄູຜູ້ສອນ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleDetailTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
 }
 
-function renderScheduleDetailRows() {
-    updateDetailModalTexts();
-    const word = getActionLabel();
-    const todayShort = getTodayDayName();
-    const allRows = buildDetailedHoursList();
+function renderScheduleDetailModal() {
+    createScheduleDetailModalIfMissing();
+    const word = getActionWord();
+    const todayShort = getTodayDayShort();
+    const allRows = getAllDetailedHours();
 
-    const rows = activeDetailMode === "today"
+    const rows = selectedScheduleDetailType === "today"
         ? allRows.filter(r => normalizeText(r.shortDay).includes(normalizeText(todayShort)) || normalizeText(r.day).includes(normalizeText(todayShort)))
         : allRows;
 
+    const tabTerm = document.getElementById("schedule-tab-term");
+    const tabToday = document.getElementById("schedule-tab-today");
+    const thPeriod = document.getElementById("schedule-th-period");
     const titleEl = document.getElementById("scheduleDetailModalTitle");
+    const tbody = document.getElementById("scheduleDetailTbody");
+
+    if (tabTerm) {
+        tabTerm.textContent = `ຕາຕະລາງ${word}ທັງໝົດໃນເທີມ`;
+        tabTerm.style.background = selectedScheduleDetailType === "term" ? "#2563eb" : "#0f172a";
+        tabTerm.style.color = selectedScheduleDetailType === "term" ? "#ffffff" : "#cbd5e1";
+    }
+    if (tabToday) {
+        tabToday.textContent = `ຕາຕະລາງ${word}ສຳລັບມື້ນີ້`;
+        tabToday.style.background = selectedScheduleDetailType === "today" ? "#2563eb" : "#0f172a";
+        tabToday.style.color = selectedScheduleDetailType === "today" ? "#ffffff" : "#cbd5e1";
+    }
+    if (thPeriod) thPeriod.textContent = `ຊົ່ວໂມງ${word}`;
     if (titleEl) {
-        titleEl.textContent = activeDetailMode === "today"
+        titleEl.textContent = selectedScheduleDetailType === "today"
             ? `ຕາຕະລາງ${word}ສຳລັບມື້ນີ້ (ວັນ${todayShort})`
             : `ຕາຕະລາງ${word}ທັງໝົດໃນເທີມ`;
     }
-
-    const tbody = document.getElementById("scheduleDetailTbody");
     if (!tbody) return;
 
     if (!rows.length) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" style="border:1px solid #334155;padding:12px;background:#162032;text-align:center;color:#94a3b8;">
-                    ບໍ່ມີຊົ່ວໂມງ${escapeHtmlText(word)}ສຳລັບ${activeDetailMode === "today" ? `ມື້ນີ້ (ວັນ${escapeHtmlText(todayShort)})` : "ເທີມນີ້"}
-                </td>
-            </tr>
-        `;
+        tbody.innerHTML = `<tr><td colspan="6" style="border:1px solid #334155;padding:12px;background:#162032;text-align:center;color:#94a3b8;">ບໍ່ມີຊົ່ວໂມງ${escapeHtmlText(word)}</td></tr>`;
         return;
     }
 
-    tbody.innerHTML = rows.map((r, idx) => `
+    tbody.innerHTML = rows.map((r, i) => `
         <tr>
-            <td style="border:1px solid #334155;padding:8px 10px;background:#162032;">${idx + 1}</td>
+            <td style="border:1px solid #334155;padding:8px 10px;background:#162032;">${i + 1}</td>
             <td style="border:1px solid #334155;padding:8px 10px;background:#162032;">${escapeHtmlText(r.day)}</td>
             <td style="border:1px solid #334155;padding:8px 10px;background:#162032;">${escapeHtmlText(r.period)}</td>
             <td style="border:1px solid #334155;padding:8px 10px;background:#162032;"><strong>${escapeHtmlText(r.subject)}</strong></td>
@@ -1210,9 +1248,10 @@ function renderScheduleDetailRows() {
 }
 
 window.openScheduleDetailModal = function () {
+    createScheduleDetailModalIfMissing();
     const modal = document.getElementById("scheduleDetailModal");
     if (modal) modal.style.display = "flex";
-    renderScheduleDetailRows();
+    renderScheduleDetailModal();
 };
 
 window.closeScheduleDetailModal = function () {
@@ -1220,91 +1259,42 @@ window.closeScheduleDetailModal = function () {
     if (modal) modal.style.display = "none";
 };
 
-window.switchScheduleDetailMode = function (mode) {
-    activeDetailMode = mode === "today" ? "today" : "term";
-    const tabTerm = document.getElementById("detail-tab-term");
-    const tabToday = document.getElementById("detail-tab-today");
-    if (tabTerm) {
-        tabTerm.style.background = activeDetailMode === "term" ? "#2563eb" : "#0f172a";
-        tabTerm.style.color = activeDetailMode === "term" ? "#ffffff" : "#cbd5e1";
-    }
-    if (tabToday) {
-        tabToday.style.background = activeDetailMode === "today" ? "#2563eb" : "#0f172a";
-        tabToday.style.color = activeDetailMode === "today" ? "#ffffff" : "#cbd5e1";
-    }
-    renderScheduleDetailRows();
+window.switchScheduleDetailType = function (type) {
+    selectedScheduleDetailType = type === "today" ? "today" : "term";
+    renderScheduleDetailModal();
 };
 
-function injectDetailButtonAndModal() {
-    // 1. ສ້າງປຸ່ມນ້ອຍ「ລາຍລະອຽດ」ໃນແຜງຕາຕະລາງ (ທັງຄູ/ແອັດມິນ ແລະ ນັກຮຽນ)
-    const panelIds = ["teaching-schedule-panel", "student-room-timetable-panel"];
-    panelIds.forEach(pid => {
-        const panel = document.getElementById(pid);
-        if (!panel) return;
-        const header = panel.querySelector(".card-header, .panel-header, h2, h3") || panel;
-        if (!header.querySelector(`#btn-detail-${pid}`)) {
+function ensureScheduleDetailUi() {
+    createScheduleDetailModalIfMissing();
+    const headers = [
+        document.querySelector("#student-room-timetable-panel .panel-header"),
+        document.querySelector("#teaching-schedule-panel .panel-header")
+    ].filter(Boolean);
+
+    headers.forEach((hdr, i) => {
+        const btnId = `mini-detail-btn-${i}`;
+        if (!document.getElementById(btnId)) {
             const btn = document.createElement("button");
             btn.type = "button";
-            btn.id = `btn-detail-${pid}`;
+            btn.id = btnId;
             btn.textContent = "ລາຍລະອຽດ";
-            btn.style.cssText = "background:#2563eb;color:#fff;border:1px solid #3b82f6;border-radius:7px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;margin-left:8px;display:inline-flex;align-items:center;vertical-align:middle;";
-            btn.onclick = () => window.openScheduleDetailModal();
-            header.appendChild(btn);
+            btn.style.cssText = "background:#2563eb;color:#ffffff;border:1px solid #60a5fa;border-radius:7px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;margin-left:8px;display:inline-flex;align-items:center;";
+            btn.addEventListener("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                window.openScheduleDetailModal();
+            });
+            hdr.appendChild(btn);
         }
     });
-
-    // 2. ສ້າງ Modal 2 ປະເພດ ຖ້າຍັງບໍ່ມີ
-    if (!document.getElementById("scheduleDetailModal")) {
-        const word = getActionLabel();
-        const modal = document.createElement("div");
-        modal.id = "scheduleDetailModal";
-        modal.style.cssText = "display:none;position:fixed;inset:0;background:rgba(2,6,23,0.78);z-index:100005;padding:16px;align-items:center;justify-content:center;";
-        modal.onclick = function (e) {
-            if (e.target === modal) window.closeScheduleDetailModal();
-        };
-        modal.innerHTML = `
-            <div style="width:100%;max-width:920px;max-height:88vh;overflow-y:auto;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:16px;padding:18px;box-shadow:0 20px 45px rgba(0,0,0,0.45);">
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid #334155;flex-wrap:wrap;">
-                    <h3 id="scheduleDetailModalTitle" style="margin:0;font-size:17px;font-weight:700;color:#f8fafc;">ຕາຕະລາງ${escapeHtmlText(word)}ທັງໝົດໃນເທີມ</h3>
-                    <button type="button" onclick="window.closeScheduleDetailModal()" style="background:#334155;color:#f8fafc;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600;">✕ ປິດ</button>
-                </div>
-
-                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-                    <button type="button" id="detail-tab-term" onclick="window.switchScheduleDetailMode('term')" style="background:#2563eb;color:#ffffff;border:1px solid #3b82f6;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600;">
-                        ຕາຕະລາງ${escapeHtmlText(word)}ທັງໝົດໃນເທີມ
-                    </button>
-                    <button type="button" id="detail-tab-today" onclick="window.switchScheduleDetailMode('today')" style="background:#0f172a;color:#cbd5e1;border:1px solid #334155;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600;">
-                        ຕາຕະລາງ${escapeHtmlText(word)}ສຳລັບມື້ນີ້
-                    </button>
-                </div>
-
-                <div style="width:100%;overflow-x:auto;">
-                    <table style="width:100%;border-collapse:collapse;min-width:600px;">
-                        <thead>
-                            <tr>
-                                <th style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;width:55px;">ລ/ດ</th>
-                                <th style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;">ມື້</th>
-                                <th id="detail-th-period" style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;">ຊົ່ວໂມງ${escapeHtmlText(word)}</th>
-                                <th style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;">ວິຊາ</th>
-                                <th style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;">ຫ້ອງ</th>
-                                <th style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;">ຄູຜູ້ສອນ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="scheduleDetailTbody"></tbody>
-                    </table>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    injectDetailButtonAndModal();
     renderStudentTimetableWithTeachers();
+    ensureScheduleDetailUi();
     setTimeout(() => {
-        injectDetailButtonAndModal();
         renderStudentTimetableWithTeachers();
+        ensureScheduleDetailUi();
     }, 300);
 });
 </script>
