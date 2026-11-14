@@ -1,346 +1,737 @@
 <!DOCTYPE html>
 <html lang="lo">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ລະບົບການເງິນ ແລະ ຊຳລະຄ່າຮຽນ - School Management System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💰 ຈັດການການເງິນ &amp; ຄ່າຮຽນ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
-        body { background: #f4f6f9; color: #333; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-        .container { background: white; width: 100%; max-width: 1000px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-top: 20px; }
-        h2 { color: #007bff; margin-bottom: 5px; text-align: center; }
-        .subtitle { text-align: center; color: #666; margin-bottom: 20px; font-size: 14px; }
-        
-        .tab-menu { display: flex; gap: 10px; border-bottom: 2px solid #dee2e6; margin-bottom: 20px; padding-bottom: 10px; }
-        .tab-btn { padding: 10px 20px; background: #e9ecef; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: #495057; transition: 0.2s; }
-        .tab-btn.active { background: #007bff; color: white; }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .filter-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 6px; flex-wrap: wrap; gap: 10px; }
-        .filter-left { display: flex; gap: 15px; align-items: center; flex: 1; }
-        .filter-left select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-        
-        .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-add:hover { background: #218838; }
-
-        .btn-qr-edit { background: #ffc107; color: #000; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 12px; font-size: 13px; }
-        .btn-qr-edit:hover { background: #e0a800; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
-        th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; font-size: 14px; }
-        th { background: #f8f9fa; font-weight: bold; color: #495057; }
-        td.center, th.center { text-align: center; }
-        
-        .action-btn { padding: 5px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 3px; }
-        .btn-del { background: #dc3545; color: white; }
-
-        .qr-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 25px; text-align: center; max-width: 420px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .qr-card img { width: 220px; height: 220px; object-fit: contain; margin: 15px 0; border: 1px solid #eee; padding: 5px; border-radius: 6px; }
-        .price-tag { font-size: 20px; color: #28a745; font-weight: bold; margin-bottom: 10px; }
-
-        .back-link { display: inline-block; margin-top: 15px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
-        .back-link:hover { text-decoration: underline; }
-        .total-badge { background: #e7f5ff; color: #007bff; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; display: inline-block; margin-bottom: 15px; }
-    </style>
-    
-    <script>
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = 'login.html';
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Noto Sans Lao', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
         }
-    </script>
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .topbar {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .back-btn {
+            background: #334155;
+            color: #f8fafc;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .back-btn:hover { background: #475569; }
+        .page-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .badge-role { background: #2563eb; color: #fff; }
+        .badge-grade { background: #0f766e; color: #ccfbf1; }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #334155;
+        }
+        .card-header h2 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        /* ແຈ້ງເຕືອນຈ່າຍແລ້ວສຳລັບເທີມນີ້ */
+        .paid-banner {
+            background: rgba(22, 163, 74, 0.16);
+            border: 1px solid #22c55e;
+            color: #bbf7d0;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+
+        /* ແຈ້ງເບີໂທ Admin ຖ້າອະນຸມັດຊ້າ */
+        .admin-contact-box {
+            background: #0f172a;
+            border: 1px dashed #60a5fa;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 13px;
+        }
+        .phone-highlight {
+            color: #93c5fd;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .qr-fee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .qr-box {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .qr-box img {
+            width: 170px;
+            height: 170px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #fff;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 8px 11px;
+            font-family: inherit;
+            font-size: 13px;
+        }
+        button {
+            font-family: inherit;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover { opacity: 0.92; }
+        .btn-primary { background: #2563eb; color: #fff; }
+        .btn-approve { background: #16a34a; color: #fff; padding: 5px 10px; font-size: 12px; }
+        .btn-reject { background: #dc2626; color: #fff; padding: 5px 10px; font-size: 12px; }
+        .btn-copy { background: #334155; color: #f8fafc; padding: 6px 11px; font-size: 12px; }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 660px;
+        }
+        th, td {
+            border: 1px solid #334155;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
+        }
+        th {
+            background: #0f172a;
+            color: #93c5fd;
+            font-weight: 700;
+        }
+        td {
+            background: #162032;
+            color: #e2e8f0;
+        }
+        tr:hover td { background: #24334d; }
+        .center { text-align: center; }
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .slip-thumb {
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            cursor: pointer;
+        }
+        .status-pending {
+            background: rgba(234, 179, 8, 0.2);
+            color: #fde047;
+            border: 1px solid #eab308;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-approved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+            border: 1px solid #22c55e;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid #ef4444;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+    </style>
 </head>
 <body>
+<div class="container">
+    <!-- ແຖບດ້ານເທິງ -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
+            <h1 class="page-title">💰 ຈັດການການເງິນ ແລະ ຄ່າຮຽນ</h1>
+        </div>
+        <div class="user-meta">
+            <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
+            <span id="currentUserRole" class="badge badge-role">ROLE</span>
+            <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
+        </div>
+    </div>
 
-    <div class="container">
-        <h2>💰 ລະບົບການເງິນ, ຄ່າທຳນຽມຮຽນ ແລະ ຊຳລະເງິນ</h2>
-        <p class="subtitle" id="user-welcome-sub">ກວດສອບ ແລະ ຈັດການຄ່າໃຊ້ຈ່າຍໃນການສຶກສາ</p>
+    <!-- ແຈ້ງວ່າໄດ້ຈ່າຍຄ່າຮຽນສຳລັບເທີມນີ້ໄປແລ້ວ (ສະແດງເມື່ອອະນຸມັດແລ້ວ) -->
+    <div class="paid-banner" id="paidTermBanner"></div>
 
-        <div class="tab-menu">
-            <button class="tab-btn active" onclick="switchTab(event, 'tab-fees')">📋 1. ຕາຕະລາງຄ່າຮຽນ</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tab-qr')">📱 2. ຊຳລະຜ່ານ QR Code</button>
+    <!-- ໜ້າ QR Code ກັບ ຕາຕະລາງຄ່າຮຽນ (ຈະຫາຍໄປເມື່ອອະນຸມັດເທີມນີ້ແລ້ວ) -->
+    <section class="card" id="qr-and-fee-section">
+        <div class="card-header">
+            <h2>🏦 QR Code ຊຳລະຄ່າຮຽນ &amp; ຕາຕະລາງຄ່າຮຽນ</h2>
+            <select id="termSelect" style="width: auto;" onchange="refreshFinanceView()">
+                <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
+                <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
+            </select>
+        </div>
+        <div class="qr-fee-grid">
+            <div class="qr-box">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SCHOOL-TUITION-PAYMENT" alt="QR Code ຊຳລະຄ່າຮຽນ" />
+                <div><strong>ສະແກນ QR Code ເພື່ອໂອນຄ່າຮຽນ</strong></div>
+                <div class="note-text">ບັນຊີໂຮງຮຽນ • ແນບສະຫຼິບດ້ານລຸ່ມຫຼັງໂອນສຳເລັດ</div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ລາຍການຄ່າຮຽນ</th>
+                            <th>ຫ້ອງ</th>
+                            <th>ເທີມ</th>
+                            <th>ຈຳນວນເງິນ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feeTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ຫ້ອງຍ່ອຍອັບໂຫຼດສະຫຼິບການໂອນ ເພື່ອໃຫ້ Admin ອະນຸມັດ -->
+    <section class="card" id="upload-slip-subroom">
+        <div class="card-header">
+            <h2>📤 ຫ້ອງຍ່ອຍ: ອັບໂຫຼດສະຫຼິບການໂອນ</h2>
         </div>
 
-        <!-- TAB 1: ຕາຕະລາງຄ່າຮຽນ -->
-        <div id="tab-fees" class="tab-content active">
-            <div class="filter-box">
-                <div class="filter-left">
-                    <label for="filter-grade">📚 ຊັ້ນຮຽນ:</label>
-                    <select id="filter-grade" onchange="loadFees()">
-                        <option value="ທັງໝົດ">-- ທຸກຊັ້ນຮຽນ --</option>
-                        <option value="ມ.1">ມ.1</option>
-                        <option value="ມ.2">ມ.2</option>
-                        <option value="ມ.3">ມ.3</option>
-                        <option value="ມ.4">ມ.4</option>
-                        <option value="ມ.5" selected>⭐ ມ.5 (ຫ້ອງປະຈຳ)</option>
-                        <option value="ມ.6">ມ.6</option>
+        <form id="slipUploadForm" onsubmit="submitSlipUpload(event)">
+            <div class="form-grid">
+                <div>
+                    <label for="slipTerm">ເທີມທີ່ຊຳລະ</label>
+                    <select id="slipTerm">
+                        <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
+                        <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
                     </select>
                 </div>
-                <button class="btn-add" id="btn-add-fee" onclick="openAddFeeModal()" style="display: none;">➕ ເພີ່ມລາຍການຄ່າຮຽນ</button>
+                <div>
+                    <label for="slipAmount">ຈຳນວນເງິນທີ່ໂອນ (ກີບ)</label>
+                    <input type="number" id="slipAmount" value="1500000" min="1000" required />
+                </div>
+                <div>
+                    <label for="slipFile">ເລືອກຮູບສະຫຼິບການໂອນ</label>
+                    <input type="file" id="slipFile" accept="image/*" required />
+                </div>
             </div>
+            <button type="submit" class="btn-primary">📤 ສົ່ງສະຫຼິບໃຫ້ Admin ອະນຸມັດ</button>
+        </form>
 
-            <span class="total-badge" id="fee-total-count">ລາຍການຄ່າຮຽນ: 0 ລາຍການ</span>
+        <!-- ແຈ້ງເບີໂທ Admin ໃຫ້ນັກຮຽນ ຖ້າອະນຸມັດຊ້າ -->
+        <div class="admin-contact-box" id="adminDelayContactBox">
+            <div>
+                ⏳ <strong>ຖ້າ Admin ອະນຸມັດຊ້າ:</strong> ສາມາດຕິດຕໍ່ສອບຖາມ Admin ໄດ້ໂດຍກົງທີ່ເບີໂທ:
+                <span class="phone-highlight" id="adminPhoneText">020-5555-8899</span>
+            </div>
+            <button type="button" class="btn-copy" onclick="copyAdminPhone()">📋 ຄັດລອກເບີໂທ</button>
+        </div>
+    </section>
+
+    <!-- ຕາຕະລາງກວດສອບສະຫຼິບລໍຖ້າອະນຸມັດ (ສຳລັບ Admin ອະນຸມັດ/ປະຕິເສດ) -->
+    <section class="card" id="pending-slips-section">
+        <div class="card-header">
+            <h2>🕵️‍♂️ ລາຍການສະຫຼິບການໂອນ (ລໍຖ້າກວດສອບ / ອະນຸມັດ)</h2>
+        </div>
+        <div class="table-wrap">
             <table>
                 <thead>
                     <tr>
-                        <th class="center" style="width: 60px;">ລຳດັບ</th>
-                        <th class="center" style="width: 100px;">ຊັ້ນຮຽນ</th>
-                        <th>ລາຍການ / ວິຊາ</th>
-                        <th class="center" style="width: 110px;">ເທີມ / ສົກຮຽນ</th>
-                        <th class="center" style="width: 130px;">ຈຳນວນເງິນ (LAK)</th>
-                        <th class="center" style="width: 100px;" id="th-action">ຈັດການ</th>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ສະຫຼິບ</th>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ເທີມ</th>
+                        <th>ຈຳນວນເງິນ</th>
+                        <th>ສະຖານະ</th>
+                        <th id="adminApproveCol">ອະນຸມັດ</th>
                     </tr>
                 </thead>
-                <tbody id="fee-table-body">
-                    <tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນຄ່າຮຽນ...</td></tr>
-                </tbody>
+                <tbody id="pendingSlipsBody"></tbody>
             </table>
         </div>
+    </section>
 
-        <!-- TAB 2: ຊຳລະຜ່ານ QR Code -->
-        <div id="tab-qr" class="tab-content">
-            <div class="qr-card">
-                <h3>📷 ສະແກນຄິວອາໂຄດຊຳລະຄ່າຮຽນ</h3>
-                <p style="font-size: 13px; color: #666; margin-top: 5px;">ໂອນເງິນຜ່ານ Mobile Banking ຂອງທະນາຄານ</p>
-                
-                <img id="qr-code-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SchoolFeePaymentAccount123456789" alt="QR Code ຊຳລະຄ່າຮຽນ">
-                
-                <div class="price-tag" id="qr-amount-text">ຍອດຄ້າງຊຳລະ: 500,000 ກີບ</div>
-                <p style="font-size: 12px; color: #888;" id="qr-account-info">ຊື່ບັນຊີ: ໂຮງຮຽນມັດທະຍົມ... (BCEL)</p>
-                <p style="font-size: 12px; color: #333; margin-top: 10px;"><strong>ຄຳແນະນຳ:</strong> ຫຼັງຈາກໂອນເງິນແລ້ວ ໃຫ້ສົ່ງຫຼັກຖານໃຫ້ຄູປະຈຳຫ້ອງ.</p>
-
-                <!-- ປຸ່ມປ່ຽນ QR Code ສະເພາະ Admin ເທົ່ານັ້ນ -->
-                <button class="btn-qr-edit" id="btn-change-qr" onclick="changeQrCode()" style="display: none;">🔄 ປ່ຽນ QR Code (Admin)</button>
+    <!-- ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ (ນັກຮຽນ ແລະ ຄູ ເຫັນສະເພາະນັກຮຽນນັ້ນໆທີ່ອະນຸມັດແລ້ວ) -->
+    <section class="card" id="paid-history-section">
+        <div class="card-header">
+            <h2 id="paidHistoryTitle">✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ</h2>
+            <div id="teacherStudentPickerWrap" style="display: none;">
+                <select id="teacherStudentSelect" onchange="renderPaidHistory()">
+                    <option value="">-- ເລືອກນັກຮຽນເພື່ອເບິ່ງປະຫວັດການຊຳລະ --</option>
+                </select>
             </div>
         </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ເທີມ</th>
+                        <th>ຈຳນວນເງິນ</th>
+                        <th>ວັນທີອະນຸມັດ</th>
+                        <th>ສະຖານະ</th>
+                    </tr>
+                </thead>
+                <tbody id="paidHistoryBody"></tbody>
+            </table>
+        </div>
+        <div class="note-text" id="paidHistoryScopeNote"></div>
+    </section>
+</div>
 
-        <a href="index.html" class="back-link">⬅️ ກັບສູ່ໜ້າຫຼັກລະບົບ</a>
-    </div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+        getFirestore, collection, getDocs, addDoc, updateDoc, doc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    <!-- Firebase SDK & Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
-            authDomain: "my-school-c1104.firebaseapp.com",
-            projectId: "my-school-c1104",
-            storageBucket: "my-school-c1104.appspot.com",
-            messagingSenderId: "339930418459",
-            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be"
-        };
-
+    const firebaseConfig = window.FIREBASE_CONFIG || null;
+    let db = null;
+    if (firebaseConfig) {
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        db = getFirestore(app);
+    }
 
-        const userRole = localStorage.getItem('userRole') || 'student';
-        const userName = localStorage.getItem('userName') || 'User';
-        const userGrade = localStorage.getItem('userGrade') || 'ມ.5';
+    const ADMIN_PHONE = localStorage.getItem("adminContactPhone") || "020-5555-8899";
+    document.getElementById("adminPhoneText").textContent = ADMIN_PHONE;
 
-        const isAdmin = (userRole === 'admin');
-        const canManageFees = (userRole === 'admin' || userRole === 'teacher');
+    const role = (localStorage.getItem("userRole") || "student").toLowerCase();
+    const userGrade = localStorage.getItem("userGrade") || "ມ.5";
+    const userName = localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
+    const isAdmin = role === "admin";
+    const isTeacher = role === "teacher";
+    const isStudent = role === "student";
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('user-welcome-sub').innerText = `ຍິນດີຕ້ອນຮັບ: ${userName} (${userRole.toUpperCase()})`;
+    document.getElementById("currentUserName").textContent = userName;
+    document.getElementById("currentUserRole").textContent = role.toUpperCase();
+    document.getElementById("currentUserGrade").textContent = userGrade;
 
-            // ສິດເພີ່ມ/ລົບຄ່າຮຽນ: ໃຫ້ Admin ແລະ Teacher
-            if (canManageFees) {
-                document.getElementById('btn-add-fee').style.display = 'inline-block';
-            } else {
-                // ຖ້າເປັນນັກຮຽນ: ເຊື່ອງຄໍລຳຈັດການ ແລະ ລັອກຊັ້ນຮຽນໃຫ້ເປັນຂອງຕົນເອງເທົ່ານັ້ນ
-                document.getElementById('th-action').style.display = 'none';
-                const gradeSelect = document.getElementById('filter-grade');
-                gradeSelect.value = userGrade;
-                gradeSelect.disabled = true;
-            }
+    const feeItems = [
+        { item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.5", amount: "1,500,000 ກີບ" },
+        { item: "ຄ່າບຳລຸງຫ້ອງຮຽນ & ອຸປະກອນ", grade: "ມ.5", amount: "200,000 ກີບ" },
+        { item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.6", amount: "1,600,000 ກີບ" },
+        { item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.7", amount: "1,700,000 ກີບ" }
+    ];
 
-            // ສິດປ່ຽນ QR Code: ໃຫ້ສະເພາະ Admin ເທົ່ານັ້ນ
-            if (isAdmin) {
-                document.getElementById('btn-change-qr').style.display = 'inline-block';
-            }
+    let paymentRecords = JSON.parse(localStorage.getItem("school_payment_records") || "null") || [];
 
-            await loadQrSettings();
-            await loadFees();
+    function savePaymentsLocal() {
+        localStorage.setItem("school_payment_records", JSON.stringify(paymentRecords));
+    }
+
+    window.copyAdminPhone = function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(ADMIN_PHONE).catch(() => {});
+        }
+        alert(`📞 ເບີໂທ Admin: ${ADMIN_PHONE}`);
+    };
+
+    function readFileAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
         });
+    }
 
-        window.switchTab = function(evt, tabId) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            evt.currentTarget.classList.add('active');
+    window.submitSlipUpload = async function (e) {
+        e.preventDefault();
+        if (!isStudent && !isAdmin) {
+            return alert("ສະເພາະນັກຮຽນສາມາດອັບໂຫຼດສະຫຼິບຊຳລະຄ່າຮຽນໄດ້!");
+        }
+
+        const termVal = document.getElementById("slipTerm").value;
+        const amountVal = Number(document.getElementById("slipAmount").value) || 0;
+        const fileInput = document.getElementById("slipFile");
+        const file = fileInput.files && fileInput.files[0];
+
+        if (!file) return alert("ກະລຸນາເລືອກຮູບສະຫຼິບການໂອນກ່ອນ!");
+
+        const slipDataUrl = await readFileAsDataUrl(file);
+        const newRecord = {
+            id: "PAY-" + Date.now(),
+            studentName: userName,
+            grade: userGrade,
+            term: termVal,
+            amount: amountVal,
+            slipUrl: slipDataUrl,
+            status: "pending",
+            submittedAt: new Date().toLocaleDateString("lo-LA"),
+            approvedAt: ""
         };
 
-        // ໂຫຼດການຕັ້ງຄ່າ QR Code ຈາກ Firestore (collection: settings, doc: payment_qr)
-        async function loadQrSettings() {
+        if (db) {
             try {
-                const snap = await getDoc(doc(db, "settings", "payment_qr"));
-                if (snap.exists()) {
-                    const data = snap.data();
-                    if (data.qrUrl) document.getElementById('qr-code-img').src = data.qrUrl;
-                    if (data.accountInfo) document.getElementById('qr-account-info').innerText = data.accountInfo;
-                    if (data.amountText) document.getElementById('qr-amount-text').innerText = data.amountText;
-                }
-            } catch (e) {
-                console.error("Error loading QR settings:", e);
+                const ref = await addDoc(collection(db, "payment_records"), newRecord);
+                newRecord.firestoreId = ref.id;
+            } catch (err) {
+                console.error("Firestore slip upload error:", err);
             }
         }
 
-      // ຟັງຊັນປ່ຽນລິ້ງ Google Drive (ແບບ /file/d/ID/view ຫຼື ?id=ID) ໃຫ້ເປັນລິ້ງຮູບໂດຍກົງ
-function convertDriveLink(url) {
-    const cleanUrl = url.trim();
-    // ກໍລະນີລິ້ງຮູບແບບ https://drive.google.com/file/d/XXXX/view...
-    const matchFileD = cleanUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (matchFileD && matchFileD[1]) {
-        return `https://lh3.googleusercontent.com/d/${matchFileD[1]}`;
-    }
-    // ກໍລະນີລິ້ງຮູບແບບ https://drive.google.com/open?id=XXXX ຫຼື uc?id=XXXX
-    const matchId = cleanUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (matchId && matchId[1]) {
-        return `https://lh3.googleusercontent.com/d/${matchId[1]}`;
-    }
-    return cleanUrl;
-}
+        paymentRecords.unshift(newRecord);
+        savePaymentsLocal();
+        fileInput.value = "";
+        alert("✅ ສົ່ງສະຫຼິບການໂອນສຳເລັດ! ກຳລັງລໍຖ້າ Admin ກວດສອບ ແລະ ອະນຸມັດ.");
+        refreshFinanceView();
+    };
 
-// ຟັງຊັນປ່ຽນ QR Code (ສະເພາະ Admin ເທົ່ານັ້ນ)
-window.changeQrCode = async function() {
-    if (!isAdmin) {
-        return alert('❌ ສະເພາະແອັດມິນ (Admin) ເທົ່ານັ້ນທີ່ມີສິດປ່ຽນ QR Code!');
-    }
+    window.approveSlip = async function (recId) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ອະນຸມັດໄດ້!");
+        const target = paymentRecords.find((r) => r.id === recId);
+        if (!target) return;
 
-    const rawInput = prompt("ປ້ອນລິ້ງ Google Drive ຂອງຮູບ QR Code (ຫຼື ເລກບັນຊີ/ຂໍ້ຄວາມເພື່ອສ້າງ QR):", "");
-    if (!rawInput) return;
+        target.status = "approved";
+        target.approvedAt = new Date().toLocaleDateString("lo-LA");
 
-    const newAccount = prompt("ປ້ອນຊື່ບັນຊີ ແລະ ທະນາຄານ:", document.getElementById('qr-account-info').innerText) || 'ບັນຊີໂຮງຮຽນ';
-    const newAmount = prompt("ປ້ອນຂໍ້ຄວາມຍອດເງິນ (ເຊັ່ນ: ຍອດຄ້າງຊຳລະ: 500,000 ກີບ):", document.getElementById('qr-amount-text').innerText) || 'ຊຳລະຄ່າທຳນຽມຮຽນ';
-
-    const trimmed = rawInput.trim();
-    let finalUrl = "";
-
-    if (trimmed.includes("drive.google.com")) {
-        // ແປງລິ້ງ Google Drive ເປັນລິ້ງຮູບໂດຍກົງ
-        finalUrl = convertDriveLink(trimmed);
-    } else if (trimmed.startsWith("http")) {
-        // ຖ້າເປັນລິ້ງຮູບພາບທົ່ວໄປ (.png, .jpg, .webp)
-        finalUrl = trimmed;
-    } else {
-        // ຖ້າປ້ອນເປັນເລກບັນຊີ/ຂໍ້ຄວາມ ໃຫ້ສ້າງຮູບ QR ອັດຕະໂນມັດ
-        finalUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(trimmed)}`;
-    }
-
-    try {
-        await setDoc(doc(db, "settings", "payment_qr"), {
-            qrUrl: finalUrl,
-            accountInfo: newAccount,
-            amountText: newAmount,
-            updatedAt: serverTimestamp()
-        });
-
-        document.getElementById('qr-code-img').src = finalUrl;
-        document.getElementById('qr-account-info').innerText = newAccount;
-        document.getElementById('qr-amount-text').innerText = newAmount;
-        alert('✅ ອັບເດດ QR Code ສຳເລັດແລ້ວ!');
-    } catch (e) {
-        alert('❌ ເກີດຂໍ້ຜິດພາດໃນການບັນທຶກ QR Code: ' + e.message);
-    }
-};
-
-        // ໂຫຼດຂໍ້ມູນຄ່າຮຽນຈາກ Firestore (collection: school_fees)
-        window.loadFees = async function() {
-            const gradeSelect = document.getElementById('filter-grade');
-            const tbody = document.getElementById('fee-table-body');
-            const totalBadge = document.getElementById('fee-total-count');
-
-            // ຖ້າເປັນນັກຮຽນ ບັງຄັບໃຫ້ເບິ່ງສະເພາະຫ້ອງຂອງຕົນເອງ (userGrade)
-            const targetGrade = !canManageFees ? userGrade : gradeSelect.value;
-            if (!canManageFees) {
-                gradeSelect.value = userGrade;
-            }
-
-            tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນຄ່າຮຽນ...</td></tr>`;
-
+        if (db && target.firestoreId) {
             try {
-                const querySnapshot = await getDocs(collection(db, "school_fees"));
-                let list = [];
-                querySnapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    data.docId = docSnap.id;
-
-                    if (!canManageFees) {
-                        if (data.grade && data.grade.trim() === targetGrade) {
-                            list.push(data);
-                        }
-                    } else {
-                        if (targetGrade === "ທັງໝົດ" || (data.grade && data.grade.trim() === targetGrade)) {
-                            list.push(data);
-                        }
-                    }
+                await updateDoc(doc(db, "payment_records", target.firestoreId), {
+                    status: "approved",
+                    approvedAt: target.approvedAt
                 });
-
-                totalBadge.innerText = `ລາຍການຄ່າຮຽນ${!canManageFees ? ` (ຫ້ອງ ${targetGrade})` : ''}: ${list.length} ລາຍການ`;
-                if (list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຄ່າຮຽນ${!canManageFees ? ` ສຳລັບຫ້ອງ ${targetGrade}` : ''}</td></tr>`;
-                    return;
-                }
-
-                let html = '';
-                list.forEach((item, idx) => {
-                    html += `
-                        <tr>
-                            <td class="center">${idx+1}</td>
-                            <td class="center"><strong>${item.grade||'-'}</strong></td>
-                            <td>${item.subject||'-'}</td>
-                            <td class="center">${item.term||'-'}</td>
-                            <td class="center" style="color: #28a745; font-weight: bold;">${Number(item.price || 0).toLocaleString()} ກີບ</td>
-                            ${canManageFees ? `<td class="center"><button class="action-btn btn-del" onclick="deleteFee('${item.docId}')">🗑️ ລົບ</button></td>` : ''}
-                        </tr>
-                    `;
-                });
-                tbody.innerHTML = html;
-            } catch (e) {
-                console.error(e);
-                tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
+            } catch (err) {
+                console.error("Firestore approve error:", err);
             }
-        };
+        }
 
-        // ຟັງຊັນເພີ່ມລາຍການຄ່າຮຽນ (ສະເພາະ Admin/Teacher)
-        window.openAddFeeModal = async function() {
-            if (!canManageFees) return;
-            const grade = prompt("ປ້ອນຊັ້ນຮຽນ (ເຊັ່ນ: ມ.1, ມ.2, ມ.3, ມ.4, ມ.5, ມ.6):") || 'ມ.5';
-            const subject = prompt("ປ້ອນຊື່ວິຊາ / ລາຍການຄ່າທຳນຽມ:") || 'ຄ່າຮຽນວິຊາ...';
-            const term = prompt("ປ້ອນເທີມ / ສົກຮຽນ (ເຊັ່ນ: ເທີມ 1 / 2026):") || 'ເທີມ 1';
-            const price = prompt("ປ້ອນຈຳນວນເງິນເປັນກີບ (ເຊັ່ນ: 150000):") || '100000';
+        savePaymentsLocal();
+        alert(`✅ ອະນຸມັດຄ່າຮຽນຂອງ "${target.studentName}" (${target.term}) ສຳເລັດ!`);
+        refreshFinanceView();
+    };
 
+    window.rejectSlip = async function (recId) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປະຕິເສດໄດ້!");
+        const target = paymentRecords.find((r) => r.id === recId);
+        if (!target) return;
+
+        target.status = "rejected";
+
+        if (db && target.firestoreId) {
             try {
-                await addDoc(collection(db, "school_fees"), {
-                    grade: grade.trim(),
-                    subject,
-                    term,
-                    price: Number(price),
-                    createdAt: serverTimestamp()
+                await updateDoc(doc(db, "payment_records", target.firestoreId), {
+                    status: "rejected"
                 });
-                alert('✅ ເພີ່ມລາຍການຄ່າຮຽນສຳເລັດ!');
-                loadFees();
-            } catch (e) {
-                alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
+            } catch (err) {
+                console.error("Firestore reject error:", err);
             }
-        };
+        }
 
-        // ຟັງຊັນລົບລາຍການຄ່າຮຽນ (ສະເພາະ Admin/Teacher)
-        window.deleteFee = async function(docId) {
-            if (!canManageFees) return;
-            if (confirm('⚠️ ທ່ານຕ້ອງການລົບລາຍການຄ່າຮຽນນີ້ແທ້ບໍ?')) {
-                try {
-                    await deleteDoc(doc(db, "school_fees", docId));
-                    alert('✅ ລົບສຳເລັດ!');
-                    loadFees();
-                } catch (e) {
-                    alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
-                }
+        savePaymentsLocal();
+        refreshFinanceView();
+    };
+
+    function isTermApprovedForStudent(studentName, term) {
+        return paymentRecords.some(
+            (r) => r.studentName === studentName && r.term === term && r.status === "approved"
+        );
+    }
+
+    function renderFeeTable() {
+        const tbody = document.getElementById("feeTableBody");
+        const selectedTerm = document.getElementById("termSelect").value;
+        const filtered = feeItems.filter((f) => f.grade === userGrade || !isStudent);
+
+        tbody.innerHTML = filtered.map((f) => `
+            <tr>
+                <td>${esc(f.item)}</td>
+                <td>${esc(f.grade)}</td>
+                <td>${esc(selectedTerm)}</td>
+                <td><strong>${esc(f.amount)}</strong></td>
+            </tr>
+        `).join("");
+    }
+
+    function renderPendingSlips() {
+        const tbody = document.getElementById("pendingSlipsBody");
+        const approveCol = document.getElementById("adminApproveCol");
+
+        if (!isAdmin) {
+            approveCol.style.display = "none";
+        } else {
+            approveCol.style.display = "";
+        }
+
+        const visibleRows = isAdmin
+            ? paymentRecords
+            : paymentRecords.filter((r) => r.studentName === userName);
+
+        const cols = isAdmin ? 8 : 7;
+        if (!visibleRows.length) {
+            tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ຍັງບໍ່ມີລາຍການສະຫຼິບການໂອນ</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = visibleRows.map((r, idx) => {
+            let statusHtml = `<span class="status-pending">ລໍຖ້າອະນຸມັດ</span>`;
+            if (r.status === "approved") statusHtml = `<span class="status-approved">ອະນຸມັດແລ້ວ</span>`;
+            if (r.status === "rejected") statusHtml = `<span class="status-rejected">ປະຕິເສດ</span>`;
+
+            return `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>
+                        ${r.slipUrl ? `<img src="${r.slipUrl}" alt="ສະຫຼິບ" class="slip-thumb" onclick="window.open('${r.slipUrl}', '_blank')" />` : "-"}
+                    </td>
+                    <td>${esc(r.studentName)}</td>
+                    <td>${esc(r.grade)}</td>
+                    <td>${esc(r.term)}</td>
+                    <td>${Number(r.amount || 0).toLocaleString()} ກີບ</td>
+                    <td>${statusHtml}</td>
+                    ${isAdmin ? `
+                        <td>
+                            <div class="actions">
+                                <button type="button" class="btn-approve" onclick="approveSlip('${esc(r.id)}')">ອະນຸມັດ</button>
+                                <button type="button" class="btn-reject" onclick="rejectSlip('${esc(r.id)}')">ປະຕິເສດ</button>
+                            </div>
+                        </td>
+                    ` : ""}
+                </tr>
+            `;
+        }).join("");
+    }
+
+    function populateTeacherStudentDropdown() {
+        if (!isTeacher) return;
+        const wrap = document.getElementById("teacherStudentPickerWrap");
+        const select = document.getElementById("teacherStudentSelect");
+        wrap.style.display = "block";
+
+        const approvedNames = Array.from(
+            new Set(
+                paymentRecords
+                    .filter((r) => r.status === "approved")
+                    .map((r) => r.studentName)
+            )
+        );
+
+        const currentVal = select.value;
+        select.innerHTML = `<option value="">-- ເລືອກນັກຮຽນເພື່ອເບິ່ງປະຫວັດການຊຳລະ --</option>` +
+            approvedNames.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join("");
+        if (approvedNames.includes(currentVal)) {
+            select.value = currentVal;
+        }
+    }
+
+    window.renderPaidHistory = function () {
+        const tbody = document.getElementById("paidHistoryBody");
+        const noteEl = document.getElementById("paidHistoryScopeNote");
+        const titleEl = document.getElementById("paidHistoryTitle");
+
+        populateTeacherStudentDropdown();
+
+        let approvedList = [];
+        if (isStudent) {
+            titleEl.textContent = `✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ (${userName})`;
+            approvedList = paymentRecords.filter(
+                (r) => r.status === "approved" && r.studentName === userName
+            );
+            noteEl.textContent = "* ເຫັນສະເພາະປະຫວັດຄ່າຮຽນທີ່ໄດ້ຮັບການອະນຸມັດແລ້ວຂອງຕົນເອງເທົ່ານັ້ນ.";
+        } else if (isTeacher) {
+            const pickedStudent = document.getElementById("teacherStudentSelect").value;
+            titleEl.textContent = pickedStudent
+                ? `✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ (${pickedStudent})`
+                : "✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ";
+            approvedList = pickedStudent
+                ? paymentRecords.filter((r) => r.status === "approved" && r.studentName === pickedStudent)
+                : [];
+            noteEl.textContent = "* ສຳລັບຄູອາຈານ: ເລືອກນັກຮຽນເພື່ອເບິ່ງສະເພາະຂໍ້ມູນການຊຳລະທີ່ອະນຸມັດແລ້ວຂອງນັກຮຽນຄົນນັ້ນໆ.";
+        } else {
+            titleEl.textContent = "✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ (ທັງໝົດທີ່ອະນຸມັດແລ້ວ)";
+            approvedList = paymentRecords.filter((r) => r.status === "approved");
+            noteEl.textContent = "* ລາຍການຄ່າຮຽນທີ່ Admin ອະນຸມັດແລ້ວ.";
+        }
+
+        if (!approvedList.length) {
+            tbody.innerHTML = `<tr><td colspan="7" class="center">ຍັງບໍ່ມີລາຍການຄ່າຮຽນທີ່ໄດ້ຊຳລະ ແລະ ອະນຸມັດແລ້ວ</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = approvedList.map((r, idx) => `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${esc(r.studentName)}</td>
+                <td>${esc(r.grade)}</td>
+                <td>${esc(r.term)}</td>
+                <td><strong>${Number(r.amount || 0).toLocaleString()} ກີບ</strong></td>
+                <td>${esc(r.approvedAt || r.submittedAt || "-")}</td>
+                <td><span class="status-approved">ຊຳລະສຳເລັດແລ້ວ</span></td>
+            </tr>
+        `).join("");
+    };
+
+    window.refreshFinanceView = function () {
+        const selectedTerm = document.getElementById("termSelect").value;
+        const qrFeeSection = document.getElementById("qr-and-fee-section");
+        const uploadSubroom = document.getElementById("upload-slip-subroom");
+        const paidBanner = document.getElementById("paidTermBanner");
+
+        renderFeeTable();
+        renderPendingSlips();
+        renderPaidHistory();
+
+        if (isStudent) {
+            document.getElementById("slipTerm").value = selectedTerm;
+            const alreadyPaidTerm = isTermApprovedForStudent(userName, selectedTerm);
+
+            if (alreadyPaidTerm) {
+                qrFeeSection.style.display = "none";
+                uploadSubroom.style.display = "none";
+                paidBanner.style.display = "block";
+                paidBanner.textContent = `✅ ໄດ້ຈ່າຍຄ່າຮຽນສຳລັບເທີມນີ້ (${selectedTerm}) ໄປແລ້ວ — ລະບົບໄດ້ປິດໜ້າ QR Code ແລະ ຕາຕະລາງຄ່າຮຽນສຳລັບເທີມນີ້ແລ້ວ.`;
+            } else {
+                qrFeeSection.style.display = "block";
+                uploadSubroom.style.display = "block";
+                paidBanner.style.display = "none";
             }
-        };
-    </script>
+        } else {
+            paidBanner.style.display = "none";
+            if (isTeacher) {
+                uploadSubroom.style.display = "none";
+            }
+        }
+    };
+
+    async function loadPaymentsFromFirestore() {
+        if (!db) return;
+        try {
+            const snap = await getDocs(collection(db, "payment_records"));
+            if (!snap.empty) {
+                paymentRecords = snap.docs.map((d) => ({
+                    id: d.data().id || d.id,
+                    firestoreId: d.id,
+                    ...d.data()
+                }));
+                savePaymentsLocal();
+                refreshFinanceView();
+            }
+        } catch (err) {
+            console.warn("ບໍ່ໄດ້ໂຫຼດ payment_records ຈາກ Firestore:", err.message);
+        }
+    }
+
+    function esc(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    refreshFinanceView();
+    loadPaymentsFromFirestore();
+</script>
 </body>
 </html>
