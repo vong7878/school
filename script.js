@@ -24,18 +24,18 @@ let allTeachersData = [];
 let allScoresData = [];
 let allFinancesData = [];
 window.showSection = function(sectionId) {
-    // ວົນລູບປິດທຸກ Section ກ່ອນ
+    // 1. ซ่อนທຸກ Section ກ่อน
     const sections = document.querySelectorAll('.content-section');
     sections.forEach(sec => {
         sec.style.display = 'none';
     });
 
-    // ສະແດງສະເພາະ Section ທີ່ຖືກເລືອກ
-    const target = document.getElementById('section-' + sectionId);
+    // 2. ສະແດງສະເພາະ Section ທີ່ຖືກເລືອກ (ໃຊ້ sectionId ໂດຍກົງ ເພາະ HTML ມີ prefix 'section-' ແລ້ວ)
+    const target = document.getElementById(sectionId);
     if (target) {
         target.style.display = 'block';
     } else {
-        console.warn('ບໍ່ພົບ Section ID: section-' + sectionId);
+        console.warn('ບໍ່ພົບ Section ID: ' + sectionId);
     }
 };
 
