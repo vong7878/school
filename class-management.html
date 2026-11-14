@@ -147,21 +147,32 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // ດຶງສິດຂອງ User ປັດຈຸບັນຈາກ localStorage
-        const userRole = localStorage.getItem('userRole') || 'student';
-        const canManage = (userRole === 'admin' || userRole === 'teacher');
+   const userRole = localStorage.getItem('userRole') || 'student';
+const userGrade = localStorage.getItem('userGrade') || 'ມ.5';
+const canManage = (userRole === 'admin' || userRole === 'teacher');
 
         window.addEventListener('DOMContentLoaded', () => {
             // ຖ້າບໍ່ແມ່ນ admin ຫຼື teacher ໃຫ້ເຊື່ອງປຸ່ມເພີ່ມທັງໝົດ
+            const roomSelect = document.getElementById('room-select');
+    const gradeSelect = document.getElementById('grade-select');
             if (!canManage) {
                 document.querySelectorAll('.btn-add').forEach(btn => {
                     btn.style.display = 'none';
                 });
-            }
+                if (roomSelect) {
+            roomSelect.value = userGrade;
+            roomSelect.disabled = true;
+        }
+        if (gradeSelect) {
+            gradeSelect.value = userGrade;
+            gradeSelect.disabled = true;
+        }
+    }
 
-            loadStudentsByClass();
-            loadScheduleByRoom();
-        });
+    loadStudentsByClass();
+    loadScheduleByRoom();
+});
+         
 
         window.switchTab = function(evt, tabId) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
