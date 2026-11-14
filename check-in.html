@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ລະບົບເຊັກອິນ - ບັນທຶກການມາຮຽນ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
+        body { background: #f4f6f9; color: #333; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: white; width: 100%; max-width: 800px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        h2 { color: #007bff; margin-bottom: 10px; text-align: center; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 25px; font-size: 14px; }
+        
+        .filter-box { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; background: #f8f9fa; padding: 15px; border-radius: 6px; }
+        .filter-box label { font-weight: bold; }
+        .filter-box select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; flex: 1; min-width: 200px; font-size: 14px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
+        th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; font-size: 14px; }
+        th { background: #f8f9fa; font-weight: bold; color: #495057; }
+        td.center, th.center { text-align: center; }
+        
+        select.status-select { padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-weight: bold; }
+        
+        .btn-save { background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.2s; }
+        .btn-save:hover { background: #218838; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #007bff; text-decoration: none; font-size: 14px; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+    
+    <!-- ກວດສອບ Login ກ່ອນ -->
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h2>📋 ລະບົບເຊັກອິນ & ບັນທຶກການມາຮຽນ</h2>
+        <p class="subtitle" id="current-date">ວັນທີ: ກຳລັງໂຫຼດ...</p>
+
+        <!-- ส่วนເລືອກຊັ້ນຮຽນ -->
+        <div class="filter-box">
+            <label for="grade-select">📚 ເລືອກຊັ້ນຮຽນ:</label>
+            <select id="grade-select" onchange="loadStudentsByGrade()">
+                <option value="">-- กรุณາເລືອກຊັ້ນຮຽນ --</option>
+                <option value="ມ.1">ມ.1</option>
+                <option value="ມ.2">ມ.2</option>
+                <option value="ມ.3">ມ.3</option>
+                <option value="ມ.4">ມ.4</option>
+                <option value="ມ.5" selected>⭐ ມ.5 (ຫ້ອງປະຈຳ)</option>
+                <option value="ມ.6">ມ.6</option>
+            </select>
+        </div>
+
+        <!-- ຕາຕະລາງລາຍຊື່ນັກຮຽນສຳລັບເຊັກຊື່ -->
+        <table>
+            <thead>
+                <tr>
+                    <th class="center" style="width: 60px;">ລຳດັບ</th>
+                    <th>ລະຫັດ & ຊື່-ນາມສະກຸນ</th>
+                    <th class="center" style="width: 150px;">ສະຖານະການມາຮຽນ</th>
+                </tr>
+            </thead>
+            <tbody id="attendance-table-body">
+                <tr><td colspan="3" class="center" style="padding: 20px; color: #666;">ກະລຸນາເລືອກຊັ້ນຮຽນດ້ານເທິງ</td></tr>
+            </tbody>
+        </table>
+
+        <button type="button" class="btn-save" onclick="saveAttendance()">💾 บันทึกການເຊັກອິນ</button>
+        <a href="index.html" class="back-link">⬅️ กลับສູ່ໜ້າຫຼັກລະບົບ</a>
+    </div>
+
+    <!-- Firebase SDK & Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
+            authDomain: "my-school-c1104.firebaseapp.com",
+            projectId: "my-school-c1104",
+            storageBucket: "my-school-c1104.appspot.com",
+            messagingSenderId: "339930418459",
+            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let currentStudents = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('current-date').innerText = 'ວັນທີ: ' + new Date().toLocaleDateString('lo-LA', options);
+            // ໂຫຼດຄ່າເລີ່ມຕົ້ນຂອງ ມ.5
+            loadStudentsByGrade();
+        });
+
+        window.loadStudentsByGrade = async function() {
+            const grade = document.getElementById('grade-select').value;
+            const tbody = document.getElementById('attendance-table-body');
+            
+            if (!grade) {
+                tbody.innerHTML = `<tr><td colspan="3" class="center" style="padding: 20px; color: #666;">ກະລຸນາເລືອກຊັ້ນຮຽນ</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = `<tr><td colspan="3" class="center" style="padding: 20px;">ກຳລັງໂຫຼດລາຍຊື່ນັກຮຽນ...</td></tr>`;
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "students"));
+                currentStudents = [];
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    if (data.grade === grade) {
+                        data.docId = docSnap.id;
+                        currentStudents.push(data);
+                    }
+                });
+
+                if (currentStudents.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນນັກຮຽນໃນຊັ້ນ ${grade}</td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                currentStudents.forEach((s, index) => {
+                    html += `
+                        <tr>
+                            <td class="center">${index + 1}</td>
+                            <td><strong>${s.name || '-'}</strong> <br><small style="color: #666;">ລະຫັດ: ${s.id || '-'}</small></td>
+                            <td class="center">
+                                <select id="status-${s.docId}" class="status-select">
+                                    <option value="ມາ" style="color: #28a745;">✅ ມາ</option>
+                                    <option value="ມາຊ້າ" style="color: #ffc107;">⏰ ມາຊ້າ</option>
+                                    <option value="ລາພັກ" style="color: #17a2b8;">📝 ລາພັກ</option>
+                                    <option value="ຂາດ" style="color: #dc3545;">❌ ຂາດ</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+
+            } catch (error) {
+                console.error("Error loading students: ", error);
+                tbody.innerHTML = `<tr><td colspan="3" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
+            }
+        };
+
+        window.saveAttendance = async function() {
+            const grade = document.getElementById('grade-select').value;
+            if (!grade || currentStudents.length === 0) {
+                alert('⚠️ ກະລຸນາເລືອກຊັ້ນຮຽນທີ່ມີນັກຮຽນກ່ອນບັນທຶກ!');
+                return;
+            }
+
+            if (!confirm(`ທ່ານຕ້ອງການບັນທຶກຜົນການເຊັກອິນຊັ້ນ ${grade} ແທ້ບໍ?`)) return;
+
+            try {
+                let attendanceRecords = [];
+                const dateStr = new Date().toISOString().split('T')[0];
+
+                currentStudents.forEach(s => {
+                    const statusSelect = document.getElementById(`status-${s.docId}`);
+                    const status = statusSelect ? statusSelect.value : 'ມາ';
+                    attendanceRecords.push({
+                        studentId: s.id || '',
+                        studentName: s.name || '',
+                        grade: grade,
+                        status: status
+                    });
+                });
+
+                // บันทຶກລົງ Collection attendance
+                await addDoc(collection(db, "attendance"), {
+                    grade: grade,
+                    date: dateStr,
+                    records: attendanceRecords,
+                    createdAt: serverTimestamp()
+                });
+
+                alert('✅ ບັນທຶກການເຊັກອິນສຳເລັດຮຽບຮ້ອຍແລ້ວ!');
+            } catch (error) {
+                console.error("Error saving attendance: ", error);
+                alert('❌ ເກີດຂໍ້ຜິດພາດໃນການບັນທຶກ: ' + error.message);
+            }
+        };
+    </script>
+</body>
+</html>
