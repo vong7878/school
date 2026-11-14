@@ -303,22 +303,23 @@
     <div><strong>ສະແກນ QR Code ເພື່ອໂອນຄ່າຮຽນ</strong></div>
     <div class="note-text" id="qrCaptionText">ບັນຊີໂຮງຮຽນ • ແນບສະຫຼິບດ້ານລຸ່ມຫຼັງໂອນສຳເລັດ</div>
                 <!-- ປ່ຽນ QR Code ສຳລັບ Admin -->
-               <div class="qr-admin-controls admin-action">
-        <label for="qrFileInput">🔄 1. ອັບໂຫຼດຮູບ QR Code ໃໝ່</label>
-        <input type="file" id="qrFileInput" accept="image/*" onchange="changeQrFromFile(event)" />
+               <!-- ສະແດງສະເພາະ Admin ເທົ່ານັ້ນ; ເຊື່ອງສຳລັບ User / Student / Teacher -->
+<div class="qr-admin-controls" id="qr-admin-box" style="display: none;">
+    <label for="qrFileInput">🔄 1. ອັບໂຫຼດຮູບ QR Code ໃໝ່</label>
+    <input type="file" id="qrFileInput" accept="image/*" onchange="changeQrFromFile(event)" />
 
-        <label for="qrUrlInput">🔗 2. ຫຼື ວາງລິ້ງຮູບ QR Code</label>
-        <div style="display:flex; gap:6px;">
-            <input type="text" id="qrUrlInput" placeholder="https://..." />
-            <button type="button" class="btn-primary" onclick="changeQrFromUrl()">ບັນທຶກ</button>
-        </div>
-
-        <label for="qrTextInput">✏️ 3. ຫຼື ສ້າງ QR ຈາກເລກບັນຊີ / ຂໍ້ຄວາມ</label>
-        <div style="display:flex; gap:6px;">
-            <input type="text" id="qrTextInput" placeholder="ເຊັ່ນ BCEL 010-12-00-xxxxx" />
-            <button type="button" class="btn-add" onclick="generateQrFromText()">ສ້າງ QR</button>
-        </div>
+    <label for="qrUrlInput">🔗 2. ຫຼື ວາງລິ້ງຮູບ QR Code</label>
+    <div style="display:flex; gap:6px;">
+        <input type="text" id="qrUrlInput" placeholder="https://..." />
+        <button type="button" class="btn-primary" onclick="changeQrFromUrl()">ບັນທຶກ</button>
     </div>
+
+    <label for="qrTextInput">✏️ 3. ຫຼື ສ້າງ QR ຈາກເລກບັນຊີ / ຂໍ້ຄວາມ</label>
+    <div style="display:flex; gap:6px;">
+        <input type="text" id="qrTextInput" placeholder="ເຊັ່ນ BCEL 010-12-00-xxxxx" />
+        <button type="button" class="btn-add" onclick="generateQrFromText()">ສ້າງ QR</button>
+    </div>
+</div>
 </div>
 
             <div class="table-wrap">
@@ -1011,6 +1012,38 @@ window.generateQrFromText = async function () {
     applyAdminVisibility();
     refreshFinanceView();
     loadFinanceFromFirestore();
+    function syncQrAdminBoxVisibility() {
+    const qrAdminBox = document.getElementById("qr-admin-box");
+    if (!qrAdminBox) return;
+
+    if (isAdmin) {
+        qrAdminBox.classList.remove("admin-only-hide", "hidden", "hide", "d-none");
+        qrAdminBox.style.setProperty("display", "flex", "important");
+        qrAdminBox.style.setProperty("flex-direction", "column", "important");
+        qrAdminBox.style.setProperty("gap", "8px", "important");
+        qrAdminBox.style.setProperty("visibility", "visible", "important");
+    } else {
+        qrAdminBox.classList.add("admin-only-hide");
+        qrAdminBox.style.setProperty("display", "none", "important");
+        qrAdminBox.style.setProperty("visibility", "hidden", "important");
+    }
+}
+    function applyAdminVisibility() {
+    syncQrAdminBoxVisibility();
+    if (isAdmin) {
+        document.querySelectorAll(".admin-action").forEach((el) => {
+            el.classList.remove("admin-only-hide");
+            if (el.id !== "qr-admin-box") {
+                el.style.removeProperty("display");
+            }
+        });
+        return;
+    }
+    document.querySelectorAll(".admin-action").forEach((el) => {
+        el.classList.add("admin-only-hide");
+        el.style.setProperty("display", "none", "important");
+    });
+}
 </script>
 </body>
 </html>
