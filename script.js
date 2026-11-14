@@ -789,9 +789,10 @@ window.addEventListener('DOMContentLoaded', () => {
     if (window.applyRolePermissions) window.applyRolePermissions();
     if (typeof loadTimetables === 'function') loadTimetables();
     if (typeof loadNews === 'function') loadNews();
-    if (typeof showSection === 'function') {
-        showSection('section-dashboard');
-});
+if (typeof showSection === 'function') {
+            showSection('dashboard'); // ໃຫ້ໃຊ້ 'dashboard' ໂດຍບໍ່ຕ້ອງມີ prefix 'section-' ເພາະຟັງຊັນຕື່ມໃຫ້ແລ້ວ
+        }
+    }); // ວົງເລັບປິດຂອງ DOMContentLoaded ແລະ addEventListener
 
 
 // ==========================================
