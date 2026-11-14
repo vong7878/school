@@ -943,12 +943,25 @@ function resetNewsForm() {
     document.getElementById('cancel-news-edit-btn').style.display = 'none';
 }
 
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) {
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+
         sidebar.classList.toggle('collapsed');
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        localStorage.setItem('sidebarCollapsed', isCollapsed ? 'true' : 'false');
     }
-}
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+
+        // ກູ້ຄືນສະຖານະປິດ/ເປີດຫຼ້າສຸດທີ່ User ເຄີຍກົດໄວ້
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+    });
+
 
 
 
