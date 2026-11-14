@@ -285,7 +285,7 @@
                     <option value="ພາສາ ແລະ ສັງຄົມສາດ">ພາສາ ແລະ ສັງຄົມສາດ</option>
                     <option value="ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ">ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ</option>
                 </select>
-                <button type="button" class="btn-sync" onclick="loadTeachersFromFirestore(true)">🔄 ໂຫຼດຈາກ Firebase</button>
+                <button type="button" class="btn-sync" onclick="loadTeachersFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
             </div>
         </div>
 
@@ -370,7 +370,7 @@
             </div>
 
             <div class="controls">
-                <button type="submit" class="btn-primary" id="btnSubmitTeacher">💾 ບັນທຶກຂໍ້ມູນຄູລົງ Firebase</button>
+                <button type="submit" class="btn-primary" id="btnSubmitTeacher">💾 ບັນທຶກຂໍ້ມູນຄູລົງ</button>
                 <button type="button" class="btn-secondary" onclick="resetTeacherForm()">↩ ລ້າງຟອມ / ຍົກເລີກແກ້ໄຂ</button>
             </div>
         </form>
@@ -657,7 +657,7 @@
             updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId} (ບັນທຶກແລ້ວ)`);
         } catch (err) {
             console.error("Firestore teacher save error:", err);
-            alert("❌ ບັນທຶກລົງ Firebase ບໍ່ສຳເລັດ: " + err.message);
+            alert("❌ ບັນທຶກບໍ່ສຳເລັດ: " + err.message);
         }
 
         const idx = teachersData.findIndex((t) => t.id === docId);
