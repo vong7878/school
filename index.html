@@ -19,8 +19,10 @@
 <body>
 
   <div class="topbar">
-    <button id="btn-toggle-sidebar" class="hamburger-btn" onclick="toggleSidebar()" title="ເປີດ/ປິດ ເມນູ">☰</button>
-    <span class="topbar-title">🏫 ລະບົບຄຸ້ມຄອງໂຮງຮຽນ</span>
+    <button type="button" class="menu-toggle-btn" id="menuToggleBtn" onclick="toggleMenuBar()" aria-label="ເປີດ/ປິດ ເມນູ">
+        ☰
+    </button>
+    <div class="top-navbar-title">🏫 ລະບົບຄຸ້ມຄອງໂຮງຮຽນ</div>
 </div>
         </div>
 
@@ -35,19 +37,22 @@
         </div>
     </header>
 <body>
-<aside id="sidebar" class="app-sidebar">
-    <h3>🏫 ລະບົບໂຮງຮຽນ</h3>
-    <hr style="border-color: #444; margin-bottom: 15px;">
-    <ul>
-        <li id="menu-dashboard"><a href="#" onclick="showSection('section-dashboard')">📊 1. Dashboard (ພາບລວມ)</a></li>
-        <li id="menu-students"><a href="#" onclick="showSection('section-students')">👨‍🎓 2. ຈັດການນັກຮຽນ</a></li>
-        <li id="menu-teachers"><a href="#" onclick="showSection('section-teachers')">👨‍🏫 3. ຈັດການຄູອາຈານ</a></li>
-        <li id="menu-classes"><a href="class-management.html">🏫 4. ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ & ຕາຕະລາງ</a></li>
+<aside class="slide-menubar" id="slideMenubar">
+    <div class="menubar-header">
+        <span>🏫 ເມນູລະບົບ</span>
+        <button type="button" class="menu-close-btn" onclick="closeMenuBar()" aria-label="ປິດເມນູ">✕</button>
+    </div>
+
+    <ul class="menubar-list">
+        <li id="menu-dashboard"><a href="#" onclick="showSection('section-dashboard'); closeMenuBar();">📊 1. Dashboard (ພາບລວມ)</a></li>
+        <li id="menu-students"><a href="#" onclick="showSection('section-students'); closeMenuBar();">👨‍🎓 2. ຈັດການນັກຮຽນ</a></li>
+        <li id="menu-teachers"><a href="#" onclick="showSection('section-teachers'); closeMenuBar();">👨‍🏫 3. ຈັດການຄູອາຈານ</a></li>
+        <li id="menu-classes"><a href="class-management.html">🏫 4. ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ &amp; ຕາຕະລາງ</a></li>
         <li id="menu-attendance"><a href="check-in.html">📋 5. ຈັດການການມາຮຽນ</a></li>
-        <li id="menu-scores"><a href="#" onclick="showSection('section-scores')">📝 6. ຈັດການຄະແນນ</a></li>
-        <li id="menu-finance"><a href="finance.html">💰 7. ການເງິນ & ຊຳລະຄ່າຮຽນ</a></li>
-        <li id="menu-news"><a href="#" onclick="showSection('section-news')">📢 8. ຂ່າວສານ & ແຈ້ງເຕືອນ</a></li>
-        <li id="menu-teachers-room"><a href="teachers-room.html">👩‍🏫 9. ລາຍຊື່ຄູປະຈຳຫ້ອງ</a></li>
+        <li id="menu-scores"><a href="#" onclick="showSection('section-scores'); closeMenuBar();">📝 6. ຈັດການຄະແນນ</a></li>
+        <li id="menu-finance"><a href="finance.html">💰 7. ການເງິນ &amp; ຊຳລະຄ່າຮຽນ</a></li>
+        <li id="menu-news"><a href="#" onclick="showSection('section-news'); closeMenuBar();">📢 8. ຂ່າວສານ &amp; ແຈ້ງເຕືອນ</a></li>
+        <li id="menu-teachers-room" class="menu-highlight"><a href="teachers-room.html">👩‍🏫 9. ລາຍຊື່ຄູປະຈຳຫ້ອງ</a></li>
     </ul>
 </aside>
 
