@@ -470,43 +470,28 @@
         </div>
     </div>
 <main class="main-content" id="mainContent">
-    <!-- 👩‍🏫 ສຳລັບ Admin ແລະ ຄູອາຈານ: ສະແດງຕາຕະລາງສອນ (ເຊື່ອງປຸ່ມ ເພີ່ມ/ແກ້ໄຂ/ລົບ) -->
-    <section class="panel-card" id="teaching-schedule-panel" style="display: none;">
-        <div class="panel-header">
-            <h3>👩‍🏫 ຕາຕະລາງສອນ</h3>
-            <span class="role-view-badge">ເບິ່ງຂໍ້ມູນຢ່າງດຽວ</span>
-        </div>
+    <!-- 👩‍🏫 ສຳລັບ Admin ແລະ ຄູອາຈານ: ສະແດງຕາຕະລາງສອນສະເພາະຊົ່ວໂມງສອນຂອງຕົນເອງ -->
+<section class="panel-card" id="teaching-schedule-panel" style="display: none;">
+    <div class="panel-header">
+        <h3 id="teaching-panel-title">👩‍🏫 ຕາຕະລາງສອນຂອງຂ້ອຍ</h3>
+        <span class="role-view-badge" id="teaching-owner-badge">ສະເພາະຊົ່ວໂມງສອນຂອງຕົນເອງ</span>
+    </div>
 
-        <div class="table-responsive">
-            <table class="dark-table">
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">ລ/ດ</th>
-                        <th>ຊື່ຄູຜູ້ສອນ</th>
-                        <th>ວິຊາສອນ</th>
-                        <th>ຫ້ອງ</th>
-                        <th>ມື້ / ເວລາສອນ</th>
-                    </tr>
-                </thead>
-                <tbody id="index-teaching-body">
-                    <tr>
-                        <td>1</td>
-                        <td>ອ. ຄຳຜາຍ ສີສະຫວັດ</td>
-                        <td>ຄະນິດສາດ</td>
-                        <td>ມ.5</td>
-                        <td>ຈັນ, ພຸດ, ສຸກ (08:00 - 08:45)</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>ອ. ສຸກສາຄອນ ແສງດາວ</td>
-                        <td>ຟີຊິກສາດ</td>
-                        <td>ມ.5</td>
-                        <td>ຈັນ, ພະຫັດ (08:50 - 09:35)</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
+    <div class="table-responsive">
+        <table class="dark-table">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">ລ/ດ</th>
+                    <th>ຊື່ຄູຜູ້ສອນ</th>
+                    <th>ວິຊາສອນ</th>
+                    <th>ຫ້ອງ</th>
+                    <th>ມື້ / ເວລາສອນ</th>
+                </tr>
+            </thead>
+            <tbody id="index-teaching-body"></tbody>
+        </table>
+    </div>
+</section>
 
     <!-- 📅 ສຳລັບນັກຮຽນ: ສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງຕົນເອງ (ລັອກຫ້ອງ + ເຊື່ອງປຸ່ມ ເພີ່ມ/ແກ້ໄຂ/ລົບ) -->
     <section class="panel-card" id="student-room-timetable-panel" style="display: none;">
