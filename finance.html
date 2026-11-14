@@ -732,6 +732,37 @@
 
     refreshFinanceView();
     loadPaymentsFromFirestore();
+    function getNormalizedUserRole() {
+    let rawRole =
+        localStorage.getItem("userRole") ||
+        localStorage.getItem("role") ||
+        localStorage.getItem("user_role") ||
+        "";
+
+    // ກໍລະນີເກັບຂໍ້ມູນຜູ້ໃຊ້ເປັນ JSON object ໃນ localStorage
+    if (!rawRole) {
+        const possibleJsonKeys = ["currentUser", "loggedInUser", "userData", "user"];
+        for (const k of possibleJsonKeys) {
+            try {
+                const parsed = JSON.parse(localStorage.getItem(k) || "null");
+                if (parsed && typeof parsed === "object" && parsed.role) {
+                    rawRole = parsed.role;
+                    break;
+                }
+            } catch (e) {}
+        }
+    }
+
+    const clean = String(rawRole).trim().toLowerCase();
+
+    if (["admin", "administrator", "superadmin", "ແອັດມິນ", "แอดมิน"].includes(clean)) {
+        return "admin";
+    }
+    if (["teacher", "instructor", "ຄູ", "ຄູອາຈານ", "ครู", "อาจารย์"].includes(clean)) {
+        return "teacher";
+    }
+    return "student";
+}
 </script>
 </body>
 </html>
