@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ລາຍຊື່ນັກຮຽນແຕ່ລະຫ້ອງ - ລະບົບຄຸ້ມຄອງໂຮງຮຽນ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
+        body { background: #f4f6f9; color: #333; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: white; width: 100%; max-width: 900px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        h2 { color: #007bff; margin-bottom: 10px; text-align: center; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 25px; font-size: 14px; }
+        
+        .filter-box { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; background: #f8f9fa; padding: 15px; border-radius: 6px; }
+        .filter-box label { font-weight: bold; }
+        .filter-box select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; flex: 1; min-width: 200px; font-size: 14px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
+        th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; font-size: 14px; }
+        th { background: #f8f9fa; font-weight: bold; color: #495057; }
+        td.center, th.center { text-align: center; }
+        
+        .back-link { display: inline-block; margin-top: 15px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .back-link:hover { text-decoration: underline; }
+        
+        .total-badge { background: #e7f5ff; color: #007bff; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; display: inline-block; margin-bottom: 15px; }
+    </style>
+    
+    <!-- ກວດສອບ Login ກ່ອນ -->
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h2>👥 ຂໍ້ມູນລາຍຊື່ນັກຮຽນແຕ່ລະຫ້ອງ</h2>
+        <p class="subtitle">ກວດສອບ ແລະ ເບິ່ງລາຍຊື່ນັກຮຽນທັງໝົດໃນແຕ່ລະຊັ້ນຮຽນ</p>
+
+        <!-- ສ່ວນເລືອກຊັ້ນຮຽນ -->
+        <div class="filter-box">
+            <label for="grade-select">📚 ເລືອກຊັ້ນຮຽນ:</label>
+            <select id="grade-select" onchange="loadStudentsByClass()">
+                <option value="">-- ກະລຸນາເລືອກຊັ້ນຮຽນ --</option>
+                <option value="ມ.1">ມ.1</option>
+                <option value="ມ.2">ມ.2</option>
+                <option value="ມ.3">ມ.3</option>
+                <option value="ມ.4">ມ.4</option>
+                <option value="ມ.5" selected>⭐ ມ.5 (ຫ້ອງປະຈຳ)</option>
+                <option value="ມ.6">ມ.6</option>
+            </select>
+        </div>
+
+        <div id="result-info">
+            <span class="total-badge" id="total-count">ຈຳນວນນັກຮຽນ: 0 ຄົນ</span>
+        </div>
+
+        <!-- ຕາຕະລາງສະແດງລາຍຊື່ນັກຮຽນ -->
+        <table>
+            <thead>
+                <tr>
+                    <th class="center" style="width: 60px;">ລຳດັບ</th>
+                    <th class="center" style="width: 120px;">ລະຫັດນັກຮຽນ</th>
+                    <th>ຊື່-ນາມສະກຸນ</th>
+                    <th class="center" style="width: 130px;">ເບີໂທລະສັບ</th>
+                    <th>ຊື່ຜູ້ປົກຄອງ</th>
+                </tr>
+            </thead>
+            <tbody id="class-students-table-body">
+                <tr><td colspan="5" class="center" style="padding: 20px; color: #666;">ກະລຸນາເລືອກຊັ້ນຮຽນດ້ານເທິງ</td></tr>
+            </tbody>
+        </table>
+
+        <a href="index.html" class="back-link">⬅️ ກັບສູ່ໜ້າຫຼັກລະບົບ</a>
+    </div>
+
+    <!-- Firebase SDK & Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
+            authDomain: "my-school-c1104.firebaseapp.com",
+            projectId: "my-school-c1104",
+            storageBucket: "my-school-c1104.appspot.com",
+            messagingSenderId: "339930418459",
+            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // โຫຼດຄ່າເລີ່ມຕົ້ນຂອງ ມ.5
+            loadStudentsByClass();
+        });
+
+        window.loadStudentsByClass = async function() {
+            const grade = document.getElementById('grade-select').value;
+            const tbody = document.getElementById('class-students-table-body');
+            const totalBadge = document.getElementById('total-count');
+            
+            if (!grade) {
+                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #666;">ກະລຸນາເລືອກຊັ້ນຮຽນ</td></tr>`;
+                totalBadge.innerText = 'ຈຳນວນນັກຮຽນ: 0 ຄົນ';
+                return;
+            }
+
+            tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງໂຫຼດລາຍຊື່ນັກຮຽນ...</td></tr>`;
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "students"));
+                let studentsList = [];
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    if (data.grade === grade) {
+                        studentsList.push(data);
+                    }
+                });
+
+                totalBadge.innerText = `ຈຳນວນນັກຮຽນຊັ້ນ ${grade}: ${studentsList.length} ຄົນ`;
+
+                if (studentsList.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນນັກຮຽນໃນຊັ້ນ ${grade}</td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                studentsList.forEach((s, index) => {
+                    html += `
+                        <tr>
+                            <td class="center">${index + 1}</td>
+                            <td class="center"><strong>${s.id || '-'}</strong></td>
+                            <td>${s.name || '-'}</td>
+                            <td class="center">${s.phone || '-'}</td>
+                            <td>${s.parent || '-'}</td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+
+            } catch (error) {
+                console.error("Error loading students: ", error);
+                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
+                totalBadge.innerText = 'ຈຳນວນນັກຮຽນ: 0 ຄົນ';
+            }
+        };
+    </script>
+</body>
+</html>
