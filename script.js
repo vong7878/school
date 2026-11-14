@@ -1084,3 +1084,21 @@ window.resetTimetableForm = function() {
     document.getElementById('save-timetable-btn').innerText = '💾 ບັນທຶກຕາຕະລາງ';
     document.getElementById('cancel-timetable-edit-btn').style.display = 'none';
 }; // <--- 📌 ປິດຟັງຊັນນີ້ໃຫ້ສົມບູນ
+
+function toggleMenuBar() {
+        const menubar = document.getElementById('slideMenubar');
+        const backdrop = document.getElementById('menuBackdrop');
+        if (!menubar || !backdrop) return;
+
+        const isOpen = menubar.classList.toggle('open');
+        backdrop.classList.toggle('show', isOpen);
+    }
+
+    function closeMenuBar() {
+        const menubar = document.getElementById('slideMenubar');
+        const backdrop = document.getElementById('menuBackdrop');
+        if (!menubar || !backdrop) return;
+
+        menubar.classList.remove('open');
+        backdrop.classList.remove('show');
+    }
