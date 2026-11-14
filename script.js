@@ -24,7 +24,6 @@ let allTeachersData = [];
 let allScoresData = [];
 let allFinancesData = [];
 
-// ==========================================
 // 4. ຟັງຊັນຄວບຄຸມການຮຽນ (Sidebar Navigation)
 // 📌 ວິທີແກ້ໄຂບັນຫາ Error showSection is not defined
 window.showSection = function(sectionId) {
