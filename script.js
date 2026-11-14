@@ -25,23 +25,23 @@ let allScoresData = [];
 let allFinancesData = [];
 
 // ==========================================
-// 4. ຟັງຊັນຄວບຄຸມການສະຫຼັບໜ້າ (Sidebar Navigation)
-};// 📌 ຟັງຊັນສຳລັບສະຫຼັບການສະແດງຜົນແຕ່ລະ Section (ແກ້ໄຂ Error showSection is not defined)
+// 4. ຟັງຊັນຄວບຄຸມການຮຽນ (Sidebar Navigation)
+// 📌 ວິທີແກ້ໄຂບັນຫາ Error showSection is not defined
 window.showSection = function(sectionId) {
-    // ซ่อนທุก Section ກ່ອນ
+    // // ວົນລູບ Section ກ່ອນ
     const sections = document.querySelectorAll('.content-section');
     sections.forEach(sec => {
         sec.style.display = 'none';
     });
-    
+
     // ສະແດງສະເພາະ Section ທີ່ຖືກເລືອກ
     const target = document.getElementById('section-' + sectionId);
     if (target) {
         target.style.display = 'block';
     } else {
-        console.warn('ไม่พบ Section ID: section-' + sectionId);
+        console.warn('ບໍ່ພົບ Section ID: section-' + sectionId);
     }
-}
+};
 
 // ຟັງຊັນອອກຈາກລະບົບ (Logout)
 window.logout = function() {
