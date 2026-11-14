@@ -69,8 +69,8 @@
         }
         .badge-role { background: #2563eb; color: #fff; }
         .badge-grade { background: #0f766e; color: #ccfbf1; }
+        .badge-fb { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
 
-        /* ແຖບຫ້ອງນ້ອຍທັງ 5 */
         .subrooms-nav {
             display: flex;
             gap: 8px;
@@ -153,6 +153,7 @@
         .btn-add { background: #16a34a; color: #fff; }
         .btn-edit { background: #eab308; color: #0f172a; padding: 5px 9px; font-size: 12px; }
         .btn-del { background: #dc2626; color: #fff; padding: 5px 9px; font-size: 12px; }
+        .btn-sync { background: #0284c7; color: #fff; }
 
         .table-wrap {
             width: 100%;
@@ -207,20 +208,19 @@
 </head>
 <body>
 <div class="container">
-    <!-- ແຖບດ້ານເທິງ -->
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
             <h1 class="page-title">📝 6. ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</h1>
         </div>
         <div class="user-meta">
+            <span id="fbStatusBadge" class="badge badge-fb">🔥 Firebase: ກຳລັງເຊື່ອມຕໍ່...</span>
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
             <span id="currentUserRole" class="badge badge-role">ROLE</span>
             <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
         </div>
     </div>
 
-    <!-- ແຖບເລືອກຫ້ອງນ້ອຍທັງ 5 ຫ້ອງ -->
     <nav class="subrooms-nav" aria-label="ຫ້ອງນ້ອຍຈັດການຄະແນນ">
         <button type="button" class="subroom-btn active" data-subroom="attendance" onclick="switchSubroom('attendance')">
             1. ຄະແນນການມາຮຽນ
@@ -239,12 +239,12 @@
         </button>
     </nav>
 
-    <!-- ຫ້ອງນ້ອຍທີ 1: ຄະແນນການມາຮຽນ -->
     <section class="card subroom-panel" id="panel-attendance">
         <div class="card-header">
             <h2 id="title-attendance">📌 1. ຄະແນນການມາຮຽນ</h2>
             <div class="controls">
                 <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
+                <button type="button" class="btn-sync" onclick="loadScoresFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
                 <button type="button" class="btn-add admin-action" onclick="addStudentScoreRow()">➕ ເພີ່ມນັກຮຽນ</button>
             </div>
         </div>
@@ -263,15 +263,15 @@
                 <tbody id="tbody-attendance"></tbody>
             </table>
         </div>
-        <div class="note-text">* ຄະແນນການມາຮຽນຄຳນວນຈາກ 20 ຄະແນນ (ຫັກຄັ້ງລະ 2 ຄະແນນຕາມການຂາດຮຽນ, ຕ່ຳສຸດ 0) ແລະ Admin ສາມາດແກ້ໄຂ/ລົບໄດ້.</div>
+        <div class="note-text">* ຄະແນນການມາຮຽນຄຳນວນຈາກ 20 ຄະແນນ (ຫັກຄັ້ງລະ 2 ຄະແນນຕາມການຂາດຮຽນ, ຕ່ຳສຸດ 0) ແລະ ບັນທຶກລົງ Firebase Firestore (`my-school-c1104`).</div>
     </section>
 
-    <!-- ຫ້ອງນ້ອຍທີ 2: ຄະແນນບົດຝຶກຫັດ -->
     <section class="card subroom-panel" id="panel-homework" style="display: none;">
         <div class="card-header">
             <h2 id="title-homework">📘 2. ຄະແນນບົດຝຶກຫັດ</h2>
             <div class="controls">
                 <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
+                <button type="button" class="btn-sync" onclick="loadScoresFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
                 <button type="button" class="btn-add admin-action" onclick="addStudentScoreRow()">➕ ເພີ່ມນັກຮຽນ</button>
             </div>
         </div>
@@ -291,12 +291,12 @@
         </div>
     </section>
 
-    <!-- ຫ້ອງນ້ອຍທີ 3: ຄະແນນສອບເສັງກາງພາກ -->
     <section class="card subroom-panel" id="panel-midterm" style="display: none;">
         <div class="card-header">
             <h2 id="title-midterm">📄 3. ຄະແນນສອບເສັງກາງພາກ</h2>
             <div class="controls">
                 <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
+                <button type="button" class="btn-sync" onclick="loadScoresFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
                 <button type="button" class="btn-add admin-action" onclick="addStudentScoreRow()">➕ ເພີ່ມນັກຮຽນ</button>
             </div>
         </div>
@@ -316,12 +316,12 @@
         </div>
     </section>
 
-    <!-- ຫ້ອງນ້ອຍທີ 4: ຄະແນນສະເລ່ຍໝົດປີ -->
     <section class="card subroom-panel" id="panel-annual" style="display: none;">
         <div class="card-header">
             <h2 id="title-annual">📈 4. ຄະແນນສະເລ່ຍໝົດປີ</h2>
             <div class="controls">
                 <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
+                <button type="button" class="btn-sync" onclick="loadScoresFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
             </div>
         </div>
         <div class="table-wrap">
@@ -342,12 +342,12 @@
         </div>
     </section>
 
-    <!-- ຫ້ອງນ້ອຍທີ 5: ຈັດເກຣດ -->
     <section class="card subroom-panel" id="panel-grade" style="display: none;">
         <div class="card-header">
             <h2 id="title-grade">🏅 5. ຈັດເກຣດ</h2>
             <div class="controls">
                 <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
+                <button type="button" class="btn-sync" onclick="loadScoresFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
             </div>
         </div>
         <div class="table-wrap">
@@ -369,19 +369,29 @@
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc
+        getFirestore, collection, getDocs, updateDoc, deleteDoc, doc, setDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = window.FIREBASE_CONFIG || null;
-    let db = null;
-    if (firebaseConfig) {
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-    }
+    const DEFAULT_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
+        authDomain: "my-school-c1104.firebaseapp.com",
+        projectId: "my-school-c1104",
+        storageBucket: "my-school-c1104.firebasestorage.app",
+        messagingSenderId: "339930418459",
+        appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+        measurementId: "G-NPNFSW2C72"
+    };
 
-    const role = (localStorage.getItem("userRole") || "student").toLowerCase();
+    const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
+    window.FIREBASE_CONFIG = firebaseConfig;
+
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const COLLECTION_NAME = "student_scores";
+
+    const role = (localStorage.getItem("userRole") || localStorage.getItem("role") || "student").toLowerCase();
     const userGrade = localStorage.getItem("userGrade") || "ມ.5";
     const userName = localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
     const isAdmin = role === "admin";
@@ -390,7 +400,6 @@
     document.getElementById("currentUserRole").textContent = role.toUpperCase();
     document.getElementById("currentUserGrade").textContent = userGrade;
 
-    // ອັບເດດຫົວຂໍ້ຫ້ອງນ້ອຍໃຫ້ລະບຸຫ້ອງຂອງຕົນເອງຊັດເຈນ
     ["attendance", "homework", "midterm", "annual", "grade"].forEach((key) => {
         const titleEl = document.getElementById("title-" + key);
         if (titleEl) {
@@ -398,7 +407,11 @@
         }
     });
 
-    // ດຶງຈຳນວນຂາດຮຽນຈາກ school_absent_records ຖ້າມີ
+    function setFbStatus(text) {
+        const el = document.getElementById("fbStatusBadge");
+        if (el) el.textContent = text;
+    }
+
     const absentRecords = JSON.parse(localStorage.getItem("school_absent_records") || "[]");
     function getAbsentCountForStudent(studentId, studentName, grade) {
         return absentRecords.filter((r) => {
@@ -409,7 +422,6 @@
         }).length;
     }
 
-    // ຂໍ້ມູນຄະແນນນັກຮຽນ
     let scoresData = JSON.parse(localStorage.getItem("school_student_scores") || "null") || [
         { id: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", attendanceScore: null, homeworkScore: 26, midtermScore: 42 },
         { id: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", attendanceScore: null, homeworkScore: 28, midtermScore: 45 },
@@ -457,9 +469,14 @@
     };
 
     function applyAdminPermissions() {
-        if (isAdmin) return;
         document.querySelectorAll(".admin-action").forEach((el) => {
-            el.classList.add("admin-only-hide");
+            if (isAdmin) {
+                el.classList.remove("admin-only-hide");
+                el.style.removeProperty("display");
+            } else {
+                el.classList.add("admin-only-hide");
+                el.style.setProperty("display", "none", "important");
+            }
         });
     }
 
@@ -469,7 +486,6 @@
             searchInputs.map((i) => i.value.trim().toLowerCase()).find((v) => v.length > 0) || ""
         );
 
-        // ທັງ Admin ແລະ Student ເບິ່ງໄດ້ສະເພາະນັກຮຽນໃນຫ້ອງຕົນເອງ (userGrade)
         return scoresData.filter((s) => {
             const sameGrade = s.grade === userGrade;
             const matchName = !activeQuery || (s.name || "").toLowerCase().includes(activeQuery);
@@ -481,7 +497,6 @@
         const list = getFilteredRoomStudents();
         const colsWithAction = isAdmin ? 6 : 5;
 
-        // 1. ຄະແນນການມາຮຽນ
         const tbAtt = document.getElementById("tbody-attendance");
         if (!list.length) {
             tbAtt.innerHTML = `<tr><td colspan="${colsWithAction}" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
@@ -509,7 +524,6 @@
             }).join("");
         }
 
-        // 2. ຄະແນນບົດຝຶກຫັດ
         const tbHw = document.getElementById("tbody-homework");
         if (!list.length) {
             tbHw.innerHTML = `<tr><td colspan="${isAdmin ? 5 : 4}" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
@@ -532,7 +546,6 @@
             `).join("");
         }
 
-        // 3. ຄະແນນສອບເສັງກາງພາກ
         const tbMid = document.getElementById("tbody-midterm");
         if (!list.length) {
             tbMid.innerHTML = `<tr><td colspan="${isAdmin ? 5 : 4}" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
@@ -555,7 +568,6 @@
             `).join("");
         }
 
-        // 4. ຄະແນນສະເລ່ຍໝົດປີ
         const tbAnnual = document.getElementById("tbody-annual");
         if (!list.length) {
             tbAnnual.innerHTML = `<tr><td colspan="7" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
@@ -579,7 +591,6 @@
             }).join("");
         }
 
-        // 5. ຈັດເກຣດ
         const tbGrade = document.getElementById("tbody-grade");
         if (!list.length) {
             tbGrade.innerHTML = `<tr><td colspan="6" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
@@ -614,22 +625,24 @@
         const midInput = prompt("ປ້ອນຄະແນນສອບເສັງກາງພາກ (0 - 50):", "40");
         if (midInput === null) return;
 
+        const newId = "STD-" + Date.now();
         const newItem = {
-            id: "STD-" + Date.now(),
+            id: newId,
             name: name.trim(),
             grade: userGrade,
             attendanceScore: null,
             homeworkScore: Math.max(0, Math.min(30, Number(hwInput) || 0)),
-            midtermScore: Math.max(0, Math.min(50, Number(midInput) || 0))
+            midtermScore: Math.max(0, Math.min(50, Number(midInput) || 0)),
+            updatedAt: new Date().toISOString()
         };
 
-        if (db) {
-            try {
-                const ref = await addDoc(collection(db, "student_scores"), newItem);
-                newItem.firestoreId = ref.id;
-            } catch (err) {
-                console.error("Firestore score add error:", err);
-            }
+        try {
+            await setDoc(doc(db, COLLECTION_NAME, newId), newItem);
+            newItem.firestoreId = newId;
+            setFbStatus("🔥 Firebase: ບັນທຶກແລ້ວ");
+        } catch (err) {
+            console.error("Firestore score add error:", err);
+            alert("⚠️ ບັນທຶກລົງເຄື່ອງແລ້ວ ແຕ່ Firebase ແຈ້ງເຕືອນ: " + err.message);
         }
 
         scoresData.push(newItem);
@@ -655,17 +668,24 @@
         target.attendanceScore = Math.max(0, Math.min(20, Number(attInput) || 0));
         target.homeworkScore = Math.max(0, Math.min(30, Number(hwInput) || 0));
         target.midtermScore = Math.max(0, Math.min(50, Number(midInput) || 0));
+        target.updatedAt = new Date().toISOString();
 
-        if (db && target.firestoreId) {
-            try {
-                await updateDoc(doc(db, "student_scores", target.firestoreId), {
-                    attendanceScore: target.attendanceScore,
-                    homeworkScore: target.homeworkScore,
-                    midtermScore: target.midtermScore
-                });
-            } catch (err) {
-                console.error("Firestore score update error:", err);
-            }
+        const docId = target.firestoreId || target.id;
+        try {
+            await setDoc(doc(db, COLLECTION_NAME, docId), {
+                id: target.id,
+                name: target.name,
+                grade: target.grade,
+                attendanceScore: target.attendanceScore,
+                homeworkScore: target.homeworkScore,
+                midtermScore: target.midtermScore,
+                updatedAt: target.updatedAt
+            }, { merge: true });
+            target.firestoreId = docId;
+            setFbStatus("🔥 Firebase: ອັບເດດແລ້ວ");
+        } catch (err) {
+            console.error("Firestore score update error:", err);
+            alert("⚠️ ອັບເດດ Firebase ບໍ່ສຳເລັດ: " + err.message);
         }
 
         saveScoresLocal();
@@ -678,12 +698,12 @@
         if (!target) return;
         if (!confirm(`ຢືນຢັນລົບຂໍ້ມູນຄະແນນຂອງ "${target.name}"?`)) return;
 
-        if (db && target.firestoreId) {
-            try {
-                await deleteDoc(doc(db, "student_scores", target.firestoreId));
-            } catch (err) {
-                console.error("Firestore score delete error:", err);
-            }
+        const docId = target.firestoreId || target.id;
+        try {
+            await deleteDoc(doc(db, COLLECTION_NAME, docId));
+            setFbStatus("🔥 Firebase: ລົບແລ້ວ");
+        } catch (err) {
+            console.error("Firestore score delete error:", err);
         }
 
         scoresData = scoresData.filter((s) => s.id !== id);
@@ -691,10 +711,9 @@
         renderAllRooms();
     };
 
-    async function loadScoresFromFirestore() {
-        if (!db) return;
+    window.loadScoresFromFirestore = async function (showToast = false) {
         try {
-            const snap = await getDocs(collection(db, "student_scores"));
+            const snap = await getDocs(collection(db, COLLECTION_NAME));
             if (!snap.empty) {
                 scoresData = snap.docs.map((d) => ({
                     id: d.data().id || d.id,
@@ -702,12 +721,21 @@
                     ...d.data()
                 }));
                 saveScoresLocal();
-                renderAllRooms();
+            } else if (scoresData.length > 0 && isAdmin) {
+                for (const rec of scoresData) {
+                    await setDoc(doc(db, COLLECTION_NAME, rec.id), rec, { merge: true });
+                    rec.firestoreId = rec.id;
+                }
             }
+            setFbStatus(`🔥 Firebase: my-school-c1104 (${scoresData.length})`);
+            renderAllRooms();
+            if (showToast) alert("✅ ໂຫຼດຂໍ້ມູນຄະແນນຈາກ Firebase ສຳເລັດ!");
         } catch (err) {
             console.warn("ບໍ່ໄດ້ໂຫຼດ student_scores ຈາກ Firestore:", err.message);
+            setFbStatus("⚠️ Firebase Offline");
+            renderAllRooms();
         }
-    }
+    };
 
     function esc(str) {
         return String(str || "")
@@ -719,7 +747,7 @@
 
     applyAdminPermissions();
     renderAllRooms();
-    loadScoresFromFirestore();
+    loadScoresFromFirestore(false);
 </script>
 </body>
 </html>
