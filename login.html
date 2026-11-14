@@ -60,14 +60,24 @@
             errorDiv.innerText = "ກຳລັງກວດສອບຂໍ້ມູນ...";
 
             try {
-                // คົຫາ User ໃນ Collection `users` ຕາມ Email ແລະ Password
-                const q = query(collection(db, "users"), where("email", "==", email), where("password", "==", password));
-                const querySnapshot = await getDocs(q);
+              const querySnapshot = await getDocs(collection(db, "students")); // ປ່ຽນຊື່ collection ໃຫ້ກົງກັບບ່ອນເກັບ doc ນີ້
+let foundUser = null;
 
-                if (querySnapshot.empty) {
-                    errorDiv.innerText = "❌ ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ!";
-                    return;
-                }
+querySnapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+    if (data.email === emailInput && data.password === passwordInput) {
+        foundUser = data;
+    }
+});
+
+if (foundUser) {
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('userName', foundUser.name || 'ນັກຮຽນ');
+    localStorage.setItem('userRole', foundUser.role || 'student');
+    window.location.href = 'index.html';
+} else {
+    alert('❌ ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ');
+}
 
                 // ດຶງຂໍ້ມູນ Role ຂອງ User ນັ້ນໆ
                 let userData = null;
