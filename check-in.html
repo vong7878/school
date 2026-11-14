@@ -203,7 +203,7 @@
             <h1 class="page-title">📋 5. ຈັດການການມາຮຽນ (ຄະແນນເຕັມ 20)</h1>
         </div>
         <div class="user-meta">
-            <span id="fbSyncBadge" class="badge badge-fb">🔥 Firebase: ກຳລັງເຊື່ອມຕໍ່...</span>
+          
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
             <span id="currentUserRole" class="badge badge-role-student">STUDENT</span>
             <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
@@ -258,7 +258,7 @@
             <h2 id="termScoreTitle">🎯 ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ (ຄະແນນເຕັມ 20)</h2>
             <div class="controls">
                 <span class="deduct-info">ຄະແນນເຕັມ: <strong>20 ຄະແນນ</strong> • ຕັດ <strong>-2 ຄະແນນ</strong> / ຄັ້ງທີ່ຂາດ</span>
-                <button type="button" class="btn-sync" onclick="loadAbsentFromFirestore(true)">🔄 ໂຫຼດຈາກ Firebase</button>
+                <button type="button" class="btn-sync" onclick="loadAbsentFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
             </div>
         </div>
         <div class="table-wrap">
@@ -857,7 +857,7 @@
             await syncTermAttendanceScoresToFirestore(termVal, gradeVal);
             updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId}`);
             renderAll();
-            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນການມາຮຽນຈາກ Firebase ສຳເລັດ!");
+            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນການມາຮຽນສຳເລັດ!");
         } catch (err) {
             console.warn("ບໍ່ໄດ້ໂຫຼດ absent_records ຈາກ Firestore:", err.message);
             updateSyncBadge("⚠️ Offline (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
