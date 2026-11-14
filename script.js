@@ -1085,3 +1085,146 @@ window.resetTimetableForm = function() {
     document.getElementById('cancel-timetable-edit-btn').style.display = 'none';
 }; // <--- 📌 ປິດຟັງຊັນນີ້ໃຫ້ສົມບູນ
 
+    // ກວດສອບວ່າ Login ແລ້ວຫຼືຍັງ
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = 'login.html';
+    }
+
+    function getSidebarEl() {
+        return (
+            document.getElementById('slideMenubar') ||
+            document.querySelector('.slide-menubar') ||
+            document.getElementById('sidebar') ||
+            document.querySelector('aside')
+        );
+    }
+
+    function getBackdropEl() {
+        return (
+            document.getElementById('menuBackdrop') ||
+            document.querySelector('.menu-backdrop')
+        );
+    }
+
+    function getToggleButtons() {
+        const list = Array.from(document.querySelectorAll('#menuToggleBtn, .menu-toggle-btn, button'));
+        return list.filter(btn => {
+            const txt = (btn.textContent || '').trim();
+            const aria = (btn.getAttribute('aria-label') || '').trim();
+            return btn.id === 'menuToggleBtn' ||
+                   btn.classList.contains('menu-toggle-btn') ||
+                   txt === '☰' ||
+                   aria.includes('ເມນູ');
+        });
+    }
+
+    // ຮັບປະກັນວ່າປຸ່ມ 3 ຂີດສະແດງສະເໝີ ບໍ່ວ່າຈະເປັນ admin, teacher ຫຼື student
+    function ensureToggleButtonVisible() {
+        getToggleButtons().forEach(btn => {
+            btn.classList.remove('hidden', 'hide', 'd-none');
+            btn.style.setProperty('display', 'inline-flex', 'important');
+            btn.style.setProperty('align-items', 'center', 'important');
+            btn.style.setProperty('justify-content', 'center', 'important');
+            btn.style.setProperty('visibility', 'visible', 'important');
+            btn.style.setProperty('opacity', '1', 'important');
+            btn.style.setProperty('pointer-events', 'auto', 'important');
+            btn.style.setProperty('position', 'relative', 'important');
+            btn.style.setProperty('z-index', '100001', 'important');
+        });
+    }
+
+    function setSidebarOpen(isOpen) {
+        const sidebar = getSidebarEl();
+        const backdrop = getBackdropEl();
+        ensureToggleButtonVisible();
+
+        if (!sidebar) {
+            console.warn('ບໍ່ພົບ Element Sidebar (#slideMenubar / .slide-menubar)');
+            return;
+        }
+
+        sidebar.classList.toggle('open', isOpen);
+        sidebar.classList.remove('collapsed', 'hidden', 'hide', 'd-none');
+
+        // ບັງຄັບ Style ໃຫ້ Sidebar ເລື່ອນເຂົ້າ/ອອກຊັດເຈນ ບໍ່ຖືກ CSS ອື່ນທັບ
+        sidebar.style.setProperty('display', 'block', 'important');
+        sidebar.style.setProperty('position', 'fixed', 'important');
+        sidebar.style.setProperty('top', '0', 'important');
+        sidebar.style.setProperty('left', '0', 'important');
+        sidebar.style.setProperty('width', '280px', 'important');
+        sidebar.style.setProperty('max-width', '85vw', 'important');
+        sidebar.style.setProperty('height', '100vh', 'important');
+        sidebar.style.setProperty('background', '#1e293b', 'important');
+        sidebar.style.setProperty('color', '#f8fafc', 'important');
+        sidebar.style.setProperty('z-index', '100000', 'important');
+        sidebar.style.setProperty('overflow-y', 'auto', 'important');
+        sidebar.style.setProperty('visibility', 'visible', 'important');
+        sidebar.style.setProperty('opacity', '1', 'important');
+        sidebar.style.setProperty('box-shadow', '4px 0 24px rgba(0, 0, 0, 0.45)', 'important');
+        sidebar.style.setProperty('transition', 'transform 0.25s ease', 'important');
+        sidebar.style.setProperty('transform', isOpen ? 'translateX(0px)' : 'translateX(-100%)', 'important');
+
+        if (backdrop) {
+            backdrop.classList.toggle('show', isOpen);
+            backdrop.style.setProperty('display', isOpen ? 'block' : 'none', 'important');
+            backdrop.style.setProperty('position', 'fixed', 'important');
+            backdrop.style.setProperty('inset', '0', 'important');
+            backdrop.style.setProperty('background', 'rgba(15, 23, 42, 0.55)', 'important');
+            backdrop.style.setProperty('z-index', '99990', 'important');
+        }
+    }
+
+    window.toggleMenuBar = function(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        const sidebar = getSidebarEl();
+        if (!sidebar) return;
+        const currentlyOpen = sidebar.classList.contains('open');
+        setSidebarOpen(!currentlyOpen);
+    };
+
+    window.closeMenuBar = function(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        setSidebarOpen(false);
+    };
+
+    function logout() {
+        localStorage.clear();
+        alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
+        window.location.href = 'login.html';
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const userName = localStorage.getItem('userName') || 'ຜູ້ໃຊ້ງານ';
+        const userRole = localStorage.getItem('userRole') || 'student';
+
+        const nameEl = document.getElementById('user-display-name');
+        const roleEl = document.getElementById('user-display-role');
+        if (nameEl) nameEl.innerText = userName;
+        if (roleEl) roleEl.innerText = userRole;
+
+        // ຕັ້ງຄ່າເລີ່ມຕົ້ນໃຫ້ Sidebar ປິດຢູ່ ແລະ ປຸ່ມ 3 ຂີດສະແດງສະເໝີ
+        setSidebarOpen(false);
+        ensureToggleButtonVisible();
+
+        // ຜູກ click ໂດຍກົງໃຫ້ປຸ່ມ 3 ຂີດທຸກປຸ່ມ
+        getToggleButtons().forEach(btn => {
+            btn.removeAttribute('onclick');
+            btn.addEventListener('click', window.toggleMenuBar);
+        });
+
+        const backdrop = getBackdropEl();
+        if (backdrop) {
+            backdrop.addEventListener('click', window.closeMenuBar);
+        }
+
+        // ກັນ script.js ຫຼື code ອື່ນມາເຊື່ອງປຸ່ມ 3 ຂີດຫຼັງໂຫຼດສຳເລັດ
+        setTimeout(ensureToggleButtonVisible, 300);
+        setTimeout(ensureToggleButtonVisible, 1000);
+    });
+
