@@ -470,27 +470,12 @@
 
         </div>
     </div>
-    <script>
+  <script>
     // ກວດສອບວ່າ Login ແລ້ວຫຼືຍັງ ຖ້າຍັງ ໃຫ້ດີດກັບໄປໜ້າ login.html
     if (localStorage.getItem('isLoggedIn') !== 'true') {
         window.location.href = 'login.html';
     }
-</script>
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            const userName = localStorage.getItem('userName') || 'ຜູ້ໃຊ້ງານ';
-            const userRole = localStorage.getItem('userRole') || 'guest';
 
-            document.getElementById('user-display-name').innerText = userName;
-            document.getElementById('user-display-role').innerText = userRole;
-        });
-
-        function logout() {
-            localStorage.clear();
-            alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
-            window.location.href = 'login.html';
-        }
-  <script>
     window.toggleMenuBar = function() {
         const menubar = document.getElementById('slideMenubar');
         const backdrop = document.getElementById('menuBackdrop');
@@ -513,7 +498,21 @@
         }
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function logout() {
+        localStorage.clear();
+        alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
+        window.location.href = 'login.html';
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const userName = localStorage.getItem('userName') || 'ຜູ້ໃຊ້ງານ';
+        const userRole = localStorage.getItem('userRole') || 'guest';
+
+        const nameEl = document.getElementById('user-display-name');
+        const roleEl = document.getElementById('user-display-role');
+        if (nameEl) nameEl.innerText = userName;
+        if (roleEl) roleEl.innerText = userRole;
+
         const toggleBtn = document.getElementById('menuToggleBtn');
         const backdrop = document.getElementById('menuBackdrop');
 
@@ -530,10 +529,10 @@
             });
         }
     });
-</script>      
-    </script>
+</script>
+
 <!-- ໂຄດ JavaScript ຫຼັກ ແລະ ໂມດູນແຍກ -->
-    <script type="module" src="script.js"></script>
-<!------    <script type="module" src="timetable.js"></script>---->
+<script type="module" src="script.js"></script>
+<!-- <script type="module" src="timetable.js"></script> -->
 </body>
 </html>
