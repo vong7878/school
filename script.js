@@ -1085,4 +1085,60 @@ window.resetTimetableForm = function() {
     document.getElementById('cancel-timetable-edit-btn').style.display = 'none';
 }; // <--- 📌 ປິດຟັງຊັນນີ້ໃຫ້ສົມບູນ
 
- 
+function ensureMenuSixVisibleAndLinked() {
+    const candidates = Array.from(
+        document.querySelectorAll(
+            "#menu-scores, #slideMenubar li, .menubar-list li, aside li, #slideMenubar a, .menubar-list a, aside a"
+        )
+    );
+
+    candidates.forEach((el) => {
+        const text = (el.textContent || "").trim();
+        const href = (el.getAttribute && el.getAttribute("href")) || "";
+        const id = el.id || "";
+
+        if (
+            id === "menu-scores" ||
+            href.includes("scores.html") ||
+            text.includes("6. ຈັດການຄະແນນ") ||
+            text.includes("ຈັດການຄະແນນ")
+        ) {
+            const targetLi = el.tagName === "LI" ? el : el.closest("li") || el;
+            const targetA = el.tagName === "A" ? el : el.querySelector("a");
+
+            [targetLi, targetA, el].forEach((node) => {
+                if (!node) return;
+                node.classList.remove("hidden", "hide", "d-none", "student-hide", "role-hidden");
+                node.style.setProperty("display", node.tagName === "LI" ? "list-item" : "block", "important");
+                node.style.setProperty("visibility", "visible", "important");
+                node.style.setProperty("opacity", "1", "important");
+                node.style.setProperty("pointer-events", "auto", "important");
+            });
+
+            if (targetA) {
+                targetA.setAttribute("href", "scores.html");
+                targetA.removeAttribute("onclick");
+                if (targetA.dataset.scoresSixBound !== "1") {
+                    targetA.dataset.scoresSixBound = "1";
+                    targetA.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        if (typeof window.closeMenuBar === "function") {
+                            window.closeMenuBar();
+                        }
+                        window.location.href = "scores.html";
+                    });
+                }
+            }
+        }
+    });
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", ensureMenuSixVisibleAndLinked);
+} else {
+    ensureMenuSixVisibleAndLinked();
+}
+
+setTimeout(ensureMenuSixVisibleAndLinked, 200);
+setTimeout(ensureMenuSixVisibleAndLinked, 600);
+setTimeout(ensureMenuSixVisibleAndLinked, 1200); 
