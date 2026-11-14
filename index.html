@@ -16,27 +16,27 @@
     </script>
 </head>
     
-<body>
-
-  <div class="topbar">
-    <button type="button" class="menu-toggle-btn" id="menuToggleBtn" onclick="toggleMenuBar()" aria-label="ເປີດ/ປິດ ເມນູ">
+<div class="topbar">
+    <button type="button" class="menu-toggle-btn" id="menuToggleBtn" onclick="toggleMenuBar(event)" aria-label="ເປີດ/ປິດ ເມນູ">
         ☰
     </button>
     <div class="top-navbar-title">🏫 ລະບົບຄຸ້ມຄອງໂຮງຮຽນ</div>
 </div>
-        </div>
 
-        <!-- 👤 ປ້າຍສະແດງຊື່ຜູ້ໃຊ້ ແລະ ໄອຄອນຫົວຄົນ -->
-        <div class="user-profile-badge">
-            <span style="font-size: 22px;">👤</span>
-            <div class="user-info">
-                <span id="user-display-name">ກຳລັງໂຫຼດ...</span>
-                <span id="user-display-role">--</span>
-            </div>
-            <button class="logout-btn" onclick="logout()">ອອກຈາກລະບົບ</button>
-        </div>
-    </header>
-<body>
+<!-- 👤 ປ້າຍສະແດງຊື່ຜູ້ໃຊ້ ແລະ ໄອຄອນຫົວຄົນ -->
+<div class="user-profile-badge">
+    <span style="font-size: 22px;">👤</span>
+    <div class="user-info">
+        <span id="user-display-name">ກຳລັງໂຫຼດ...</span>
+        <span id="user-display-role">--</span>
+    </div>
+    <button type="button" class="logout-btn" onclick="logout()">ອອກຈາກລະບົບ</button>
+</div>
+
+<!-- ພື້ນຫຼັງມືດເວລາເປີດເມນູ -->
+<div class="menu-backdrop" id="menuBackdrop" onclick="closeMenuBar()"></div>
+
+<!-- ເມນູບາເລື່ອນເປີດ/ປິດ (Slide Menubar) -->
 <aside class="slide-menubar" id="slideMenubar">
     <div class="menubar-header">
         <span>🏫 ເມນູລະບົບ</span>
@@ -55,7 +55,6 @@
         <li id="menu-teachers-room" class="menu-highlight"><a href="teachers-room.html">👩‍🏫 9. ລາຍຊື່ຄູປະຈຳຫ້ອງ</a></li>
     </ul>
 </aside>
-
   <!-- 🖥️ Main Content Area (ສະແດງເນື້ອຫາຕາມໂມດູນທີ່ເລືອກ) -->
         <div style="flex: 1; padding: 30px; overflow-y: auto; background: #f4f6f9;">
             
