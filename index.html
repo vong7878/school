@@ -479,33 +479,44 @@
         </div>
     </div>
 <main class="main-content" id="mainContent">
+  <main class="main-content" id="mainContent">
     <!-- 👩‍🏫 ສຳລັບ Admin ແລະ ຄູອາຈານ: ສະແດງຕາຕະລາງສອນສະເພາະຊົ່ວໂມງສອນຂອງຕົນເອງ -->
-<section class="panel-card" id="teaching-schedule-panel" style="display: none;">
-    <div class="panel-header">
-        <h3 id="teaching-panel-title">👩‍🏫 ຕາຕະລາງສອນຂອງຂ້ອຍ</h3>
-        <span class="role-view-badge" id="teaching-owner-badge">ສະເພາະຊົ່ວໂມງສອນຂອງຕົນເອງ</span>
-    </div>
+    <section class="panel-card" id="teaching-schedule-panel" style="display: none;">
+        <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <h3 id="teaching-panel-title" style="margin: 0;">👩‍🏫 ຕາຕະລາງສອນຂອງຂ້ອຍ</h3>
+                <button type="button" id="btn-schedule-detail-staff" onclick="openScheduleDetailModal()" style="background: #2563eb; color: #ffffff; border: 1px solid #3b82f6; border-radius: 7px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center;">
+                    ລາຍລະອຽດ
+                </button>
+            </div>
+            <span class="role-view-badge" id="teaching-owner-badge">ສະເພາະຊົ່ວໂມງສອນຂອງຕົນເອງ</span>
+        </div>
 
-    <div class="table-responsive">
-        <table class="dark-table">
-            <thead>
-                <tr>
-                    <th style="width: 60px;">ລ/ດ</th>
-                    <th>ຊື່ຄູຜູ້ສອນ</th>
-                    <th>ວິຊາສອນ</th>
-                    <th>ຫ້ອງ</th>
-                    <th>ມື້ / ເວລາສອນ</th>
-                </tr>
-            </thead>
-            <tbody id="index-teaching-body"></tbody>
-        </table>
-    </div>
-</section>
+        <div class="table-responsive">
+            <table class="dark-table">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ຊື່ຄູຜູ້ສອນ</th>
+                        <th>ວິຊາສອນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ມື້ / ເວລາສອນ</th>
+                    </tr>
+                </thead>
+                <tbody id="index-teaching-body"></tbody>
+            </table>
+        </div>
+    </section>
 
     <!-- 📅 ສຳລັບນັກຮຽນ: ສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງຕົນເອງ (ລັອກຫ້ອງ + ເຊື່ອງປຸ່ມ ເພີ່ມ/ແກ້ໄຂ/ລົບ) -->
     <section class="panel-card" id="student-room-timetable-panel" style="display: none;">
-        <div class="panel-header">
-            <h3 id="student-timetable-title">📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ</h3>
+        <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <h3 id="student-timetable-title" style="margin: 0;">📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ</h3>
+                <button type="button" id="btn-schedule-detail-student" onclick="openScheduleDetailModal()" style="background: #2563eb; color: #ffffff; border: 1px solid #3b82f6; border-radius: 7px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center;">
+                    ລາຍລະອຽດ
+                </button>
+            </div>
             <span class="room-badge" id="student-timetable-badge">ຫ້ອງ: ມ.5</span>
         </div>
 
