@@ -1,10 +1,10 @@
 // 1. ນຳເຂົ້າ Firebase SDK ທີ່ຈຳເປັນ
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-// ໃຫ້ແນ່ໃຈວ່າບໍ່ມີ } ຕົກຄ້າງຢູ່ບ່ອນນີ້
+
 // 2. ຕັ້ງຄ່າ Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
+    apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
     authDomain: "my-school-c1104.firebaseapp.com",
     projectId: "my-school-c1104",
     storageBucket: "my-school-c1104.appspot.com",
@@ -13,37 +13,46 @@ const firebaseConfig = {
     measurementId: "G-NPNFSW2C72"
 };
 
-// 3. ເລີ່ມຕົ້ນ Firebase App ແລະ Firestore (ປະກາດ db ພຽງຄັ້ງດຽວເທົ່ານັ້ນ!)
+// 3. ເລີ່ມຕົ້ນ Firebase App ແລະ Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ຕົວແປເກັບຂໍ້ມູນລວມສຳລັບการຄົ້ນຫາ
 let allStudentsData = [];
 let allTeachersData = [];
 let allScoresData = [];
 let allFinancesData = [];
+
+function cleanScriptStorageValue(val) {
+    return String(val || "")
+        .trim()
+        .replace(/^["']+|["']+$/g, "")
+        .trim();
+}
+
 window.showSection = function(sectionId) {
-    // 1. ซ່ອນທຸກ Section ກ່ອນ
+    const cleanId = String(sectionId || "").trim();
+    const resolvedId = document.getElementById(cleanId)
+        ? cleanId
+        : (document.getElementById("section-" + cleanId) ? "section-" + cleanId : cleanId);
+
     const sections = document.querySelectorAll('.content-section');
     sections.forEach(sec => {
         sec.style.display = 'none';
     });
 
-    // 2. ສະແດງສະເພາະ Section ທີ່ຖືກເລືອກ (ໃຊ້ sectionId ທີ່ສົ່ງມາໂດຍກົງ)
-    const target = document.getElementById(sectionId);
+    const target = document.getElementById(resolvedId);
     if (target) {
         target.style.display = 'block';
     } else {
-        console.warn('ບໍ່ພົບ Section ID: ' + sectionId);
+        console.warn('ບໍ່ພົບ Section ID: ' + resolvedId);
     }
 };
 
-// ຟັງຊັນອອກຈາກລະບົບ (Logout)
 window.logout = function() {
     localStorage.clear();
     alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
-    window.location.href = 'index.html';
-}
+    window.location.href = 'login.html';
+};
 
 // ==========================================
 // 5. ໂມດູນຈັດການນັກຮຽນ (Students Management)
@@ -51,7 +60,7 @@ window.logout = function() {
 window.loadStudents = async function() {
     const tbody = document.getElementById('students-table-body');
     if (!tbody) return;
-    
+
     tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
 
     try {
@@ -80,7 +89,7 @@ window.loadStudents = async function() {
         console.error("Error loading students: ", error);
         tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
     }
-}
+};
 
 function renderStudentsTable(students) {
     const tbody = document.getElementById('students-table-body');
@@ -144,11 +153,11 @@ window.editStudent = function(docId, id, name, grade, phone, parent) {
     document.getElementById('student-grade').value = grade;
     document.getElementById('student-phone').value = phone;
     document.getElementById('student-parent').value = parent;
-    
+
     document.getElementById('student-form-title').innerText = '✏️ ແກ້ໄຂຂໍ້ມູນນັກຮຽນ';
     document.getElementById('save-student-btn').innerText = 'ອັບເດດຂໍ້ມູນ';
     document.getElementById('cancel-edit-btn').style.display = 'inline-block';
-}
+};
 
 window.deleteStudent = async function(docId) {
     if (confirm('ທ່ານຕ້ອງການລົບຂໍ້ມູນນັກຮຽນນີ້ແທ້ບໍ?')) {
@@ -161,7 +170,7 @@ window.deleteStudent = async function(docId) {
             alert('❌ ເກີດຂໍ້ຜິດພາດໃນການລົບ');
         }
     }
-}
+};
 
 window.resetStudentForm = function() {
     const form = document.getElementById('student-form');
@@ -170,22 +179,21 @@ window.resetStudentForm = function() {
     document.getElementById('student-form-title').innerText = '➕ ເພີ່ມຂໍ້ມູນນັກຮຽນໃໝ່';
     document.getElementById('save-student-btn').innerText = 'ບັນທຶກຂໍ້ມູນ';
     document.getElementById('cancel-edit-btn').style.display = 'none';
-}
+};
 
 window.filterStudents = function() {
     const keyword = document.getElementById('search-student-input').value.toLowerCase();
     const selectedGrade = document.getElementById('filter-grade-select').value;
-    
+
     const filtered = allStudentsData.filter(s => {
-        const matchKeyword = (s.name && s.name.toLowerCase().includes(keyword)) || 
+        const matchKeyword = (s.name && s.name.toLowerCase().includes(keyword)) ||
                              (s.id && s.id.toLowerCase().includes(keyword)) ||
                              (s.phone && s.phone.toLowerCase().includes(keyword));
         const matchGrade = selectedGrade === "" || s.grade === selectedGrade;
         return matchKeyword && matchGrade;
     });
     renderStudentsTable(filtered);
-}
-
+};
 
 // ==========================================
 // 6. ໂມດູນຈັດການຄູອາຈານ (Teachers Management)
@@ -193,7 +201,7 @@ window.filterStudents = function() {
 window.loadTeachers = async function() {
     const tbody = document.getElementById('teachers-table-body');
     if (!tbody) return;
-    
+
     tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
 
     try {
@@ -222,7 +230,7 @@ window.loadTeachers = async function() {
         console.error("Error loading teachers: ", error);
         tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
     }
-}
+};
 
 function renderTeachersTable(teachers) {
     const tbody = document.getElementById('teachers-table-body');
@@ -280,11 +288,11 @@ window.editTeacher = function(docId, id, name, subject) {
     document.getElementById('teacher-id').value = id;
     document.getElementById('teacher-name').value = name;
     document.getElementById('teacher-subject').value = subject;
-    
+
     document.getElementById('teacher-form-title').innerText = '✏️ ແກ້ໄຂຂໍ້ມູນຄູອາຈານ';
     document.getElementById('save-teacher-btn').innerText = 'ອັບເດດຂໍ້ມູນ';
     document.getElementById('cancel-teacher-edit-btn').style.display = 'inline-block';
-}
+};
 
 window.deleteTeacher = async function(docId) {
     if (confirm('ທ່ານຕ້ອງການລົບຂໍ້ມູນຄູອາຈານຄົນນີ້ແທ້ບໍ?')) {
@@ -297,7 +305,7 @@ window.deleteTeacher = async function(docId) {
             alert('❌ ເກີດຂໍ້ຜິດພາດໃນການລົບ');
         }
     }
-}
+};
 
 window.resetTeacherForm = function() {
     const form = document.getElementById('teacher-form');
@@ -306,29 +314,28 @@ window.resetTeacherForm = function() {
     document.getElementById('teacher-form-title').innerText = '➕ ເພີ່ມຂໍ້ມູນຄູອາຈານໃໝ່';
     document.getElementById('save-teacher-btn').innerText = 'ບັນທຶກຂໍ້ມູນ';
     document.getElementById('cancel-teacher-edit-btn').style.display = 'none';
-}
+};
 
 window.filterTeachers = function() {
     const inputSearch = document.getElementById('search-teacher-input');
     if (!inputSearch) return;
     const keyword = inputSearch.value.toLowerCase();
-    
-    const filtered = allTeachersData.filter(t => 
-        (t.name && t.name.toLowerCase().includes(keyword)) || 
+
+    const filtered = allTeachersData.filter(t =>
+        (t.name && t.name.toLowerCase().includes(keyword)) ||
         (t.id && t.id.toLowerCase().includes(keyword)) ||
         (t.subject && t.subject.toLowerCase().includes(keyword))
     );
     renderTeachersTable(filtered);
-}
-
+};
 
 // ==========================================
-// 7. ໂມດູນຈັດການຫ້ອງຮຽນ (Classes Management - Firebase v10 Modular)
+// 7. ໂມດູນຈັດການຫ້ອງຮຽນ (Classes Management)
 // ==========================================
 window.loadClasses = async function() {
     const tbody = document.getElementById('classes-table-body');
     if (!tbody) return;
-    
+
     tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
 
     try {
@@ -358,17 +365,17 @@ window.loadClasses = async function() {
             tbody.appendChild(tr);
         });
 
-        const role = localStorage.getItem('userRole');
+        const role = cleanScriptStorageValue(localStorage.getItem('userRole')).toLowerCase();
         if (role === 'student') {
             const formContainer = document.getElementById('class-form-container');
             if (formContainer) formContainer.style.display = 'none';
         }
-
     } catch (error) {
         console.error("Error loading classes: ", error);
         tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
     }
-}
+};
+
 const classForm = document.getElementById('class-form');
 if (classForm) {
     classForm.addEventListener('submit', async (e) => {
@@ -396,16 +403,16 @@ if (classForm) {
 }
 
 window.editClass = function(docId, level, name, teacher) {
-    if(document.getElementById('class-doc-id')) document.getElementById('class-doc-id').value = docId;
-    if(document.getElementById('class-level')) document.getElementById('class-level').value = level;
-    if(document.getElementById('class-name')) document.getElementById('class-name').value = name;
-    if(document.getElementById('class-teacher')) document.getElementById('class-teacher').value = teacher;
-    
+    if (document.getElementById('class-doc-id')) document.getElementById('class-doc-id').value = docId;
+    if (document.getElementById('class-level')) document.getElementById('class-level').value = level;
+    if (document.getElementById('class-name')) document.getElementById('class-name').value = name;
+    if (document.getElementById('class-teacher')) document.getElementById('class-teacher').value = teacher;
+
     const saveBtn = document.getElementById('save-class-btn');
     const cancelBtn = document.getElementById('cancel-class-edit-btn');
-    if(saveBtn) saveBtn.innerText = 'ອັບເດດຫ້ອງ';
-    if(cancelBtn) cancelBtn.style.display = 'inline-block';
-}
+    if (saveBtn) saveBtn.innerText = 'ອັບເດດຫ້ອງ';
+    if (cancelBtn) cancelBtn.style.display = 'inline-block';
+};
 
 window.deleteClass = async function(docId) {
     if (confirm('ທ່ານຕ້ອງການລົບຫ້ອງຮຽນນີ້ແທ້ບໍ?')) {
@@ -418,26 +425,26 @@ window.deleteClass = async function(docId) {
             alert('❌ ເກີດຂໍ້ຜິດພາດໃນການລົບ');
         }
     }
-}
+};
 
 window.resetClassForm = function() {
     const form = document.getElementById('class-form');
     if (form) form.reset();
-    if(document.getElementById('class-doc-id')) document.getElementById('class-doc-id').value = '';
+    if (document.getElementById('class-doc-id')) document.getElementById('class-doc-id').value = '';
     const saveBtn = document.getElementById('save-class-btn');
     const cancelBtn = document.getElementById('cancel-class-edit-btn');
-    if(saveBtn) saveBtn.innerText = 'ບັນທຶກຫ້ອງ';
-    if(cancelBtn) cancelBtn.style.display = 'none';
-}
+    if (saveBtn) saveBtn.innerText = 'ບັນທຶກຫ້ອງ';
+    if (cancelBtn) cancelBtn.style.display = 'none';
+};
 
 window.viewClassStudents = async function(classId, className) {
     try {
         const querySnapshot = await getDocs(collection(db, 'students'));
         let studentListHtml = `<h3>👥 ລາຍຊື່ນັກຮຽນໃນຫ້ອງ: ${className}</h3>`;
-        
+
         let foundCount = 0;
         let listHtml = `<ul style="padding-left: 20px; text-align: left;">`;
-        
+
         querySnapshot.forEach((docSnap) => {
             const sData = docSnap.data();
             if (sData.classId === classId || sData.grade === className) {
@@ -468,13 +475,11 @@ window.viewClassStudents = async function(classId, className) {
             </div>
         `;
         modal.style.display = 'flex';
-
     } catch (error) {
         console.error('Error loading students: ', error);
         alert('❌ ບໍ່ສາມາດໂຫຼດລາຍຊື່ນັກຮຽນໄດ້');
     }
-}
-
+};
 
 // ==========================================
 // 8. ໂມດູນຈັດການຄະແນນ (Scores Management)
@@ -482,7 +487,7 @@ window.viewClassStudents = async function(classId, className) {
 window.loadScores = async function() {
     const tbody = document.getElementById('scores-table-body');
     if (!tbody) return;
-    
+
     tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
 
     try {
@@ -506,7 +511,7 @@ window.loadScores = async function() {
         console.error("Error loading scores: ", error);
         tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
     }
-}
+};
 
 function calculateGrade(total) {
     if (total >= 80) return 'A';
@@ -585,11 +590,11 @@ window.editScore = function(docId, studentName, grade, subject, midterm, final) 
     document.getElementById('score-subject').value = subject;
     document.getElementById('score-midterm').value = midterm;
     document.getElementById('score-final').value = final;
-    
+
     document.getElementById('score-form-title').innerText = '✏️ ແກ້ໄຂຄະແນນນັກຮຽນ';
     document.getElementById('save-score-btn').innerText = 'ອັບເດດຄະແນນ';
     document.getElementById('cancel-score-edit-btn').style.display = 'inline-block';
-}
+};
 
 window.deleteScore = async function(docId) {
     if (confirm('ທ່ານຕ້ອງການລົບລາຍການຄະແນນນີ້ແທ້ບໍ?')) {
@@ -602,7 +607,7 @@ window.deleteScore = async function(docId) {
             alert('❌ ເກີດຂໍ້ຜິດພາດໃນການລົບ');
         }
     }
-}
+};
 
 window.resetScoreForm = function() {
     const form = document.getElementById('score-form');
@@ -611,18 +616,17 @@ window.resetScoreForm = function() {
     document.getElementById('score-form-title').innerText = '➕ ບັນທຶກຄະແນນນັກຮຽນ';
     document.getElementById('save-score-btn').innerText = 'ບັນທຶກຄະແນນ';
     document.getElementById('cancel-score-edit-btn').style.display = 'none';
-}
+};
 
 window.filterScores = function() {
     const keyword = document.getElementById('search-score-input').value.toLowerCase();
-    const filtered = allScoresData.filter(s => 
-        (s.studentName && s.studentName.toLowerCase().includes(keyword)) || 
+    const filtered = allScoresData.filter(s =>
+        (s.studentName && s.studentName.toLowerCase().includes(keyword)) ||
         (s.subject && s.subject.toLowerCase().includes(keyword)) ||
         (s.grade && s.grade.toLowerCase().includes(keyword))
     );
     renderScoresTable(filtered);
-}
-
+};
 
 // ==========================================
 // 9. ໂມດູນການເງິນ & ຄ່າຮຽນ (Finance Management)
@@ -630,7 +634,7 @@ window.filterScores = function() {
 window.loadFinances = async function() {
     const tbody = document.getElementById('finances-table-body');
     if (!tbody) return;
-    
+
     tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
 
     try {
@@ -640,9 +644,9 @@ window.loadFinances = async function() {
 
         if (querySnapshot.empty) {
             tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 15px;">ຍັງບໍ່ມີຂໍ້ມູນການເງິນໃນລະບົບ</td></tr>`;
-            if(document.getElementById('total-income')) document.getElementById('total-income').innerText = '0 ₭';
-            if(document.getElementById('total-pending')) document.getElementById('total-pending').innerText = '0 ₭';
-            if(document.getElementById('total-finance-records')) document.getElementById('total-finance-records').innerText = '0 ລາຍການ';
+            if (document.getElementById('total-income')) document.getElementById('total-income').innerText = '0 ₭';
+            if (document.getElementById('total-pending')) document.getElementById('total-pending').innerText = '0 ₭';
+            if (document.getElementById('total-finance-records')) document.getElementById('total-finance-records').innerText = '0 ລາຍການ';
             return;
         }
 
@@ -662,16 +666,16 @@ window.loadFinances = async function() {
             }
         });
 
-        if(document.getElementById('total-income')) document.getElementById('total-income').innerText = totalIncome.toLocaleString() + ' ₭';
-        if(document.getElementById('total-pending')) document.getElementById('total-pending').innerText = totalPending.toLocaleString() + ' ₭';
-        if(document.getElementById('total-finance-records')) document.getElementById('total-finance-records').innerText = allFinancesData.length + ' ລາຍການ';
+        if (document.getElementById('total-income')) document.getElementById('total-income').innerText = totalIncome.toLocaleString() + ' ₭';
+        if (document.getElementById('total-pending')) document.getElementById('total-pending').innerText = totalPending.toLocaleString() + ' ₭';
+        if (document.getElementById('total-finance-records')) document.getElementById('total-finance-records').innerText = allFinancesData.length + ' ລາຍການ';
 
         renderFinancesTable(allFinancesData);
     } catch (error) {
         console.error("Error loading finances: ", error);
         tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 15px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ</td></tr>`;
     }
-}
+};
 
 function renderFinancesTable(finances) {
     const tbody = document.getElementById('finances-table-body');
@@ -735,11 +739,11 @@ window.editFinance = function(docId, studentName, grade, amount, status) {
     document.getElementById('finance-grade').value = grade;
     document.getElementById('finance-amount').value = amount;
     document.getElementById('finance-status').value = status;
-    
+
     document.getElementById('finance-form-title').innerText = '✏️ ແກ້ໄຂຂໍ້ມູນການຊຳລະຄ່າຮຽນ';
     document.getElementById('save-finance-btn').innerText = 'ອັບເດດຂໍ້ມູນ';
     document.getElementById('cancel-finance-edit-btn').style.display = 'inline-block';
-}
+};
 
 window.deleteFinance = async function(docId) {
     if (confirm('ທ່ານຕ້ອງການລົບລາຍການການເງິນນີ້ແທ້ບໍ?')) {
@@ -752,7 +756,7 @@ window.deleteFinance = async function(docId) {
             alert('❌ ເກີດຂໍ້ຜິດພາດໃນການລົບ');
         }
     }
-}
+};
 
 window.resetFinanceForm = function() {
     const form = document.getElementById('finance-form');
@@ -761,42 +765,23 @@ window.resetFinanceForm = function() {
     document.getElementById('finance-form-title').innerText = '➕ ບັນທຶກການຊຳລະຄ່າຮຽນ';
     document.getElementById('save-finance-btn').innerText = 'ບັນທຶກຂໍ້ມູນ';
     document.getElementById('cancel-finance-edit-btn').style.display = 'none';
-}
+};
 
 window.filterFinances = function() {
     const keyword = document.getElementById('search-finance-input').value.toLowerCase();
-    const filtered = allFinancesData.filter(f => 
-        (f.studentName && f.studentName.toLowerCase().includes(keyword)) || 
+    const filtered = allFinancesData.filter(f =>
+        (f.studentName && f.studentName.toLowerCase().includes(keyword)) ||
         (f.grade && f.grade.toLowerCase().includes(keyword))
     );
     renderFinancesTable(filtered);
-}
-
-
-// ==========================================
-// 10. ໂຫຼດຂໍ້ມູນທັງໝົດຕອນເປີດໜ້າເວັບ
-// ==========================================
-window.addEventListener('DOMContentLoaded', () => {
-    if (window.loadStudents) window.loadStudents();
-    if (window.loadTeachers) window.loadTeachers();
-    if (window.loadClasses) window.loadClasses();
-    if (window.loadScores) window.loadScores();
-    if (window.loadFinances) window.loadFinances();
-    if (window.applyRolePermissions) window.applyRolePermissions();
-    if (typeof loadTimetables === 'function') loadTimetables();
-    if (typeof loadNews === 'function') loadNews();
-if (typeof showSection === 'function') {
-            showSection('dashboard'); // ໃຫ້ໃຊ້ 'dashboard' ໂດຍບໍ່ຕ້ອງມີ prefix 'section-' ເພາະຟັງຊັນຕື່ມໃຫ້ແລ້ວ
-        }
-    }); // ວົງເລັບປິດຂອງ DOMContentLoaded ແລະ addEventListener
-
+};
 
 // ==========================================
 // 11. ລະບົບຄວບຄຸມສິດຜູ້ໃຊ້ (Role-Based Access Control)
 // ==========================================
 window.applyRolePermissions = function() {
-    const role = localStorage.getItem('userRole');
-    const userName = localStorage.getItem('userName') || 'User';
+    const role = cleanScriptStorageValue(localStorage.getItem('userRole')).toLowerCase();
+    const userName = cleanScriptStorageValue(localStorage.getItem('userName')) || 'User';
 
     if (!role) {
         window.location.href = 'login.html';
@@ -807,11 +792,6 @@ window.applyRolePermissions = function() {
     const roleSpan = document.getElementById('user-display-role');
     if (nameSpan) nameSpan.innerText = userName;
     if (roleSpan) roleSpan.innerText = role.toUpperCase();
-
-    const userDisplay = document.getElementById('user-display');
-    if (userDisplay) {
-        userDisplay.innerText = `👤 ${userName} (${role.toUpperCase()})`;
-    }
 
     if (role === 'student') {
         const menusToHide = ['menu-dashboard', 'menu-students', 'menu-teachers', 'menu-attendance', 'menu-scores'];
@@ -827,20 +807,12 @@ window.applyRolePermissions = function() {
                 form.parentElement.style.display = 'none';
             }
         });
-
-        document.querySelectorAll('button').forEach(btn => {
-            const text = btn.innerText.toLowerCase();
-            if (!text.includes('ອອກຈາກລະບົບ') && !text.includes('ຊຳລະ') && !text.includes('ປິດ')) {
-                btn.style.display = 'none';
-            }
-        });
-
-        if (typeof showSection === 'function') {
-            showSection('classes');
-        }
     }
-}
 
+    if (typeof window.syncStudentTimetableGrade === 'function') {
+        window.syncStudentTimetableGrade();
+    }
+};
 
 // ==========================================
 // 12. ໂມດູນຈັດການຂ່າວສານ (News Management)
@@ -882,7 +854,7 @@ async function loadNews() {
     try {
         const querySnapshot = await getDocs(collection(db, "news"));
         let html = '';
-        const userRole = localStorage.getItem('userRole') || 'student';
+        const userRole = cleanScriptStorageValue(localStorage.getItem('userRole')).toLowerCase() || 'student';
         const canManage = (userRole === 'admin' || userRole === 'teacher');
 
         if (querySnapshot.empty) {
@@ -936,41 +908,17 @@ async function deleteNews(id) {
 }
 
 function resetNewsForm() {
-    document.getElementById('news-form').reset();
-    document.getElementById('news-doc-id').value = '';
-    document.getElementById('news-form-title').innerText = '➕ ສ້າງປະກາດຂ່າວສານໃໝ່';
-    document.getElementById('save-news-btn').innerText = 'ເຜີຍແຜ່ປະກາດ';
-    document.getElementById('cancel-news-edit-btn').style.display = 'none';
+    const form = document.getElementById('news-form');
+    if (form) form.reset();
+    if (document.getElementById('news-doc-id')) document.getElementById('news-doc-id').value = '';
+    if (document.getElementById('news-form-title')) document.getElementById('news-form-title').innerText = '➕ ສ້າງປະກາດຂ່າວສານໃໝ່';
+    if (document.getElementById('save-news-btn')) document.getElementById('save-news-btn').innerText = 'ເຜີຍແຜ່ປະກາດ';
+    if (document.getElementById('cancel-news-edit-btn')) document.getElementById('cancel-news-edit-btn').style.display = 'none';
 }
-
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        if (!sidebar) return;
-
-        sidebar.classList.toggle('collapsed');
-        const isCollapsed = sidebar.classList.contains('collapsed');
-        localStorage.setItem('sidebarCollapsed', isCollapsed ? 'true' : 'false');
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        const sidebar = document.getElementById('sidebar');
-        if (!sidebar) return;
-
-        // ກູ້ຄືນສະຖານະປິດ/ເປີດຫຼ້າສຸດທີ່ User ເຄີຍກົດໄວ້
-        if (localStorage.getItem('sidebarCollapsed') === 'true') {
-            sidebar.classList.add('collapsed');
-        }
-    });
-
-
-
-
 
 // ==========================================
 // 📅 ໂມດູນຈັດການ ແລະ ເບິ່ງຕາຕະລາງຮຽນ (Timetable Module)
 // ==========================================
-
-// 1. ບັນທຶກ ຫຼື ເພີ່ມ/ແກ້ໄຂ ຕາຕະລາງຮຽນລົງ Firebase Firestore
 window.saveTimetableData = async function(event) {
     if (event) event.preventDefault();
 
@@ -1008,7 +956,6 @@ window.saveTimetableData = async function(event) {
     }
 };
 
-// 2. ຟັງຊັ່ນໂຫຼດ ແລະ ສະແດງຕາຕະລາງຮຽນໃນໜ້າເວັບ
 window.loadTimetables = async function() {
     const tbody = document.getElementById('timetable-table-body');
     if (!tbody) return;
@@ -1016,7 +963,7 @@ window.loadTimetables = async function() {
     try {
         const querySnapshot = await getDocs(collection(db, "timetables"));
         let html = '';
-        const userRole = localStorage.getItem('userRole') || 'student';
+        const userRole = cleanScriptStorageValue(localStorage.getItem('userRole')).toLowerCase() || 'student';
         const canManage = (userRole === 'admin' || userRole === 'teacher');
 
         if (querySnapshot.empty) {
@@ -1047,8 +994,8 @@ window.loadTimetables = async function() {
     } catch (error) {
         console.error("Error loading timetables: ", error);
     }
-}; // <--- 📌 ຕ້ອງມີປີກກາ ແລະ semicolon ປິດຟັງຊັນ loadTimetables ບ່ອນນີ້!
-// 3. ນຳຂໍ້ມູນມາວາງໃສ່ຟອມເພື່ອແກ້ໄຂ
+};
+
 window.editTimetable = function(id, room, subject, day, time, teacher) {
     document.getElementById('timetable-doc-id').value = id;
     document.getElementById('timetable-class-room').value = room;
@@ -1062,7 +1009,6 @@ window.editTimetable = function(id, room, subject, day, time, teacher) {
     document.getElementById('cancel-timetable-edit-btn').style.display = 'inline-block';
 };
 
-// 4. ລົບຕາຕະລາງຮຽນ
 window.deleteTimetable = async function(id) {
     if (confirm('⚠️ ທ່ານຕ້ອງການລົບຕາຕະລາງນີ້ແທ້ບໍ?')) {
         try {
@@ -1073,9 +1019,8 @@ window.deleteTimetable = async function(id) {
             console.error("Error deleting timetable: ", error);
         }
     }
-}; // <--- 📌 ເພີ່ມປີກກາ ແລະ semicolon ປິດຟັງຊັນນີ້ໃຫ້ຖືກຕ້ອງ
+};
 
-// 5. ຣີເຊັດຟອມ
 window.resetTimetableForm = function() {
     const form = document.getElementById('timetable-form');
     if (form) form.reset();
@@ -1083,17 +1028,11 @@ window.resetTimetableForm = function() {
     document.getElementById('class-form-title').innerText = '➕ ເພີ່ມຕາຕະລາງຮຽນໃໝ່';
     document.getElementById('save-timetable-btn').innerText = '💾 ບັນທຶກຕາຕະລາງ';
     document.getElementById('cancel-timetable-edit-btn').style.display = 'none';
-}; // <--- 📌 ປິດຟັງຊັນນີ້ໃຫ້ສົມບູນ
+};
+
 // ==========================================
 // 13. ຊິ້ງຫ້ອງຂອງນັກຮຽນ (ເຊັ່ນ ມ.6) ກັບຕາຕະລາງຮຽນໃນ index.html
 // ==========================================
-function cleanScriptStorageValue(val) {
-    return String(val || "")
-        .trim()
-        .replace(/^["']+|["']+$/g, "")
-        .trim();
-}
-
 window.syncStudentTimetableGrade = function () {
     const role = cleanScriptStorageValue(
         localStorage.getItem("userRole") || localStorage.getItem("role") || "student"
@@ -1126,9 +1065,23 @@ window.syncStudentTimetableGrade = function () {
     }
 };
 
-window.addEventListener("DOMContentLoaded", () => {
-    setTimeout(() => window.syncStudentTimetableGrade(), 100);
-    setTimeout(() => window.syncStudentTimetableGrade(), 600);
+// ==========================================
+// 10. ໂຫຼດຂໍ້ມູນທັງໝົດຕອນເປີດໜ້າເວັບ
+// ==========================================
+window.addEventListener('DOMContentLoaded', () => {
+    if (window.loadStudents) window.loadStudents();
+    if (window.loadTeachers) window.loadTeachers();
+    if (window.loadClasses) window.loadClasses();
+    if (window.loadScores) window.loadScores();
+    if (window.loadFinances) window.loadFinances();
+    if (window.applyRolePermissions) window.applyRolePermissions();
+    if (typeof loadTimetables === 'function') loadTimetables();
+    if (typeof loadNews === 'function') loadNews();
+    if (typeof showSection === 'function') {
+        showSection('section-dashboard');
+    }
+    setTimeout(() => window.syncStudentTimetableGrade(), 150);
+    setTimeout(() => window.syncStudentTimetableGrade(), 700);
 });
 
 window.addEventListener("load", () => {
