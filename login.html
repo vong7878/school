@@ -34,10 +34,10 @@
         </form>
     </div>
 
-    <!-- ໂຄດເຊື່ອມຕໍ່ Firebase Authentication / Firestore ເພື່ອກວດສອບ User -->
+<!-- ໂຄດເຊື່ອມຕໍ່ Firebase Firestore ເພື່ອກວດສອບ User (ແບບປອດໄພບໍ່ໃຊ້ Index) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
@@ -60,43 +60,46 @@
             errorDiv.innerText = "ກຳລັງກວດສອບຂໍ້ມູນ...";
 
             try {
-              const querySnapshot = await getDocs(collection(db, "students")); // ປ່ຽນຊື່ collection ໃຫ້ກົງກັບບ່ອນເກັບ doc ນີ້
-let foundUser = null;
-
-querySnapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    if (data.email === emailInput && data.password === passwordInput) {
-        foundUser = data;
-    }
-});
-
-if (foundUser) {
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userName', foundUser.name || 'ນັກຮຽນ');
-    localStorage.setItem('userRole', foundUser.role || 'student');
-    window.location.href = 'index.html';
-} else {
-    alert('❌ ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ');
-}
-
-                // ດຶງຂໍ້ມູນ Role ຂອງ User ນັ້ນໆ
                 let userData = null;
-                querySnapshot.forEach((doc) => {
-                    userData = doc.data();
+
+                // 1. ດຶງຂໍ້ມູນທັງໝົດຈາກ Collection `users` ມາเช็คໃນ JS
+                const snapshotUsers = await getDocs(collection(db, "users"));
+                snapshotUsers.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.email === email && data.password === password) {
+                        userData = data;
+                    }
                 });
+
+                // 2. ຖ້າບໍ່ພົບໃນ users, ໃຫ້ດຶງຈາກ Collection `students` ມາเช็ค
+                if (!userData) {
+                    const snapshotStudents = await getDocs(collection(db, "students"));
+                    snapshotStudents.forEach((doc) => {
+                        const data = doc.data();
+                        if (data.email === email && data.password === password) {
+                            userData = data;
+                        }
+                    });
+                }
+
+                // ຖ້າຫາບໍ່ພົບທັງສອງບ່ອນ
+                if (!userData) {
+                    errorDiv.innerText = "❌ ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ!";
+                    return;
+                }
 
                 // ບັນທຶກສະຖານະ Login ແລະ Role ລົງ LocalStorage
                 localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', userData.email);
-                localStorage.setItem('userRole', userData.role); // ຕົວຢ່າງ: admin, teacher, director, student, parent
+                localStorage.setItem('userEmail', userData.email || email);
+                localStorage.setItem('userRole', userData.role || 'student'); 
                 localStorage.setItem('userName', userData.name || 'User');
 
-                alert(`✅ ເຂົ້າສູ່ລະບົບສຳເລັດ! ຍິນດີຕ້ອນຮັບ (${userData.role.toUpperCase()})`);
-                window.location.href = 'index.html'; // ພາໄປໜ້າ Dashboard ຫຼັກ
+                alert(`✅ ເຂົ້າສູ່ລະບົບສຳເລັດ! ຍິນດີຕ້ອນຮັບ (${(userData.role || 'student').toUpperCase()})`);
+                window.location.href = 'index.html'; 
 
             } catch (error) {
                 console.error("Login error: ", error);
-                errorDiv.innerText = "❌ ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່ລະບົບ";
+                errorDiv.innerText = "❌ ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່: " + error.message;
             }
         });
     </script>
