@@ -470,26 +470,49 @@
         </div>
     </div>
 <main class="main-content" id="mainContent">
-    <!-- ກາດສະແດງຂ່າວສານ (ເນັ້ນສຳລັບ Admin) -->
-    <section class="panel-card" id="admin-news-panel" style="display: none;">
+    <!-- 👩‍🏫 ສຳລັບ Admin ແລະ ຄູອາຈານ: ສະແດງຕາຕະລາງສອນ (ເຊື່ອງປຸ່ມ ເພີ່ມ/ແກ້ໄຂ/ລົບ) -->
+    <section class="panel-card" id="teaching-schedule-panel" style="display: none;">
         <div class="panel-header">
-            <h3>📢 ຂ່າວສານ &amp; ແຈ້ງເຕືອນ (ສຳລັບ Admin)</h3>
-            <button type="button" class="btn-primary-sm" onclick="addSchoolNews()">➕ ເພີ່ມຂ່າວສານ</button>
+            <h3>👩‍🏫 ຕາຕະລາງສອນ</h3>
+            <span class="role-view-badge">ເບິ່ງຂໍ້ມູນຢ່າງດຽວ</span>
         </div>
-        <div id="news-list-container" class="news-list">
-            <div class="news-item">
-                <div class="news-title">📌 ປະຊຸມຄູປະຈຳຫ້ອງ ແລະ ກະກຽມຂໍ້ມູນຊັ້ນ ມ.5</div>
-                <div class="news-meta">ໂດຍ: Admin • ມື້ນີ້</div>
-                <p class="news-desc">ກະລຸນາກວດສອບລາຍຊື່ນັກຮຽນ, ຕາຕະລາງຮຽນ ແລະ ການຊຳລະຄ່າຮຽນໃຫ້ຄົບຖ້ວນ.</p>
-            </div>
+
+        <div class="table-responsive">
+            <table class="dark-table">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ຊື່ຄູຜູ້ສອນ</th>
+                        <th>ວິຊາສອນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ມື້ / ເວລາສອນ</th>
+                    </tr>
+                </thead>
+                <tbody id="index-teaching-body">
+                    <tr>
+                        <td>1</td>
+                        <td>ອ. ຄຳຜາຍ ສີສະຫວັດ</td>
+                        <td>ຄະນິດສາດ</td>
+                        <td>ມ.5</td>
+                        <td>ຈັນ, ພຸດ, ສຸກ (08:00 - 08:45)</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>ອ. ສຸກສາຄອນ ແສງດາວ</td>
+                        <td>ຟີຊິກສາດ</td>
+                        <td>ມ.5</td>
+                        <td>ຈັນ, ພະຫັດ (08:50 - 09:35)</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </section>
 
-    <!-- ກາດສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງ (ເນັ້ນສຳລັບ ຄູ / ນັກຮຽນ) -->
-    <section class="panel-card" id="room-timetable-panel">
+    <!-- 📅 ສຳລັບນັກຮຽນ: ສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງຕົນເອງ (ລັອກຫ້ອງ + ເຊື່ອງປຸ່ມ ເພີ່ມ/ແກ້ໄຂ/ລົບ) -->
+    <section class="panel-card" id="student-room-timetable-panel" style="display: none;">
         <div class="panel-header">
-            <h3 id="timetable-room-title">📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ</h3>
-            <span class="room-badge" id="timetable-room-badge">ຫ້ອງ: ມ.5</span>
+            <h3 id="student-timetable-title">📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ</h3>
+            <span class="room-badge" id="student-timetable-badge">ຫ້ອງ: ມ.5</span>
         </div>
 
         <div class="table-responsive">
@@ -503,189 +526,87 @@
                         <th>ຊົ່ວໂມງທີ 4<br><small>10:40 - 11:25</small></th>
                     </tr>
                 </thead>
-                <tbody id="room-timetable-body">
-                    <tr>
-                        <td><strong>ຈັນ</strong></td>
-                        <td>ຄະນິດສາດ</td>
-                        <td>ຟີຊິກສາດ</td>
-                        <td>ພາສາລາວ</td>
-                        <td>ພາສາອັງກິດ</td>
-                    </tr>
-                    <tr>
-                        <td><strong>ອັງຄານ</strong></td>
-                        <td>ເຄມີສາດ</td>
-                        <td>ຊີວະສາດ</td>
-                        <td>ປະຫວັດສາດ</td>
-                        <td>ໄອທີ / ຄອມ</td>
-                    </tr>
-                    <tr>
-                        <td><strong>ພຸດ</strong></td>
-                        <td>ຄະນິດສາດ</td>
-                        <td>ພູມສາດ</td>
-                        <td>ພາສາອັງກິດ</td>
-                        <td>ພະລະສຶກສາ</td>
-                    </tr>
-                    <tr>
-                        <td><strong>ພະຫັດ</strong></td>
-                        <td>ຟີຊິກສາດ</td>
-                        <td>ເຄມີສາດ</td>
-                        <td>ພາສາລາວ</td>
-                        <td>ສຶກສາພົນລະເມືອງ</td>
-                    </tr>
-                    <tr>
-                        <td><strong>ສຸກ</strong></td>
-                        <td>ຄະນິດສາດ</td>
-                        <td>ຊີວະສາດ</td>
-                        <td>ກິດຈະກຳຫ້ອງ</td>
-                        <td>ສະຫຼຸບປະຈຳອາທິດ</td>
-                    </tr>
-                </tbody>
+                <tbody id="student-timetable-body"></tbody>
             </table>
         </div>
     </section>
 </main>
     <script>
-    if (localStorage.getItem('isLoggedIn') !== 'true') {
-        window.location.href = 'login.html';
-    }
-
-    function findMenuEl() {
-        return (
-            document.getElementById('slideMenubar') ||
-            document.querySelector('.slide-menubar') ||
-            document.getElementById('sidebar') ||
-            document.querySelector('aside')
-        );
-    }
-
-    function findBackdropEl() {
-        return document.getElementById('menuBackdrop') || document.querySelector('.menu-backdrop');
-    }
-
-    function applyMenuState(open) {
-        const menu = findMenuEl();
-        const backdrop = findBackdropEl();
-        if (!menu) return;
-
-        menu.classList.toggle('open', open);
-        menu.style.setProperty('display', 'block', 'important');
-        menu.style.setProperty('position', 'fixed', 'important');
-        menu.style.setProperty('top', '0', 'important');
-        menu.style.setProperty('left', '0', 'important');
-        menu.style.setProperty('width', '280px', 'important');
-        menu.style.setProperty('max-width', '85vw', 'important');
-        menu.style.setProperty('height', '100vh', 'important');
-        menu.style.setProperty('z-index', '999999', 'important');
-        menu.style.setProperty('background', '#1e293b', 'important');
-        menu.style.setProperty('color', '#ffffff', 'important');
-        menu.style.setProperty('overflow-y', 'auto', 'important');
-        menu.style.setProperty('box-shadow', '4px 0 20px rgba(0,0,0,0.3)', 'important');
-        menu.style.setProperty('transform', open ? 'translateX(0)' : 'translateX(-100%)', 'important');
-        menu.style.setProperty('transition', 'transform 0.25s ease', 'important');
-
-        if (backdrop) {
-            backdrop.classList.toggle('show', open);
-            backdrop.style.setProperty('display', open ? 'block' : 'none', 'important');
-            backdrop.style.setProperty('position', 'fixed', 'important');
-            backdrop.style.setProperty('inset', '0', 'important');
-            backdrop.style.setProperty('z-index', '999990', 'important');
-            backdrop.style.setProperty('background', 'rgba(15, 23, 42, 0.45)', 'important');
-        }
-    }
-
-    window.toggleMenuBar = function(e) {
-        if (e) e.preventDefault();
-        const menu = findMenuEl();
-        if (!menu) return;
-        const willOpen = !menu.classList.contains('open');
-        applyMenuState(willOpen);
-    };
-
-    window.closeMenuBar = function(e) {
-        if (e) e.preventDefault();
-        applyMenuState(false);
-    };
-
-    function logout() {
-        localStorage.clear();
-        alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
-        window.location.href = 'login.html';
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        const userName = localStorage.getItem('userName') || 'ຜູ້ໃຊ້ງານ';
-        const userRole = localStorage.getItem('userRole') || 'guest';
-
-        const nameEl = document.getElementById('user-display-name');
-        const roleEl = document.getElementById('user-display-role');
-        if (nameEl) nameEl.innerText = userName;
-        if (roleEl) roleEl.innerText = userRole;
-
-        // ຕັ້ງຄ່າເລີ່ມຕົ້ນໃຫ້ປິດໄວ້ກ່ອນ
-        applyMenuState(false);
-
-        // ຜູກ click ໃຫ້ປຸ່ມ 3 ຂີດໂດຍກົງ
-        const btn = document.getElementById('menuToggleBtn') || document.querySelector('.menu-toggle-btn');
-        if (btn) {
-            btn.removeAttribute('onclick');
-            btn.addEventListener('click', window.toggleMenuBar);
-        }
-
-        const backdrop = findBackdropEl();
-        if (backdrop) {
-            backdrop.addEventListener('click', window.closeMenuBar);
-        }
-    });
-        function applyRoleDashboardView() {
-    const role = (localStorage.getItem('userRole') || 'student').toLowerCase();
-    const grade = localStorage.getItem('userGrade') || 'ມ.5';
-
-    const adminNewsPanel = document.getElementById('admin-news-panel');
-    const roomTimetablePanel = document.getElementById('room-timetable-panel');
-    const roomBadge = document.getElementById('timetable-room-badge');
-    const roomTitle = document.getElementById('timetable-room-title');
-
-    if (roomBadge) roomBadge.innerText = `ຫ້ອງ: ${grade}`;
-    if (roomTitle) roomTitle.innerText = `📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ ${grade}`;
-
-    if (role === 'admin') {
-        // Admin ເຫັນຂ່າວສານເປັນຫຼັກ (ແລະ ຍັງສາມາດເບິ່ງຕາຕະລາງໄດ້)
-        if (adminNewsPanel) adminNewsPanel.style.display = 'block';
-        if (roomTimetablePanel) roomTimetablePanel.style.display = 'block';
-    } else {
-        // ຄູ (teacher) ແລະ ນັກຮຽນ (student) ເນັ້ນສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງນັ້ນ
-        if (adminNewsPanel) adminNewsPanel.style.display = 'none';
-        if (roomTimetablePanel) roomTimetablePanel.style.display = 'block';
-    }
-}
-
-window.addSchoolNews = function() {
-    const title = prompt("ປ້ອນຫົວຂໍ້ຂ່າວສານ:");
-    if (!title) return;
-    const desc = prompt("ປ້ອນລາຍລະອຽດຂ່າວສານ:") || "";
-    const container = document.getElementById('news-list-container');
-    if (!container) return;
-
-    const item = document.createElement('div');
-    item.className = 'news-item';
-    item.innerHTML = `
-        <div class="news-title">📌 ${escapeHtmlText(title.trim())}</div>
-        <div class="news-meta">ໂດຍ: Admin • ຫາກໍ່ເພີ່ມ</div>
-        <p class="news-desc">${escapeHtmlText(desc.trim())}</p>
-    `;
-    container.prepend(item);
+   const timetablesByRoom = {
+    "ມ.5": [
+        { day: "ຈັນ", p1: "ຄະນິດສາດ", p2: "ຟີຊິກສາດ", p3: "ພາສາລາວ", p4: "ພາສາອັງກິດ" },
+        { day: "ອັງຄານ", p1: "ເຄມີສາດ", p2: "ຊີວະສາດ", p3: "ປະຫວັດສາດ", p4: "ໄອທີ / ຄອມ" },
+        { day: "ພຸດ", p1: "ຄະນິດສາດ", p2: "ພູມສາດ", p3: "ພາສາອັງກິດ", p4: "ພະລະສຶກສາ" },
+        { day: "ພະຫັດ", p1: "ຟີຊິກສາດ", p2: "ເຄມີສາດ", p3: "ພາສາລາວ", p4: "ສຶກສາພົນລະເມືອງ" },
+        { day: "ສຸກ", p1: "ຄະນິດສາດ", p2: "ຊີວະສາດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
+    ],
+    "ມ.6": [
+        { day: "ຈັນ", p1: "ພາສາລາວ", p2: "ຄະນິດສາດ", p3: "ຟີຊິກສາດ", p4: "ພາສາອັງກິດ" },
+        { day: "ອັງຄານ", p1: "ຊີວະສາດ", p2: "ເຄມີສາດ", p3: "ພູມສາດ", p4: "ປະຫວັດສາດ" },
+        { day: "ພຸດ", p1: "ຄະນິດສາດ", p2: "ໄອທີ / ຄອມ", p3: "ພາສາອັງກິດ", p4: "ພະລະສຶກສາ" },
+        { day: "ພະຫັດ", p1: "ເຄມີສາດ", p2: "ຟີຊິກສາດ", p3: "ສຶກສາພົນລະເມືອງ", p4: "ພາສາລາວ" },
+        { day: "ສຸກ", p1: "ຊີວະສາດ", p2: "ຄະນິດສາດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
+    ],
+    "ມ.7": [
+        { day: "ຈັນ", p1: "ຄະນິດສາດ", p2: "ພາສາອັງກິດ", p3: "ຟີຊິກສາດ", p4: "ເຄມີສາດ" },
+        { day: "ອັງຄານ", p1: "ພາສາລາວ", p2: "ຊີວະສາດ", p3: "ປະຫວັດສາດ", p4: "ໄອທີ / ຄອມ" },
+        { day: "ພຸດ", p1: "ຟີຊິກສາດ", p2: "ຄະນິດສາດ", p3: "ພູມສາດ", p4: "ພາສາອັງກິດ" },
+        { day: "ພະຫັດ", p1: "ເຄມີສາດ", p2: "ສຶກສາພົນລະເມືອງ", p3: "ຊີວະສາດ", p4: "ພາສາລາວ" },
+        { day: "ສຸກ", p1: "ຄະນິດສາດ", p2: "ພາສາອັງກິດ", p3: "ກິດຈະກຳຫ້ອງ", p4: "ສະຫຼຸບປະຈຳອາທິດ" }
+    ]
 };
 
-function escapeHtmlText(str) {
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+function renderStudentOwnRoomTimetable(room) {
+    const cleanRoom = timetablesByRoom[room] ? room : "ມ.5";
+    const titleEl = document.getElementById("student-timetable-title");
+    const badgeEl = document.getElementById("student-timetable-badge");
+    const tbody = document.getElementById("student-timetable-body");
+
+    if (titleEl) titleEl.textContent = `📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ ${cleanRoom}`;
+    if (badgeEl) badgeEl.textContent = `ຫ້ອງ: ${cleanRoom}`;
+    if (!tbody) return;
+
+    const rows = timetablesByRoom[cleanRoom];
+    tbody.innerHTML = rows.map(r => `
+        <tr>
+            <td><strong>${r.day}</strong></td>
+            <td>${r.p1}</td>
+            <td>${r.p2}</td>
+            <td>${r.p3}</td>
+            <td>${r.p4}</td>
+        </tr>
+    `).join("");
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    applyRoleDashboardView();
+function applyIndexRoleRules() {
+    const role = (localStorage.getItem("userRole") || "student").toLowerCase();
+    const userGrade = localStorage.getItem("userGrade") || "ມ.5";
+
+    const teachingPanel = document.getElementById("teaching-schedule-panel");
+    const studentPanel = document.getElementById("student-room-timetable-panel");
+
+    if (role === "admin" || role === "teacher") {
+        // ແອັດມິນ ແລະ ຄູອາຈານ: ສະແດງຕາຕະລາງສອນ (ເຊື່ອງປຸ່ມ ເພີ່ມ/ແກ້ໄຂ/ລົບ)
+        if (teachingPanel) teachingPanel.style.display = "block";
+        if (studentPanel) studentPanel.style.display = "none";
+    } else {
+        // ນັກຮຽນ: ສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງຕົນເອງ (ບໍ່ເຫັນຫ້ອງອື່ນ + ເຊື່ອງປຸ່ມ ເພີ່ມ/ແກ້ໄຂ/ລົບ)
+        if (teachingPanel) teachingPanel.style.display = "none";
+        if (studentPanel) studentPanel.style.display = "block";
+        renderStudentOwnRoomTimetable(userGrade);
+    }
+
+    // ເຊື່ອງປຸ່ມ ເພີ່ມ / ແກ້ໄຂ / ລົບ ເພີ່ມເຕີມຜ່ານ JS
+    document.querySelectorAll("#mainContent button").forEach(btn => {
+        const txt = (btn.textContent || "").trim();
+        if (txt.includes("ເພີ່ມ") || txt.includes("ແກ້ໄຂ") || txt.includes("ລົບ")) {
+            btn.style.display = "none";
+        }
+    });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    applyIndexRoleRules();
 });
 </script>
 <script type="module" src="script.js"></script>
