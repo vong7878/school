@@ -130,7 +130,7 @@
         <a href="index.html" class="back-link">⬅️ ກັບສູ່ໜ້າຫຼັກລະບົບ</a>
     </div>
 
-    <!-- Firebase SDK & Script -->
+ <!-- Firebase SDK & Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -147,10 +147,18 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // ດຶງສິດຂອງ User ປັດຈຸບັນຈາກ localStorage
         const userRole = localStorage.getItem('userRole') || 'student';
         const canManage = (userRole === 'admin' || userRole === 'teacher');
 
         window.addEventListener('DOMContentLoaded', () => {
+            // ຖ້າບໍ່ແມ່ນ admin ຫຼື teacher ໃຫ້ເຊື່ອງປຸ່ມເພີ່ມທັງໝົດ
+            if (!canManage) {
+                document.querySelectorAll('.btn-add').forEach(btn => {
+                    btn.style.display = 'none';
+                });
+            }
+
             loadStudentsByClass();
             loadScheduleByRoom();
         });
@@ -197,7 +205,7 @@
                             <td class="center">${s.phone||'-'}</td>
                             <td>${s.parent||'-'}</td>
                             <td class="center">
-                                ${canManage ? `<button class="action-btn btn-del" onclick="deleteStudent('${s.docId}')">🗑️ ລົບ</button>` : '<span style="color:#888; font-size:11px;">ເບິ່ງ</span>'}
+                                ${canManage ? `<button class="action-btn btn-del" onclick="deleteStudent('${s.docId}')">🗑️ ລົບ</button>` : '<span style="color:#888; font-size:12px;">ເບິ່ງຢ່າງດຽວ</span>'}
                             </td>
                         </tr>
                     `;
@@ -206,19 +214,6 @@
             } catch (e) {
                 console.error(e);
                 tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດ</td></tr>`;
-            }
-        };
-
-        // ຟັງຊັນລົບນັກຮຽນ
-        window.deleteStudent = async function(docId) {
-            if (confirm('⚠️ ທ່ານຕ້ອງການລົບຂໍ້ມູນນັກຮຽນນີ້ແທ້ບໍ?')) {
-                try {
-                    await deleteDoc(doc(db, "students", docId));
-                    alert('✅ ລົບຂໍ້ມູນສຳເລັດ!');
-                    loadStudentsByClass();
-                } catch (e) {
-                    alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
-                }
             }
         };
 
@@ -257,7 +252,7 @@
                             <td>${item.teacher||'-'}</td>
                             <td class="center" style="color:#007bff; font-weight:bold;">${item.room||'-'}</td>
                             <td class="center">
-                                ${canManage ? `<button class="action-btn btn-del" onclick="deleteSchedule('${item.docId}')">🗑️ ລົບ</button>` : '<span style="color:#888; font-size:11px;">ເບິ່ງ</span>'}
+                                ${canManage ? `<button class="action-btn btn-del" onclick="deleteSchedule('${item.docId}')">🗑️ ລົບ</button>` : '<span style="color:#888; font-size:12px;">ເບິ່ງຢ່າງດຽວ</span>'}
                             </td>
                         </tr>
                     `;
@@ -269,8 +264,22 @@
             }
         };
 
-        // ຟັງຊັນລົບຕາຕະລາງ
+        // ຟັງຊັນລົບຕ່າງໆ (ປ້ອງກັນສິດເພີ່ມເຕີມ)
+        window.deleteStudent = async function(docId) {
+            if (!canManage) return alert('❌ ທ່ານບໍ່ມີສິດໃນການລົບຂໍ້ມູນ!');
+            if (confirm('⚠️ ທ່ານຕ້ອງການລົບຂໍ້ມູນນັກຮຽນນີ້ແທ້ບໍ?')) {
+                try {
+                    await deleteDoc(doc(db, "students", docId));
+                    alert('✅ ລົບຂໍ້ມູນສຳເລັດ!');
+                    loadStudentsByClass();
+                } catch (e) {
+                    alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + e.message);
+                }
+            }
+        };
+
         window.deleteSchedule = async function(docId) {
+            if (!canManage) return alert('❌ ທ່ານບໍ່ມີສິດໃນການລົບຂໍ້ມູນ!');
             if (confirm('⚠️ ທ່ານຕ້ອງການລົບຕາຕະລາງນີ້ແທ້ບໍ?')) {
                 try {
                     await deleteDoc(doc(db, "timetables", docId));
@@ -282,14 +291,14 @@
             }
         };
 
-        // ຟັງຊັນເພີ່ມນັກຮຽນຢ່າງງ່າຍ
         window.openStudentModal = async function() {
-            const name = prompt("ป้อนຊື່-ນາມສະກຸນນັກຮຽນ:");
+            if (!canManage) return;
+            const name = prompt("ປ້ອນຊື່-ນາມສະກຸນນັກຮຽນ:");
             if (!name) return;
-            const id = prompt("ป้อนລະຫັດນັກຮຽນ (ເຊັ່ນ S001):") || 'S999';
+            const id = prompt("ປ້ອນລະຫັດນັກຮຽນ (ເຊັ່ນ S001):") || 'S999';
             const grade = document.getElementById('grade-select').value;
-            const phone = prompt("ป้อนເບີໂທລະສັບ:") || '-';
-            const parent = prompt("ป้อนຊື່ຜູ້ປົກຄອງ:") || '-';
+            const phone = prompt("ປ້ອນເບີໂທລະສັບ:") || '-';
+            const parent = prompt("ປ້ອນຊື່ຜູ້ປົກຄອງ:") || '-';
 
             try {
                 await addDoc(collection(db, "students"), { name, id, grade, phone, parent, createdAt: serverTimestamp() });
@@ -300,13 +309,13 @@
             }
         };
 
-        // ຟັງຊັນເພີ່ມຕາຕະລາງຢ່າງງ່າຍ
         window.openScheduleModal = async function() {
-            const day = prompt("ป้อนວັນ (ເຊັ່ນ: ວັນຈັນ):");
+            if (!canManage) return;
+            const day = prompt("ປ້ອນວັນ (ເຊັ່ນ: ວັນຈັນ):");
             if (!day) return;
-            const time = prompt("ป้อนເວລາ (ເຊັ່ນ: 08:00 - 09:30):") || '08:00 - 09:30';
-            const subject = prompt("ป้อนຊື່ວິຊາ:") || 'ວິຊາ...';
-            const teacher = prompt("ป้อนຊື່ຄູຜູ້ສອນ:") || 'ຄູ...';
+            const time = prompt("ປ້ອນເວລາ (ເຊັ່ນ: 08:00 - 09:30):") || '08:00 - 09:30';
+            const subject = prompt("ປ້ອນຊື່ວິຊາ:") || 'ວິຊາ...';
+            const teacher = prompt("ປ້ອນຊື່ຄູຜູ້ສອນ:") || 'ຄູ...';
             const room = document.getElementById('room-select').value;
 
             try {
@@ -318,5 +327,3 @@
             }
         };
     </script>
-</body>
-</html>
