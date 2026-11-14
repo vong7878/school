@@ -151,7 +151,7 @@
             padding-top: 12px;
             border-top: 1px solid #334155;
             text-align: left;
-            display: flex;
+            display: none;
             flex-direction: column;
             gap: 8px;
         }
@@ -263,7 +263,6 @@
 </head>
 <body>
 <div class="container">
-    <!-- ແຖບດ້ານເທິງ -->
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
@@ -276,10 +275,8 @@
         </div>
     </div>
 
-    <!-- ແຈ້ງວ່າໄດ້ຈ່າຍຄ່າຮຽນສຳລັບເທີມນີ້ໄປແລ້ວ -->
     <div class="paid-banner" id="paidTermBanner"></div>
 
-    <!-- ໜ້າ QR Code ກັບ ຕາຕະລາງຄ່າຮຽນ -->
     <section class="card" id="qr-and-fee-section">
         <div class="card-header">
             <h2>🏦 QR Code ຊຳລະຄ່າຮຽນ &amp; ຕາຕະລາງຄ່າຮຽນ</h2>
@@ -294,33 +291,32 @@
 
         <div class="qr-fee-grid">
             <div class="qr-box">
-    <img
-        id="schoolQrImage"
-        src="https://quickchart.io/qr?text=SCHOOL-TUITION-PAYMENT&size=200"
-        alt="QR Code ຊຳລະຄ່າຮຽນ"
-        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22180%22><rect width=%22180%22 height=%22180%22 fill=%22%23f1f5f9%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%230f172a%22 font-size=%2214%22>QR Code</text></svg>';"
-    />
-    <div><strong>ສະແກນ QR Code ເພື່ອໂອນຄ່າຮຽນ</strong></div>
-    <div class="note-text" id="qrCaptionText">ບັນຊີໂຮງຮຽນ • ແນບສະຫຼິບດ້ານລຸ່ມຫຼັງໂອນສຳເລັດ</div>
-                <!-- ປ່ຽນ QR Code ສຳລັບ Admin -->
-               <!-- ສະແດງສະເພາະ Admin ເທົ່ານັ້ນ; ເຊື່ອງສຳລັບ User / Student / Teacher -->
-<div class="qr-admin-controls" id="qr-admin-box" style="display: none;">
-    <label for="qrFileInput">🔄 1. ອັບໂຫຼດຮູບ QR Code ໃໝ່</label>
-    <input type="file" id="qrFileInput" accept="image/*" onchange="changeQrFromFile(event)" />
+                <img
+                    id="schoolQrImage"
+                    src="https://quickchart.io/qr?text=SCHOOL-TUITION-PAYMENT&size=200"
+                    alt="QR Code ຊຳລະຄ່າຮຽນ"
+                    onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22180%22><rect width=%22180%22 height=%22180%22 fill=%22%23f1f5f9%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%230f172a%22 font-size=%2214%22>QR Code</text></svg>';"
+                />
+                <div><strong>ສະແກນ QR Code ເພື່ອໂອນຄ່າຮຽນ</strong></div>
+                <div class="note-text" id="qrCaptionText">ບັນຊີໂຮງຮຽນ • ແນບສະຫຼິບດ້ານລຸ່ມຫຼັງໂອນສຳເລັດ</div>
 
-    <label for="qrUrlInput">🔗 2. ຫຼື ວາງລິ້ງຮູບ QR Code</label>
-    <div style="display:flex; gap:6px;">
-        <input type="text" id="qrUrlInput" placeholder="https://..." />
-        <button type="button" class="btn-primary" onclick="changeQrFromUrl()">ບັນທຶກ</button>
-    </div>
+                <div class="qr-admin-controls" id="qr-admin-box">
+                    <label for="qrFileInput">🔄 1. ອັບໂຫຼດຮູບ QR Code ໃໝ່</label>
+                    <input type="file" id="qrFileInput" accept="image/*" onchange="changeQrFromFile(event)" />
 
-    <label for="qrTextInput">✏️ 3. ຫຼື ສ້າງ QR ຈາກເລກບັນຊີ / ຂໍ້ຄວາມ</label>
-    <div style="display:flex; gap:6px;">
-        <input type="text" id="qrTextInput" placeholder="ເຊັ່ນ BCEL 010-12-00-xxxxx" />
-        <button type="button" class="btn-add" onclick="generateQrFromText()">ສ້າງ QR</button>
-    </div>
-</div>
-</div>
+                    <label for="qrUrlInput">🔗 2. ຫຼື ວາງລິ້ງຮູບ QR Code</label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="qrUrlInput" placeholder="https://..." />
+                        <button type="button" class="btn-primary" onclick="changeQrFromUrl()">ບັນທຶກ</button>
+                    </div>
+
+                    <label for="qrTextInput">✏️ 3. ຫຼື ສ້າງ QR ຈາກເລກບັນຊີ / ຂໍ້ຄວາມ</label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="qrTextInput" placeholder="ເຊັ່ນ BCEL 010-12-00-xxxxx" />
+                        <button type="button" class="btn-add" onclick="generateQrFromText()">ສ້າງ QR</button>
+                    </div>
+                </div>
+            </div>
 
             <div class="table-wrap">
                 <table>
@@ -339,7 +335,6 @@
         </div>
     </section>
 
-    <!-- ຫ້ອງຍ່ອຍອັບໂຫຼດສະຫຼິບການໂອນ -->
     <section class="card" id="upload-slip-subroom">
         <div class="card-header">
             <h2>📤 ຫ້ອງຍ່ອຍ: ອັບໂຫຼດສະຫຼິບການໂອນ</h2>
@@ -375,7 +370,6 @@
         </div>
     </section>
 
-    <!-- ຕາຕະລາງກວດສອບໂພດ/ລາຍການທີ່ລາຍງານສະຫຼິບ (Admin ອະນຸມັດ ຫຼື ລົບໄດ້) -->
     <section class="card" id="pending-slips-section">
         <div class="card-header">
             <h2>🕵️‍♂️ ລາຍການສະຫຼິບການໂອນທີ່ລາຍງານເຂົ້າມາ</h2>
@@ -399,7 +393,6 @@
         </div>
     </section>
 
-    <!-- ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ -->
     <section class="card" id="paid-history-section">
         <div class="card-header">
             <h2 id="paidHistoryTitle">✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ</h2>
@@ -432,10 +425,22 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc
+        getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, setDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = window.FIREBASE_CONFIG || null;
+    const DEFAULT_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
+        authDomain: "my-school-c1104.firebaseapp.com",
+        projectId: "my-school-c1104",
+        storageBucket: "my-school-c1104.firebasestorage.app",
+        messagingSenderId: "339930418459",
+        appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+        measurementId: "G-NPNFSW2C72"
+    };
+
+    const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
+    window.FIREBASE_CONFIG = firebaseConfig;
+
     let db = null;
     if (firebaseConfig) {
         const app = initializeApp(firebaseConfig);
@@ -468,22 +473,58 @@
     document.getElementById("currentUserRole").textContent = role.toUpperCase();
     document.getElementById("currentUserGrade").textContent = userGrade;
 
-    // 1. ປ່ຽນ QR Code ໂດຍ Admin
-    const DEFAULT_QR = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SCHOOL-TUITION-PAYMENT";
+    const DEFAULT_QR = "https://quickchart.io/qr?text=SCHOOL-TUITION-PAYMENT&size=200";
     let schoolQrUrl = localStorage.getItem("school_qr_code_url") || DEFAULT_QR;
-    document.getElementById("schoolQrImage").src = schoolQrUrl;
+    const qrImgEl = document.getElementById("schoolQrImage");
+    if (qrImgEl) qrImgEl.src = schoolQrUrl;
 
-    async function saveQrCodeUrl(newUrl) {
+    function compressImageFileToDataUrl(file, maxSize = 400) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    const scale = Math.min(1, maxSize / Math.max(img.width || 1, img.height || 1));
+                    const canvas = document.createElement("canvas");
+                    canvas.width = Math.max(1, Math.round((img.width || 200) * scale));
+                    canvas.height = Math.max(1, Math.round((img.height || 200) * scale));
+                    const ctx = canvas.getContext("2d");
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL("image/jpeg", 0.82));
+                };
+                img.onerror = reject;
+                img.src = ev.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function saveQrCodeUrl(newUrl, captionText = "") {
         if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
         schoolQrUrl = newUrl;
-        localStorage.setItem("school_qr_code_url", schoolQrUrl);
-        document.getElementById("schoolQrImage").src = schoolQrUrl;
+        try {
+            localStorage.setItem("school_qr_code_url", schoolQrUrl);
+            if (captionText) localStorage.setItem("school_qr_caption", captionText);
+        } catch (e) {
+            console.warn("localStorage quota warning:", e);
+        }
+        const img = document.getElementById("schoolQrImage");
+        if (img) img.src = schoolQrUrl;
+
+        const cap = document.getElementById("qrCaptionText");
+        if (cap && captionText) cap.textContent = captionText;
 
         if (db) {
             try {
-                await setDoc(doc(db, "finance_settings", "qr_code"), { url: schoolQrUrl }, { merge: true });
+                await setDoc(doc(db, "finance_settings", "qr_code"), {
+                    url: schoolQrUrl,
+                    caption: captionText || (cap ? cap.textContent : "")
+                }, { merge: true });
             } catch (err) {
-                console.error("Firestore QR save error:", err);
+                console.warn("Firestore QR save note:", err.message);
             }
         }
         alert("✅ ປ່ຽນ QR Code ສຳເລັດແລ້ວ!");
@@ -493,8 +534,12 @@
         if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
         const file = e.target.files && e.target.files[0];
         if (!file) return;
-        const dataUrl = await readFileAsDataUrl(file);
-        await saveQrCodeUrl(dataUrl);
+        try {
+            const compressedUrl = await compressImageFileToDataUrl(file, 400);
+            await saveQrCodeUrl(compressedUrl, "ບັນຊີໂຮງຮຽນ (ອັບໂຫຼດຮູບໃໝ່)");
+        } catch (err) {
+            alert("❌ ບໍ່ສາມາດໂຫຼດຮູບນີ້ໄດ້, ລອງເລືອກຮູບໃໝ່.");
+        }
         e.target.value = "";
     };
 
@@ -502,11 +547,19 @@
         if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
         const val = (document.getElementById("qrUrlInput").value || "").trim();
         if (!val) return alert("ກະລຸນາປ້ອນລິ້ງຮູບ QR Code ກ່ອນ!");
-        await saveQrCodeUrl(val);
+        await saveQrCodeUrl(val, "ບັນຊີໂຮງຮຽນ");
         document.getElementById("qrUrlInput").value = "";
     };
 
-    // 2. ລາຍການຄ່າຮຽນ (Admin ເພີ່ມ / ແກ້ໄຂ / ລົບ ໄດ້)
+    window.generateQrFromText = async function () {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
+        const txt = (document.getElementById("qrTextInput").value || "").trim();
+        if (!txt) return alert("ກະລຸນາປ້ອນເລກບັນຊີ ຫຼື ຂໍ້ຄວາມກ່ອນ!");
+        const qrUrl = "https://quickchart.io/qr?text=" + encodeURIComponent(txt) + "&size=220";
+        await saveQrCodeUrl(qrUrl, "ຂໍ້ມູນ QR: " + txt);
+        document.getElementById("qrTextInput").value = "";
+    };
+
     let feeItems = JSON.parse(localStorage.getItem("school_fee_items") || "null") || [
         { id: "FEE-1", item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.5", term: "ເທີມ 1 / 2026-2027", amount: "1,500,000 ກີບ" },
         { id: "FEE-2", item: "ຄ່າບຳລຸງຫ້ອງຮຽນ & ອຸປະກອນ", grade: "ມ.5", term: "ເທີມ 1 / 2026-2027", amount: "200,000 ກີບ" },
@@ -600,7 +653,6 @@
         renderFeeTable();
     };
 
-    // 3. ລາຍການສະຫຼິບ ແລະ ການຊຳລະ
     let paymentRecords = JSON.parse(localStorage.getItem("school_payment_records") || "null") || [];
 
     function savePaymentsLocal() {
@@ -635,7 +687,7 @@
         const file = fileInput.files && fileInput.files[0];
         if (!file) return alert("ກະລຸນາເລືອກຮູບສະຫຼິບການໂອນກ່ອນ!");
 
-        const slipDataUrl = await readFileAsDataUrl(file);
+        const slipDataUrl = await compressImageFileToDataUrl(file, 500);
         const newRecord = {
             id: "PAY-" + Date.now(),
             studentName: userName,
@@ -688,7 +740,6 @@
         refreshFinanceView();
     };
 
-    // Admin ລົບໂພດ / ລາຍການທີ່ລາຍງານສະຫຼິບ
     window.deleteSlipRecord = async function (recId) {
         if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບລາຍການສະຫຼິບໄດ້!");
         const target = paymentRecords.find((r) => r.id === recId);
@@ -709,9 +760,21 @@
     };
 
     function applyAdminVisibility() {
-        if (isAdmin) return;
+        const qrAdminBox = document.getElementById("qr-admin-box");
+        if (qrAdminBox) {
+            qrAdminBox.style.setProperty("display", isAdmin ? "flex" : "none", "important");
+        }
+
         document.querySelectorAll(".admin-action").forEach((el) => {
-            el.classList.add("admin-only-hide");
+            if (isAdmin) {
+                el.classList.remove("admin-only-hide");
+                if (el.id !== "qr-admin-box") {
+                    el.style.removeProperty("display");
+                }
+            } else {
+                el.classList.add("admin-only-hide");
+                el.style.setProperty("display", "none", "important");
+            }
         });
     }
 
@@ -901,6 +964,18 @@
     async function loadFinanceFromFirestore() {
         if (!db) return;
         try {
+            const qrSnap = await getDoc(doc(db, "finance_settings", "qr_code"));
+            if (qrSnap.exists() && qrSnap.data().url) {
+                schoolQrUrl = qrSnap.data().url;
+                localStorage.setItem("school_qr_code_url", schoolQrUrl);
+                const img = document.getElementById("schoolQrImage");
+                if (img) img.src = schoolQrUrl;
+                const cap = document.getElementById("qrCaptionText");
+                if (cap && qrSnap.data().caption) cap.textContent = qrSnap.data().caption;
+            }
+        } catch (err) {}
+
+        try {
             const feeSnap = await getDocs(collection(db, "fee_items"));
             if (!feeSnap.empty) {
                 feeItems = feeSnap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
@@ -918,88 +993,6 @@
 
         refreshFinanceView();
     }
-    const DEFAULT_QR = "https://quickchart.io/qr?text=SCHOOL-TUITION-PAYMENT&size=200";
-let schoolQrUrl = localStorage.getItem("school_qr_code_url") || DEFAULT_QR;
-const qrImgEl = document.getElementById("schoolQrImage");
-if (qrImgEl) qrImgEl.src = schoolQrUrl;
-
-// ຫຍໍ້ຂະໜາດຮູບທີ່ອັບໂຫຼດໃຫ້ພໍດີ (max 400px) ເພື່ອບໍ່ໃຫ້ Base64 ໃຫຍ່ເກີນໄປ
-function compressImageFileToDataUrl(file, maxSize = 400) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            const img = new Image();
-            img.onload = () => {
-                const scale = Math.min(1, maxSize / Math.max(img.width || 1, img.height || 1));
-                const canvas = document.createElement("canvas");
-                canvas.width = Math.max(1, Math.round((img.width || 200) * scale));
-                canvas.height = Math.max(1, Math.round((img.height || 200) * scale));
-                const ctx = canvas.getContext("2d");
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL("image/jpeg", 0.82));
-            };
-            img.onerror = reject;
-            img.src = ev.target.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
-
-async function saveQrCodeUrl(newUrl) {
-    if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
-    schoolQrUrl = newUrl;
-    try {
-        localStorage.setItem("school_qr_code_url", schoolQrUrl);
-    } catch (e) {
-        console.warn("localStorage quota warning:", e);
-    }
-    const img = document.getElementById("schoolQrImage");
-    if (img) img.src = schoolQrUrl;
-
-    if (db) {
-        try {
-            await setDoc(doc(db, "finance_settings", "qr_code"), { url: schoolQrUrl }, { merge: true });
-        } catch (err) {
-            console.warn("Firestore QR save note:", err.message);
-        }
-    }
-    alert("✅ ປ່ຽນ QR Code ສຳເລັດແລ້ວ!");
-}
-
-window.changeQrFromFile = async function (e) {
-    if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    try {
-        const compressedUrl = await compressImageFileToDataUrl(file, 400);
-        await saveQrCodeUrl(compressedUrl);
-    } catch (err) {
-        alert("❌ ບໍ່ສາມາດໂຫຼດຮູບນີ້ໄດ້, ລອງເລືອກຮູບໃໝ່.");
-    }
-    e.target.value = "";
-};
-
-window.changeQrFromUrl = async function () {
-    if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
-    const val = (document.getElementById("qrUrlInput").value || "").trim();
-    if (!val) return alert("ກະລຸນາປ້ອນລິ້ງຮູບ QR Code ກ່ອນ!");
-    await saveQrCodeUrl(val);
-    document.getElementById("qrUrlInput").value = "";
-};
-
-window.generateQrFromText = async function () {
-    if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
-    const txt = (document.getElementById("qrTextInput").value || "").trim();
-    if (!txt) return alert("ກະລຸນາປ້ອນເລກບັນຊີ ຫຼື ຂໍ້ຄວາມກ່ອນ!");
-    const qrUrl = "https://quickchart.io/qr?text=" + encodeURIComponent(txt) + "&size=220";
-    await saveQrCodeUrl(qrUrl);
-    const cap = document.getElementById("qrCaptionText");
-    if (cap) cap.textContent = "ຂໍ້ມູນ QR: " + txt;
-    document.getElementById("qrTextInput").value = "";
-};
 
     function esc(str) {
         return String(str || "")
@@ -1012,40 +1005,7 @@ window.generateQrFromText = async function () {
     applyAdminVisibility();
     refreshFinanceView();
     loadFinanceFromFirestore();
-    function syncQrAdminBoxVisibility() {
-    const qrAdminBox = document.getElementById("qr-admin-box");
-    if (!qrAdminBox) return;
-
-    if (isAdmin) {
-        qrAdminBox.classList.remove("admin-only-hide", "hidden", "hide", "d-none");
-        qrAdminBox.style.setProperty("display", "flex", "important");
-        qrAdminBox.style.setProperty("flex-direction", "column", "important");
-        qrAdminBox.style.setProperty("gap", "8px", "important");
-        qrAdminBox.style.setProperty("visibility", "visible", "important");
-    } else {
-        qrAdminBox.classList.add("admin-only-hide");
-        qrAdminBox.style.setProperty("display", "none", "important");
-        qrAdminBox.style.setProperty("visibility", "hidden", "important");
-    }
-}
-    function applyAdminVisibility() {
-    syncQrAdminBoxVisibility();
-    if (isAdmin) {
-        document.querySelectorAll(".admin-action").forEach((el) => {
-            el.classList.remove("admin-only-hide");
-            if (el.id !== "qr-admin-box") {
-                el.style.removeProperty("display");
-            }
-        });
-        return;
-    }
-    document.querySelectorAll(".admin-action").forEach((el) => {
-        el.classList.add("admin-only-hide");
-        el.style.setProperty("display", "none", "important");
-    });
-}
 </script>
-    <script type="module" src="script.js"></script>
-
+<script type="module" src="script.js"></script>
 </body>
 </html>
