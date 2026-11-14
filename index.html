@@ -469,7 +469,82 @@
 
         </div>
     </div>
-<script>
+<main class="main-content" id="mainContent">
+    <!-- ກາດສະແດງຂ່າວສານ (ເນັ້ນສຳລັບ Admin) -->
+    <section class="panel-card" id="admin-news-panel" style="display: none;">
+        <div class="panel-header">
+            <h3>📢 ຂ່າວສານ &amp; ແຈ້ງເຕືອນ (ສຳລັບ Admin)</h3>
+            <button type="button" class="btn-primary-sm" onclick="addSchoolNews()">➕ ເພີ່ມຂ່າວສານ</button>
+        </div>
+        <div id="news-list-container" class="news-list">
+            <div class="news-item">
+                <div class="news-title">📌 ປະຊຸມຄູປະຈຳຫ້ອງ ແລະ ກະກຽມຂໍ້ມູນຊັ້ນ ມ.5</div>
+                <div class="news-meta">ໂດຍ: Admin • ມື້ນີ້</div>
+                <p class="news-desc">ກະລຸນາກວດສອບລາຍຊື່ນັກຮຽນ, ຕາຕະລາງຮຽນ ແລະ ການຊຳລະຄ່າຮຽນໃຫ້ຄົບຖ້ວນ.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ກາດສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງ (ເນັ້ນສຳລັບ ຄູ / ນັກຮຽນ) -->
+    <section class="panel-card" id="room-timetable-panel">
+        <div class="panel-header">
+            <h3 id="timetable-room-title">📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ</h3>
+            <span class="room-badge" id="timetable-room-badge">ຫ້ອງ: ມ.5</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="dark-table">
+                <thead>
+                    <tr>
+                        <th>ມື້ / ຊົ່ວໂມງ</th>
+                        <th>ຊົ່ວໂມງທີ 1<br><small>08:00 - 08:45</small></th>
+                        <th>ຊົ່ວໂມງທີ 2<br><small>08:50 - 09:35</small></th>
+                        <th>ຊົ່ວໂມງທີ 3<br><small>09:50 - 10:35</small></th>
+                        <th>ຊົ່ວໂມງທີ 4<br><small>10:40 - 11:25</small></th>
+                    </tr>
+                </thead>
+                <tbody id="room-timetable-body">
+                    <tr>
+                        <td><strong>ຈັນ</strong></td>
+                        <td>ຄະນິດສາດ</td>
+                        <td>ຟີຊິກສາດ</td>
+                        <td>ພາສາລາວ</td>
+                        <td>ພາສາອັງກິດ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ອັງຄານ</strong></td>
+                        <td>ເຄມີສາດ</td>
+                        <td>ຊີວະສາດ</td>
+                        <td>ປະຫວັດສາດ</td>
+                        <td>ໄອທີ / ຄອມ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ພຸດ</strong></td>
+                        <td>ຄະນິດສາດ</td>
+                        <td>ພູມສາດ</td>
+                        <td>ພາສາອັງກິດ</td>
+                        <td>ພະລະສຶກສາ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ພະຫັດ</strong></td>
+                        <td>ຟີຊິກສາດ</td>
+                        <td>ເຄມີສາດ</td>
+                        <td>ພາສາລາວ</td>
+                        <td>ສຶກສາພົນລະເມືອງ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ສຸກ</strong></td>
+                        <td>ຄະນິດສາດ</td>
+                        <td>ຊີວະສາດ</td>
+                        <td>ກິດຈະກຳຫ້ອງ</td>
+                        <td>ສະຫຼຸບປະຈຳອາທິດ</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+    <script>
     if (localStorage.getItem('isLoggedIn') !== 'true') {
         window.location.href = 'login.html';
     }
