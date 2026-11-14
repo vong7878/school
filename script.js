@@ -1084,4 +1084,53 @@ window.resetTimetableForm = function() {
     document.getElementById('save-timetable-btn').innerText = '💾 ບັນທຶກຕາຕະລາງ';
     document.getElementById('cancel-timetable-edit-btn').style.display = 'none';
 }; // <--- 📌 ປິດຟັງຊັນນີ້ໃຫ້ສົມບູນ
+// ==========================================
+// 13. ຊິ້ງຫ້ອງຂອງນັກຮຽນ (ເຊັ່ນ ມ.6) ກັບຕາຕະລາງຮຽນໃນ index.html
+// ==========================================
+function cleanScriptStorageValue(val) {
+    return String(val || "")
+        .trim()
+        .replace(/^["']+|["']+$/g, "")
+        .trim();
+}
 
+window.syncStudentTimetableGrade = function () {
+    const role = cleanScriptStorageValue(
+        localStorage.getItem("userRole") || localStorage.getItem("role") || "student"
+    ).toLowerCase();
+
+    if (role !== "student") return;
+
+    const grade = cleanScriptStorageValue(
+        localStorage.getItem("userGrade") ||
+        localStorage.getItem("studentGrade") ||
+        localStorage.getItem("grade") ||
+        "ມ.5"
+    ) || "ມ.5";
+
+    localStorage.setItem("userGrade", grade);
+    localStorage.setItem("userRole", role);
+
+    const titleEl = document.getElementById("student-timetable-title");
+    const badgeEl = document.getElementById("student-timetable-badge");
+
+    if (titleEl) {
+        titleEl.textContent = `📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ ${grade}`;
+    }
+    if (badgeEl) {
+        badgeEl.textContent = `ຫ້ອງ: ${grade}`;
+    }
+
+    if (typeof window.renderStudentTimetableWithTeachers === "function") {
+        window.renderStudentTimetableWithTeachers();
+    }
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => window.syncStudentTimetableGrade(), 100);
+    setTimeout(() => window.syncStudentTimetableGrade(), 600);
+});
+
+window.addEventListener("load", () => {
+    window.syncStudentTimetableGrade();
+});
