@@ -1055,6 +1055,25 @@ const db = getFirestore(app);
 
     applyAdminVisibility();
 };
+    (function ensureSubmitSlipButtonVisible() {
+    const form = document.getElementById("slipUploadForm");
+    if (!form) return;
+    let btn = document.getElementById("btnSubmitSlip");
+    if (!btn) {
+        btn = document.createElement("button");
+        btn.type = "submit";
+        btn.id = "btnSubmitSlip";
+        btn.className = "btn-primary";
+        btn.textContent = "📤 ສົ່ງສະຫຼິບໃຫ້ Admin ອະນຸມັດ";
+        const wrap = document.createElement("div");
+        wrap.style.marginTop = "12px";
+        wrap.appendChild(btn);
+        form.appendChild(wrap);
+    }
+    btn.style.setProperty("display", "inline-flex", "important");
+    btn.style.setProperty("visibility", "visible", "important");
+    btn.style.setProperty("opacity", "1", "important");
+})();
 </script>
 <script type="module" src="script.js"></script>
 </body>
