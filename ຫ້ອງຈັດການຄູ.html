@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>👩‍🏫 ຫ້ອງຈັດການຄູ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Noto Sans Lao', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
+        }
+        .container {
+            max-width: 1220px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .topbar {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .back-btn {
+            background: #334155;
+            color: #f8fafc;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .back-btn:hover { background: #475569; }
+        .page-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .badge-role-admin { background: #dc2626; color: #fff; }
+        .badge-role-teacher { background: #7c3aed; color: #fff; }
+        .badge-role-student { background: #2563eb; color: #fff; }
+        .badge-grade { background: #0f766e; color: #ccfbf1; }
+        .badge-fb { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
+
+        /* ເມນູຍ່ອຍ */
+        .subnav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 10px;
+        }
+        .subnav-btn {
+            background: #0f172a;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .subnav-btn:hover {
+            background: #24334d;
+            color: #f8fafc;
+        }
+        .subnav-btn.active {
+            background: #2563eb;
+            border-color: #3b82f6;
+            color: #ffffff;
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #334155;
+        }
+        .card-header h2 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        input, select, textarea {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 8px 11px;
+            font-family: inherit;
+            font-size: 13px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 76px;
+            resize: vertical;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        button {
+            font-family: inherit;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 13px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover { opacity: 0.92; }
+        .btn-primary { background: #16a34a; color: #fff; }
+        .btn-secondary { background: #475569; color: #fff; }
+        .btn-sync { background: #0284c7; color: #fff; }
+        .btn-view { background: #2563eb; color: #fff; padding: 5px 10px; font-size: 12px; }
+        .btn-edit { background: #eab308; color: #0f172a; padding: 5px 10px; font-size: 12px; }
+        .btn-del { background: #dc2626; color: #fff; padding: 5px 10px; font-size: 12px; }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 780px;
+        }
+        th, td {
+            border: 1px solid #334155;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
+        }
+        th {
+            background: #0f172a;
+            color: #93c5fd;
+            font-weight: 700;
+        }
+        td {
+            background: #162032;
+            color: #e2e8f0;
+        }
+        tr:hover td { background: #24334d; }
+        .center { text-align: center; }
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        .subject-pill {
+            background: rgba(56, 189, 248, 0.16);
+            color: #7dd3fc;
+            border: 1px solid #38bdf8;
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* ບັດປະຫວັດຄູ */
+        .history-box {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .history-item {
+            background: #162032;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 13px;
+        }
+        .history-label {
+            color: #94a3b8;
+            font-size: 11px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .admin-only-hide { display: none !important; }
+        .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- ແຖບດ້ານເທິງ -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
+            <h1 class="page-title">👩‍🏫 ຫ້ອງຈັດການຄູ</h1>
+        </div>
+        <div class="user-meta">
+            <span id="fbSyncBadge" class="badge badge-fb">🔥 Firebase: ກຳລັງເຊື່ອມຕໍ່...</span>
+            <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
+            <span id="currentUserRole" class="badge badge-role-student">STUDENT</span>
+            <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
+        </div>
+    </div>
+
+    <!-- ເມນູຍ່ອຍ -->
+    <nav class="subnav" aria-label="ເມນູຍ່ອຍຫ້ອງຈັດການຄູ">
+        <button type="button" class="subnav-btn active" id="nav-history" onclick="switchSubmenu('history')">
+            🔍 1. ຄົ້ນຫາ &amp; ເບິ່ງປະຫວັດຄູ
+        </button>
+        <button type="button" class="subnav-btn admin-only" id="nav-manage" onclick="switchSubmenu('manage')">
+            ⚙️ 2. ເພີ່ມ / ແກ້ໄຂ / ລົບ ຄູ
+        </button>
+    </nav>
+
+    <!-- ເມນູຍ່ອຍທີ 1: ຄົ້ນຫາ & ເບິ່ງປະຫວັດຄູ (ເປີດໃຫ້ທຸກຄົນ: Admin, Teacher, Student) -->
+    <section class="card" id="panel-history">
+        <div class="card-header">
+            <h2>🔍 ຄົ້ນຫາ ແລະ ເບິ່ງປະຫວັດຄູໃນໂຮງຮຽນ</h2>
+            <div class="controls">
+                <input type="text" id="searchTeacherInput" placeholder="ຄົ້ນຫາຊື່ຄູ, ວິຊາ, ຫ້ອງ..." oninput="renderTeachersTable()" />
+                <select id="filterDepartmentSelect" onchange="renderTeachersTable()">
+                    <option value="">ທຸກພາກວິຊາ / ກອງ</option>
+                    <option value="ວິທະຍາສາດ ແລະ ຄະນິດສາດ">ວິທະຍາສາດ ແລະ ຄະນິດສາດ</option>
+                    <option value="ພາສາ ແລະ ສັງຄົມສາດ">ພາສາ ແລະ ສັງຄົມສາດ</option>
+                    <option value="ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ">ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ</option>
+                </select>
+                <button type="button" class="btn-sync" onclick="loadTeachersFromFirestore(true)">🔄 ໂຫຼດຈາກ Firebase</button>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 55px;">ລ/ດ</th>
+                        <th>ລະຫັດຄູ</th>
+                        <th>ຊື່ ແລະ ນາມສະກຸນ</th>
+                        <th>ວິຊາສອນ</th>
+                        <th>ຫ້ອງທີ່ຮັບຜິດຊອບ</th>
+                        <th>ພາກວິຊາ</th>
+                        <th>ປີເຂົ້າເຮັດວຽກ</th>
+                        <th style="width: 190px;">ປະຫວັດ / ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="teachersTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- ກອບສະແດງປະຫວັດຄູລະອຽດ -->
+        <div class="history-box" id="teacherDetailBox">
+            <h3 style="margin: 0 0 10px; font-size: 15px; color: #93c5fd;">📖 ລາຍລະອຽດປະຫວັດຄູ</h3>
+            <div id="teacherDetailContent" class="note-text">
+                ກົດປຸ່ມ "ເບິ່ງປະຫວັດ" ໃນຕາຕະລາງດ້ານເທິງ ເພື່ອເບິ່ງປະຫວັດການສອນ, ວຸດທິການສຶກສາ ແລະ ບັນທຶກປະຫວັດຂອງຄູ.
+            </div>
+        </div>
+    </section>
+
+    <!-- ເມນູຍ່ອຍທີ 2: ເພີ່ມ / ແກ້ໄຂ / ລົບ ຄູ (ສະເພາະ Admin ເທົ່ານັ້ນ, ເຊື່ອງຈາກນັກຮຽນ) -->
+    <section class="card admin-only" id="panel-manage" style="display: none;">
+        <div class="card-header">
+            <h2 id="manageFormTitle">➕ ເພີ່ມຂໍ້ມູນຄູໃໝ່</h2>
+            <span class="badge badge-role-admin">ສະເພາະແອັດມິນ (ADMIN)</span>
+        </div>
+
+        <form id="teacherForm" onsubmit="handleTeacherFormSubmit(event)">
+            <input type="hidden" id="editingTeacherId" value="" />
+            <div class="form-grid">
+                <div>
+                    <label for="teacherCodeInput">ລະຫັດຄູ</label>
+                    <input type="text" id="teacherCodeInput" placeholder="ເຊັ່ນ: TCH-004" required />
+                </div>
+                <div>
+                    <label for="teacherNameInput">ຊື່ ແລະ ນາມສະກຸນຄູ</label>
+                    <input type="text" id="teacherNameInput" placeholder="ເຊັ່ນ: ອ. ວິໄລວັນ ພົມມະຈັນ" required />
+                </div>
+                <div>
+                    <label for="teacherSubjectInput">ວິຊາສອນ</label>
+                    <input type="text" id="teacherSubjectInput" placeholder="ເຊັ່ນ: ຟີຊິກສາດ" required />
+                </div>
+                <div>
+                    <label for="teacherRoomInput">ຫ້ອງທີ່ຮັບຜິດຊອບ</label>
+                    <input type="text" id="teacherRoomInput" placeholder="ເຊັ່ນ: ມ.5, ມ.6" required />
+                </div>
+                <div>
+                    <label for="teacherDeptInput">ພາກວິຊາ / ກອງ</label>
+                    <select id="teacherDeptInput">
+                        <option value="ວິທະຍາສາດ ແລະ ຄະນິດສາດ">ວິທະຍາສາດ ແລະ ຄະນິດສາດ</option>
+                        <option value="ພາສາ ແລະ ສັງຄົມສາດ">ພາສາ ແລະ ສັງຄົມສາດ</option>
+                        <option value="ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ">ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="teacherJoinYearInput">ປີເຂົ້າເຮັດວຽກ</label>
+                    <input type="text" id="teacherJoinYearInput" placeholder="ເຊັ່ນ: 2021" required />
+                </div>
+                <div>
+                    <label for="teacherEducationInput">ວຸດທິການສຶກສາ</label>
+                    <input type="text" id="teacherEducationInput" placeholder="ເຊັ່ນ: ປະລິນຍາຕີ ຄູຟີຊິກສາດ" required />
+                </div>
+                <div>
+                    <label for="teacherPhoneInput">ເບີໂທຕິດຕໍ່</label>
+                    <input type="text" id="teacherPhoneInput" placeholder="ເຊັ່ນ: 020 5555 1234" />
+                </div>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label for="teacherHistoryInput">ປະຫວັດການສອນ / ຜົນງານ / ບັນທຶກປະຫວັດ</label>
+                <textarea id="teacherHistoryInput" placeholder="ບັນທຶກປະຫວັດການສອນ, ຫ້ອງທີ່ເຄີຍປະຈຳການ, ຜົນງານດີເດັ່ນ..."></textarea>
+            </div>
+
+            <div class="controls">
+                <button type="submit" class="btn-primary" id="btnSubmitTeacher">💾 ບັນທຶກຂໍ້ມູນຄູລົງ Firebase</button>
+                <button type="button" class="btn-secondary" onclick="resetTeacherForm()">↩ ລ້າງຟອມ / ຍົກເລີກແກ້ໄຂ</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+<script type="module">
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+        getFirestore, collection, getDocs, setDoc, deleteDoc, doc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const DEFAULT_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
+        authDomain: "my-school-c1104.firebaseapp.com",
+        projectId: "my-school-c1104",
+        storageBucket: "my-school-c1104.firebasestorage.app",
+        messagingSenderId: "339930418459",
+        appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+        measurementId: "G-NPNFSW2C72"
+    };
+
+    const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
+    window.FIREBASE_CONFIG = firebaseConfig;
+
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const COLLECTION_NAME = "teachers";
+
+    function resolveRole() {
+        const raw = (
+            localStorage.getItem("userRole") ||
+            localStorage.getItem("role") ||
+            localStorage.getItem("user_role") ||
+            "student"
+        ).trim().toLowerCase();
+
+        if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
+        if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
+        return "student";
+    }
+
+    const role = resolveRole();
+    const userGrade = localStorage.getItem("userGrade") || "ມ.5";
+    const userName = localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
+    const isAdmin = role === "admin";
+
+    const roleBadge = document.getElementById("currentUserRole");
+    roleBadge.textContent = role.toUpperCase();
+    roleBadge.className = `badge badge-role-${role}`;
+
+    document.getElementById("currentUserName").textContent = userName;
+    document.getElementById("currentUserGrade").textContent = userGrade;
+
+    function updateSyncBadge(text) {
+        const el = document.getElementById("fbSyncBadge");
+        if (el) el.textContent = text;
+    }
+
+    let teachersData = JSON.parse(localStorage.getItem("school_teachers_data") || "null") || [
+        {
+            id: "TCH-001",
+            firestoreId: "TCH-001",
+            code: "TCH-001",
+            name: "ອ. ສົມພອນ ວົງສາ",
+            subject: "ຄະນິດສາດ",
+            rooms: "ມ.5, ມ.6",
+            department: "ວິທະຍາສາດ ແລະ ຄະນິດສາດ",
+            joinYear: "2020",
+            education: "ປະລິນຍາຕີ ຄະນິດສາດສຶກສາ",
+            phone: "020 5511 2233",
+            history: "ສອນວິຊາຄະນິດສາດຊັ້ນ ມ.5-ມ.6 ມາແລ້ວ 6 ປີ, ນຳພານັກຮຽນສອບແຂ່ງຂັນຄະນິດສາດລະດັບເມືອງ."
+        },
+        {
+            id: "TCH-002",
+            firestoreId: "TCH-002",
+            code: "TCH-002",
+            name: "ອ. ນິດາ ແກ້ວມະນີ",
+            subject: "ພາສາອັງກິດ",
+            rooms: "ມ.5, ມ.7",
+            department: "ພາສາ ແລະ ສັງຄົມສາດ",
+            joinYear: "2022",
+            education: "ປະລິນຍາຕີ ພາສາອັງກິດສຶກສາ",
+            phone: "020 9988 7766",
+            history: "ຮັບຜິດຊອບການສອນພາສາອັງກິດ ແລະ ຊຸມນຸມສົນທະນາພາສາອັງກິດປະຈຳໂຮງຮຽນ."
+        },
+        {
+            id: "TCH-003",
+            firestoreId: "TCH-003",
+            code: "TCH-003",
+            name: "ອ. ຄຳຫຼ້າ ໄຊຍະສິດ",
+            subject: "ວິທະຍາການຄຳນວນ",
+            rooms: "ມ.5, ມ.6, ມ.7",
+            department: "ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ",
+            joinYear: "2021",
+            education: "ປະລິນຍາຕີ ວິສະວະກຳຄອມພິວເຕີ / ໄອທີ",
+            phone: "020 7766 5544",
+            history: "ສອນພື້ນຖານການຂຽນໂປຣແກຣມ, ລະບົບຂໍ້ມູນ ແລະ ດູແລຫ້ອງປະຕິບັດການຄອມພິວເຕີ."
+        }
+    ];
+
+    function saveTeachersLocal() {
+        localStorage.setItem("school_teachers_data", JSON.stringify(teachersData));
+    }
+
+    // ເຊື່ອງເມນູເພີ່ມ/ແກ້ໄຂ/ລົບຄູຈາກນັກຮຽນ ແລະ ຄູ, ເປີດສະເພາະແອັດມິນ
+    function applyRolePermissions() {
+        document.querySelectorAll(".admin-only").forEach((el) => {
+            if (isAdmin) {
+                el.classList.remove("admin-only-hide");
+                el.style.removeProperty("display");
+            } else {
+                el.classList.add("admin-only-hide");
+                el.style.setProperty("display", "none", "important");
+            }
+        });
+
+        if (!isAdmin) {
+            switchSubmenu("history");
+        }
+    }
+
+    window.switchSubmenu = function (menuKey) {
+        if (menuKey === "manage" && !isAdmin) {
+            alert("❌ ເມນູເພີ່ມ/ແກ້ໄຂ/ລົບຄູ ສະຫງວນໄວ້ສະເພາະແອັດມິນເທົ່ານັ້ນ!");
+            menuKey = "history";
+        }
+
+        document.getElementById("nav-history").classList.toggle("active", menuKey === "history");
+        const navManage = document.getElementById("nav-manage");
+        if (navManage) navManage.classList.toggle("active", menuKey === "manage");
+
+        document.getElementById("panel-history").style.display = menuKey === "history" ? "block" : "none";
+        const panelManage = document.getElementById("panel-manage");
+        if (panelManage) {
+            panelManage.style.display = (menuKey === "manage" && isAdmin) ? "block" : "none";
+        }
+    };
+
+    window.viewTeacherHistory = function (id) {
+        const target = teachersData.find((t) => t.id === id);
+        const box = document.getElementById("teacherDetailContent");
+        if (!target || !box) return;
+
+        box.innerHTML = `
+            <div class="history-grid">
+                <div class="history-item">
+                    <span class="history-label">ລະຫັດຄູ</span>
+                    <strong>${esc(target.code || target.id)}</strong>
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ຊື່ ແລະ ນາມສະກຸນ</span>
+                    <strong>${esc(target.name)}</strong>
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ວິຊາສອນ / ພາກວິຊາ</span>
+                    <strong>${esc(target.subject)}</strong> (${esc(target.department || "-")})
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ຫ້ອງທີ່ຮັບຜິດຊອບ</span>
+                    <strong>${esc(target.rooms || "-")}</strong>
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ປີເຂົ້າເຮັດວຽກ</span>
+                    <strong>${esc(target.joinYear || "-")}</strong>
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ວຸດທິການສຶກສາ</span>
+                    <strong>${esc(target.education || "-")}</strong>
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ເບີໂທຕິດຕໍ່</span>
+                    <strong>${esc(target.phone || "-")}</strong>
+                </div>
+            </div>
+            <div class="history-item">
+                <span class="history-label">ປະຫວັດການສອນ ແລະ ບັນທຶກປະຫວັດ</span>
+                <div>${esc(target.history || "ບໍ່ມີບັນທຶກປະຫວັດເພີ່ມເຕີມ")}</div>
+            </div>
+        `;
+    };
+
+    window.renderTeachersTable = function () {
+        const q = (document.getElementById("searchTeacherInput").value || "").trim().toLowerCase();
+        const dept = document.getElementById("filterDepartmentSelect").value;
+        const tbody = document.getElementById("teachersTableBody");
+
+        const filtered = teachersData.filter((t) => {
+            const matchDept = !dept || t.department === dept;
+            const hay = `${t.code || ""} ${t.name || ""} ${t.subject || ""} ${t.rooms || ""} ${t.department || ""}`.toLowerCase();
+            const matchQuery = !q || hay.includes(q);
+            return matchDept && matchQuery;
+        });
+
+        if (!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="8" class="center">ບໍ່ພົບຂໍ້ມູນຄູທີ່ຄົ້ນຫາ</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map((t, idx) => `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${esc(t.code || t.id)}</td>
+                <td><strong>${esc(t.name)}</strong></td>
+                <td><span class="subject-pill">${esc(t.subject)}</span></td>
+                <td>${esc(t.rooms || "-")}</td>
+                <td>${esc(t.department || "-")}</td>
+                <td>${esc(t.joinYear || "-")}</td>
+                <td>
+                    <div class="actions">
+                        <button type="button" class="btn-view" onclick="viewTeacherHistory('${esc(t.id)}')">ເບິ່ງປະຫວັດ</button>
+                        ${isAdmin ? `
+                            <button type="button" class="btn-edit" onclick="startEditTeacher('${esc(t.id)}')">ແກ້ໄຂ</button>
+                            <button type="button" class="btn-del" onclick="deleteTeacher('${esc(t.id)}')">ລົບ</button>
+                        ` : ""}
+                    </div>
+                </td>
+            </tr>
+        `).join("");
+
+        applyRolePermissions();
+    };
+
+    window.startEditTeacher = function (id) {
+        if (!isAdmin) return alert("❌ ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ແກ້ໄຂຂໍ້ມູນຄູໄດ້!");
+        const target = teachersData.find((t) => t.id === id);
+        if (!target) return;
+
+        switchSubmenu("manage");
+        document.getElementById("manageFormTitle").textContent = `✏️ ແກ້ໄຂຂໍ້ມູນຄູ: ${target.name}`;
+        document.getElementById("editingTeacherId").value = target.id;
+        document.getElementById("teacherCodeInput").value = target.code || target.id;
+        document.getElementById("teacherNameInput").value = target.name || "";
+        document.getElementById("teacherSubjectInput").value = target.subject || "";
+        document.getElementById("teacherRoomInput").value = target.rooms || "";
+        document.getElementById("teacherDeptInput").value = target.department || "ວິທະຍາສາດ ແລະ ຄະນິດສາດ";
+        document.getElementById("teacherJoinYearInput").value = target.joinYear || "";
+        document.getElementById("teacherEducationInput").value = target.education || "";
+        document.getElementById("teacherPhoneInput").value = target.phone || "";
+        document.getElementById("teacherHistoryInput").value = target.history || "";
+    };
+
+    window.resetTeacherForm = function () {
+        document.getElementById("manageFormTitle").textContent = "➕ ເພີ່ມຂໍ້ມູນຄູໃໝ່";
+        document.getElementById("editingTeacherId").value = "";
+        document.getElementById("teacherForm").reset();
+    };
+
+    window.handleTeacherFormSubmit = async function (e) {
+        e.preventDefault();
+        if (!isAdmin) return alert("❌ ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ບັນທຶກຂໍ້ມູນຄູໄດ້!");
+
+        const editingId = document.getElementById("editingTeacherId").value.trim();
+        const code = document.getElementById("teacherCodeInput").value.trim();
+        const name = document.getElementById("teacherNameInput").value.trim();
+        const subject = document.getElementById("teacherSubjectInput").value.trim();
+        const rooms = document.getElementById("teacherRoomInput").value.trim();
+        const department = document.getElementById("teacherDeptInput").value;
+        const joinYear = document.getElementById("teacherJoinYearInput").value.trim();
+        const education = document.getElementById("teacherEducationInput").value.trim();
+        const phone = document.getElementById("teacherPhoneInput").value.trim();
+        const history = document.getElementById("teacherHistoryInput").value.trim();
+
+        if (!name || !subject) return;
+
+        const docId = editingId || code || ("TCH-" + Date.now());
+        const record = {
+            id: docId,
+            firestoreId: docId,
+            code: code || docId,
+            name,
+            subject,
+            rooms,
+            department,
+            joinYear,
+            education,
+            phone,
+            history,
+            updatedAt: new Date().toISOString()
+        };
+
+        try {
+            await setDoc(doc(db, COLLECTION_NAME, docId), record, { merge: true });
+            updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId} (ບັນທຶກແລ້ວ)`);
+        } catch (err) {
+            console.error("Firestore teacher save error:", err);
+            alert("❌ ບັນທຶກລົງ Firebase ບໍ່ສຳເລັດ: " + err.message);
+        }
+
+        const idx = teachersData.findIndex((t) => t.id === docId);
+        if (idx >= 0) {
+            teachersData[idx] = record;
+        } else {
+            teachersData.push(record);
+        }
+
+        saveTeachersLocal();
+        resetTeacherForm();
+        switchSubmenu("history");
+        renderTeachersTable();
+        viewTeacherHistory(docId);
+        alert("✅ ບັນທຶກຂໍ້ມູນຄູສຳເລັດ!");
+    };
+
+    window.deleteTeacher = async function (id) {
+        if (!isAdmin) return alert("❌ ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ລົບຂໍ້ມູນຄູໄດ້!");
+        const target = teachersData.find((t) => t.id === id);
+        if (!target) return;
+        if (!confirm(`ຢືນຢັນລົບຂໍ້ມູນຄູ "${target.name}"?`)) return;
+
+        const docId = target.firestoreId || target.id;
+        try {
+            await deleteDoc(doc(db, COLLECTION_NAME, docId));
+            updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId} (ລົບແລ້ວ)`);
+        } catch (err) {
+            console.error("Firestore teacher delete error:", err);
+            alert("❌ ລົບຂໍ້ມູນບໍ່ສຳເລັດ: " + err.message);
+        }
+
+        teachersData = teachersData.filter((t) => t.id !== id);
+        saveTeachersLocal();
+        renderTeachersTable();
+        document.getElementById("teacherDetailContent").innerHTML =
+            "ກົດປຸ່ມ \"ເບິ່ງປະຫວັດ\" ໃນຕາຕະລາງດ້ານເທິງ ເພື່ອເບິ່ງປະຫວັດການສອນ ແລະ ບັນທຶກປະຫວັດຂອງຄູ.";
+    };
+
+    window.loadTeachersFromFirestore = async function (showAlert = false) {
+        try {
+            const snap = await getDocs(collection(db, COLLECTION_NAME));
+            if (!snap.empty) {
+                teachersData = snap.docs.map((d) => ({
+                    id: d.data().id || d.id,
+                    firestoreId: d.id,
+                    ...d.data()
+                }));
+                saveTeachersLocal();
+            }
+            updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId}`);
+            renderTeachersTable();
+            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຄູຈາກ Firebase ສຳເລັດ!");
+        } catch (err) {
+            console.warn("Firestore teachers load error:", err.message);
+            updateSyncBadge("⚠️ Offline (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
+            renderTeachersTable();
+        }
+    };
+
+    function esc(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    applyRolePermissions();
+    renderTeachersTable();
+    loadTeachersFromFirestore(false);
+</script>
+</body>
+</html>
