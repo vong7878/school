@@ -1035,8 +1035,7 @@ window.loadTimetables = async function() {
     } catch (error) {
         console.error("Error loading timetables: ", error);
     }
-};
-
+}; // <--- 📌 ຕ້ອງມີປີກກາ ແລະ semicolon ປິດຟັງຊັນ loadTimetables ບ່ອນນີ້!
 // 3. ນຳຂໍ້ມູນມາວາງໃສ່ຟອມເພື່ອແກ້ໄຂ
 window.editTimetable = function(id, room, subject, day, time, teacher) {
     document.getElementById('timetable-doc-id').value = id;
