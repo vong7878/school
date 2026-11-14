@@ -636,6 +636,57 @@
             backdrop.addEventListener('click', window.closeMenuBar);
         }
     });
+        function applyRoleDashboardView() {
+    const role = (localStorage.getItem('userRole') || 'student').toLowerCase();
+    const grade = localStorage.getItem('userGrade') || 'ມ.5';
+
+    const adminNewsPanel = document.getElementById('admin-news-panel');
+    const roomTimetablePanel = document.getElementById('room-timetable-panel');
+    const roomBadge = document.getElementById('timetable-room-badge');
+    const roomTitle = document.getElementById('timetable-room-title');
+
+    if (roomBadge) roomBadge.innerText = `ຫ້ອງ: ${grade}`;
+    if (roomTitle) roomTitle.innerText = `📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ ${grade}`;
+
+    if (role === 'admin') {
+        // Admin ເຫັນຂ່າວສານເປັນຫຼັກ (ແລະ ຍັງສາມາດເບິ່ງຕາຕະລາງໄດ້)
+        if (adminNewsPanel) adminNewsPanel.style.display = 'block';
+        if (roomTimetablePanel) roomTimetablePanel.style.display = 'block';
+    } else {
+        // ຄູ (teacher) ແລະ ນັກຮຽນ (student) ເນັ້ນສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງນັ້ນ
+        if (adminNewsPanel) adminNewsPanel.style.display = 'none';
+        if (roomTimetablePanel) roomTimetablePanel.style.display = 'block';
+    }
+}
+
+window.addSchoolNews = function() {
+    const title = prompt("ປ້ອນຫົວຂໍ້ຂ່າວສານ:");
+    if (!title) return;
+    const desc = prompt("ປ້ອນລາຍລະອຽດຂ່າວສານ:") || "";
+    const container = document.getElementById('news-list-container');
+    if (!container) return;
+
+    const item = document.createElement('div');
+    item.className = 'news-item';
+    item.innerHTML = `
+        <div class="news-title">📌 ${escapeHtmlText(title.trim())}</div>
+        <div class="news-meta">ໂດຍ: Admin • ຫາກໍ່ເພີ່ມ</div>
+        <p class="news-desc">${escapeHtmlText(desc.trim())}</p>
+    `;
+    container.prepend(item);
+};
+
+function escapeHtmlText(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    applyRoleDashboardView();
+});
 </script>
 <script type="module" src="script.js"></script>
 <!-- <script type="module" src="timetable.js"></script> -->
