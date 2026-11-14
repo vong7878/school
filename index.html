@@ -469,32 +469,66 @@
 
         </div>
     </div>
-  <script>
-    // ກວດສອບວ່າ Login ແລ້ວຫຼືຍັງ ຖ້າຍັງ ໃຫ້ດີດກັບໄປໜ້າ login.html
+<script>
     if (localStorage.getItem('isLoggedIn') !== 'true') {
         window.location.href = 'login.html';
     }
 
-    window.toggleMenuBar = function() {
-        const menubar = document.getElementById('slideMenubar');
-        const backdrop = document.getElementById('menuBackdrop');
-        if (!menubar) return;
+    function findMenuEl() {
+        return (
+            document.getElementById('slideMenubar') ||
+            document.querySelector('.slide-menubar') ||
+            document.getElementById('sidebar') ||
+            document.querySelector('aside')
+        );
+    }
 
-        const isOpen = menubar.classList.toggle('open');
+    function findBackdropEl() {
+        return document.getElementById('menuBackdrop') || document.querySelector('.menu-backdrop');
+    }
+
+    function applyMenuState(open) {
+        const menu = findMenuEl();
+        const backdrop = findBackdropEl();
+        if (!menu) return;
+
+        menu.classList.toggle('open', open);
+        menu.style.setProperty('display', 'block', 'important');
+        menu.style.setProperty('position', 'fixed', 'important');
+        menu.style.setProperty('top', '0', 'important');
+        menu.style.setProperty('left', '0', 'important');
+        menu.style.setProperty('width', '280px', 'important');
+        menu.style.setProperty('max-width', '85vw', 'important');
+        menu.style.setProperty('height', '100vh', 'important');
+        menu.style.setProperty('z-index', '999999', 'important');
+        menu.style.setProperty('background', '#1e293b', 'important');
+        menu.style.setProperty('color', '#ffffff', 'important');
+        menu.style.setProperty('overflow-y', 'auto', 'important');
+        menu.style.setProperty('box-shadow', '4px 0 20px rgba(0,0,0,0.3)', 'important');
+        menu.style.setProperty('transform', open ? 'translateX(0)' : 'translateX(-100%)', 'important');
+        menu.style.setProperty('transition', 'transform 0.25s ease', 'important');
+
         if (backdrop) {
-            backdrop.classList.toggle('show', isOpen);
+            backdrop.classList.toggle('show', open);
+            backdrop.style.setProperty('display', open ? 'block' : 'none', 'important');
+            backdrop.style.setProperty('position', 'fixed', 'important');
+            backdrop.style.setProperty('inset', '0', 'important');
+            backdrop.style.setProperty('z-index', '999990', 'important');
+            backdrop.style.setProperty('background', 'rgba(15, 23, 42, 0.45)', 'important');
         }
+    }
+
+    window.toggleMenuBar = function(e) {
+        if (e) e.preventDefault();
+        const menu = findMenuEl();
+        if (!menu) return;
+        const willOpen = !menu.classList.contains('open');
+        applyMenuState(willOpen);
     };
 
-    window.closeMenuBar = function() {
-        const menubar = document.getElementById('slideMenubar');
-        const backdrop = document.getElementById('menuBackdrop');
-        if (!menubar) return;
-
-        menubar.classList.remove('open');
-        if (backdrop) {
-            backdrop.classList.remove('show');
-        }
+    window.closeMenuBar = function(e) {
+        if (e) e.preventDefault();
+        applyMenuState(false);
     };
 
     function logout() {
@@ -512,25 +546,22 @@
         if (nameEl) nameEl.innerText = userName;
         if (roleEl) roleEl.innerText = userRole;
 
-        const toggleBtn = document.getElementById('menuToggleBtn');
-        const backdrop = document.getElementById('menuBackdrop');
+        // ຕັ້ງຄ່າເລີ່ມຕົ້ນໃຫ້ປິດໄວ້ກ່ອນ
+        applyMenuState(false);
 
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.toggleMenuBar();
-            });
+        // ຜູກ click ໃຫ້ປຸ່ມ 3 ຂີດໂດຍກົງ
+        const btn = document.getElementById('menuToggleBtn') || document.querySelector('.menu-toggle-btn');
+        if (btn) {
+            btn.removeAttribute('onclick');
+            btn.addEventListener('click', window.toggleMenuBar);
         }
 
+        const backdrop = findBackdropEl();
         if (backdrop) {
-            backdrop.addEventListener('click', () => {
-                window.closeMenuBar();
-            });
+            backdrop.addEventListener('click', window.closeMenuBar);
         }
     });
 </script>
-
-<!-- ໂຄດ JavaScript ຫຼັກ ແລະ ໂມດູນແຍກ -->
 <script type="module" src="script.js"></script>
 <!-- <script type="module" src="timetable.js"></script> -->
 </body>
