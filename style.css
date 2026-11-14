@@ -306,4 +306,30 @@ tr:hover {
     padding: 20px 0;
     overflow: hidden;
 }
-    
+
+.app-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.app-sidebar ul li {
+    margin-bottom: 6px;
+}
+
+.app-sidebar ul li a,
+.app-sidebar ul li a:visited {
+    display: block;
+    color: #f8f9fa;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.4;
+    transition: background 0.2s, color 0.2s;
+}
+
+.app-sidebar ul li a:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
