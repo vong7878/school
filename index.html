@@ -760,6 +760,48 @@ window.addEventListener("DOMContentLoaded", () => {
         setTimeout(ensureToggleButtonVisible, 300);
         setTimeout(ensureToggleButtonVisible, 1000);
     });
+       
+    // ບັງຄັບໃຫ້ເມນູທີ 5 (ຈັດການການມາຮຽນ) ໃນ Sidebar ສະແດງສະເໝີ ບໍ່ຊ່ອນສຳລັບນັກຮຽນ
+    function ensureAttendanceMenuVisibleForStudent() {
+        const candidates = Array.from(
+            document.querySelectorAll('#menu-attendance, #slideMenubar li, .menubar-list li, aside li, #slideMenubar a, .menubar-list a, aside a')
+        );
+
+        candidates.forEach((el) => {
+            const text = (el.textContent || '').trim();
+            const href = (el.getAttribute && el.getAttribute('href')) || '';
+            const id = el.id || '';
+
+            if (
+                id === 'menu-attendance' ||
+                href.includes('check-in.html') ||
+                text.includes('5. ຈັດການການມາຮຽນ') ||
+                text.includes('ຈັດການການມາຮຽນ')
+            ) {
+                const targetLi = el.tagName === 'LI' ? el : (el.closest('li') || el);
+                const targetA = el.tagName === 'A' ? el : el.querySelector('a');
+
+                [targetLi, targetA, el].forEach((node) => {
+                    if (!node) return;
+                    node.classList.remove('hidden', 'hide', 'd-none', 'student-hide', 'role-hidden');
+                    node.style.setProperty('display', node.tagName === 'LI' ? 'list-item' : 'block', 'important');
+                    node.style.setProperty('visibility', 'visible', 'important');
+                    node.style.setProperty('opacity', '1', 'important');
+                    node.style.setProperty('pointer-events', 'auto', 'important');
+                });
+            }
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        ensureAttendanceMenuVisibleForStudent();
+
+        // ກັນ script.js ຫຼື ໂຄດກວດສິດ Role ມາເຊື່ອງເມນູທີ 5 ພາຍຫຼັງ
+        setTimeout(ensureAttendanceMenuVisibleForStudent, 200);
+        setTimeout(ensureAttendanceMenuVisibleForStudent, 600);
+        setTimeout(ensureAttendanceMenuVisibleForStudent, 1200);
+    });
+
 
 </script>
 <script type="module" src="script.js"></script>
