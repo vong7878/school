@@ -490,6 +490,47 @@
             alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
             window.location.href = 'login.html';
         }
+  <script>
+    window.toggleMenuBar = function() {
+        const menubar = document.getElementById('slideMenubar');
+        const backdrop = document.getElementById('menuBackdrop');
+        if (!menubar) return;
+
+        const isOpen = menubar.classList.toggle('open');
+        if (backdrop) {
+            backdrop.classList.toggle('show', isOpen);
+        }
+    };
+
+    window.closeMenuBar = function() {
+        const menubar = document.getElementById('slideMenubar');
+        const backdrop = document.getElementById('menuBackdrop');
+        if (!menubar) return;
+
+        menubar.classList.remove('open');
+        if (backdrop) {
+            backdrop.classList.remove('show');
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('menuToggleBtn');
+        const backdrop = document.getElementById('menuBackdrop');
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.toggleMenuBar();
+            });
+        }
+
+        if (backdrop) {
+            backdrop.addEventListener('click', () => {
+                window.closeMenuBar();
+            });
+        }
+    });
+</script>      
     </script>
 <!-- ໂຄດ JavaScript ຫຼັກ ແລະ ໂມດູນແຍກ -->
     <script type="module" src="script.js"></script>
