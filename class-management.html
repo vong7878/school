@@ -478,48 +478,52 @@
         localStorage.setItem("school_class_timetables", JSON.stringify(classTimetables));
     }
 
-    window.renderClassTimetable = function () {
-        const selectEl = document.getElementById("classTimetableGrade");
-        const titleEl = document.getElementById("classTimetableTitle");
-        const tbody = document.getElementById("classTimetableBody");
+window.renderClassTimetable = function () {
+    const selectEl = document.getElementById("classTimetableGrade");
+    const titleEl = document.getElementById("classTimetableTitle");
+    const tbody = document.getElementById("classTimetableBody");
 
-        let g = selectEl.value;
-        if (isStudent) {
-            g = userGrade;
-            selectEl.value = userGrade;
-            selectEl.disabled = true;
-        }
+    if (!selectEl || !tbody) return;
 
-        if (!classTimetables[g]) classTimetables[g] = [];
-        titleEl.textContent = `📅 2. ຕາຕະລາງຮຽນ (${g})`;
-        const rows = classTimetables[g];
-        const cols = isAdmin ? 6 : 5;
+    let g = selectEl.value;
+    if (isStudent) {
+        g = userGrade;
+        selectEl.value = userGrade;
+        selectEl.disabled = true;
+    }
 
-        if (!rows.length) {
-            tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນ</td></tr>`;
-            applyAdminOnlyUI();
-            return;
-        }
+    if (!classTimetables[g]) classTimetables[g] = [];
+    if (titleEl) titleEl.textContent = `📅 2. ຕາຕະລາງຮຽນ (${g})`;
 
-        tbody.innerHTML = rows.map((r) => `
-            <tr>
-                <td><strong>${esc(r.day)}</strong></td>
-                <td>${esc(r.p1)}</td>
-                <td>${esc(r.p2)}</td>
-                <td>${esc(r.p3)}</td>
-                <td>${esc(r.p4)}</td>
-                ${isAdmin ? `
-                    <td>
-                        <div class="actions">
-                            <button type="button" class="btn-edit" onclick="editClassTimetableRow('${esc(g)}', '${esc(r.id)}')">ແກ້ໄຂ</button>
-                            <button type="button" class="btn-del" onclick="deleteClassTimetableRow('${esc(g)}', '${esc(r.id)}')">ລົບ</button>
-                        </div>
-                    </td>
-                ` : ""}
-            </tr>
-        `).join("");
-        applyAdminOnlyUI();
-    };
+    const rows = classTimetables[g];
+    const cols = isAdmin ? 6 : 5;
+
+    if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນ</td></tr>`;
+        if (typeof applyAdminOnlyUI === "function") applyAdminOnlyUI();
+        return;
+    }
+
+    tbody.innerHTML = rows.map((r) => `
+        <tr>
+            <td><strong>${esc(r.day)}</strong></td>
+            <td>${formatClassCell(r.p1, r.t1)}</td>
+            <td>${formatClassCell(r.p2, r.t2)}</td>
+            <td>${formatClassCell(r.p3, r.t3)}</td>
+            <td>${formatClassCell(r.p4, r.t4)}</td>
+            ${isAdmin ? `
+                <td>
+                    <div class="actions">
+                        <button type="button" class="btn-edit" onclick="editClassTimetableRow('${esc(g)}', '${esc(r.id)}')">ແກ້ໄຂ</button>
+                        <button type="button" class="btn-del" onclick="deleteClassTimetableRow('${esc(g)}', '${esc(r.id)}')">ລົບ</button>
+                    </div>
+                </td>
+            ` : ""}
+        </tr>
+    `).join("");
+
+    if (typeof applyAdminOnlyUI === "function") applyAdminOnlyUI();
+};
 
     window.addClassTimetableRow = function () {
         if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມຕາຕະລາງຮຽນໄດ້!");
@@ -766,7 +770,7 @@
     renderClassTimetable();
     renderTeachingTimetable();
     loadFromFirestoreIfAvailable();
-    function formatClassCell(subject, teacher) {
+   function formatClassCell(subject, teacher) {
     const subjText = esc(subject || "-");
     const tchText = teacher ? `<br><small style="color:#93c5fd;">👩‍🏫 ${esc(teacher)}</small>` : "";
     return `<div><strong>${subjText}</strong>${tchText}</div>`;
