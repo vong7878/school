@@ -26,17 +26,18 @@
         .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn-add:hover { background: #218838; }
 
+        .btn-qr-edit { background: #ffc107; color: #000; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 12px; font-size: 13px; }
+        .btn-qr-edit:hover { background: #e0a800; }
+
         table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
         th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; font-size: 14px; }
         th { background: #f8f9fa; font-weight: bold; color: #495057; }
         td.center, th.center { text-align: center; }
         
         .action-btn { padding: 5px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 3px; }
-        .btn-edit { background: #ffc107; color: #000; }
         .btn-del { background: #dc3545; color: white; }
 
-        /* QR Code Section Styling */
-        .qr-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 25px; text-align: center; max-width: 400px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .qr-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 25px; text-align: center; max-width: 420px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .qr-card img { width: 220px; height: 220px; object-fit: contain; margin: 15px 0; border: 1px solid #eee; padding: 5px; border-radius: 6px; }
         .price-tag { font-size: 20px; color: #28a745; font-weight: bold; margin-bottom: 10px; }
 
@@ -57,7 +58,6 @@
         <h2>💰 ລະບົບການເງິນ, ຄ່າທຳນຽມຮຽນ ແລະ ຊຳລະເງິນ</h2>
         <p class="subtitle" id="user-welcome-sub">ກວດສອບ ແລະ ຈັດການຄ່າໃຊ້ຈ່າຍໃນການສຶກສາ</p>
 
-        <!-- 📌 Tabs Menu -->
         <div class="tab-menu">
             <button class="tab-btn active" onclick="switchTab(event, 'tab-fees')">📋 1. ຕາຕະລາງຄ່າຮຽນ</button>
             <button class="tab-btn" onclick="switchTab(event, 'tab-qr')">📱 2. ຊຳລະຜ່ານ QR Code</button>
@@ -78,7 +78,6 @@
                         <option value="ມ.6">ມ.6</option>
                     </select>
                 </div>
-                <!-- ປຸ່ມເພີ່ມ (ສະແດງສະເພາະ Admin / Teacher) -->
                 <button class="btn-add" id="btn-add-fee" onclick="openAddFeeModal()" style="display: none;">➕ ເພີ່ມລາຍການຄ່າຮຽນ</button>
             </div>
 
@@ -95,7 +94,7 @@
                     </tr>
                 </thead>
                 <tbody id="fee-table-body">
-                    <tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                    <tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນຄ່າຮຽນ...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -106,12 +105,14 @@
                 <h3>📷 ສະແກນຄິວອາໂຄດຊຳລະຄ່າຮຽນ</h3>
                 <p style="font-size: 13px; color: #666; margin-top: 5px;">ໂອນເງິນຜ່ານ Mobile Banking ຂອງທະນາຄານ</p>
                 
-                <!-- ຕົວຢ່າງຮູບ QR Code (ສາມາດປ່ຽນລິ້ງຮູບໄດ້) -->
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SchoolFeePaymentAccount123456789" alt="QR Code ຊຳລະຄ່າຮຽນ">
+                <img id="qr-code-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SchoolFeePaymentAccount123456789" alt="QR Code ຊຳລະຄ່າຮຽນ">
                 
-                <div class="price-tag">ຍອດຄ້າງຊຳລະ: 500,000 ກີບ</div>
-                <p style="font-size: 12px; color: #888;">ຊື່ບັນຊີ: ໂຮງຮຽນມັດທະຍົມ... (BCEL)</p>
+                <div class="price-tag" id="qr-amount-text">ຍອດຄ້າງຊຳລະ: 500,000 ກີບ</div>
+                <p style="font-size: 12px; color: #888;" id="qr-account-info">ຊື່ບັນຊີ: ໂຮງຮຽນມັດທະຍົມ... (BCEL)</p>
                 <p style="font-size: 12px; color: #333; margin-top: 10px;"><strong>ຄຳແນະນຳ:</strong> ຫຼັງຈາກໂອນເງິນແລ້ວ ໃຫ້ສົ່ງຫຼັກຖານໃຫ້ຄູປະຈຳຫ້ອງ.</p>
+
+                <!-- ປຸ່ມປ່ຽນ QR Code ສະເພາະ Admin ເທົ່ານັ້ນ -->
+                <button class="btn-qr-edit" id="btn-change-qr" onclick="changeQrCode()" style="display: none;">🔄 ປ່ຽນ QR Code (Admin)</button>
             </div>
         </div>
 
@@ -121,7 +122,7 @@
     <!-- Firebase SDK & Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
@@ -135,24 +136,34 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // ດຶງສິດ ແລະ ຊື່ຜູ້ໃຊ້ຈາກ LocalStorage
         const userRole = localStorage.getItem('userRole') || 'student';
         const userName = localStorage.getItem('userName') || 'User';
-        const canManage = (userRole === 'admin' || userRole === 'teacher');
+        const userGrade = localStorage.getItem('userGrade') || 'ມ.5';
 
-        window.addEventListener('DOMContentLoaded', () => {
-            // ສະແດງຂໍ້ຄວາມຕ້ອນຮັບ
+        const isAdmin = (userRole === 'admin');
+        const canManageFees = (userRole === 'admin' || userRole === 'teacher');
+
+        window.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('user-welcome-sub').innerText = `ຍິນດີຕ້ອນຮັບ: ${userName} (${userRole.toUpperCase()})`;
 
-            // ຖ້າເປັນ Admin ຫຼື Teacher ໃຫ້ສະແດງປຸ່ມເພີ່ມ
-            if (canManage) {
+            // ສິດເພີ່ມ/ລົບຄ່າຮຽນ: ໃຫ້ Admin ແລະ Teacher
+            if (canManageFees) {
                 document.getElementById('btn-add-fee').style.display = 'inline-block';
             } else {
-                // ຖ້າເປັນນັກຮຽນ: ໃຫ້ລັອກການເລືອກຊັ້ນຮຽນເປັນຊັ້ນຂອງຕົນເອງ (ຕົວຢ່າງ: ມ.5) ແລະ ເຊື່ອງຄໍລຳຈັດການ
+                // ຖ້າເປັນນັກຮຽນ: ເຊື່ອງຄໍລຳຈັດການ ແລະ ລັອກຊັ້ນຮຽນໃຫ້ເປັນຂອງຕົນເອງເທົ່ານັ້ນ
                 document.getElementById('th-action').style.display = 'none';
+                const gradeSelect = document.getElementById('filter-grade');
+                gradeSelect.value = userGrade;
+                gradeSelect.disabled = true;
             }
 
-            loadFees();
+            // ສິດປ່ຽນ QR Code: ໃຫ້ສະເພາະ Admin ເທົ່ານັ້ນ
+            if (isAdmin) {
+                document.getElementById('btn-change-qr').style.display = 'inline-block';
+            }
+
+            await loadQrSettings();
+            await loadFees();
         });
 
         window.switchTab = function(evt, tabId) {
@@ -162,12 +173,67 @@
             evt.currentTarget.classList.add('active');
         };
 
+        // ໂຫຼດການຕັ້ງຄ່າ QR Code ຈາກ Firestore (collection: settings, doc: payment_qr)
+        async function loadQrSettings() {
+            try {
+                const snap = await getDoc(doc(db, "settings", "payment_qr"));
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (data.qrUrl) document.getElementById('qr-code-img').src = data.qrUrl;
+                    if (data.accountInfo) document.getElementById('qr-account-info').innerText = data.accountInfo;
+                    if (data.amountText) document.getElementById('qr-amount-text').innerText = data.amountText;
+                }
+            } catch (e) {
+                console.error("Error loading QR settings:", e);
+            }
+        }
+
+        // ຟັງຊັນປ່ຽນ QR Code (ສະເພາະ Admin ເທົ່ານັ້ນ)
+        window.changeQrCode = async function() {
+            if (!isAdmin) {
+                return alert('❌ ສະເພາະແອັດມິນ (Admin) ເທົ່ານັ້ນທີ່ມີສິດປ່ຽນ QR Code!');
+            }
+
+            const newQrUrl = prompt("ປ້ອນ URL ຮູບພາບ QR Code ໃໝ່ (ຫຼື ຂໍ້ຄວາມ/ເລກບັນຊີເພື່ອສ້າງ QR):", document.getElementById('qr-code-img').src);
+            if (!newQrUrl) return;
+
+            const newAccount = prompt("ປ້ອນຊື່ບັນຊີ ແລະ ທະນາຄານ:", document.getElementById('qr-account-info').innerText) || 'ບັນຊີໂຮງຮຽນ';
+            const newAmount = prompt("ປ້ອນຂໍ້ຄວາມຍອດເງິນ (ເຊັ່ນ: ຍອດຄ້າງຊຳລະ: 500,000 ກີບ):", document.getElementById('qr-amount-text').innerText) || 'ຊຳລະຄ່າທຳນຽມຮຽນ';
+
+            // ຖ້າຜູ້ໃຊ້ພິມເປັນເລກບັນຊີ/ຂໍ້ຄວາມທຳມະດາ (ບໍ່ແມ່ນ http) ໃຫ້ສ້າງຮູບ QR ອັດຕະໂນມັດ
+            const finalUrl = newQrUrl.trim().startsWith('http')
+                ? newQrUrl.trim()
+                : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(newQrUrl.trim())}`;
+
+            try {
+                await setDoc(doc(db, "settings", "payment_qr"), {
+                    qrUrl: finalUrl,
+                    accountInfo: newAccount,
+                    amountText: newAmount,
+                    updatedAt: serverTimestamp()
+                });
+
+                document.getElementById('qr-code-img').src = finalUrl;
+                document.getElementById('qr-account-info').innerText = newAccount;
+                document.getElementById('qr-amount-text').innerText = newAmount;
+                alert('✅ ອັບເດດ QR Code ສຳເລັດແລ້ວ!');
+            } catch (e) {
+                alert('❌ ເກີດຂໍ້ຜິດພາດໃນການບັນທຶກ QR Code: ' + e.message);
+            }
+        };
+
         // ໂຫຼດຂໍ້ມູນຄ່າຮຽນຈາກ Firestore (collection: school_fees)
         window.loadFees = async function() {
-            const selectedGrade = document.getElementById('filter-grade').value;
+            const gradeSelect = document.getElementById('filter-grade');
             const tbody = document.getElementById('fee-table-body');
             const totalBadge = document.getElementById('fee-total-count');
-            
+
+            // ຖ້າເປັນນັກຮຽນ ບັງຄັບໃຫ້ເບິ່ງສະເພາະຫ້ອງຂອງຕົນເອງ (userGrade)
+            const targetGrade = !canManageFees ? userGrade : gradeSelect.value;
+            if (!canManageFees) {
+                gradeSelect.value = userGrade;
+            }
+
             tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນຄ່າຮຽນ...</td></tr>`;
 
             try {
@@ -176,21 +242,21 @@
                 querySnapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     data.docId = docSnap.id;
-                    
-                    // ຖ້າເປັນ Admin/Teacher ເຫັນທັງໝົດ ຫຼື ຕາມ Filter, ຖ້າເປັນ student ເຫັນສະເພາະຊັ້ນຂອງຕົນເອງ
-                    if (!canManage) {
-                        // ກັອງໃຫ້ເຫັນສະເພາະຊັ້ນ ມ.5 (ຫຼື ຕາມທີ່ຕ້ອງການໃຫ້ນັກຮຽນເຫັນ)
-                        if (data.grade === "ມ.5") list.push(data);
+
+                    if (!canManageFees) {
+                        if (data.grade && data.grade.trim() === targetGrade) {
+                            list.push(data);
+                        }
                     } else {
-                        if (selectedGrade === "ທັງໝົດ" || data.grade === selectedGrade) {
+                        if (targetGrade === "ທັງໝົດ" || (data.grade && data.grade.trim() === targetGrade)) {
                             list.push(data);
                         }
                     }
                 });
 
-                totalBadge.innerText = `ລາຍການຄ່າຮຽນ: ${list.length} ລາຍການ`;
+                totalBadge.innerText = `ລາຍການຄ່າຮຽນ${!canManageFees ? ` (ຫ້ອງ ${targetGrade})` : ''}: ${list.length} ລາຍການ`;
                 if (list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຄ່າຮຽນ</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຄ່າຮຽນ${!canManageFees ? ` ສຳລັບຫ້ອງ ${targetGrade}` : ''}</td></tr>`;
                     return;
                 }
 
@@ -203,7 +269,7 @@
                             <td>${item.subject||'-'}</td>
                             <td class="center">${item.term||'-'}</td>
                             <td class="center" style="color: #28a745; font-weight: bold;">${Number(item.price || 0).toLocaleString()} ກີບ</td>
-                            ${canManage ? `<td class="center"><button class="action-btn btn-del" onclick="deleteFee('${item.docId}')">🗑️ ລົບ</button></td>` : ''}
+                            ${canManageFees ? `<td class="center"><button class="action-btn btn-del" onclick="deleteFee('${item.docId}')">🗑️ ລົບ</button></td>` : ''}
                         </tr>
                     `;
                 });
@@ -216,7 +282,7 @@
 
         // ຟັງຊັນເພີ່ມລາຍການຄ່າຮຽນ (ສະເພາະ Admin/Teacher)
         window.openAddFeeModal = async function() {
-            if (!canManage) return;
+            if (!canManageFees) return;
             const grade = prompt("ປ້ອນຊັ້ນຮຽນ (ເຊັ່ນ: ມ.1, ມ.2, ມ.3, ມ.4, ມ.5, ມ.6):") || 'ມ.5';
             const subject = prompt("ປ້ອນຊື່ວິຊາ / ລາຍການຄ່າທຳນຽມ:") || 'ຄ່າຮຽນວິຊາ...';
             const term = prompt("ປ້ອນເທີມ / ສົກຮຽນ (ເຊັ່ນ: ເທີມ 1 / 2026):") || 'ເທີມ 1';
@@ -224,7 +290,7 @@
 
             try {
                 await addDoc(collection(db, "school_fees"), {
-                    grade,
+                    grade: grade.trim(),
                     subject,
                     term,
                     price: Number(price),
@@ -239,7 +305,7 @@
 
         // ຟັງຊັນລົບລາຍການຄ່າຮຽນ (ສະເພາະ Admin/Teacher)
         window.deleteFee = async function(docId) {
-            if (!canManage) return;
+            if (!canManageFees) return;
             if (confirm('⚠️ ທ່ານຕ້ອງການລົບລາຍການຄ່າຮຽນນີ້ແທ້ບໍ?')) {
                 try {
                     await deleteDoc(doc(db, "school_fees", docId));
