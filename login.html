@@ -34,7 +34,7 @@
         </form>
     </div>
 
-<!-- ໂຄດເຊື່ອມຕໍ່ Firebase Firestore ເພື່ອກວດສອບ User (ແບບປອດໄພບໍ່ໃຊ້ Index) -->
+<!-- ໂຄດເຊື່ອມຕໍ່ Firebase Firestore ເພື່ອກວດສອບ User (ຮອງຮັບ users, students ແລະ teachers) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -62,7 +62,7 @@
             try {
                 let userData = null;
 
-                // 1. ດຶງຂໍ້ມູນທັງໝົດຈາກ Collection `users` ມາเช็คໃນ JS
+                // 1. ຄົ້ນຫາໃນ Collection `users` (ສຳລັບ Admin / ຜູ້ບໍລິຫານ)
                 const snapshotUsers = await getDocs(collection(db, "users"));
                 snapshotUsers.forEach((doc) => {
                     const data = doc.data();
@@ -71,18 +71,31 @@
                     }
                 });
 
-                // 2. ຖ້າບໍ່ພົບໃນ users, ໃຫ້ດຶງຈາກ Collection `students` ມາเช็ค
+                // 2. ຖ້າບໍ່ພົບ, ຄົ້ນຫາໃນ Collection `teachers` (ສຳລັບຄູອາຈານ)
+                if (!userData) {
+                    const snapshotTeachers = await getDocs(collection(db, "teachers"));
+                    snapshotTeachers.forEach((doc) => {
+                        const data = doc.data();
+                        if (data.email === email && data.password === password) {
+                            userData = data;
+                            if (!userData.role) userData.role = 'teacher'; // ຖ້າບໍ່ໄດ້ຕັ້ງ role ໃຫ້ເປັນ teacher ໂດຍອັດຕະໂນມັດ
+                        }
+                    });
+                }
+
+                // 3. ຖ້າຍังບໍ່ພົບອີກ, ຄົ້ນຫາໃນ Collection `students` (ສຳລັບນັກຮຽນ)
                 if (!userData) {
                     const snapshotStudents = await getDocs(collection(db, "students"));
                     snapshotStudents.forEach((doc) => {
                         const data = doc.data();
                         if (data.email === email && data.password === password) {
                             userData = data;
+                            if (!userData.role) userData.role = 'student'; // ຖ້າບໍ່ໄດ້ຕັ້ງ role ໃຫ້ເປັນ student ໂດຍອັດຕະໂນມັດ
                         }
                     });
                 }
 
-                // ຖ້າຫາບໍ່ພົບທັງສອງບ່ອນ
+                // ຖ້າຫາບໍ່ພົບທັງ 3 ບ່ອນ
                 if (!userData) {
                     errorDiv.innerText = "❌ ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ!";
                     return;
@@ -91,10 +104,10 @@
                 // ບັນທຶກສະຖານະ Login ແລະ Role ລົງ LocalStorage
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userEmail', userData.email || email);
-                localStorage.setItem('userRole', userData.role || 'student'); 
+                localStorage.setItem('userRole', userData.role || 'user'); 
                 localStorage.setItem('userName', userData.name || 'User');
 
-                alert(`✅ ເຂົ້າສູ່ລະບົບສຳເລັດ! ຍິນດີຕ້ອນຮັບ (${(userData.role || 'student').toUpperCase()})`);
+                alert(`✅ ເຂົ້າສູ່ລະບົບສຳເລັດ! ຍິນດີຕ້ອນຮັບ (${(userData.role || 'user').toUpperCase()})`);
                 window.location.href = 'index.html'; 
 
             } catch (error) {
