@@ -40,7 +40,7 @@
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
+            apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
             authDomain: "my-school-c1104.firebaseapp.com",
             projectId: "my-school-c1104",
             storageBucket: "my-school-c1104.appspot.com",
@@ -56,6 +56,7 @@
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value.trim();
+            const emailLower = email.toLowerCase();
             const errorDiv = document.getElementById('login-error');
             errorDiv.innerText = "ກຳລັງກວດສອບຂໍ້ມູນ...";
 
@@ -66,7 +67,7 @@
                 const snapshotUsers = await getDocs(collection(db, "users"));
                 snapshotUsers.forEach((doc) => {
                     const data = doc.data();
-                    if (data.email === email && data.password === password) {
+                    if (String(data.email || "").trim().toLowerCase() === emailLower && String(data.password || "") === password) {
                         userData = data;
                     }
                 });
@@ -76,19 +77,19 @@
                     const snapshotTeachers = await getDocs(collection(db, "teachers"));
                     snapshotTeachers.forEach((doc) => {
                         const data = doc.data();
-                        if (data.email === email && data.password === password) {
+                        if (String(data.email || "").trim().toLowerCase() === emailLower && String(data.password || "") === password) {
                             userData = data;
                             if (!userData.role) userData.role = 'teacher'; // ຖ້າບໍ່ໄດ້ຕັ້ງ role ໃຫ້ເປັນ teacher ໂດຍອັດຕະໂນມັດ
                         }
                     });
                 }
 
-                // 3. ຖ້າຍังບໍ່ພົບອີກ, ຄົ້ນຫາໃນ Collection `students` (ສຳລັບນັກຮຽນ)
+                // 3. ຖ້າຍັງບໍ່ພົບອີກ, ຄົ້ນຫາໃນ Collection `students` (ສຳລັບນັກຮຽນ)
                 if (!userData) {
                     const snapshotStudents = await getDocs(collection(db, "students"));
                     snapshotStudents.forEach((doc) => {
                         const data = doc.data();
-                        if (data.email === email && data.password === password) {
+                        if (String(data.email || "").trim().toLowerCase() === emailLower && String(data.password || "") === password) {
                             userData = data;
                             if (!userData.role) userData.role = 'student'; // ຖ້າບໍ່ໄດ້ຕັ້ງ role ໃຫ້ເປັນ student ໂດຍອັດຕະໂນມັດ
                         }
@@ -101,14 +102,19 @@
                     return;
                 }
 
-                // ບັນທຶກສະຖານະ Login ແລະ Role ລົງ LocalStorage
+                const roleValue = String(userData.role || 'user').trim().toLowerCase();
+                const gradeValue = String(userData.grade || userData.room || userData.classRoom || 'ມ.5').trim();
+
+                // ບັນທຶກສະຖານະ Login, Role ແລະ ຫ້ອງ ລົງ LocalStorage
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userEmail', userData.email || email);
-                localStorage.setItem('userRole', userData.role || 'user'); 
+                localStorage.setItem('userRole', roleValue);
+                localStorage.setItem('role', roleValue);
+                localStorage.setItem('userGrade', gradeValue);
                 localStorage.setItem('userName', userData.name || 'User');
 
-                alert(`✅ ເຂົ້າສູ່ລະບົບສຳເລັດ! ຍິນດີຕ້ອນຮັບ (${(userData.role || 'user').toUpperCase()})`);
-                window.location.href = 'index.html'; 
+                alert(`✅ ເຂົ້າສູ່ລະບົບສຳເລັດ! ຍິນດີຕ້ອນຮັບ (${roleValue.toUpperCase()})`);
+                window.location.href = 'index.html';
 
             } catch (error) {
                 console.error("Login error: ", error);
