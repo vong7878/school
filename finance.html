@@ -339,39 +339,49 @@
     </section>
 
     <section class="card" id="upload-slip-subroom">
-        <div class="card-header">
-            <h2>📤 ຫ້ອງຍ່ອຍ: ອັບໂຫຼດສະຫຼິບການໂອນ</h2>
-        </div>
+    <div class="card-header">
+        <h2>📤 ຫ້ອງຍ່ອຍ: ອັບໂຫຼດສະຫຼິບການໂອນ</h2>
+    </div>
 
-        <form id="slipUploadForm" onsubmit="submitSlipUpload(event)">
-            <div class="form-grid">
-                <div>
-                    <label for="slipTerm">ເທີມທີ່ຊຳລະ</label>
-                    <select id="slipTerm">
-                        <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
-                        <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="slipAmount">ຈຳນວນເງິນທີ່ໂອນ (ກີບ)</label>
-                    <input type="number" id="slipAmount" value="1500000" min="1000" required />
-                </div>
-                <div>
-                    <label for="slipFile">ເລືອກຮູບສະຫຼິບການໂອນ</label>
-                    <input type="file" id="slipFile" accept="image/*" required />
-                </div>
-            </div>
-            <button type="submit" class="btn-primary">📤 ສົ່ງສະຫຼິບໃຫ້ Admin ອະນຸມັດ</button>
-        </form>
-
-        <div class="admin-contact-box" id="adminDelayContactBox">
+    <form id="slipUploadForm" onsubmit="submitSlipUpload(event)">
+        <div class="form-grid">
             <div>
-                ⏳ <strong>ຖ້າ Admin ອະນຸມັດຊ້າ:</strong> ສາມາດຕິດຕໍ່ສອບຖາມ Admin ໄດ້ໂດຍກົງທີ່ເບີໂທ:
-                <span class="phone-highlight" id="adminPhoneText">020-5555-8899</span>
+                <label for="slipTerm">ເທີມທີ່ຊຳລະ</label>
+                <select id="slipTerm">
+                    <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
+                    <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
+                </select>
             </div>
-            <button type="button" class="btn-copy" onclick="copyAdminPhone()">📋 ຄັດລອກເບີໂທ</button>
+            <div>
+                <label for="slipAmount">ຈຳນວນເງິນທີ່ໂອນ (ກີບ)</label>
+                <input type="number" id="slipAmount" value="1500000" min="1000" required />
+            </div>
+            <div>
+                <label for="slipFile">ເລືອກຮູບສະຫຼິບການໂອນ</label>
+                <input type="file" id="slipFile" accept="image/*" required />
+            </div>
         </div>
-    </section>
+
+        <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button
+                type="submit"
+                id="btnSubmitSlip"
+                class="btn-primary"
+                style="display: inline-flex !important; visibility: visible !important; opacity: 1 !important;"
+            >
+                📤 ສົ່ງສະຫຼິບໃຫ້ Admin ອະນຸມັດ
+            </button>
+        </div>
+    </form>
+
+    <div class="admin-contact-box" id="adminDelayContactBox">
+        <div>
+            ⏳ <strong>ຖ້າ Admin ອະນຸມັດຊ້າ:</strong> ສາມາດຕິດຕໍ່ສອບຖາມ Admin ໄດ້ໂດຍກົງທີ່ເບີໂທ:
+            <span class="phone-highlight" id="adminPhoneText">020-5555-8899</span>
+        </div>
+        <button type="button" class="btn-copy" onclick="copyAdminPhone()">📋 ຄັດລອກເບີໂທ</button>
+    </div>
+</section>
 
     <section class="card" id="pending-slips-section">
         <div class="card-header">
