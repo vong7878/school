@@ -215,7 +215,7 @@
             <h1 class="page-title">📝 6. ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</h1>
         </div>
         <div class="user-meta">
-            <span id="fbSyncBadge" class="badge badge-fb">🔥 Firebase: ກຳລັງເຊື່ອມຕໍ່...</span>
+           
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
             <span id="currentUserRole" class="badge badge-role">ROLE</span>
             <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
@@ -250,7 +250,7 @@
             <h2 id="title-attendance">📌 1. ຄະແນນການມາຮຽນ</h2>
             <div class="controls">
                 <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
-                <button type="button" class="btn-sync" onclick="loadScoresFromFirestore(true)">🔄 ໂຫຼດຈາກ Firebase</button>
+                <button type="button" class="btn-sync" onclick="loadScoresFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
                 <button type="button" class="btn-add admin-action" onclick="addStudentScoreRow()">➕ ເພີ່ມນັກຮຽນ</button>
             </div>
         </div>
@@ -724,7 +724,7 @@
 
         try {
             await setDoc(doc(db, COLLECTION_NAME, newId), newItem);
-            updateSyncBadge("🔥 Firebase: ບັນທຶກສຳເລັດ");
+            updateSyncBadge(" ບັນທຶກສຳເລັດ");
         } catch (err) {
             console.error("Firestore score add error:", err);
         }
@@ -762,7 +762,7 @@
 
         try {
             await setDoc(doc(db, COLLECTION_NAME, docId), target, { merge: true });
-            updateSyncBadge("🔥 Firebase: ອັບເດດແລ້ວ");
+            updateSyncBadge("ອັບເດດແລ້ວ");
         } catch (err) {
             console.error("Firestore score update error:", err);
         }
@@ -780,7 +780,7 @@
         const docId = target.firestoreId || target.id;
         try {
             await deleteDoc(doc(db, COLLECTION_NAME, docId));
-            updateSyncBadge("🔥 Firebase: ລົບຂໍ້ມູນແລ້ວ");
+            updateSyncBadge("ລົບຂໍ້ມູນແລ້ວ");
         } catch (err) {
             console.error("Firestore score delete error:", err);
         }
@@ -803,7 +803,7 @@
             }
             updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId}`);
             renderAllRooms();
-            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຄະແນນຈາກ Firebase ສຳເລັດ!");
+            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຄະແນນສຳເລັດ!");
         } catch (err) {
             console.warn("ບໍ່ໄດ້ໂຫຼດ student_scores ຈາກ Firestore:", err.message);
             updateSyncBadge("⚠️ Offline (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
