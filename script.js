@@ -24,13 +24,13 @@ let allTeachersData = [];
 let allScoresData = [];
 let allFinancesData = [];
 window.showSection = function(sectionId) {
-    // 1. ซ่อนທຸກ Section ກ่อน
+    // 1. ซ່ອນທຸກ Section ກ່ອນ
     const sections = document.querySelectorAll('.content-section');
     sections.forEach(sec => {
         sec.style.display = 'none';
     });
 
-    // 2. ສະແດງສະເພາະ Section ທີ່ຖືກເລືອກ (ໃຊ້ sectionId ໂດຍກົງ ເພາະ HTML ມີ prefix 'section-' ແລ້ວ)
+    // 2. ສະແດງສະເພາະ Section ທີ່ຖືກເລືອກ (ໃຊ້ sectionId ທີ່ສົ່ງມາໂດຍກົງ)
     const target = document.getElementById(sectionId);
     if (target) {
         target.style.display = 'block';
