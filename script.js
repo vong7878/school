@@ -25,18 +25,22 @@ let allFinancesData = [];
 
 // ==========================================
 // 4. ຟັງຊັນຄວບຄຸມການສະຫຼັບໜ້າ (Sidebar Navigation)
-// ==========================================
+};// 📌 ຟັງຊັນສຳລັບສະຫຼັບການສະແດງຜົນແຕ່ລະ Section (ແກ້ໄຂ Error showSection is not defined)
 window.showSection = function(sectionId) {
-    // ซ่อนทุก section ກ່ອນ
+    // ซ่อนທุก Section ກ່ອນ
     const sections = document.querySelectorAll('.content-section');
-    sections.forEach(sec => sec.style.display = 'none');
-
-    // ສະແດງສະເພາະ section ที่เลือก
-    const target = document.getElementById(sectionId);
+    sections.forEach(sec => {
+        sec.style.display = 'none';
+    });
+    
+    // ສະແດງສະເພາະ Section ທີ່ຖືກເລືອກ
+    const target = document.getElementById('section-' + sectionId);
     if (target) {
         target.style.display = 'block';
+    } else {
+        console.warn('ไม่พบ Section ID: section-' + sectionId);
     }
-};
+}
 
 // ຟັງຊັນອອກຈາກລະບົບ (Logout)
 window.logout = function() {
