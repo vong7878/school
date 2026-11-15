@@ -2,7 +2,7 @@
 <html lang="lo">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ລະບົບຄຸ້ມຄອງໂຮງຮຽນ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -13,6 +13,185 @@
             window.location.href = 'login.html';
         }
     </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+        .quota-banner {
+            background: rgba(245, 158, 11, 0.16);
+            border: 1px solid rgba(245, 158, 11, 0.55);
+            color: #fef08a;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 12px;
+            line-height: 1.4;
+            display: none;
+            margin-bottom: 12px;
+            overflow-wrap: anywhere;
+        }
+        .quota-banner.show {
+            display: block;
+        }
+        .btn-sync-index {
+            background: #0284c7;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 11px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn-sync-index:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .idx-dash-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+            width: 100%;
+        }
+        .idx-fin-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 14px;
+            width: 100%;
+        }
+        .idx-main-wrap {
+            flex: 1;
+            padding: 18px;
+            overflow-y: auto;
+            background: #f4f6f9;
+            width: 100%;
+            min-width: 0;
+        }
+        .mobile-cards {
+            display: none;
+            flex-direction: column;
+            gap: 9px;
+            width: 100%;
+            min-width: 0;
+            margin-top: 10px;
+        }
+        .idx-card {
+            background: #162032;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 10px 11px;
+            color: #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+            width: 100%;
+        }
+        .idx-card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #26354d;
+            font-weight: 700;
+            color: #f8fafc;
+            font-size: 13px;
+            overflow-wrap: anywhere;
+        }
+        .idx-card-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 12px;
+            min-width: 0;
+        }
+        .idx-card-label {
+            color: #94a3b8;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .idx-card-val {
+            text-align: right;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 14px;
+            left: 50%;
+            transform: translate(-50%, 12px);
+            background: #1e293b;
+            border: 1px solid #38bdf8;
+            color: #f8fafc;
+            padding: 9px 13px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+            z-index: 250000;
+            opacity: 0;
+            transition: 0.2s;
+            pointer-events: none;
+            max-width: calc(100% - 20px);
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+        .toast-msg.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        @media (max-width: 900px) {
+            .idx-dash-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .idx-main-wrap,
+            .main-content {
+                padding: 10px !important;
+            }
+            .idx-dash-grid,
+            .idx-fin-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .user-profile-badge {
+                flex-wrap: wrap;
+                max-width: calc(100% - 16px);
+                gap: 6px;
+            }
+            .table-responsive,
+            table {
+                max-width: 100%;
+            }
+            #teaching-schedule-panel .table-responsive,
+            #student-room-timetable-panel .table-responsive {
+                display: none;
+            }
+            #teaching-schedule-panel .mobile-cards,
+            #student-room-timetable-panel .mobile-cards {
+                display: flex;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -67,36 +246,42 @@
             <span>10. ຫ້ອງຮຽນ</span>
         </a>
         <li id="menu-calendar">
-            <a href="ປະຕິທິນ.html" onclick="if(typeof closeMenuBar==='function') closeMenuBar();">📅 11. ຫ້ອງປະຕິທິນ</a>
+            <a href="ປະຕິທິນ.html" onclick="if(typeof closeMenuBar==='function') closeMenuBar();">📅 11. ຫອງປະຕິທິນ</a>
         </li>
         <li id="menu-update-12">
-            <a href="update.html" onclick="if(typeof closeMenuBar==='function') closeMenuBar();">🛠️ 12. ຫ້ອງອັບເດດ</a>
+            <a href="update.html" onclick="if(typeof closeMenuBar==='function') closeMenuBar();">🛠️ 12. ຫອງອັບເດດ</a>
         </li>
     </ul>
 </aside>
 
 <!-- 🖥️ Main Content Area -->
-<div style="flex: 1; padding: 30px; overflow-y: auto; background: #f4f6f9;">
+<div class="idx-main-wrap">
+    <div class="quota-banner" id="quotaBanner">
+        ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບກຳລັງໃຊ້ຂໍ້ມູນທີ່ເກັບໃນເຄື່ອງ (`localStorage`) ແລະ ຫຼຸດການເອີ້ນຖານຂໍ້ມູນອັດຕະໂນມັດ.
+    </div>
 
     <!-- 1. Dashboard Section -->
     <div id="section-dashboard" class="content-section">
-        <h2>📊 Dashboard - ພາບລວມລະບົບ</h2>
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px;">
-            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4>ນັກຮຽນທັງໝົດ</h4>
-                <p id="dash-total-students" style="font-size: 24px; font-weight: bold; color: #007bff;">0 ຄົນ</p>
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <h2 style="margin:0;">📊 Dashboard - ພາບລວມລະບົບ</h2>
+            <button type="button" class="btn-sync-index" id="indexSyncBtn" onclick="window.manualSyncIndexSchedules && window.manualSyncIndexSchedules(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
+        </div>
+        <div class="idx-dash-grid">
+            <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4 style="margin:0 0 6px;">ນັກຮຽນທັງໝົດ</h4>
+                <p id="dash-total-students" style="margin:0; font-size: 22px; font-weight: bold; color: #007bff;">0 ຄົນ</p>
             </div>
-            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4>ຄູອາຈານທັງໝົດ</h4>
-                <p id="dash-total-teachers" style="font-size: 24px; font-weight: bold; color: #28a745;">0 ຄົນ</p>
+            <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4 style="margin:0 0 6px;">ຄູອາຈານທັງໝົດ</h4>
+                <p id="dash-total-teachers" style="margin:0; font-size: 22px; font-weight: bold; color: #28a745;">0 ຄົນ</p>
             </div>
-            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4>ຫ້ອງຮຽນທັງໝົດ</h4>
-                <p id="dash-total-rooms" style="font-size: 24px; font-weight: bold; color: #ffc107;">0 ຫ້ອງ</p>
+            <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4 style="margin:0 0 6px;">ຫ້ອງຮຽນທັງໝົດ</h4>
+                <p id="dash-total-rooms" style="margin:0; font-size: 22px; font-weight: bold; color: #d97706;">0 ຫ້ອງ</p>
             </div>
-            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4>ສະຖິຕິມາຮຽນ</h4>
-                <p id="dash-attendance-rate" style="font-size: 24px; font-weight: bold; color: #17a2b8;">0%</p>
+            <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4 style="margin:0 0 6px;">ສະຖິຕິມາຮຽນ</h4>
+                <p id="dash-attendance-rate" style="margin:0; font-size: 22px; font-weight: bold; color: #17a2b8;">0%</p>
             </div>
         </div>
     </div>
@@ -106,9 +291,9 @@
         <h2>👨‍🎓 ຈັດການຂໍ້ມູນນັກຮຽນ</h2>
         <p>ເພີ່ມ, ແກ້ໄຂ, ລົບ, ກອງຊັ້ນຮຽນ ແລະ ຄົ້ນຫາຂໍ້ມູນນັກຮຽນໃນລະບົບ.</p>
 
-        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px;">
             <h3 id="student-form-title">➕ ເພີ່ມຂໍ້ມູນນັກຮຽນໃໝ່</h3>
-            <form id="student-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+            <form id="student-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 12px;">
                 <input type="hidden" id="student-doc-id">
                 <div>
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະຫັດນັກຮຽນ:</label>
@@ -138,17 +323,17 @@
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ຜູ້ປົກຄອງ:</label>
                     <input type="text" id="student-parent" placeholder="ຊື່-ນາມສະກຸນ ຜູ້ປົກຄອງ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                 </div>
-                <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+                <div style="display: flex; align-items: flex-end; gap: 8px;">
                     <button type="submit" id="save-student-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຂໍ້ມູນ</button>
                     <button type="button" id="cancel-edit-btn" onclick="resetStudentForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
                 </div>
             </form>
         </div>
 
-        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h3>📋 ລາຍຊື່ນັກຮຽນທັງໝົດ</h3>
-                <div style="display: flex; gap: 10px;">
+        <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin:0;">📋 ລາຍຊື່ນັກຮຽນທັງໝົດ</h3>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <select id="filter-grade-select" onchange="filterStudents()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         <option value="">-- ທຸກຊັ້ນຮຽນ --</option>
                         <option value="ມ.1">ມ.1</option>
@@ -158,25 +343,27 @@
                         <option value="ມ.5">ມ.5</option>
                         <option value="ມ.6">ມ.6</option>
                     </select>
-                    <input type="text" id="search-student-input" placeholder="🔍 ค้นຫາຊື່ ຫຼື ລະຫັດ..." onkeyup="filterStudents()" style="padding: 8px; width: 220px; border: 1px solid #ddd; border-radius: 4px;">
+                    <input type="text" id="search-student-input" placeholder="🔍 ค้นຫາຊື່ ຫຼື ລະຫັດ..." onkeyup="filterStudents()" style="padding: 8px; width: 220px; max-width: 100%; border: 1px solid #ddd; border-radius: 4px;">
                 </div>
             </div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>ລະຫັດ</th>
-                        <th>ຊື່-ນາມສະກຸນ</th>
-                        <th>ຊັ້ນຮຽນ</th>
-                        <th>ເບີໂທ</th>
-                        <th>ຜູ້ປົກຄອງ</th>
-                        <th>ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="students-table-body">
-                    <tr><td colspan="6" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
-                </tbody>
-            </table>
+            <div style="width:100%; overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ລະຫັດ</th>
+                            <th>ຊື່-ນາມສະກຸນ</th>
+                            <th>ຊັ້ນຮຽນ</th>
+                            <th>ເບີໂທ</th>
+                            <th>ຜູ້ປົກຄອງ</th>
+                            <th>ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="students-table-body">
+                        <tr><td colspan="6" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -184,9 +371,9 @@
     <div id="section-teachers" class="content-section" style="display: none;">
         <h2>👩‍🏫 ຈັດການຂໍ້ມູນຄູອາຈານ</h2>
         <p>ເພີ່ມ, ແກ້ໄຂ, ລົບ ແລະ ຈັດການວິຊາທີ່ສອນຂອງຄູອາຈານໃນລະບົບ.</p>
-        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px;">
             <h3 id="teacher-form-title">➕ ເພີ່ມຂໍ້ມູນຄູອາຈານໃໝ່</h3>
-            <form id="teacher-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+            <form id="teacher-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 12px;">
                 <input type="hidden" id="teacher-doc-id">
                 <div>
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະຫັດຄູ:</label>
@@ -200,31 +387,33 @@
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ວິຊາທີ່ສອນ:</label>
                     <input type="text" id="teacher-subject" required placeholder="ຕົວຢ່າງ: ວິຊາຄະນິດສາດ" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                 </div>
-                <div style="display: flex; align-items: flex-end; gap: 10px;">
+                <div style="display: flex; align-items: flex-end; gap: 8px;">
                     <button type="submit" id="save-teacher-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຂໍ້ມູນ</button>
                     <button type="button" id="cancel-teacher-edit-btn" onclick="resetTeacherForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
                 </div>
             </form>
         </div>
 
-        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3>📋 ລາຍຊື່ຄູອາຈານທັງໝົດ</h3>
-                <input type="text" id="search-teacher-input" placeholder="🔍 ຄົ້ນຫາຊື່, ລະຫັດ ຫຼື ວິຊາ..." onkeyup="filterTeachers()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+        <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin:0;">📋 ລາຍຊື່ຄູອາຈານທັງໝົດ</h3>
+                <input type="text" id="search-teacher-input" placeholder="🔍 ຄົ້ນຫາຊື່, ລະຫັດ ຫຼື ວິຊາ..." onkeyup="filterTeachers()" style="padding: 8px; width: 250px; max-width: 100%; border: 1px solid #ddd; border-radius: 4px;">
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ລະຫັດຄູ</th>
-                        <th>ຊື່-ນາມສະກຸນ</th>
-                        <th>ວິຊາທີ່ສອນ</th>
-                        <th>ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="teachers-table-body">
-                    <tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
-                </tbody>
-            </table>
+            <div style="width:100%; overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ລະຫັດຄູ</th>
+                            <th>ຊື່-ນາມສະກຸນ</th>
+                            <th>ວິຊາທີ່ສອນ</th>
+                            <th>ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teachers-table-body">
+                        <tr><td colspan="4" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -233,9 +422,9 @@
         <h2>📅 ຈັດການຕາຕະລາງຮຽນ &amp; ຫ້ອງຮຽນ</h2>
         <p>ເບິ່ງ, ເພີ່ມ, ແກ້ໄຂ ແລະ ລົບຕາຕະລາງຮຽນ (ສຳລັບຄູອາຈານ ແລະ ແອັດມິນ).</p>
 
-        <div id="class-form-container" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: none;">
+        <div id="class-form-container" style="background: white; padding: 18px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: none;">
             <h4 id="class-form-title">➕ ເພີ່ມຕາຕະລາງຮຽນໃໝ່</h4>
-            <form id="timetable-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+            <form id="timetable-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 12px;">
                 <input type="hidden" id="timetable-doc-id">
                 <div>
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊັ້ນຮຽນ / ຫ້ອງ:</label>
@@ -266,33 +455,35 @@
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄູຜູ້ສອນ:</label>
                     <input type="text" id="timetable-teacher" placeholder="ຊື່-ນາມສະກຸນຄູ" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
-                <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+                <div style="display: flex; align-items: flex-end; gap: 8px;">
                     <button type="button" id="save-timetable-btn" onclick="saveTimetableData(event)" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 ບັນທຶກຕາຕະລາງ</button>
                     <button type="button" id="cancel-timetable-edit-btn" onclick="resetTimetableForm()" style="display: none; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
                 </div>
             </form>
         </div>
 
-        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h3>📋 ຕາຕະລາງຮຽນທັງໝົດ</h3>
-                <input type="text" id="search-timetable-input" placeholder="🔍 ຄົ້ນຫາວິຊາ, ຫ້ອງ ຫຼື ຄູ..." onkeyup="filterTimetables()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+        <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin:0;">📋 ຕາຕະລາງຮຽນທັງໝົດ</h3>
+                <input type="text" id="search-timetable-input" placeholder="🔍 ຄົ້ນຫາວິຊາ, ຫ້ອງ ຫຼື ຄູ..." onkeyup="filterTimetables()" style="padding: 8px; width: 250px; max-width: 100%; border: 1px solid #ddd; border-radius: 4px;">
             </div>
-            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                <thead>
-                    <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6; text-align: left;">
-                        <th style="padding: 10px;">ຊັ້ນ / ຫ້ອງ</th>
-                        <th style="padding: 10px;">ຊື່ວິຊາ</th>
-                        <th style="padding: 10px;">ມື້ຮຽນ</th>
-                        <th style="padding: 10px;">ເວລາ</th>
-                        <th style="padding: 10px;">ຄູຜູ້ສອນ</th>
-                        <th style="padding: 10px; text-align: center;">ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="timetable-table-body">
-                    <tr><td colspan="6" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
-                </tbody>
-            </table>
+            <div style="width:100%; overflow-x:auto;">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6; text-align: left;">
+                            <th style="padding: 10px;">ຊັ້ນ / ຫ້ອງ</th>
+                            <th style="padding: 10px;">ຊື່ວິຊາ</th>
+                            <th style="padding: 10px;">ມື້ຮຽນ</th>
+                            <th style="padding: 10px;">ເວລາ</th>
+                            <th style="padding: 10px;">ຄູຜູ້ສອນ</th>
+                            <th style="padding: 10px; text-align: center;">ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timetable-table-body">
+                        <tr><td colspan="6" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -301,10 +492,10 @@
         <h2>📝 ຈັດການການມາຮຽນ (ມາ, ຂາດ, ມາຊ້າ, ລາພັກ)</h2>
         <p style="margin-top: 10px; color: #666;">ເລືອກລະບົບເຊັກຊື່ ແລະ ກວດສອບປະຫວັດການມາຮຽນຂອງນັກຮຽນ.</p>
 
-        <div style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
-            <a href="check-in.html" style="padding: 12px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">⭐ ເປີດລະບົບເຊັກຊື່ (ລວມ ມ.5)</a>
-            <a href="attendance-report.html" style="padding: 12px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">📊 ເບິ່ງປະຫວັດການເຊັກຊື່</a>
-            <a href="attendance-summary.html" style="padding: 12px 20px; background: #17a2b8; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">📈 ສະຫຼຸບວັນຂາດ &amp; ຫັກຄະແນນ</a>
+        <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="check-in.html" style="padding: 11px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">⭐ ເປີດລະບົບເຊັກຊື່ (ລວມ ມ.5)</a>
+            <a href="attendance-report.html" style="padding: 11px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">📊 ເບິ່ງປະຫວັດການເຊັກຊື່</a>
+            <a href="attendance-summary.html" style="padding: 11px 16px; background: #17a2b8; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">📈 ສະຫຼຸບວັນຂາດ &amp; ຫັກຄະແນນ</a>
         </div>
     </div>
 
@@ -312,9 +503,9 @@
     <div id="section-scores" class="content-section" style="display: none;">
         <h2>📈 ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</h2>
         <p>ບັນທຶກ, ປະເມີນ ແລະ ຈັດການຄະແນນສອບເສັງຂອງນັກຮຽນໃນແຕ່ລະວິຊາ.</p>
-        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px;">
             <h3 id="score-form-title">➕ ບັນທຶກຄະແນນນັກຮຽນ</h3>
-            <form id="score-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+            <form id="score-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 12px;">
                 <input type="hidden" id="score-doc-id">
                 <div>
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ລະຫັດ ຫຼື ຊື່ນັກຮຽນ:</label>
@@ -344,35 +535,37 @@
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຄະແນນສອບເສັງ (60):</label>
                     <input type="number" id="score-final" required min="0" max="60" placeholder="0-60" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                 </div>
-                <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+                <div style="display: flex; align-items: flex-end; gap: 8px;">
                     <button type="submit" id="save-score-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຄະແນນ</button>
                     <button type="button" id="cancel-score-edit-btn" onclick="resetScoreForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
                 </div>
             </form>
         </div>
 
-        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h3>📋 ຕາຕະລາງສະຫຼຸບຄະແນນນັກຮຽນ</h3>
-                <input type="text" id="search-score-input" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ ຫຼື ວິຊາ..." onkeyup="filterScores()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+        <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin:0;">📋 ຕາຕະລາງສະຫຼຸບຄະແນນນັກຮຽນ</h3>
+                <input type="text" id="search-score-input" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ ຫຼື ວິຊາ..." onkeyup="filterScores()" style="padding: 8px; width: 250px; max-width: 100%; border: 1px solid #ddd; border-radius: 4px;">
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ຊື່ນັກຮຽນ</th>
-                        <th>ຊັ້ນຮຽນ</th>
-                        <th>ວິຊາ</th>
-                        <th>ຄະແນນເກັບ (40)</th>
-                        <th>ສອບເສັງ (60)</th>
-                        <th>ລວມ (100)</th>
-                        <th>ເກຣດ</th>
-                        <th>ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="scores-table-body">
-                    <tr><td colspan="8" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
-                </tbody>
-            </table>
+            <div style="width:100%; overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ຊື່ນັກຮຽນ</th>
+                            <th>ຊັ້ນຮຽນ</th>
+                            <th>ວິຊາ</th>
+                            <th>ຄະແນນເກັບ (40)</th>
+                            <th>ສອບເສັງ (60)</th>
+                            <th>ລວມ (100)</th>
+                            <th>ເກຣດ</th>
+                            <th>ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scores-table-body">
+                        <tr><td colspan="8" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -380,24 +573,24 @@
     <div id="section-finance" class="content-section" style="display: none;">
         <h2>💰 ລະບົບການເງິນ &amp; ຄ່າຮຽນ</h2>
         <p>ຕິດຕາມການຊຳລະຄ່າຮຽນ, ບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ ແລະ ສະຖານະການເງິນຂອງໂຮງຮຽນ.</p>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
-            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4>ລາຍຮັບຄ່າຮຽນລວມ</h4>
-                <p id="total-income" style="font-size: 24px; font-weight: bold; color: #28a745;">0 ₭</p>
+        <div class="idx-fin-grid">
+            <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4 style="margin:0 0 6px;">ລາຍຮັບຄ່າຮຽນລວມ</h4>
+                <p id="total-income" style="margin:0; font-size: 22px; font-weight: bold; color: #28a745;">0 ₭</p>
             </div>
-            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4>ຍອດຄ້າງຊຳລະ</h4>
-                <p id="total-pending" style="font-size: 24px; font-weight: bold; color: #dc3545;">0 ₭</p>
+            <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4 style="margin:0 0 6px;">ຍອດຄ້າງຊຳລະ</h4>
+                <p id="total-pending" style="margin:0; font-size: 22px; font-weight: bold; color: #dc3545;">0 ₭</p>
             </div>
-            <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4>ລາຍການທັງໝົດ</h4>
-                <p id="total-finance-records" style="font-size: 24px; font-weight: bold; color: #007bff;">0 ລາຍການ</p>
+            <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4 style="margin:0 0 6px;">ລາຍການທັງໝົດ</h4>
+                <p id="total-finance-records" style="margin:0; font-size: 22px; font-weight: bold; color: #007bff;">0 ລາຍການ</p>
             </div>
         </div>
 
-        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px;">
             <h3 id="finance-form-title">➕ ບັນທຶກການຊຳລະຄ່າຮຽນ</h3>
-            <form id="finance-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+            <form id="finance-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 12px;">
                 <input type="hidden" id="finance-doc-id">
                 <div>
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຊື່ນັກຮຽນ:</label>
@@ -426,32 +619,34 @@
                         <option value="ຄ້າງຈ່າຍ">❌ ຄ້າງຈ່າຍ</option>
                     </select>
                 </div>
-                <div style="display: flex; align-items: flex-end; gap: 10px; grid-column: span 2;">
+                <div style="display: flex; align-items: flex-end; gap: 8px;">
                     <button type="submit" id="save-finance-btn" style="flex: 1; padding: 9px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ບັນທຶກຂໍ້ມູນ</button>
                     <button type="button" id="cancel-finance-edit-btn" onclick="resetFinanceForm()" style="display: none; padding: 9px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
                 </div>
             </form>
         </div>
 
-        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h3>📋 ປະຫວັດການຊຳລະຄ່າຮຽນ</h3>
-                <input type="text" id="search-finance-input" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." onkeyup="filterFinances()" style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+        <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin:0;">📋 ປະຫວັດການຊຳລະຄ່າຮຽນ</h3>
+                <input type="text" id="search-finance-input" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." onkeyup="filterFinances()" style="padding: 8px; width: 250px; max-width: 100%; border: 1px solid #ddd; border-radius: 4px;">
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ຊື່ນັກຮຽນ</th>
-                        <th>ຊັ້ນຮຽນ</th>
-                        <th>ຈຳນວນເງິນ</th>
-                        <th>ສະຖານະ</th>
-                        <th>ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="finances-table-body">
-                    <tr><td colspan="5" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
-                </tbody>
-            </table>
+            <div style="width:100%; overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ຊື່ນັກຮຽນ</th>
+                            <th>ຊັ້ນຮຽນ</th>
+                            <th>ຈຳນວນເງິນ</th>
+                            <th>ສະຖານະ</th>
+                            <th>ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="finances-table-body">
+                        <tr><td colspan="5" style="text-align: center; padding: 15px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -459,9 +654,9 @@
     <div id="section-news" class="content-section" style="display: none;">
         <h2>📢 ຂ່າວສານ &amp; ແຈ້ງເຕືອນ</h2>
         <p>ປະກາດຂ່າວສານ, ກິດຈະກຳ ແລະ ສົ່ງການແຈ້ງເຕືອນສຳຄັນພາຍໃນໂຮງຮຽນ.</p>
-        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px;">
             <h3 id="news-form-title">➕ ສ້າງປະກາດຂ່າວສານໃໝ່</h3>
-            <form id="news-form" style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px;">
+            <form id="news-form" style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 12px;">
                 <input type="hidden" id="news-doc-id">
                 <div>
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ຫົວຂໍ້ຂ່າວ / ປະກາດ:</label>
@@ -471,16 +666,16 @@
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ເນື້ອໃນລະອຽດ:</label>
                     <textarea id="news-content" required rows="4" placeholder="ຂຽນລາຍລະອຽດເນື້ອໃນປະກາດ..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
                 </div>
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button type="submit" id="save-news-btn" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ເຜີຍແຜ່ປະກາດ</button>
                     <button type="button" id="cancel-news-edit-btn" onclick="resetNewsForm()" style="display: none; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">ຍົກເລີກ</button>
                 </div>
             </form>
         </div>
 
-        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <h3>📋 ລາຍການປະກາດທັງໝົດ</h3>
-            <div id="news-container" style="margin-top: 15px; display: grid; gap: 15px;">
+        <div style="background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <h3 style="margin:0;">📋 ລາຍການປະກາດທັງໝົດ</h3>
+            <div id="news-container" style="margin-top: 12px; display: grid; gap: 12px;">
                 <p style="text-align: center; color: #666;">ກຳລັງໂຫຼດຂໍ້ມູນ...</p>
             </div>
         </div>
@@ -515,6 +710,7 @@
                 <tbody id="index-teaching-body"></tbody>
             </table>
         </div>
+        <div class="mobile-cards" id="index-teaching-cards"></div>
     </section>
 
     <!-- 📅 ສຳລັບນັກຮຽນ: ສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງຕົນເອງ -->
@@ -543,12 +739,15 @@
                 <tbody id="student-timetable-body"></tbody>
             </table>
         </div>
+        <div class="mobile-cards" id="student-timetable-cards"></div>
     </section>
 </main>
 
+<div class="toast-msg" id="toastMsg"></div>
+
 <script type="module">
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
@@ -560,18 +759,56 @@ const firebaseConfig = {
     measurementId: "G-NPNFSW2C72"
 };
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const db = getFirestore(app);
+let db = null;
+try {
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    db = getFirestore(app);
+} catch (e) {}
 
 const DAYS_ORDER = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"];
+const SCHEDULE_COLS = ["weekly_schedules", "timetables", "schedules", "teaching_schedules", "class_timetables"];
 
-const colBuffers = {
-    weekly_schedules: [],
-    timetables: [],
-    schedules: [],
-    teaching_schedules: [],
-    class_timetables: []
-};
+const LAST_FETCH_TS_KEY = "school_index_last_fetch_ts";
+const QUOTA_BLOCK_UNTIL_KEY = "school_firestore_quota_blocked_until";
+const FETCH_COOLDOWN_MS = 60000;
+const QUOTA_COOLDOWN_MS = 1800000;
+
+function showIndexToast(msg) {
+    const el = document.getElementById("toastMsg");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(showIndexToast._t);
+    showIndexToast._t = setTimeout(() => el.classList.remove("show"), 3200);
+}
+
+function isQuotaError(err) {
+    const code = String(err?.code || "").toLowerCase();
+    const msg = String(err?.message || "").toLowerCase();
+    return (
+        code.includes("resource-exhausted") ||
+        msg.includes("quota") ||
+        msg.includes("resource exhausted") ||
+        msg.includes("daily usage")
+    );
+}
+
+function setQuotaNotice(active) {
+    const banner = document.getElementById("quotaBanner");
+    if (!banner) return;
+    if (active) banner.classList.add("show");
+    else banner.classList.remove("show");
+}
+
+let colBuffers = {};
+try {
+    colBuffers = JSON.parse(localStorage.getItem("school_index_col_buffers") || "null") || {};
+} catch (e) {
+    colBuffers = {};
+}
+SCHEDULE_COLS.forEach((c) => {
+    if (!Array.isArray(colBuffers[c])) colBuffers[c] = [];
+});
 
 function cleanRoomKey(v) {
     return String(v ?? "")
@@ -647,6 +884,7 @@ function syncFirestoreSchedulesToIndex() {
     };
 
     Object.entries(colBuffers).forEach(([colName, docs]) => {
+        if (!Array.isArray(docs)) return;
         docs.forEach((raw) => {
             if (colName === "class_timetables" && Array.isArray(raw.rows)) {
                 const roomKey = cleanRoomKey(raw.grade || raw.room || raw.classRoom);
@@ -709,18 +947,78 @@ function syncFirestoreSchedulesToIndex() {
     }
 }
 
-Object.keys(colBuffers).forEach((colName) => {
-    onSnapshot(collection(db, colName), (snap) => {
-        colBuffers[colName] = snap.docs.map((d) => d.data());
+window.manualSyncIndexSchedules = async function (showAlert = false) {
+    const now = Date.now();
+    const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+    const lastFetchTs = Number(localStorage.getItem(LAST_FETCH_TS_KEY) || "0");
+
+    if (!db) {
         syncFirestoreSchedulesToIndex();
-    }, () => {});
-});
+        return;
+    }
+
+    if (now < blockedUntil) {
+        setQuotaNotice(true);
+        syncFirestoreSchedulesToIndex();
+        if (showAlert) showIndexToast("ໂຄຕ້າ Firebase ເຕັມ ກຳລັງໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+        return;
+    }
+
+    if (!showAlert && now - lastFetchTs < FETCH_COOLDOWN_MS) {
+        syncFirestoreSchedulesToIndex();
+        return;
+    }
+
+    const btn = document.getElementById("indexSyncBtn");
+    if (btn) btn.disabled = true;
+
+    try {
+        for (const colName of SCHEDULE_COLS) {
+            try {
+                const snap = await getDocs(collection(db, colName));
+                if (!snap.empty) {
+                    colBuffers[colName] = snap.docs.map((d) => d.data());
+                }
+            } catch (err) {
+                if (isQuotaError(err)) {
+                    localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                    setQuotaNotice(true);
+                    break;
+                }
+            }
+        }
+
+        try {
+            localStorage.setItem("school_index_col_buffers", JSON.stringify(colBuffers));
+        } catch (e) {}
+
+        localStorage.setItem(LAST_FETCH_TS_KEY, String(Date.now()));
+        localStorage.removeItem(QUOTA_BLOCK_UNTIL_KEY);
+        setQuotaNotice(false);
+        syncFirestoreSchedulesToIndex();
+        if (showAlert) showIndexToast("✅ ໂຫຼດຂໍ້ມູນສຳເລັດແລ້ວ");
+    } catch (err) {
+        if (isQuotaError(err)) {
+            localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+            setQuotaNotice(true);
+            if (showAlert) showIndexToast("⚠️ ໂຄຕ້າ Firebase ປະຈຳມື້ເຕັມ ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+        } else if (showAlert) {
+            showIndexToast("⚠️ ເຊື່ອມຕໍ່ຊ້າ ໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໃນເຄື່ອງ");
+        }
+        syncFirestoreSchedulesToIndex();
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+};
 
 window.addEventListener("storage", (e) => {
     if (e.key === "schoolSystemDataUpdated" || e.key === "userGrade" || e.key === "userName" || e.key === "userRole") {
         syncFirestoreSchedulesToIndex();
     }
 });
+
+syncFirestoreSchedulesToIndex();
+window.manualSyncIndexSchedules(false);
 </script>
 
 <script>
@@ -811,6 +1109,7 @@ function getActiveRoomTimetablesMap() {
 
 function renderOwnTeachingSchedule(currentUserName) {
     const tbody = document.getElementById("index-teaching-body");
+    const cards = document.getElementById("index-teaching-cards");
     const titleEl = document.getElementById("teaching-panel-title");
     const badgeEl = document.getElementById("teaching-owner-badge");
 
@@ -838,10 +1137,13 @@ function renderOwnTeachingSchedule(currentUserName) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" style="text-align: center; color: #94a3b8;">
-                    ຍັງບໍ່ມີຊົ່ວໂມງສອນໃນ Firebase ສຳລັບ "${escapeHtmlText(currentUserName)}"
+                    ຍັງບໍ່ມີຊົ່ວໂມງສອນສຳລັບ "${escapeHtmlText(currentUserName)}"
                 </td>
             </tr>
         `;
+        if (cards) {
+            cards.innerHTML = `<div class="idx-card" style="text-align:center;color:#94a3b8;">ຍັງບໍ່ມີຊົ່ວໂມງສອນສຳລັບ "${escapeHtmlText(currentUserName)}"</div>`;
+        }
         return;
     }
 
@@ -854,6 +1156,19 @@ function renderOwnTeachingSchedule(currentUserName) {
             <td>${escapeHtmlText(item.schedule)}</td>
         </tr>
     `).join("");
+
+    if (cards) {
+        cards.innerHTML = mySchedules.map((item, idx) => `
+            <div class="idx-card">
+                <div class="idx-card-head">
+                    <span>#${idx + 1} • ${escapeHtmlText(item.subject || "-")}</span>
+                    <span>ຫ້ອງ ${escapeHtmlText(item.grade || "-")}</span>
+                </div>
+                <div class="idx-card-row"><span class="idx-card-label">ຄູຜູ້ສອນ:</span><span class="idx-card-val">${escapeHtmlText(item.teacher || "-")}</span></div>
+                <div class="idx-card-row"><span class="idx-card-label">ມື້ / ເວລາ:</span><span class="idx-card-val">${escapeHtmlText(item.schedule || "-")}</span></div>
+            </div>
+        `).join("");
+    }
 }
 
 function applyIndexRoleRules() {
@@ -1100,6 +1415,7 @@ function renderStudentTimetableWithTeachers() {
     const titleEl = document.getElementById("student-timetable-title");
     const badgeEl = document.getElementById("student-timetable-badge");
     const tbody = document.getElementById("student-timetable-body");
+    const cards = document.getElementById("student-timetable-cards");
 
     if (titleEl) titleEl.textContent = `📅 ຕາຕະລາງຮຽນສະເພາະຫ້ອງ ${cleanRoom}`;
     if (badgeEl) badgeEl.textContent = `ຫ້ອງ: ${cleanRoom}`;
@@ -1110,10 +1426,13 @@ function renderStudentTimetableWithTeachers() {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" style="text-align: center; color: #94a3b8;">
-                    ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນໃນ Firebase ສຳລັບຫ້ອງ ${escapeHtmlText(cleanRoom)}
+                    ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນສຳລັບຫ້ອງ ${escapeHtmlText(cleanRoom)}
                 </td>
             </tr>
         `;
+        if (cards) {
+            cards.innerHTML = `<div class="idx-card" style="text-align:center;color:#94a3b8;">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນສຳລັບຫ້ອງ ${escapeHtmlText(cleanRoom)}</div>`;
+        }
         ensureScheduleDetailUi();
         return;
     }
@@ -1130,6 +1449,24 @@ function renderStudentTimetableWithTeachers() {
             ${(r.slots || []).map(s => `<td>${formatSlotWithTeacher(s)}</td>`).join("")}
         </tr>
     `).join("");
+
+    if (cards) {
+        const pTitles = ["ຊ.ມ. 1 (08:00-08:45)", "ຊ.ມ. 2 (08:50-09:35)", "ຊ.ມ. 3 (09:50-10:35)", "ຊ.ມ. 4 (10:40-11:25)"];
+        cards.innerHTML = sortedRows.map(r => `
+            <div class="idx-card">
+                <div class="idx-card-head">
+                    <span>ມື້${escapeHtmlText(cleanDayKey(r.day))}</span>
+                    <span>ຫ້ອງ ${escapeHtmlText(cleanRoom)}</span>
+                </div>
+                ${(r.slots || []).map((s, idx) => `
+                    <div class="idx-card-row">
+                        <span class="idx-card-label">${pTitles[idx] || `ຊ.ມ. ${idx + 1}`}:</span>
+                        <span class="idx-card-val">${formatSlotWithTeacher(s)}</span>
+                    </div>
+                `).join("")}
+            </div>
+        `).join("");
+    }
 
     ensureScheduleDetailUi();
 }
@@ -1215,15 +1552,15 @@ function createScheduleDetailModalIfMissing() {
     const word = getActionWord();
     const modal = document.createElement("div");
     modal.id = "scheduleDetailModal";
-    modal.style.cssText = "display:none;position:fixed;inset:0;background:rgba(2,6,23,0.82);z-index:200000;padding:16px;align-items:center;justify-content:center;";
+    modal.style.cssText = "display:none;position:fixed;inset:0;background:rgba(2,6,23,0.82);z-index:200000;padding:12px;align-items:center;justify-content:center;";
     modal.addEventListener("click", function (e) {
         if (e.target === modal) window.closeScheduleDetailModal();
     });
 
     modal.innerHTML = `
-        <div style="width:100%;max-width:920px;max-height:88vh;overflow-y:auto;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:16px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,0.55);">
+        <div style="width:100%;max-width:920px;max-height:88vh;overflow-y:auto;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:16px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,0.55);">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid #334155;flex-wrap:wrap;">
-                <h3 id="scheduleDetailModalTitle" style="margin:0;font-size:17px;font-weight:700;color:#f8fafc;">ຕາຕະລາງ${escapeHtmlText(word)}ທັງໝົດໃນເທີມ</h3>
+                <h3 id="scheduleDetailModalTitle" style="margin:0;font-size:16px;font-weight:700;color:#f8fafc;">ຕາຕະລາງ${escapeHtmlText(word)}ທັງໝົດໃນເທີມ</h3>
                 <button type="button" onclick="window.closeScheduleDetailModal()" style="background:#334155;color:#f8fafc;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600;">✕ ປິດ</button>
             </div>
 
@@ -1237,7 +1574,7 @@ function createScheduleDetailModalIfMissing() {
             </div>
 
             <div style="width:100%;overflow-x:auto;">
-                <table style="width:100%;border-collapse:collapse;min-width:600px;">
+                <table style="width:100%;border-collapse:collapse;min-width:560px;">
                     <thead>
                         <tr>
                             <th style="border:1px solid #334155;padding:9px 11px;background:#0f172a;color:#93c5fd;text-align:left;width:55px;">ລ/ດ</th>
@@ -1291,7 +1628,7 @@ function renderScheduleDetailModal() {
     if (!tbody) return;
 
     if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="6" style="border:1px solid #334155;padding:12px;background:#162032;text-align:center;color:#94a3b8;">ບໍ່ມີຊົ່ວໂມງ${escapeHtmlText(word)}ໃນ Firebase</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="border:1px solid #334155;padding:12px;background:#162032;text-align:center;color:#94a3b8;">ບໍ່ມີຊົ່ວໂມງ${escapeHtmlText(word)}</td></tr>`;
         return;
     }
 
