@@ -514,7 +514,7 @@
             </table>
         </div>
     </section>
-
+</main>
     <!-- 📅 ສຳລັບນັກຮຽນ: ສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງຕົນເອງ (ລັອກຫ້ອງ + ເຊື່ອງປຸ່ມ ເພີ່ມ/ແກ້ໄຂ/ລົບ) -->
     <section class="panel-card" id="student-room-timetable-panel" style="display: none;">
         <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
@@ -541,8 +541,96 @@
                 <tbody id="student-timetable-body"></tbody>
             </table>
         </div>
-    </section>
-</main>
+    </section><script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
+    authDomain: "my-school-c1104.firebaseapp.com",
+    projectId: "my-school-c1104",
+    storageBucket: "my-school-c1104.appspot.com",
+    messagingSenderId: "339930418459",
+    appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+    measurementId: "G-NPNFSW2C72"
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let weeklyDocs = [];
+let timetableDocs = [];
+
+function cleanRoomKey(v) {
+    return String(v ?? "").trim().replace(/^["']+|["']+$/g, "").replace(/\s+/g, "");
+}
+
+function cleanDayKey(v) {
+    return String(v ?? "").trim().replace(/^["']+|["']+$/g, "").replace(/^ວັນ/, "");
+}
+
+function syncFirestoreSchedulesToIndex() {
+    if (typeof roomTimetablesWithTeacher === "undefined") return;
+
+    const mergedMap = JSON.parse(JSON.stringify(roomTimetablesWithTeacher));
+    const daysOrder = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ"];
+    const allDocs = [...weeklyDocs, ...timetableDocs];
+
+    allDocs.forEach((raw) => {
+        const room = cleanRoomKey(raw.room || raw.grade || raw.classRoom);
+        const day = cleanDayKey(raw.day);
+        const periodNum = Math.max(1, Math.min(4, parseInt(raw.period || "1", 10) || 1));
+        const subject = String(raw.subject || "").trim();
+        const teacher = String(raw.teacher || raw.teacherName || "").trim();
+
+        if (!room || !day || !subject) return;
+
+        if (!mergedMap[room]) {
+            mergedMap[room] = daysOrder.map((d) => ({
+                day: d,
+                slots: [
+                    { subject: "-", teacher: "" },
+                    { subject: "-", teacher: "" },
+                    { subject: "-", teacher: "" },
+                    { subject: "-", teacher: "" }
+                ]
+            }));
+        }
+
+        const dayRow = mergedMap[room].find((r) => cleanDayKey(r.day) === day);
+        if (dayRow) {
+            if (!Array.isArray(dayRow.slots)) dayRow.slots = [];
+            while (dayRow.slots.length < 4) dayRow.slots.push({ subject: "-", teacher: "" });
+            dayRow.slots[periodNum - 1] = { subject, teacher };
+        }
+    });
+
+    window.__syncedRoomTimetables = mergedMap;
+
+    if (typeof window.renderStudentTimetableWithTeachers === "function") {
+        window.renderStudentTimetableWithTeachers();
+    }
+    if (document.getElementById("scheduleDetailModal")?.style.display === "flex" && typeof window.renderScheduleDetailModal === "function") {
+        window.renderScheduleDetailModal();
+    }
+}
+
+onSnapshot(collection(db, "weekly_schedules"), (snap) => {
+    weeklyDocs = snap.docs.map((d) => d.data());
+    syncFirestoreSchedulesToIndex();
+});
+
+onSnapshot(collection(db, "timetables"), (snap) => {
+    timetableDocs = snap.docs.map((d) => d.data());
+    syncFirestoreSchedulesToIndex();
+});
+
+window.addEventListener("storage", (e) => {
+    if (e.key === "schoolSystemDataUpdated" || e.key === "userGrade") {
+        syncFirestoreSchedulesToIndex();
+    }
+});
+</script>
 
 <script>
 function cleanStorageValue(val) {
@@ -602,6 +690,10 @@ function isStaffRole() {
 
 function getActionWord() {
     return isStaffRole() ? "ສອນ" : "ຮຽນ";
+}
+
+function getActiveRoomTimetablesMap() {
+    return window.__syncedRoomTimetables || roomTimetablesWithTeacher;
 }
 
 function renderOwnTeachingSchedule(currentUserName) {
@@ -1030,8 +1122,9 @@ function renderStudentTimetableWithTeachers() {
     const role = getCurrentRoleClean();
     if (role === "admin" || role === "teacher") return;
 
+    const activeMap = getActiveRoomTimetablesMap();
     const rawGrade = getCurrentGradeClean();
-    const cleanRoom = roomTimetablesWithTeacher[rawGrade] ? rawGrade : "ມ.5";
+    const cleanRoom = activeMap[rawGrade] ? rawGrade : (rawGrade || "ມ.5");
     localStorage.setItem("userGrade", cleanRoom);
 
     const titleEl = document.getElementById("student-timetable-title");
@@ -1042,7 +1135,7 @@ function renderStudentTimetableWithTeachers() {
     if (badgeEl) badgeEl.textContent = `ຫ້ອງ: ${cleanRoom}`;
     if (!tbody) return;
 
-    const rows = roomTimetablesWithTeacher[cleanRoom] || roomTimetablesWithTeacher["ມ.5"];
+    const rows = activeMap[cleanRoom] || activeMap["ມ.5"] || roomTimetablesWithTeacher["ມ.5"];
     tbody.innerHTML = rows.map(r => `
         <tr>
             <td><strong>${r.day}</strong></td>
@@ -1079,14 +1172,15 @@ function getTodayDayShort() {
 }
 
 function getAllDetailedHours() {
+    const activeMap = getActiveRoomTimetablesMap();
     const staff = isStaffRole();
     const userName = normalizeText(localStorage.getItem("userName") || "");
     const userGrade = getCurrentGradeClean();
     const rows = [];
 
     if (staff) {
-        Object.keys(roomTimetablesWithTeacher).forEach(gradeKey => {
-            (roomTimetablesWithTeacher[gradeKey] || []).forEach(dayItem => {
+        Object.keys(activeMap).forEach(gradeKey => {
+            (activeMap[gradeKey] || []).forEach(dayItem => {
                 (dayItem.slots || []).forEach((slot, idx) => {
                     const subj = typeof slot === "string" ? slot : (slot.subject || "-");
                     const tch = typeof slot === "string" ? "" : (slot.teacher || "-");
@@ -1105,8 +1199,8 @@ function getAllDetailedHours() {
             });
         });
     } else {
-        const cleanRoom = roomTimetablesWithTeacher[userGrade] ? userGrade : "ມ.5";
-        (roomTimetablesWithTeacher[cleanRoom] || []).forEach(dayItem => {
+        const cleanRoom = activeMap[userGrade] ? userGrade : (userGrade || "ມ.5");
+        (activeMap[cleanRoom] || activeMap["ມ.5"] || []).forEach(dayItem => {
             (dayItem.slots || []).forEach((slot, idx) => {
                 const subj = typeof slot === "string" ? slot : (slot.subject || "-");
                 const tch = typeof slot === "string" ? "-" : (slot.teacher || "-");
@@ -1222,6 +1316,8 @@ function renderScheduleDetailModal() {
     `).join("");
 }
 
+window.renderScheduleDetailModal = renderScheduleDetailModal;
+
 window.openScheduleDetailModal = function () {
     createScheduleDetailModalIfMissing();
     const modal = document.getElementById("scheduleDetailModal");
@@ -1307,8 +1403,6 @@ window.addEventListener('load', () => {
     initIndexView();
     ensureToggleButtonVisible();
 });
-
-</script>
-<script type="module" src="script.js"></script>
+</script><script type="module" src="script.js"></script>
 </body>
 </html>
