@@ -260,7 +260,6 @@
             border-color: #ef4444;
         }
         .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
-        /* ເຊື່ອງປຸ່ມ "ເພີ່ມນັກຮຽນ (ຫ້ອງອັບເດດ 3)" */
         a[href*="update.html"][href*="tab=students"],
         a[href*="update"][href*="students"],
         button[onclick*="addStudent"],
@@ -269,7 +268,6 @@
         #btnAddStudent {
             display: none !important;
         }
-        /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
         #fbSyncBadge,
         .badge-fb,
         [data-hide-firebase="true"],
@@ -536,10 +534,14 @@
     const COLLECTION_NAME = "student_scores";
     const SUBJECTS_COLLECTION = "subjects";
     const ATTENDANCE_SCORES_COLLECTION = "attendance_scores";
+    const ABSENT_RECORDS_COLLECTION = "absent_records";
+    const TERM_PERIODS_COLLECTION = "term_periods";
 
     const DEFAULT_SUBJECTS = ["ຄະນິດສາດ", "ຟີຊິກສາດ", "ເຄມີສາດ", "ຊີວະສາດ", "ພາສາລາວ", "ພາສາອັງກິດ", "ໄອທີ / ຄອມ"];
     let subjectsList = [...DEFAULT_SUBJECTS];
     let attendanceScoresMap = new Map();
+    let liveAbsentRecords = JSON.parse(localStorage.getItem("school_absent_records") || "[]");
+    let liveTermPeriods = JSON.parse(localStorage.getItem("school_term_periods") || "[]");
 
     function cleanText(v) {
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
@@ -619,7 +621,8 @@
                 rawScore: Number(rawScore.toFixed(2)),
                 maxScore,
                 totalPeriods,
-                absentCount
+                absentCount,
+                term: cleanText(item.term || "")
             };
             if (keys.byId) attendanceScoresMap.set(keys.byId, entry);
             if (keys.byName) attendanceScoresMap.set(keys.byName, entry);
@@ -644,8 +647,62 @@
             rawScore: found.rawScore,
             maxScore: found.maxScore,
             totalPeriods: found.totalPeriods,
-            absentCount: found.absentCount
+            absentCount: found.absentCount,
+            term: found.term || ""
         };
+    }
+
+    function getLiveTermRule(term, grade) {
+        const tVal = cleanText(term);
+        const gVal = cleanGrade(grade);
+        const matches = liveTermPeriods.filter((tp) => {
+            const matchTerm = !tVal || !cleanText(tp.term) || cleanText(tp.term) === tVal;
+            const tpGrade = cleanText(tp.grade);
+            const matchGrade = !tpGrade || tpGrade.toUpperCase() === "ALL" || cleanGrade(tpGrade) === gVal;
+            return matchTerm && matchGrade;
+        });
+        const best = matches.find((m) => cleanGrade(m.grade) === gVal) || matches[0];
+        return {
+            term: cleanText(best?.term) || tVal || "ເທີມ 1 / 2026-2027",
+            totalPeriods: Math.max(1, boundNum(best?.totalPeriods, 1, 500, 40)),
+            maxScore: Math.max(1, boundNum(best?.maxScore, 1, 100, 20))
+        };
+    }
+
+    function getLiveAttendanceForStudent(s) {
+        const linked = getLinkedAttendance(s);
+        const targetTerm = cleanText(linked?.term) || getLiveTermRule("", s.grade).term;
+        const rule = getLiveTermRule(targetTerm, s.grade);
+
+        if (Array.isArray(liveAbsentRecords) && liveAbsentRecords.length > 0) {
+            const sId = cleanText(s.id).toLowerCase();
+            const sName = cleanText(s.name).replace(/\s+/g, " ").toLowerCase();
+            const sGrade = cleanGrade(s.grade).toLowerCase();
+
+            const absentCount = liveAbsentRecords.filter((r) => {
+                const rGrade = cleanGrade(r.grade || r.room).toLowerCase();
+                if (sGrade && rGrade && rGrade !== sGrade) return false;
+                const rTerm = cleanText(r.term);
+                if (rTerm && targetTerm && rTerm !== targetTerm) return false;
+                const rId = cleanText(r.studentId || r.id).toLowerCase();
+                const rName = cleanText(r.studentName || r.name).replace(/\s+/g, " ").toLowerCase();
+                return (sId && rId && rId === sId) || (sName && rName && rName === sName);
+            }).length;
+
+            const attendedPeriods = Math.max(0, rule.totalPeriods - absentCount);
+            const rawScore = Number(((attendedPeriods / rule.totalPeriods) * rule.maxScore).toFixed(2));
+            const score10 = Number(((rawScore / rule.maxScore) * 10).toFixed(1));
+
+            return {
+                score10: boundNum(score10, 0, 10, 0),
+                rawScore,
+                maxScore: rule.maxScore,
+                totalPeriods: rule.totalPeriods,
+                absentCount
+            };
+        }
+
+        return linked;
     }
 
     function getRole() {
@@ -687,7 +744,7 @@
 
     function getCoursework(s, subj) {
         const bySubj = s.courseworkBySubject?.[subj] || s.coursework || {};
-        const linkedAtt = getLinkedAttendance(s);
+        const linkedAtt = getLiveAttendanceForStudent(s);
         return {
             attendance: linkedAtt ? linkedAtt.score10 : boundNum(bySubj.attendance, 0, 10, 8),
             participation: boundNum(bySubj.participation, 0, 10, 8),
@@ -857,7 +914,7 @@
         } else {
             tbAtt.innerHTML = list.map((s, idx) => {
                 const cw = getCoursework(s, subj);
-                const linked = getLinkedAttendance(s);
+                const linked = getLiveAttendanceForStudent(s);
                 const sourceText = linked
                     ? `<span class="pill ${linked.absentCount > 0 ? "pill-warn" : "pill-good"}">${linked.rawScore} / ${linked.maxScore} (ຂາດ ${linked.absentCount} / ${linked.totalPeriods} ຄາບ)</span>`
                     : `<span class="pill">ຍັງບໍ່ມີຂໍ້ມູນກວດຂາດ</span>`;
@@ -997,6 +1054,20 @@
                 saveLocal();
             }
 
+            const tpSnap = await getDocs(collection(db, TERM_PERIODS_COLLECTION));
+            if (!tpSnap.empty) {
+                liveTermPeriods = tpSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                try {
+                    localStorage.setItem("school_term_periods", JSON.stringify(liveTermPeriods));
+                } catch (e) {}
+            }
+
+            const absSnap = await getDocs(collection(db, ABSENT_RECORDS_COLLECTION));
+            liveAbsentRecords = absSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+            try {
+                localStorage.setItem("school_absent_records", JSON.stringify(liveAbsentRecords));
+            } catch (e) {}
+
             const attSnap = await getDocs(collection(db, ATTENDANCE_SCORES_COLLECTION));
             if (!attSnap.empty) {
                 const attItems = attSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -1031,6 +1102,24 @@
         renderAll();
     }, () => {});
 
+    onSnapshot(collection(db, ABSENT_RECORDS_COLLECTION), (snap) => {
+        liveAbsentRecords = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        try {
+            localStorage.setItem("school_absent_records", JSON.stringify(liveAbsentRecords));
+        } catch (e) {}
+        renderAll();
+    }, () => {});
+
+    onSnapshot(collection(db, TERM_PERIODS_COLLECTION), (snap) => {
+        if (!snap.empty) {
+            liveTermPeriods = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+            try {
+                localStorage.setItem("school_term_periods", JSON.stringify(liveTermPeriods));
+            } catch (e) {}
+            renderAll();
+        }
+    }, () => {});
+
     onSnapshot(collection(db, SUBJECTS_COLLECTION), (snap) => {
         if (!snap.empty) {
             const dbSubjects = snap.docs
@@ -1045,11 +1134,22 @@
     }, () => {});
 
     window.addEventListener("storage", (e) => {
-        if (e.key === "schoolSystemDataUpdated" || e.key === "school_attendance_scores_20") {
+        if (
+            e.key === "schoolSystemDataUpdated" ||
+            e.key === "school_attendance_scores_20" ||
+            e.key === "school_absent_records" ||
+            e.key === "school_term_periods"
+        ) {
+            liveAbsentRecords = JSON.parse(localStorage.getItem("school_absent_records") || "[]");
+            liveTermPeriods = JSON.parse(localStorage.getItem("school_term_periods") || "[]");
             loadFromFirestore(false);
         }
     });
-    window.addEventListener("school-data-updated", () => loadFromFirestore(false));
+    window.addEventListener("school-data-updated", () => {
+        liveAbsentRecords = JSON.parse(localStorage.getItem("school_absent_records") || "[]");
+        liveTermPeriods = JSON.parse(localStorage.getItem("school_term_periods") || "[]");
+        loadFromFirestore(false);
+    });
 
     populateSubjectDropdown();
     renderAll();
