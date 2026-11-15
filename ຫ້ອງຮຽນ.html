@@ -72,7 +72,6 @@
         .badge-role-student { background: #2563eb; color: #fff; }
         .badge-fb { display: none !important; }
 
-        /* ເຊື່ອງຟອມ ແລະ ປຸ່ມ ເພີ່ມ / ແກ້ໄຂ / ລົບ ທັງໝົດ ລວມທັງ ADMIN */
         .admin-only,
         #adminClassroomSection,
         .btn-edit,
@@ -240,6 +239,8 @@
     function normalizeRoom(raw, idx = 0) {
         const d = raw || {};
         const roomName = cleanVal(d.name || d.roomName || d.room || d.grade || "");
+        const countRaw = d.studentCount ?? d.capacity ?? d.count ?? 0;
+        const parsedCount = Number(String(countRaw).replace(/[^\d.-]/g, ""));
         return {
             ...d,
             id: cleanVal(d.id || d.firestoreId || roomName || `ROOM-${idx + 1}`),
@@ -247,7 +248,7 @@
             name: roomName,
             advisor: cleanVal(d.advisor || d.homeroomTeacher || d.teacher || ""),
             building: cleanVal(d.building || d.floor || d.level || ""),
-            studentCount: Number(d.studentCount ?? d.capacity ?? 0) || 0,
+            studentCount: Number.isFinite(parsedCount) ? parsedCount : 0,
             note: cleanVal(d.note || d.description || "")
         };
     }
@@ -372,14 +373,26 @@
         const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
         const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const COLLECTION_NAME = "classrooms";
+        const COLLECTIONS = ["classrooms", "rooms"];
+
+        async function fetchAllMergedRooms() {
+            const combined = [];
+            for (const colName of COLLECTIONS) {
+                try {
+                    const snap = await getDocs(collection(db, colName));
+                    snap.forEach((d, idx) => {
+                        combined.push(normalizeRoom({ ...d.data(), firestoreId: d.id, _col: colName }, idx));
+                    });
+                } catch (e) {}
+            }
+            return combined;
+        }
 
         window.fbRoomsApi = {
             async loadRooms(showAlert = false) {
-                const snap = await getDocs(collection(db, COLLECTION_NAME));
-                if (!snap.empty) {
-                    const loaded = snap.docs.map((d, idx) => normalizeRoom({ ...d.data(), firestoreId: d.id }, idx));
-                    classroomsData = dedupeClassrooms(loaded);
+                const merged = await fetchAllMergedRooms();
+                if (merged.length) {
+                    classroomsData = dedupeClassrooms(merged);
                     saveClassroomsLocal();
                 }
                 renderClassroomsTable();
@@ -387,14 +400,21 @@
             }
         };
 
-        onSnapshot(collection(db, COLLECTION_NAME), (snap) => {
-            if (!snap.empty) {
-                const loaded = snap.docs.map((d, idx) => normalizeRoom({ ...d.data(), firestoreId: d.id }, idx));
-                classroomsData = dedupeClassrooms(loaded);
-                saveClassroomsLocal();
-                renderClassroomsTable();
-            }
+        COLLECTIONS.forEach((colName) => {
+            onSnapshot(collection(db, colName), async () => {
+                const merged = await fetchAllMergedRooms();
+                if (merged.length) {
+                    classroomsData = dedupeClassrooms(merged);
+                    saveClassroomsLocal();
+                    renderClassroomsTable();
+                }
+            }, () => {});
         });
+
+        window.addEventListener("storage", (e) => {
+            if (e.key === "schoolSystemDataUpdated") loadClassroomsFromFirestore(false);
+        });
+        window.addEventListener("school-data-updated", () => loadClassroomsFromFirestore(false));
     } catch (err) {
         console.warn("Firebase classrooms fallback:", err);
     }
