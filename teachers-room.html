@@ -92,7 +92,7 @@
 
         .container {
             width: 100%;
-            max-width: 1120px;
+            max-width: 1320px;
             margin: 18px auto 32px;
             padding: 0 14px;
             min-width: 0;
@@ -191,7 +191,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 620px;
+            min-width: 960px;
         }
         th, td {
             border: 1px solid #334155;
@@ -236,6 +236,158 @@
             white-space: nowrap;
         }
 
+        .pass-cell-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .pass-value {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #e2e8f0;
+        }
+        .pass-hidden-text {
+            color: #64748b;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .mini-btn {
+            background: #334155;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            white-space: nowrap;
+        }
+        .mini-btn:hover { background: #475569; }
+        .mini-btn.edit-btn {
+            background: rgba(37, 99, 235, 0.25);
+            border-color: rgba(96, 165, 250, 0.5);
+            color: #93c5fd;
+        }
+        .mini-btn.edit-btn:hover {
+            background: rgba(37, 99, 235, 0.45);
+        }
+
+        /* Modal ແກ້ໄຂອີເມວ ແລະ ລະຫັດຜ່ານ */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.78);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-backdrop.active {
+            display: flex;
+        }
+        .modal-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 4px;
+        }
+        .modal-sub {
+            font-size: 12.5px;
+            color: #94a3b8;
+            margin-bottom: 14px;
+        }
+        .form-field {
+            margin-bottom: 12px;
+        }
+        .form-field label {
+            display: block;
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .form-field input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #f8fafc;
+            font-size: 13px;
+        }
+        .form-field input:focus {
+            outline: none;
+            border-color: #38bdf8;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .btn-cancel {
+            background: #334155;
+            color: #f8fafc;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-save {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-save:hover { background: #1d4ed8; }
+        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e293b;
+            border: 1px solid #38bdf8;
+            color: #f8fafc;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+            z-index: 1200;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: 0.2s;
+            pointer-events: none;
+        }
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 12px auto 24px;
@@ -266,7 +418,7 @@
                 padding: 8px 9px;
             }
             table {
-                min-width: 540px;
+                min-width: 820px;
             }
             th, td {
                 padding: 8px 8px;
@@ -328,7 +480,7 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="filter-search-input">🔍 ຄົ້ນຫາຊື່ຄູ / ຫ້ອງ / ເບີໂທ:</label>
+                    <label for="filter-search-input">🔍 ຄົ້ນຫາຊື່ຄູ / ຫ້ອງ / ເບີໂທ / ອີເມວ:</label>
                     <input type="text" id="filter-search-input" placeholder="ພິມຄຳຄົ້ນຫາ..." oninput="renderCombinedView()">
                 </div>
             </div>
@@ -337,25 +489,51 @@
                 <table>
                     <thead>
                         <tr>
-                            <th class="center" style="width: 68px;">ລຳດັບ</th>
-                            <th class="center" style="width: 155px;">ຊັ້ນ / ຫ້ອງຮຽນ</th>
+                            <th class="center" style="width: 64px;">ລຳດັບ</th>
+                            <th class="center" style="width: 145px;">ຊັ້ນ / ຫ້ອງຮຽນ</th>
                             <th>ຊື່-ນາມສະກຸນ ຄູປະຈຳຫ້ອງ</th>
-                            <th class="center" style="width: 145px;">ຈຳນວນນັກຮຽນ</th>
-                            <th class="center" style="width: 145px;">ເບີໂທລະສັບ</th>
+                            <th class="center" style="width: 130px;">ຈຳນວນນັກຮຽນ</th>
+                            <th class="center" style="width: 135px;">ເບີໂທລະສັບ</th>
+                            <th style="width: 195px;">ອີເມວ</th>
+                            <th class="center" style="width: 210px;">ລະຫັດຜ່ານ</th>
                         </tr>
                     </thead>
                     <tbody id="homeroom-table-body">
-                        <tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງດຶງຂໍ້ມູນຈາກ Firebase...</td></tr>
+                        <tr><td colspan="7" class="center" style="padding: 20px;">ກຳລັງດຶງຂໍ້ມູນຈາກ Firebase...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
     </div>
 
+    <!-- Modal ແກ້ໄຂອີເມວ ແລະ ລະຫັດຜ່ານ (ສຳລັບ Admin ແລະ ເຈົ້າຂອງບັນຊີ) -->
+    <div class="modal-backdrop" id="editCredModal" onclick="if(event.target===this) closeEditModal()">
+        <div class="modal-card">
+            <div class="modal-title">✏️ ແກ້ໄຂອີເມວ ແລະ ລະຫັດຜ່ານ</div>
+            <div class="modal-sub" id="editModalSubtitle">ຄູປະຈຳຫ້ອງ</div>
+            <form id="editCredForm" onsubmit="saveCredentialEdit(event)">
+                <div class="form-field">
+                    <label for="editEmailInput">📧 ອີເມວ (Email)</label>
+                    <input type="email" id="editEmailInput" placeholder="example@school.edu.la">
+                </div>
+                <div class="form-field">
+                    <label for="editPasswordInput">🔑 ລະຫັດຜ່ານ (Password)</label>
+                    <input type="text" id="editPasswordInput" placeholder="ປ້ອນລະຫັດຜ່ານ">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">ຍົກເລີກ</button>
+                    <button type="submit" class="btn-save" id="saveCredBtn">ບັນທຶກ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast-msg" id="toastMsg"></div>
+
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import {
-            getFirestore, collection, getDocs, onSnapshot
+            getFirestore, collection, getDocs, onSnapshot, doc, updateDoc
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const DEFAULT_FIREBASE_CONFIG = {
@@ -396,6 +574,10 @@
             return cleanVal(v).replace(/\s+/g, "");
         }
 
+        function isEmailLike(v) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanVal(v));
+        }
+
         function hasRealHomeroomTeacher(item) {
             const g = cleanGrade(item?.grade);
             const t = cleanVal(item?.teacherName);
@@ -420,11 +602,48 @@
 
         const userRole = getNormalizedRole();
         const userName = cleanVal(localStorage.getItem("userName")) || "User";
+        const currentUserEmail = cleanVal(
+            localStorage.getItem("userEmail") || localStorage.getItem("email") || ""
+        ).toLowerCase();
+        const currentUserId = cleanVal(
+            localStorage.getItem("userId") || localStorage.getItem("uid") || ""
+        );
 
         let latestHomeroom = [];
         let latestRooms = [];
         let latestTeachers = [];
         let studentCountByGrade = new Map();
+        let currentRenderedItems = [];
+        let activeEditingIndex = null;
+        const revealedPasswordKeys = new Set();
+
+        function showToast(message) {
+            const el = document.getElementById("toastMsg");
+            if (!el) return;
+            el.textContent = message;
+            el.classList.add("show");
+            clearTimeout(showToast._timer);
+            showToast._timer = setTimeout(() => {
+                el.classList.remove("show");
+            }, 2800);
+        }
+
+        function isOwnerOfRecord(item) {
+            const itemName = cleanVal(item.teacherName).toLowerCase();
+            const loggedName = cleanVal(userName).toLowerCase();
+            const itemEmail = cleanVal(item.email).toLowerCase();
+            const itemUid = cleanVal(item.uid || item.userId || "");
+
+            if (currentUserId && itemUid && currentUserId === itemUid) return true;
+            if (currentUserEmail && itemEmail && currentUserEmail === itemEmail) return true;
+            if (loggedName && loggedName !== "user" && itemName && itemName === loggedName) return true;
+            return false;
+        }
+
+        function canViewOrEditPassword(item) {
+            if (userRole === "admin") return true;
+            return isOwnerOfRecord(item);
+        }
 
         function rebuildStudentCounts(studentDocs) {
             const counts = new Map();
@@ -449,20 +668,38 @@
             studentCountByGrade = counts;
         }
 
+        function extractEmail(d) {
+            const direct = cleanVal(d.email || d.userEmail || d.teacherEmail || "");
+            if (direct) return direct;
+            const phoneOrAlt = cleanVal(d.phone || "");
+            return isEmailLike(phoneOrAlt) ? phoneOrAlt : "";
+        }
+
+        function extractPassword(d) {
+            return cleanVal(
+                d.password || d.pass || d.userPassword || d.pwd || d.pin || ""
+            );
+        }
+
         function mapHomeroomDoc(docSnap) {
             const d = docSnap.data() || {};
             const gradeVal = cleanGrade(d.grade || d.room || d.name || "");
             const teacherVal = cleanVal(d.teacherName || d.advisor || d.name || "");
-            const phoneVal = cleanVal(d.phone || d.email || "-");
+            const rawPhone = cleanVal(d.phone || "");
+            const phoneVal = isEmailLike(rawPhone) ? "-" : (rawPhone || "-");
             const orderVal = Number(d.order) || 99;
             const capVal = Number(d.capacity ?? d.studentCount ?? 0);
             return {
                 docId: docSnap.id,
+                collectionName: HOMEROOM_COLLECTION,
                 sourceLabel: "",
                 grade: gradeVal,
                 room: gradeVal,
                 teacherName: teacherVal,
-                phone: phoneVal || "-",
+                phone: phoneVal,
+                email: extractEmail(d),
+                password: extractPassword(d),
+                uid: cleanVal(d.uid || d.userId || ""),
                 fallbackCount: Number.isFinite(capVal) && capVal > 0 ? capVal : 0,
                 order: orderVal
             };
@@ -472,15 +709,20 @@
             const d = docSnap.data() || {};
             const gradeVal = cleanGrade(d.name || d.roomName || d.room || d.grade || "");
             const teacherVal = cleanVal(d.advisor || d.homeroomTeacher || d.teacherName || "");
-            const phoneVal = cleanVal(d.phone || d.tel || d.contact || "-");
+            const rawPhone = cleanVal(d.phone || d.tel || d.contact || "");
+            const phoneVal = isEmailLike(rawPhone) ? "-" : (rawPhone || "-");
             const capVal = Number(d.capacity ?? d.studentCount ?? 0);
             return {
                 docId: docSnap.id,
+                collectionName: ROOMS_COLLECTION,
                 sourceLabel: "ຫ້ອງ",
                 grade: gradeVal,
                 room: gradeVal,
                 teacherName: teacherVal,
-                phone: phoneVal || "-",
+                phone: phoneVal,
+                email: extractEmail(d),
+                password: extractPassword(d),
+                uid: cleanVal(d.uid || d.userId || ""),
                 fallbackCount: Number.isFinite(capVal) && capVal > 0 ? capVal : 0,
                 order: 99
             };
@@ -494,16 +736,21 @@
             const gradeVal = rawGrade || (matchedGradeMatch ? cleanGrade(matchedGradeMatch[1]) : "");
             const teacherVal = cleanVal(d.name || d.teacherName || "");
             const subjVal = cleanVal(d.subject || d.major || "");
-            const phoneVal = cleanVal(d.phone || d.email || "-");
+            const rawPhone = cleanVal(d.phone || "");
+            const phoneVal = isEmailLike(rawPhone) ? "-" : (rawPhone || "-");
             const isAdvisor = Boolean(gradeVal) && (isHomeroomDutyText(dutyVal) || Boolean(d.room || d.grade || d.rooms));
 
             return {
                 docId: docSnap.id,
+                collectionName: TEACHERS_COLLECTION,
                 sourceLabel: subjVal ? `ຄູ • ${subjVal}` : "ຄູ",
                 grade: isAdvisor ? gradeVal : "",
                 room: isAdvisor ? gradeVal : "",
                 teacherName: isAdvisor ? teacherVal : "",
-                phone: phoneVal || "-",
+                phone: phoneVal,
+                email: extractEmail(d),
+                password: extractPassword(d),
+                uid: cleanVal(d.uid || d.userId || ""),
                 fallbackCount: 0,
                 order: 99
             };
@@ -533,6 +780,12 @@
                     if ((!target.phone || target.phone === "-") && rm.phone && rm.phone !== "-") {
                         target.phone = rm.phone;
                     }
+                    if (!target.email && rm.email) {
+                        target.email = rm.email;
+                    }
+                    if (!target.password && rm.password) {
+                        target.password = rm.password;
+                    }
                     if (!target.fallbackCount && rm.fallbackCount) {
                         target.fallbackCount = rm.fallbackCount;
                     }
@@ -551,6 +804,12 @@
                     if ((!target.phone || target.phone === "-") && tc.phone && tc.phone !== "-") {
                         target.phone = tc.phone;
                     }
+                    if (!target.email && tc.email) {
+                        target.email = tc.email;
+                    }
+                    if (!target.password && tc.password) {
+                        target.password = tc.password;
+                    }
                 }
             }
 
@@ -558,7 +817,8 @@
                 const gKey = cleanGrade(item.grade).toLowerCase();
                 const liveCount = gKey ? studentCountByGrade.get(gKey) : undefined;
                 const studentCount = liveCount !== undefined ? liveCount : (item.fallbackCount || 0);
-                return { ...item, studentCount };
+                const recordKey = `${item.collectionName}__${item.docId}`;
+                return { ...item, studentCount, recordKey };
             });
         }
 
@@ -589,6 +849,109 @@
             }
         }
 
+        window.toggleRevealPassword = function (recordKey) {
+            if (revealedPasswordKeys.has(recordKey)) {
+                revealedPasswordKeys.delete(recordKey);
+            } else {
+                revealedPasswordKeys.add(recordKey);
+            }
+            renderCombinedView();
+        };
+
+        window.openEditModal = function (idx) {
+            const item = currentRenderedItems[idx];
+            if (!item) return;
+            if (!canViewOrEditPassword(item)) {
+                showToast("ທ່ານບໍ່ມີສິດແກ້ໄຂຂໍ້ມູນຂອງຜູ້ໃຊ້ອື່ນ");
+                return;
+            }
+            activeEditingIndex = idx;
+            document.getElementById("editModalSubtitle").textContent =
+                `${item.grade} — ${item.teacherName}`;
+            document.getElementById("editEmailInput").value = item.email || "";
+            document.getElementById("editPasswordInput").value = item.password || "";
+            document.getElementById("editCredModal").classList.add("active");
+        };
+
+        window.closeEditModal = function () {
+            activeEditingIndex = null;
+            document.getElementById("editCredModal").classList.remove("active");
+        };
+
+        window.saveCredentialEdit = async function (event) {
+            event.preventDefault();
+            if (activeEditingIndex === null) return;
+            const item = currentRenderedItems[activeEditingIndex];
+            if (!item || !canViewOrEditPassword(item)) return;
+
+            const newEmail = cleanVal(document.getElementById("editEmailInput").value);
+            const newPassword = cleanVal(document.getElementById("editPasswordInput").value);
+            const saveBtn = document.getElementById("saveCredBtn");
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = "ກຳລັງບັນທຶກ...";
+
+            try {
+                if (item.docId && item.collectionName) {
+                    const docRef = doc(db, item.collectionName, item.docId);
+                    await updateDoc(docRef, {
+                        email: newEmail,
+                        password: newPassword
+                    });
+                }
+
+                // ອັບເດດໃນ state ທ້ອງຖິ່ນທັນທີ
+                const applyLocalUpdate = (arr) => {
+                    for (const rec of arr) {
+                        if (rec.docId === item.docId || cleanGrade(rec.grade).toLowerCase() === cleanGrade(item.grade).toLowerCase()) {
+                            rec.email = newEmail;
+                            rec.password = newPassword;
+                        }
+                    }
+                };
+                applyLocalUpdate(latestHomeroom);
+                applyLocalUpdate(latestRooms);
+                applyLocalUpdate(latestTeachers);
+
+                if (isOwnerOfRecord(item) && newEmail) {
+                    localStorage.setItem("userEmail", newEmail);
+                }
+
+                renderCombinedView();
+                closeEditModal();
+                showToast("ບັນທຶກອີເມວ ແລະ ລະຫັດຜ່ານສຳເລັດແລ້ວ");
+            } catch (err) {
+                console.error(err);
+                showToast("ບັນທຶກບໍ່ສຳເລັດ: " + (err.message || "ກວດສອບສິດ Firestore"));
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "ບັນທຶກ";
+            }
+        };
+
+        function renderPasswordCell(item, idx) {
+            const allowed = canViewOrEditPassword(item);
+            if (!allowed) {
+                return `<span class="pass-hidden-text">🔒 ເຊື່ອງໄວ້</span>`;
+            }
+
+            const isShown = revealedPasswordKeys.has(item.recordKey);
+            const hasPass = Boolean(item.password);
+            const displayPass = !hasPass
+                ? `<span class="pass-hidden-text">-</span>`
+                : (isShown
+                    ? `<span class="pass-value">${esc(item.password)}</span>`
+                    : `<span class="pass-value">••••••••</span>`);
+
+            const toggleBtn = hasPass
+                ? `<button type="button" class="mini-btn" onclick="toggleRevealPassword('${esc(item.recordKey)}')">${isShown ? "ເຊື່ອງ" : "ເບິ່ງ"}</button>`
+                : "";
+
+            const editBtn = `<button type="button" class="mini-btn edit-btn" onclick="openEditModal(${idx})">ແກ້ໄຂ</button>`;
+
+            return `<div class="pass-cell-box">${displayPass}${toggleBtn}${editBtn}</div>`;
+        }
+
         window.renderCombinedView = function () {
             const allList = mergeRecords(latestHomeroom, latestRooms, latestTeachers);
             allList.sort((a, b) => (a.order || 99) - (b.order || 99) || String(a.grade).localeCompare(String(b.grade)));
@@ -604,16 +967,19 @@
                     String(item.grade || "").toLowerCase().includes(searchKw) ||
                     String(item.teacherName || "").toLowerCase().includes(searchKw) ||
                     String(item.phone || "").toLowerCase().includes(searchKw) ||
+                    String(item.email || "").toLowerCase().includes(searchKw) ||
                     String(item.sourceLabel || "").toLowerCase().includes(searchKw);
                 return matchesRoom && matchesSearch;
             });
+
+            currentRenderedItems = filteredList;
 
             const tbody = document.getElementById("homeroom-table-body");
             const totalBadge = document.getElementById("room-total-count");
             totalBadge.innerText = `ຈຳນວນລາຍການ: ${filteredList.length} / ${allList.length} ລາຍການ`;
 
             if (filteredList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #94a3b8;">ບໍ່ມີຂໍ້ມູນຄູປະຈຳຫ້ອງ</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="center" style="padding: 20px; color: #94a3b8;">ບໍ່ມີຂໍ້ມູນຄູປະຈຳຫ້ອງ</td></tr>`;
                 return;
             }
 
@@ -628,6 +994,8 @@
                         <td>${esc(item.teacherName)}${tagHtml}</td>
                         <td class="center"><span class="student-count-pill">${esc(String(item.studentCount ?? 0))} ຄົນ</span></td>
                         <td class="center">${esc(item.phone || '-')}</td>
+                        <td>${esc(item.email || '-')}</td>
+                        <td class="center">${renderPasswordCell(item, idx)}</td>
                     </tr>
                 `;
             });
@@ -637,7 +1005,7 @@
 
         window.loadHomeroomTeachers = async function () {
             const tbody = document.getElementById("homeroom-table-body");
-            tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງດຶງຂໍ້ມູນຈາກ Firebase...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="center" style="padding: 20px;">ກຳລັງດຶງຂໍ້ມູນຈາກ Firebase...</td></tr>`;
 
             try {
                 try {
@@ -671,7 +1039,7 @@
                 renderCombinedView();
             } catch (err) {
                 console.error(err);
-                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #fca5a5;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ: ${esc(err.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="center" style="padding: 20px; color: #fca5a5;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ: ${esc(err.message)}</td></tr>`;
             }
         };
 
