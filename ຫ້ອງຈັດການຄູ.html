@@ -35,10 +35,10 @@
         .topbar-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
-        .back-btn {
+        .back-btn, a.top-link {
             background: #334155;
             color: #f8fafc;
             text-decoration: none;
@@ -46,8 +46,13 @@
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        .back-btn:hover { background: #475569; }
+        .back-btn:hover, a.top-link:hover { background: #475569; }
+        a.top-link-upd { background: #2563eb; color: #fff; font-size: 13px; padding: 7px 12px; }
+        a.top-link-upd:hover { background: #1d4ed8; }
         .page-title {
             margin: 0;
             font-size: 18px;
@@ -253,9 +258,12 @@
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
+            <a href="teachers-room.html" class="top-link">👩‍🏫 ຜັງຄູປະຈຳຫ້ອງ</a>
+            <a href="update.html?tab=teachers" class="top-link top-link-upd admin-only" style="display: none;">🛠️ ຫ້ອງອັບເດດຄູ</a>
             <h1 class="page-title">👩‍🏫 ຫ້ອງຈັດການຄູ</h1>
         </div>
         <div class="user-meta">
+            <span id="fbSyncBadge" class="badge badge-fb">🔥 Firebase</span>
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
             <span id="currentUserRole" class="badge badge-role-student">STUDENT</span>
             <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
@@ -379,7 +387,7 @@
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, setDoc, deleteDoc, doc
+        getFirestore, collection, getDocs, onSnapshot, setDoc, deleteDoc, doc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -398,14 +406,24 @@
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const COLLECTION_NAME = "teachers";
+    const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
+    const SYNC_EVENT_NAME = "school-data-updated";
+
+    function cleanVal(v) {
+        return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
+    }
+
+    function cleanGrade(v) {
+        return cleanVal(v).replace(/\s+/g, "");
+    }
 
     function resolveRole() {
-        const raw = (
+        const raw = cleanVal(
             localStorage.getItem("userRole") ||
             localStorage.getItem("role") ||
             localStorage.getItem("user_role") ||
             "student"
-        ).trim().toLowerCase();
+        ).toLowerCase();
 
         if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
         if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
@@ -413,9 +431,21 @@
     }
 
     const role = resolveRole();
-    const userGrade = localStorage.getItem("userGrade") || "ມ.5";
-    const userName = localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
+    const userGrade = cleanGrade(localStorage.getItem("userGrade") || "ມ.5") || "ມ.5";
+    const userName = cleanVal(localStorage.getItem("userName")) || "ຜູ້ໃຊ້ງານ";
     const isAdmin = role === "admin";
+
+    function broadcastSystemDataUpdated(tabKey = "teachers") {
+        const payload = {
+            tab: tabKey,
+            updatedBy: userName,
+            timestamp: Date.now()
+        };
+        try {
+            localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(payload));
+        } catch (e) {}
+        window.dispatchEvent(new CustomEvent(SYNC_EVENT_NAME, { detail: payload }));
+    }
 
     const roleBadge = document.getElementById("currentUserRole");
     roleBadge.textContent = role.toUpperCase();
@@ -429,7 +459,29 @@
         if (el) el.textContent = text;
     }
 
-    let teachersData = JSON.parse(localStorage.getItem("school_teachers_data") || "null") || [
+    function normalizeTeacherRecord(raw, fallbackId = "") {
+        const d = raw || {};
+        const idVal = cleanVal(d.id || d.code || fallbackId);
+        const nameVal = cleanVal(d.name || d.teacherName || "");
+        const subjectVal = cleanVal(d.subject || d.major || "");
+        const roomsVal = cleanVal(d.rooms || d.room || d.grade || "");
+        return {
+            id: idVal,
+            firestoreId: cleanVal(d.firestoreId || fallbackId || idVal),
+            code: cleanVal(d.code || idVal),
+            name: nameVal,
+            subject: subjectVal,
+            rooms: roomsVal,
+            room: roomsVal,
+            department: cleanVal(d.department || "ວິທະຍາສາດ ແລະ ຄະນິດສາດ"),
+            joinYear: cleanVal(d.joinYear || ""),
+            education: cleanVal(d.education || ""),
+            phone: cleanVal(d.phone || ""),
+            history: cleanVal(d.history || "")
+        };
+    }
+
+    let teachersData = (JSON.parse(localStorage.getItem("school_teachers_data") || "null") || [
         {
             id: "TCH-001",
             firestoreId: "TCH-001",
@@ -469,13 +521,12 @@
             phone: "020 7766 5544",
             history: "ສອນພື້ນຖານການຂຽນໂປຣແກຣມ, ລະບົບຂໍ້ມູນ ແລະ ດູແລຫ້ອງປະຕິບັດການຄອມພິວເຕີ."
         }
-    ];
+    ]).map((t, i) => normalizeTeacherRecord(t, t.id || `TCH-${i + 1}`));
 
     function saveTeachersLocal() {
         localStorage.setItem("school_teachers_data", JSON.stringify(teachersData));
     }
 
-    // ເຊື່ອງເມນູເພີ່ມ/ແກ້ໄຂ/ລົບຄູຈາກນັກຮຽນ ແລະ ຄູ, ເປີດສະເພາະແອັດມິນ
     function applyRolePermissions() {
         document.querySelectorAll(".admin-only").forEach((el) => {
             if (isAdmin) {
@@ -530,7 +581,7 @@
                 </div>
                 <div class="history-item">
                     <span class="history-label">ຫ້ອງທີ່ຮັບຜິດຊອບ</span>
-                    <strong>${esc(target.rooms || "-")}</strong>
+                    <strong>${esc(target.rooms || target.room || "-")}</strong>
                 </div>
                 <div class="history-item">
                     <span class="history-label">ປີເຂົ້າເຮັດວຽກ</span>
@@ -553,13 +604,13 @@
     };
 
     window.renderTeachersTable = function () {
-        const q = (document.getElementById("searchTeacherInput").value || "").trim().toLowerCase();
-        const dept = document.getElementById("filterDepartmentSelect").value;
+        const q = cleanVal(document.getElementById("searchTeacherInput").value).toLowerCase();
+        const dept = cleanVal(document.getElementById("filterDepartmentSelect").value);
         const tbody = document.getElementById("teachersTableBody");
 
         const filtered = teachersData.filter((t) => {
-            const matchDept = !dept || t.department === dept;
-            const hay = `${t.code || ""} ${t.name || ""} ${t.subject || ""} ${t.rooms || ""} ${t.department || ""}`.toLowerCase();
+            const matchDept = !dept || cleanVal(t.department) === dept;
+            const hay = `${t.code || ""} ${t.name || ""} ${t.subject || ""} ${t.rooms || ""} ${t.room || ""} ${t.department || ""}`.toLowerCase();
             const matchQuery = !q || hay.includes(q);
             return matchDept && matchQuery;
         });
@@ -575,7 +626,7 @@
                 <td>${esc(t.code || t.id)}</td>
                 <td><strong>${esc(t.name)}</strong></td>
                 <td><span class="subject-pill">${esc(t.subject)}</span></td>
-                <td>${esc(t.rooms || "-")}</td>
+                <td>${esc(t.rooms || t.room || "-")}</td>
                 <td>${esc(t.department || "-")}</td>
                 <td>${esc(t.joinYear || "-")}</td>
                 <td>
@@ -604,7 +655,7 @@
         document.getElementById("teacherCodeInput").value = target.code || target.id;
         document.getElementById("teacherNameInput").value = target.name || "";
         document.getElementById("teacherSubjectInput").value = target.subject || "";
-        document.getElementById("teacherRoomInput").value = target.rooms || "";
+        document.getElementById("teacherRoomInput").value = target.rooms || target.room || "";
         document.getElementById("teacherDeptInput").value = target.department || "ວິທະຍາສາດ ແລະ ຄະນິດສາດ";
         document.getElementById("teacherJoinYearInput").value = target.joinYear || "";
         document.getElementById("teacherEducationInput").value = target.education || "";
@@ -622,34 +673,35 @@
         e.preventDefault();
         if (!isAdmin) return alert("❌ ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ບັນທຶກຂໍ້ມູນຄູໄດ້!");
 
-        const editingId = document.getElementById("editingTeacherId").value.trim();
-        const code = document.getElementById("teacherCodeInput").value.trim();
-        const name = document.getElementById("teacherNameInput").value.trim();
-        const subject = document.getElementById("teacherSubjectInput").value.trim();
-        const rooms = document.getElementById("teacherRoomInput").value.trim();
-        const department = document.getElementById("teacherDeptInput").value;
-        const joinYear = document.getElementById("teacherJoinYearInput").value.trim();
-        const education = document.getElementById("teacherEducationInput").value.trim();
-        const phone = document.getElementById("teacherPhoneInput").value.trim();
-        const history = document.getElementById("teacherHistoryInput").value.trim();
+        const editingId = cleanVal(document.getElementById("editingTeacherId").value);
+        const code = cleanVal(document.getElementById("teacherCodeInput").value);
+        const name = cleanVal(document.getElementById("teacherNameInput").value);
+        const subject = cleanVal(document.getElementById("teacherSubjectInput").value);
+        const rooms = cleanVal(document.getElementById("teacherRoomInput").value);
+        const department = cleanVal(document.getElementById("teacherDeptInput").value);
+        const joinYear = cleanVal(document.getElementById("teacherJoinYearInput").value);
+        const education = cleanVal(document.getElementById("teacherEducationInput").value);
+        const phone = cleanVal(document.getElementById("teacherPhoneInput").value);
+        const history = cleanVal(document.getElementById("teacherHistoryInput").value);
 
         if (!name || !subject) return;
 
         const docId = editingId || code || ("TCH-" + Date.now());
-        const record = {
+        const record = normalizeTeacherRecord({
             id: docId,
             firestoreId: docId,
             code: code || docId,
             name,
             subject,
             rooms,
+            room: rooms,
             department,
             joinYear,
             education,
             phone,
             history,
             updatedAt: new Date().toISOString()
-        };
+        }, docId);
 
         try {
             await setDoc(doc(db, COLLECTION_NAME, docId), record, { merge: true });
@@ -667,6 +719,7 @@
         }
 
         saveTeachersLocal();
+        broadcastSystemDataUpdated("teachers");
         resetTeacherForm();
         switchSubmenu("history");
         renderTeachersTable();
@@ -691,6 +744,7 @@
 
         teachersData = teachersData.filter((t) => t.id !== id);
         saveTeachersLocal();
+        broadcastSystemDataUpdated("teachers");
         renderTeachersTable();
         document.getElementById("teacherDetailContent").innerHTML =
             "ກົດປຸ່ມ \"ເບິ່ງປະຫວັດ\" ໃນຕາຕະລາງດ້ານເທິງ ເພື່ອເບິ່ງປະຫວັດການສອນ ແລະ ບັນທຶກປະຫວັດຂອງຄູ.";
@@ -700,11 +754,7 @@
         try {
             const snap = await getDocs(collection(db, COLLECTION_NAME));
             if (!snap.empty) {
-                teachersData = snap.docs.map((d) => ({
-                    id: d.data().id || d.id,
-                    firestoreId: d.id,
-                    ...d.data()
-                }));
+                teachersData = snap.docs.map((d) => normalizeTeacherRecord(d.data(), d.id));
                 saveTeachersLocal();
             }
             updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId}`);
@@ -717,8 +767,21 @@
         }
     };
 
+    onSnapshot(collection(db, COLLECTION_NAME), (snap) => {
+        if (!snap.empty) {
+            teachersData = snap.docs.map((d) => normalizeTeacherRecord(d.data(), d.id));
+            saveTeachersLocal();
+            renderTeachersTable();
+        }
+    }, () => {});
+
+    window.addEventListener("storage", (e) => {
+        if (e.key === SYNC_STORAGE_KEY) loadTeachersFromFirestore(false);
+    });
+    window.addEventListener(SYNC_EVENT_NAME, () => loadTeachersFromFirestore(false));
+
     function esc(str) {
-        return String(str || "")
+        return String(str ?? "")
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
