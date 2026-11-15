@@ -213,11 +213,6 @@
         }
         th.center, td.center { text-align: center; }
 
-        .highlight-row td {
-            background: rgba(34, 197, 94, 0.14);
-            color: #dcfce7;
-            font-weight: 600;
-        }
         .source-tag {
             display: inline-block;
             font-size: 11px;
@@ -318,7 +313,7 @@
         <section class="panel">
             <div class="panel-header">
                 <h2>👩‍🏫 ຜັງລາຍຊື່ຄູປະຈຳຫ້ອງ (ຊັ້ນຮຽນຕ່າງໆ)</h2>
-                <p class="subtitle" id="user-role-subtitle">ກວດສອບຊື່ຄູອາຈານທີ່ຮັບຜິດຊອບເປັນຄູປະຈຳຊັ້ນ/ຫ້ອງ ແລະ ຈຳນວນນັກຮຽນ</p>
+                <p class="subtitle" id="user-role-subtitle">ສະແດງສະເພາະຄູປະຈຳຫ້ອງທີ່ມີຂໍ້ມູນແທ້ ແລະ ຈຳນວນນັກຮຽນ</p>
             </div>
 
             <div class="top-bar">
@@ -385,12 +380,33 @@
         const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
         const SYNC_EVENT_NAME = "school-data-updated";
 
+        const PLACEHOLDER_TEACHER_NAMES = new Set([
+            "",
+            "-",
+            "ຍັງບໍ່ໄດ້ລະບຸຄູປະຈຳຫ້ອງ",
+            "ບໍ່ມີຄູປະຈຳຫ້ອງ",
+            "ຍັງບໍ່ມີ"
+        ]);
+
         function cleanVal(v) {
             return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
         }
 
         function cleanGrade(v) {
             return cleanVal(v).replace(/\s+/g, "");
+        }
+
+        function hasRealHomeroomTeacher(item) {
+            const g = cleanGrade(item?.grade);
+            const t = cleanVal(item?.teacherName);
+            if (!g || g === "-") return false;
+            if (PLACEHOLDER_TEACHER_NAMES.has(t.toLowerCase())) return false;
+            return true;
+        }
+
+        function isHomeroomDutyText(dutyText) {
+            const d = cleanVal(dutyText).toLowerCase();
+            return d.includes("ປະຈຳຫ້ອງ") || d.includes("ປະຈຳຊັ້ນ") || d.includes("homeroom") || d.includes("advisor");
         }
 
         function getNormalizedRole() {
@@ -404,7 +420,6 @@
 
         const userRole = getNormalizedRole();
         const userName = cleanVal(localStorage.getItem("userName")) || "User";
-        const userGrade = cleanGrade(localStorage.getItem("userGrade") || "");
 
         let latestHomeroom = [];
         let latestRooms = [];
@@ -456,7 +471,7 @@
         function mapRoomDoc(docSnap) {
             const d = docSnap.data() || {};
             const gradeVal = cleanGrade(d.name || d.roomName || d.room || d.grade || "");
-            const teacherVal = cleanVal(d.advisor || d.homeroomTeacher || d.teacherName || "ຍັງບໍ່ໄດ້ລະບຸຄູປະຈຳຫ້ອງ");
+            const teacherVal = cleanVal(d.advisor || d.homeroomTeacher || d.teacherName || "");
             const phoneVal = cleanVal(d.phone || d.tel || d.contact || "-");
             const capVal = Number(d.capacity ?? d.studentCount ?? 0);
             return {
@@ -473,16 +488,21 @@
 
         function mapTeacherDoc(docSnap) {
             const d = docSnap.data() || {};
-            const gradeVal = cleanGrade(d.room || d.grade || "");
+            const dutyVal = cleanVal(d.duty || d.responsibility || "");
+            const rawGrade = cleanGrade(d.room || d.grade || d.rooms || "");
+            const matchedGradeMatch = dutyVal.match(/(ມ\.\d+(?:\/\d+)?)/i);
+            const gradeVal = rawGrade || (matchedGradeMatch ? cleanGrade(matchedGradeMatch[1]) : "");
             const teacherVal = cleanVal(d.name || d.teacherName || "");
             const subjVal = cleanVal(d.subject || d.major || "");
             const phoneVal = cleanVal(d.phone || d.email || "-");
+            const isAdvisor = Boolean(gradeVal) && (isHomeroomDutyText(dutyVal) || Boolean(d.room || d.grade || d.rooms));
+
             return {
                 docId: docSnap.id,
                 sourceLabel: subjVal ? `ຄູ • ${subjVal}` : "ຄູ",
-                grade: gradeVal || "-",
-                room: gradeVal || "-",
-                teacherName: teacherVal,
+                grade: isAdvisor ? gradeVal : "",
+                room: isAdvisor ? gradeVal : "",
+                teacherName: isAdvisor ? teacherVal : "",
                 phone: phoneVal || "-",
                 fallbackCount: 0,
                 order: 99
@@ -490,45 +510,47 @@
         }
 
         function mergeRecords(homeroomList, roomList, teacherList) {
-            const merged = [...homeroomList];
-            const existingGrades = new Set(homeroomList.map((r) => cleanGrade(r.grade).toLowerCase()).filter(Boolean));
-            const existingTeachers = new Set(homeroomList.map((r) => cleanVal(r.teacherName).toLowerCase()).filter(Boolean));
+            const merged = [];
+            const gradeMap = new Map();
 
-            for (const rm of roomList) {
-                if (!rm.grade) continue;
-                const gKey = rm.grade.toLowerCase();
-                if (!existingGrades.has(gKey)) {
-                    merged.push(rm);
-                    existingGrades.add(gKey);
+            const validHomeroom = homeroomList.filter(hasRealHomeroomTeacher);
+            for (const hr of validHomeroom) {
+                const gKey = cleanGrade(hr.grade).toLowerCase();
+                const entry = { ...hr };
+                merged.push(entry);
+                if (!gradeMap.has(gKey)) gradeMap.set(gKey, entry);
+            }
+
+            const validRooms = roomList.filter(hasRealHomeroomTeacher);
+            for (const rm of validRooms) {
+                const gKey = cleanGrade(rm.grade).toLowerCase();
+                if (!gradeMap.has(gKey)) {
+                    const entry = { ...rm };
+                    merged.push(entry);
+                    gradeMap.set(gKey, entry);
                 } else {
-                    const target = merged.find((x) => cleanGrade(x.grade).toLowerCase() === gKey);
-                    if (target) {
-                        if (rm.teacherName && rm.teacherName !== "ຍັງບໍ່ໄດ້ລະບຸຄູປະຈຳຫ້ອງ" && (!target.teacherName || target.teacherName === "-")) {
-                            target.teacherName = rm.teacherName;
-                        }
-                        if ((!target.phone || target.phone === "-") && rm.phone && rm.phone !== "-") {
-                            target.phone = rm.phone;
-                        }
-                        if (!target.fallbackCount && rm.fallbackCount) {
-                            target.fallbackCount = rm.fallbackCount;
-                        }
+                    const target = gradeMap.get(gKey);
+                    if ((!target.phone || target.phone === "-") && rm.phone && rm.phone !== "-") {
+                        target.phone = rm.phone;
+                    }
+                    if (!target.fallbackCount && rm.fallbackCount) {
+                        target.fallbackCount = rm.fallbackCount;
                     }
                 }
             }
 
-            for (const tc of teacherList) {
-                if (!tc.teacherName) continue;
-                const tKey = tc.teacherName.toLowerCase();
-                const gKey = tc.grade && tc.grade !== "-" ? tc.grade.toLowerCase() : "";
-                if (gKey && existingGrades.has(gKey)) {
-                    const target = merged.find((x) => cleanGrade(x.grade).toLowerCase() === gKey);
-                    if (target && (!target.teacherName || target.teacherName === "-")) {
-                        target.teacherName = tc.teacherName;
-                        if (tc.phone && tc.phone !== "-") target.phone = tc.phone;
+            const validTeachers = teacherList.filter(hasRealHomeroomTeacher);
+            for (const tc of validTeachers) {
+                const gKey = cleanGrade(tc.grade).toLowerCase();
+                if (!gradeMap.has(gKey)) {
+                    const entry = { ...tc };
+                    merged.push(entry);
+                    gradeMap.set(gKey, entry);
+                } else {
+                    const target = gradeMap.get(gKey);
+                    if ((!target.phone || target.phone === "-") && tc.phone && tc.phone !== "-") {
+                        target.phone = tc.phone;
                     }
-                } else if (!existingTeachers.has(tKey)) {
-                    merged.push(tc);
-                    existingTeachers.add(tKey);
                 }
             }
 
@@ -591,23 +613,19 @@
             totalBadge.innerText = `ຈຳນວນລາຍການ: ${filteredList.length} / ${allList.length} ລາຍການ`;
 
             if (filteredList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #94a3b8;">ບໍ່ມີຂໍ້ມູນຄູປະຈຳຫ້ອງໃນ Firebase</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #94a3b8;">ບໍ່ມີຂໍ້ມູນຄູປະຈຳຫ້ອງ</td></tr>`;
                 return;
             }
 
             let html = '';
             filteredList.forEach((item, idx) => {
-                const isTargetGrade = Boolean(userGrade) && cleanGrade(item.grade).toLowerCase() === userGrade.toLowerCase();
-                const rowClass = isTargetGrade ? 'class="highlight-row"' : '';
-                const gradeLabel = isTargetGrade ? `⭐ ${esc(item.grade)} (ຫ້ອງປະຈຳ)` : `<strong>${esc(item.grade || '-')}</strong>`;
-                const nameStyle = isTargetGrade ? 'style="color: #86efac;"' : '';
                 const tagHtml = item.sourceLabel ? `<span class="source-tag">${esc(item.sourceLabel)}</span>` : "";
 
                 html += `
-                    <tr ${rowClass}>
+                    <tr>
                         <td class="center">${idx + 1}</td>
-                        <td class="center">${gradeLabel}</td>
-                        <td ${nameStyle}>${esc(item.teacherName || '-')}${tagHtml}</td>
+                        <td class="center"><strong>${esc(item.grade)}</strong></td>
+                        <td>${esc(item.teacherName)}${tagHtml}</td>
                         <td class="center"><span class="student-count-pill">${esc(String(item.studentCount ?? 0))} ຄົນ</span></td>
                         <td class="center">${esc(item.phone || '-')}</td>
                     </tr>
@@ -693,9 +711,7 @@
         window.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("top-user-name").innerText = userName;
             document.getElementById("top-user-role").innerText = userRole.toUpperCase();
-            document.getElementById("user-role-subtitle").innerText = userGrade
-                ? `ຜູ້ໃຊ້ງານ: ${userName} (${userRole.toUpperCase()}) • ຫ້ອງ: ${userGrade}`
-                : `ຜູ້ໃຊ້ງານ: ${userName} (${userRole.toUpperCase()})`;
+            document.getElementById("user-role-subtitle").innerText = `ຜູ້ໃຊ້ງານ: ${userName} (${userRole.toUpperCase()})`;
 
             await loadHomeroomTeachers();
         });
