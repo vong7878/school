@@ -1307,6 +1307,111 @@ window.addEventListener('load', () => {
     initIndexView();
     ensureToggleButtonVisible();
 });
+ 
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
+        authDomain: "my-school-c1104.firebaseapp.com",
+        projectId: "my-school-c1104",
+        storageBucket: "my-school-c1104.appspot.com",
+        messagingSenderId: "339930418459",
+        appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+        measurementId: "G-NPNFSW2C72"
+    };
+
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    function cleanRoom(v) {
+        return String(v ?? "").trim().replace(/^["']+|["']+$/g, "").replace(/\s+/g, "");
+    }
+
+    function cleanDay(v) {
+        return String(v ?? "").trim().replace(/^["']+|["']+$/g, "").replace(/^ວັນ/, "");
+    }
+
+    function escapeText(v) {
+        return String(v ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    const DAYS = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ"];
+    let weeklyList = [];
+    let timetableList = [];
+
+    function getActiveStudentRoom() {
+        const selectEl = document.querySelector("#student-room-select, #stu-room-select, #room-select, select[name='room']");
+        const fromSelect = cleanRoom(selectEl?.value);
+        const fromStorage = cleanRoom(localStorage.getItem("userGrade") || localStorage.getItem("studentRoom") || localStorage.getItem("room"));
+        return fromSelect || fromStorage || "ມ.6";
+    }
+
+    function renderSyncedStudentTimetableInIndex() {
+        const targetRoom = getActiveStudentRoom();
+        const combined = [...weeklyList, ...timetableList]
+            .map((d) => ({
+                day: cleanDay(d.day),
+                period: String(d.period || "1").trim(),
+                room: cleanRoom(d.room || d.grade || d.classRoom),
+                subject: String(d.subject || "").trim(),
+                teacher: String(d.teacher || d.teacherName || "").trim()
+            }))
+            .filter((item) => {
+                if (!item.subject) return false;
+                if (!targetRoom) return true;
+                return item.room === targetRoom || (targetRoom === "ມ.6" && item.room.startsWith("ມ.6/"));
+            });
+
+        // ຖ້າມີ tbody ຂອງຕາຕະລາງຮຽນໃນ index.html ໃຫ້ອັບເດດທັນທີ
+        const tbody = document.querySelector("#student-timetable-tbody, #stu-weekly-tbody, #timetable-tbody");
+        if (tbody) {
+            tbody.innerHTML = DAYS.map((dayName) => {
+                const cols = [1, 2, 3, 4].map((p) => {
+                    const found = combined.filter((x) => x.day === dayName && x.period === String(p));
+                    if (!found.length) return `<td>- ວ່າງ -</td>`;
+                    return `<td>${found.map((m) => `
+                        <div style="margin-bottom:4px;padding:6px;border-radius:6px;background:rgba(56,189,248,0.12);">
+                            <strong>${escapeText(m.subject)}</strong><br>
+                            <small>👩‍🏫 ${escapeText(m.teacher)} | 🏫 ${escapeText(m.room)}</small>
+                        </div>
+                    `).join("")}</td>`;
+                }).join("");
+                return `<tr><td><strong>ວັນ${dayName}</strong></td>${cols}</tr>`;
+            }).join("");
+        }
+
+        // ສົ່ງ event ໃຫ້ຟັງຊັນແຕ້ມຕາຕະລາງເດີມໃນ index.html (ຖ້າມີ)
+        window.syncedStudentTimetable = combined;
+        window.dispatchEvent(new CustomEvent("student-timetable-synced", { detail: { room: targetRoom, items: combined } }));
+    }
+
+    onSnapshot(collection(db, "weekly_schedules"), (snap) => {
+        weeklyList = snap.docs.map((docSnap) => docSnap.data());
+        renderSyncedStudentTimetableInIndex();
+    });
+
+    onSnapshot(collection(db, "timetables"), (snap) => {
+        timetableList = snap.docs.map((docSnap) => docSnap.data());
+        renderSyncedStudentTimetableInIndex();
+    });
+
+    window.addEventListener("storage", (e) => {
+        if (e.key === "schoolSystemDataUpdated" || e.key === "userGrade") {
+            renderSyncedStudentTimetableInIndex();
+        }
+    });
+
+    document.addEventListener("change", (e) => {
+        if (e.target && e.target.matches("#student-room-select, #stu-room-select, #room-select, select[name='room']")) {
+            renderSyncedStudentTimetableInIndex();
+        }
+    });
+
 </script>
 <script type="module" src="script.js"></script>
 </body>
