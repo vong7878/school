@@ -2,24 +2,46 @@
 <html lang="lo">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>🏫 ຫ້ອງຮຽນ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        * { box-sizing: border-box; }
-        body {
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body {
             margin: 0;
             font-family: 'Noto Sans Lao', sans-serif;
             background: #0f172a;
             color: #e2e8f0;
-            padding: 16px;
+            padding: 14px;
+            min-height: 100vh;
+            min-height: 100dvh;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
         }
         .container {
+            width: 100%;
             max-width: 1180px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
+            min-width: 0;
+        }
+        .quota-banner {
+            background: rgba(245, 158, 11, 0.16);
+            border: 1px solid rgba(245, 158, 11, 0.55);
+            color: #fef08a;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 12px;
+            line-height: 1.4;
+            display: none;
+            overflow-wrap: anywhere;
+        }
+        .quota-banner.show {
+            display: block;
         }
         .topbar {
             background: #1e293b;
@@ -31,12 +53,15 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
+            min-width: 0;
         }
         .topbar-left {
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
+            min-width: 0;
+            flex: 1 1 auto;
         }
         .back-btn {
             background: #334155;
@@ -44,15 +69,19 @@
             text-decoration: none;
             padding: 8px 14px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         .back-btn:hover { background: #475569; }
         .page-title {
             margin: 0;
-            font-size: 18px;
+            font-size: clamp(16px, 4.2vw, 18.5px);
             font-weight: 700;
             color: #f8fafc;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
         }
         .user-meta {
             display: flex;
@@ -60,17 +89,26 @@
             gap: 8px;
             font-size: 13px;
             flex-wrap: wrap;
+            max-width: 100%;
+            min-width: 0;
+        }
+        #currentUserName {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 200px;
         }
         .badge {
             padding: 4px 10px;
             border-radius: 999px;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11.5px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         .badge-role-admin { background: #dc2626; color: #fff; }
         .badge-role-teacher { background: #7c3aed; color: #fff; }
         .badge-role-student { background: #2563eb; color: #fff; }
-        .badge-fb { display: none !important; }
 
         .admin-only,
         #adminClassroomSection,
@@ -83,8 +121,10 @@
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            padding: 18px;
+            padding: 16px 18px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            min-width: 0;
+            width: 100%;
         }
         .card-header {
             display: flex;
@@ -95,18 +135,22 @@
             padding-bottom: 12px;
             margin-bottom: 14px;
             border-bottom: 1px solid #334155;
+            min-width: 0;
         }
         .card-header h2 {
             margin: 0;
-            font-size: 16px;
+            font-size: clamp(14.5px, 3.8vw, 16.5px);
             font-weight: 700;
             color: #f8fafc;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
         }
         .controls {
             display: flex;
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
+            min-width: 0;
         }
         input {
             background: #0f172a;
@@ -116,6 +160,11 @@
             padding: 8px 11px;
             font-family: inherit;
             font-size: 13px;
+            min-width: 0;
+            max-width: 100%;
+        }
+        .controls input {
+            flex: 1 1 200px;
         }
         button {
             font-family: inherit;
@@ -125,24 +174,31 @@
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
+            white-space: nowrap;
+            max-width: 100%;
         }
-        button:hover { opacity: 0.92; }
+        button:hover:not(:disabled) { opacity: 0.92; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-sync { background: #0284c7; color: #fff; }
 
         .table-wrap {
             width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 720px;
+            min-width: 640px;
         }
         th, td {
             border: 1px solid #334155;
-            padding: 10px 12px;
+            padding: 9px 11px;
             text-align: left;
             font-size: 13px;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
         th {
             background: #0f172a;
@@ -155,25 +211,50 @@
         }
         tr:hover td { background: #24334d; }
         .center { text-align: center; }
-        /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
-#fbSyncBadge,
-.badge-fb,
-[data-hide-firebase="true"],
-[class*="firebase" i],
-[id*="firebase" i] {
-  display: none !important;
-}
+
+        @media (max-width: 640px) {
+            html, body {
+                padding: 10px;
+            }
+            .topbar, .card {
+                padding: 13px 12px;
+                border-radius: 12px;
+            }
+            .controls {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .controls input,
+            .controls button {
+                width: 100%;
+                flex: 1 1 auto;
+            }
+            table {
+                min-width: 560px;
+            }
+            th, td {
+                padding: 8px 9px;
+                font-size: 12px;
+            }
+            #currentUserName {
+                max-width: 150px;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="container">
+    <div class="quota-banner" id="quotaBanner">
+        ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບກຳລັງໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໃນເຄື່ອງ (`localStorage`) ແລະ ຈຳກັດການໂຫຼດຊ້ຳ.
+    </div>
+
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
             <h1 class="page-title">🏫 ຫ້ອງຮຽນ</h1>
         </div>
         <div class="user-meta">
-            <span id="fbSyncBadge" class="badge badge-fb"></span>
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
             <span id="currentUserRole" class="badge badge-role-student">STUDENT</span>
         </div>
@@ -184,7 +265,7 @@
             <h2>📋 ລາຍການຫ້ອງຮຽນທັງໝົດ (ໂຕບໍ່ຊ້ຳກັນ)</h2>
             <div class="controls">
                 <input type="text" id="searchRoomInput" placeholder="ຄົ້ນຫາຊື່ຫ້ອງ, ຄູປະຈຳຫ້ອງ..." oninput="renderClassroomsTable()" />
-                <button type="button" class="btn-sync" onclick="loadClassroomsFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນໃໝ່</button>
+                <button type="button" class="btn-sync" id="btnLoadRooms" onclick="loadClassroomsFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນໃໝ່</button>
             </div>
         </div>
 
@@ -207,6 +288,18 @@
 </div>
 
 <script>
+    const QUOTA_BLOCK_UNTIL_KEY = "school_firestore_quota_blocked_until";
+    const ROOMS_FETCH_TS_KEY = "school_rooms_last_fetch_ts";
+    const ROOMS_COOLDOWN_MS = 60000;
+    const QUOTA_COOLDOWN_MS = 1800000;
+
+    function setRoomsQuotaBanner(active) {
+        const banner = document.getElementById("quotaBanner");
+        if (!banner) return;
+        if (active) banner.classList.add("show");
+        else banner.classList.remove("show");
+    }
+
     function cleanVal(v) {
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
     }
@@ -342,8 +435,30 @@
     }
 
     async function loadClassroomsFromFirestore(showAlert = false) {
+        const now = Date.now();
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        const lastFetchTs = Number(localStorage.getItem(ROOMS_FETCH_TS_KEY) || "0");
+        const btn = document.getElementById("btnLoadRooms");
+
+        if (now < blockedUntil) {
+            setRoomsQuotaBanner(true);
+            renderClassroomsTable();
+            if (showAlert) alert("⚠️ ໂຄຕ້າ Firebase ປະຈຳມື້ເຕັມ — ສະແດງຂໍ້ມູນໃນເຄື່ອງ.");
+            return;
+        }
+
+        if (!showAlert && now - lastFetchTs < ROOMS_COOLDOWN_MS) {
+            renderClassroomsTable();
+            return;
+        }
+
         if (window.fbRoomsApi && window.fbRoomsApi.loadRooms) {
-            await window.fbRoomsApi.loadRooms(showAlert);
+            if (btn) btn.disabled = true;
+            try {
+                await window.fbRoomsApi.loadRooms(showAlert);
+            } finally {
+                if (btn) btn.disabled = false;
+            }
         } else {
             renderClassroomsTable();
             if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຫ້ອງຮຽນ (ໂຕບໍ່ຊ້ຳກັນ) ສຳເລັດ!");
@@ -358,6 +473,10 @@
     const nameEl = document.getElementById("currentUserName");
     if (nameEl) nameEl.textContent = userName;
 
+    if (Date.now() < Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0")) {
+        setRoomsQuotaBanner(true);
+    }
+
     renderClassroomsTable();
 </script>
 
@@ -365,7 +484,7 @@
     try {
         const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
         const {
-            getFirestore, collection, getDocs, onSnapshot
+            getFirestore, collection, getDocs
         } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
         const DEFAULT_FIREBASE_CONFIG = {
@@ -383,6 +502,22 @@
         const db = getFirestore(app);
         const COLLECTIONS = ["classrooms", "rooms"];
 
+        function isQuotaErr(err) {
+            const code = String(err?.code || "").toLowerCase();
+            const msg = String(err?.message || "").toLowerCase();
+            return (
+                code.includes("resource-exhausted") ||
+                msg.includes("quota") ||
+                msg.includes("resource exhausted") ||
+                msg.includes("daily usage")
+            );
+        }
+
+        function markQuotaBlocked() {
+            localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+            setRoomsQuotaBanner(true);
+        }
+
         async function fetchAllMergedRooms() {
             const combined = [];
             for (const colName of COLLECTIONS) {
@@ -391,41 +526,45 @@
                     snap.forEach((d, idx) => {
                         combined.push(normalizeRoom({ ...d.data(), firestoreId: d.id, _col: colName }, idx));
                     });
-                } catch (e) {}
+                } catch (e) {
+                    if (isQuotaErr(e)) throw e;
+                }
             }
             return combined;
         }
 
         window.fbRoomsApi = {
             async loadRooms(showAlert = false) {
-                const merged = await fetchAllMergedRooms();
-                if (merged.length) {
-                    classroomsData = dedupeClassrooms(merged);
-                    saveClassroomsLocal();
+                try {
+                    const merged = await fetchAllMergedRooms();
+                    if (merged.length) {
+                        classroomsData = dedupeClassrooms(merged);
+                        saveClassroomsLocal();
+                    }
+                    localStorage.setItem(ROOMS_FETCH_TS_KEY, String(Date.now()));
+                    localStorage.removeItem(QUOTA_BLOCK_UNTIL_KEY);
+                    setRoomsQuotaBanner(false);
+                    renderClassroomsTable();
+                    if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຫ້ອງຮຽນ (ໂຕບໍ່ຊ້ຳກັນ) ສຳເລັດ!");
+                } catch (err) {
+                    if (isQuotaErr(err)) markQuotaBlocked();
+                    renderClassroomsTable();
+                    if (showAlert) alert("⚠️ ໂຄຕ້າ Firebase ປະຈຳມື້ເຕັມ — ສະແດງຂໍ້ມູນໃນເຄື່ອງ.");
                 }
-                renderClassroomsTable();
-                if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຫ້ອງຮຽນ (ໂຕບໍ່ຊ້ຳກັນ) ສຳເລັດ!");
             }
         };
-
-        COLLECTIONS.forEach((colName) => {
-            onSnapshot(collection(db, colName), async () => {
-                const merged = await fetchAllMergedRooms();
-                if (merged.length) {
-                    classroomsData = dedupeClassrooms(merged);
-                    saveClassroomsLocal();
-                    renderClassroomsTable();
-                }
-            }, () => {});
-        });
 
         window.addEventListener("storage", (e) => {
             if (e.key === "schoolSystemDataUpdated") loadClassroomsFromFirestore(false);
         });
         window.addEventListener("school-data-updated", () => loadClassroomsFromFirestore(false));
-    } catch (err) {
-        console.warn("Firebase classrooms fallback:", err);
-    }
+
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        const lastFetchTs = Number(localStorage.getItem(ROOMS_FETCH_TS_KEY) || "0");
+        if (Date.now() >= blockedUntil && Date.now() - lastFetchTs >= ROOMS_COOLDOWN_MS) {
+            window.fbRoomsApi.loadRooms(false);
+        }
+    } catch (_) {}
 </script>
 </body>
 </html>
