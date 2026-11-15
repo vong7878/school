@@ -58,6 +58,44 @@
 
         .container { max-width: 1180px; margin: 24px auto; padding: 0 16px; }
 
+        .term-info-banner {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.55), rgba(15, 23, 42, 0.9));
+            border: 1px solid #3b82f6;
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .term-info-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 14px;
+        }
+        .term-highlight {
+            color: #7dd3fc;
+            font-weight: 700;
+        }
+        .term-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .term-pill {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
         .subroom-tabs {
             display: flex;
             gap: 10px;
@@ -267,6 +305,15 @@
 </header>
 
 <div class="container">
+    <div class="term-info-banner" id="term-info-banner">
+        <div class="term-info-main">
+            <span>🗓️ <strong>ເທີມຮຽນ:</strong></span>
+            <span class="term-highlight" id="term-banner-title">ຍັງບໍ່ມີຂໍ້ມູນເທີມໃນ Firebase</span>
+            <span id="term-banner-range" style="color:#cbd5e1;"></span>
+        </div>
+        <div class="term-pills" id="term-banner-pills"></div>
+    </div>
+
     <div class="subroom-tabs">
         <button type="button" class="subroom-tab active" id="tab-student-cal" onclick="switchSubRoom('student')">
             🎓 ຫ້ອງນ້ອຍ 1: ໜ້ານັກຮຽນ (ຕາຕະລາງຮຽນປະຈຳອາທິດ)
@@ -288,6 +335,12 @@
         </div>
 
         <div class="filter-bar">
+            <div class="filter-group">
+                <label>🗓️ ເລືອກເທີມຮຽນ:</label>
+                <select id="stu-term-select" onchange="onTermSelectionChange('student')">
+                    <option value="">-- ທຸກເທີມ --</option>
+                </select>
+            </div>
             <div class="filter-group">
                 <label>📆 ເລືອກອາທິດ:</label>
                 <input type="week" id="stu-week-picker" onchange="onStudentWeekPickerChange()">
@@ -339,6 +392,12 @@
         </div>
 
         <div class="filter-bar">
+            <div class="filter-group">
+                <label>🗓️ ເລືອກເທີມຮຽນ:</label>
+                <select id="tch-term-select" onchange="onTermSelectionChange('teacher')">
+                    <option value="">-- ທຸກເທີມ --</option>
+                </select>
+            </div>
             <div class="filter-group">
                 <label>📆 ເລືອກອາທິດ:</label>
                 <input type="week" id="tch-week-picker" onchange="onTeacherWeekPickerChange()">
@@ -520,10 +579,110 @@
     let allWeeklyEntries = [];
     let weeklyDocsCache = [];
     let timetableDocsCache = [];
+    let termPeriodsCache = [];
+    let selectedTermKey = "";
     let currentStudentWeek = getISOWeekString(new Date());
     let currentTeacherWeek = getISOWeekString(new Date());
     let activeRole = "student";
     let isListeningFirestore = false;
+
+    function normalizeTermDoc(raw, id = "") {
+        const d = raw || {};
+        const gradeRaw = cleanVal(d.grade || "ALL");
+        const grade = (!gradeRaw || gradeRaw.toUpperCase() === "ALL") ? "ALL" : normalizeRoomName(gradeRaw);
+        const startMonth = cleanVal(d.startMonth || d.openMonth || "");
+        const endMonth = cleanVal(d.endMonth || d.closeMonth || "");
+        const rangeText = cleanVal(d.termRange || ((startMonth || endMonth) ? `${startMonth || "-"} – ${endMonth || "-"}` : ""));
+        return {
+            id: cleanVal(d.id || id),
+            term: cleanVal(d.term || ""),
+            academicYear: cleanVal(d.academicYear || ""),
+            startMonth,
+            endMonth,
+            termRange: rangeText,
+            grade,
+            totalPeriods: Number(d.totalPeriods) || 40,
+            maxScore: Number(d.maxScore) || 20
+        };
+    }
+
+    function getMatchingTerms(roomFilter = "") {
+        const cleanRoom = normalizeRoomName(roomFilter).replace(/\s+/g, "").toLowerCase();
+        const roomSpecific = cleanRoom
+            ? termPeriodsCache.filter((t) => normalizeRoomName(t.grade).replace(/\s+/g, "").toLowerCase() === cleanRoom)
+            : [];
+        if (roomSpecific.length) return roomSpecific;
+
+        const allRoomTerms = termPeriodsCache.filter((t) => !t.grade || String(t.grade).toUpperCase() === "ALL");
+        return allRoomTerms.length ? allRoomTerms : termPeriodsCache;
+    }
+
+    function renderTermBannerAndSelects() {
+        const stuRoom = normalizeRoomName(document.getElementById("stu-room-select")?.value || "");
+        const tchRoom = normalizeRoomName(document.getElementById("tch-room-filter")?.value || "");
+        const activeRoomForTerm = activeRole === "teacher" ? (tchRoom || "") : stuRoom;
+        const list = getMatchingTerms(activeRoomForTerm);
+
+        const stuSel = document.getElementById("stu-term-select");
+        const tchSel = document.getElementById("tch-term-select");
+
+        const optionsHtml =
+            `<option value="">-- ທຸກເທີມ --</option>` +
+            list.map((t, idx) => {
+                const key = t.id || `${t.academicYear}__${t.term}__${t.grade}__${idx}`;
+                const label = `${t.term}${t.academicYear ? ` (${t.academicYear})` : ""}${t.termRange ? ` • ${t.termRange}` : ""}`;
+                return `<option value="${escapeHtml(key)}">${escapeHtml(label)}</option>`;
+            }).join("");
+
+        if (stuSel) {
+            stuSel.innerHTML = optionsHtml;
+            if (selectedTermKey && Array.from(stuSel.options).some((o) => o.value === selectedTermKey)) {
+                stuSel.value = selectedTermKey;
+            } else if (list.length > 0 && !selectedTermKey) {
+                selectedTermKey = stuSel.options[1]?.value || "";
+                stuSel.value = selectedTermKey;
+            }
+        }
+        if (tchSel) {
+            tchSel.innerHTML = optionsHtml;
+            if (selectedTermKey && Array.from(tchSel.options).some((o) => o.value === selectedTermKey)) {
+                tchSel.value = selectedTermKey;
+            }
+        }
+
+        const titleEl = document.getElementById("term-banner-title");
+        const rangeEl = document.getElementById("term-banner-range");
+        const pillsEl = document.getElementById("term-banner-pills");
+
+        const chosen = list.find((t, idx) => (t.id || `${t.academicYear}__${t.term}__${t.grade}__${idx}`) === selectedTermKey) || list[0];
+
+        if (!chosen) {
+            if (titleEl) titleEl.textContent = "ຍັງບໍ່ມີຂໍ້ມູນເທີມໃນ Firebase";
+            if (rangeEl) rangeEl.textContent = "";
+            if (pillsEl) pillsEl.innerHTML = "";
+            return;
+        }
+
+        if (titleEl) {
+            titleEl.textContent = `${chosen.term}${chosen.academicYear ? ` (${chosen.academicYear})` : ""}`;
+        }
+        if (rangeEl) {
+            rangeEl.textContent = chosen.termRange ? `• ເປີດເທີມ – ປິດເທີມ: ${chosen.termRange}` : "";
+        }
+        if (pillsEl) {
+            pillsEl.innerHTML = `
+                <span class="term-pill">🏫 ${chosen.grade === "ALL" ? "ທຸກຫ້ອງ" : `ຫ້ອງ ${escapeHtml(chosen.grade)}`}</span>
+                <span class="term-pill">⏱️ ${escapeHtml(String(chosen.totalPeriods))} ຄາບ</span>
+                <span class="term-pill">🎯 ເຕັມ ${escapeHtml(String(chosen.maxScore))} ຄະແນນ</span>
+            `;
+        }
+    }
+
+    window.onTermSelectionChange = function (mode) {
+        const sel = document.getElementById(mode === "teacher" ? "tch-term-select" : "stu-term-select");
+        selectedTermKey = sel ? sel.value : "";
+        renderTermBannerAndSelects();
+    };
 
     async function refreshRoomSelects(extraRooms = []) {
         const roomMap = new Map();
@@ -583,6 +742,8 @@
             const match = Array.from(formSelect.options).find((o) => normalizeRoomName(o.value).toLowerCase() === prev);
             if (match) formSelect.value = match.value;
         }
+
+        renderTermBannerAndSelects();
     }
 
     function dedupeEntries(list = []) {
@@ -640,6 +801,13 @@
                 console.warn("ບໍ່ສາມາດຟັງ timetables ຈາກ Firestore:", err);
             });
 
+            onSnapshot(collection(db, "term_periods"), (termSnap) => {
+                termPeriodsCache = termSnap.docs.map((docSnap) => normalizeTermDoc(docSnap.data(), docSnap.id));
+                renderTermBannerAndSelects();
+            }, (err) => {
+                console.warn("ບໍ່ສາມາດຟັງ term_periods ຈາກ Firestore:", err);
+            });
+
             ["classrooms", "rooms"].forEach((colName) => {
                 onSnapshot(collection(db, colName), () => {
                     refreshRoomSelects();
@@ -678,12 +846,14 @@
             if (tchSec) tchSec.style.display = "block";
             if (tabStu) tabStu.classList.remove("active");
             if (tabTch) tabTch.classList.add("active");
+            renderTermBannerAndSelects();
             renderTeacherWeeklyTable();
         } else {
             if (stuSec) stuSec.style.display = "block";
             if (tchSec) tchSec.style.display = "none";
             if (tabStu) tabStu.classList.add("active");
             if (tabTch) tabTch.classList.remove("active");
+            renderTermBannerAndSelects();
             renderStudentWeeklyTable();
         }
     };
@@ -706,6 +876,7 @@
         const tbody = document.getElementById("stu-weekly-tbody");
         if (!tbody) return;
 
+        renderTermBannerAndSelects();
         const room = normalizeRoomName(document.getElementById("stu-room-select").value).toLowerCase();
         const keyword = cleanVal(document.getElementById("stu-search-input").value).toLowerCase();
         const normCurrentWeek = normalizeWeekCode(currentStudentWeek);
@@ -768,6 +939,7 @@
         const tbody = document.getElementById("tch-weekly-tbody");
         if (!tbody) return;
 
+        renderTermBannerAndSelects();
         const teacherKw = cleanVal(document.getElementById("tch-name-search").value).toLowerCase();
         const roomFilter = normalizeRoomName(document.getElementById("tch-room-filter").value).toLowerCase();
         const subjKw = cleanVal(document.getElementById("tch-subject-search").value).toLowerCase();
@@ -860,6 +1032,13 @@
         document.getElementById("tch-week-picker").value = currentTeacherWeek;
         document.getElementById("form-week").value = currentTeacherWeek;
 
+        try {
+            const cachedTerms = JSON.parse(localStorage.getItem("school_term_periods") || "[]");
+            if (Array.isArray(cachedTerms) && cachedTerms.length) {
+                termPeriodsCache = cachedTerms.map((t, i) => normalizeTermDoc(t, t.id || `TERM-${i}`));
+            }
+        } catch (e) {}
+
         await refreshRoomSelects([userGrade]);
 
         const roomSelect = document.getElementById("stu-room-select");
@@ -892,7 +1071,15 @@
         }
 
         window.addEventListener("storage", (e) => {
-            if (e.key === "schoolSystemDataUpdated") {
+            if (e.key === "schoolSystemDataUpdated" || e.key === "school_term_periods") {
+                if (e.key === "school_term_periods") {
+                    try {
+                        const parsed = JSON.parse(e.newValue || "[]");
+                        if (Array.isArray(parsed)) {
+                            termPeriodsCache = parsed.map((t, i) => normalizeTermDoc(t, t.id || `TERM-${i}`));
+                        }
+                    } catch (err) {}
+                }
                 rebuildScheduleCacheAndRender();
             }
         });
