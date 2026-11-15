@@ -3,117 +3,38 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>👩‍🏫 ຫ້ອງຈັດການຄູ</title>
+    <title>👩‍🏫 ຈັດການຄູອາຈານ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body {
             margin: 0;
-            padding: 0;
             font-family: 'Noto Sans Lao', sans-serif;
             background: #0f172a;
             color: #e2e8f0;
-            width: 100%;
+            padding: 14px;
             min-height: 100vh;
             min-height: 100dvh;
+            width: 100%;
             max-width: 100%;
             overflow-x: hidden;
             -webkit-text-size-adjust: 100%;
         }
-        body {
-            padding: 12px;
-        }
         .container {
-            max-width: 1320px;
+            width: 100%;
+            max-width: 1200px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            width: 100%;
+            gap: 14px;
             min-width: 0;
         }
-        .topbar {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 14px;
-            padding: 12px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            min-width: 0;
-            width: 100%;
-        }
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            min-width: 0;
-            flex: 1 1 auto;
-        }
-        .back-btn, a.top-link {
-            background: #334155;
-            color: #f8fafc;
-            text-decoration: none;
-            padding: 7px 11px;
-            border-radius: 8px;
-            font-size: 12.5px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            white-space: nowrap;
-            max-width: 100%;
-        }
-        .back-btn:hover, a.top-link:hover { background: #475569; }
-        .page-title {
-            margin: 0;
-            font-size: clamp(14.5px, 4.2vw, 18px);
-            font-weight: 700;
-            color: #f8fafc;
-            line-height: 1.3;
-            min-width: 0;
-            overflow-wrap: anywhere;
-        }
-        .user-meta {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            flex-wrap: wrap;
-            min-width: 0;
-            max-width: 100%;
-        }
-        #currentUserName {
-            max-width: 180px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .badge {
-            padding: 4px 9px;
-            border-radius: 999px;
-            font-weight: 600;
-            font-size: 11.5px;
-            white-space: nowrap;
-        }
-        .badge-role-admin { background: #dc2626; color: #fff; }
-        .badge-role-teacher { background: #7c3aed; color: #fff; }
-        .badge-role-student { background: #2563eb; color: #fff; }
-        .badge-grade { background: #0f766e; color: #ccfbf1; }
-        .badge-fb { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
-
         .quota-banner {
-            background: rgba(245, 158, 11, 0.14);
-            border: 1px solid rgba(245, 158, 11, 0.45);
-            color: #fde68a;
-            border-radius: 10px;
-            padding: 9px 12px;
+            background: rgba(245, 158, 11, 0.16);
+            border: 1px solid rgba(245, 158, 11, 0.55);
+            color: #fef08a;
+            border-radius: 12px;
+            padding: 10px 14px;
             font-size: 12px;
             line-height: 1.4;
             display: none;
@@ -122,232 +43,565 @@
         .quota-banner.show {
             display: block;
         }
-
-        .admin-only,
-        #nav-manage,
-        #panel-manage,
-        .btn-edit,
-        .btn-del {
-            display: none !important;
+        .topbar {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            min-width: 0;
         }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .back-btn {
+            background: #334155;
+            color: #f8fafc;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .back-btn:hover { background: #475569; }
+        .page-title {
+            margin: 0;
+            font-size: clamp(16px, 4.2vw, 18.5px);
+            font-weight: 700;
+            color: #f8fafc;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
+        }
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            flex-wrap: wrap;
+            max-width: 100%;
+            min-width: 0;
+        }
+        #currentUserName {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 200px;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 11.5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .badge-role-admin { background: #dc2626; color: #fff; }
+        .badge-role-teacher { background: #7c3aed; color: #fff; }
+        .badge-role-student { background: #2563eb; color: #fff; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 12px 14px;
+            min-width: 0;
+        }
+        .stat-label { font-size: 12px; color: #94a3b8; }
+        .stat-value { font-size: 20px; font-weight: 700; color: #38bdf8; margin-top: 2px; }
 
         .card {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            padding: 14px;
+            padding: 16px 18px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
             min-width: 0;
             width: 100%;
         }
         .card-header {
             display: flex;
-            flex-direction: column;
-            align-items: stretch;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
             gap: 10px;
             padding-bottom: 12px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             border-bottom: 1px solid #334155;
             min-width: 0;
         }
         .card-header h2 {
             margin: 0;
-            font-size: clamp(14.5px, 4vw, 16.5px);
+            font-size: clamp(14.5px, 3.8vw, 16.5px);
             font-weight: 700;
             color: #f8fafc;
             line-height: 1.35;
             overflow-wrap: anywhere;
         }
-        .controls {
+        .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-            gap: 8px;
-            width: 100%;
-            min-width: 0;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+        .form-group { min-width: 0; }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 4px;
         }
         input, select {
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
             background: #0f172a;
             color: #f8fafc;
             border: 1px solid #475569;
             border-radius: 8px;
-            padding: 8px 10px;
+            padding: 8px 11px;
             font-family: inherit;
             font-size: 13px;
-            width: 100%;
-            min-width: 0;
-            max-width: 100%;
         }
         input:focus, select:focus {
             outline: none;
             border-color: #38bdf8;
         }
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+        .controls input {
+            flex: 1 1 200px;
+        }
+        .form-actions {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
         button {
             font-family: inherit;
             border: none;
             border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 12.5px;
+            padding: 8px 13px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
+            white-space: nowrap;
             max-width: 100%;
         }
-        button:hover { opacity: 0.92; }
-        .btn-sync {
-            background: #0284c7;
-            color: #fff;
-            white-space: nowrap;
-        }
-        .btn-view {
-            background: #2563eb;
-            color: #fff;
-            padding: 6px 11px;
-            font-size: 12px;
-            white-space: nowrap;
+        button:hover:not(:disabled) { opacity: 0.92; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-save { background: #16a34a; color: #fff; }
+        .btn-cancel { background: #475569; color: #fff; }
+        .btn-sync { background: #0284c7; color: #fff; }
+        .btn-edit { background: #eab308; color: #0f172a; padding: 5px 10px; font-size: 12px; }
+        .btn-del { background: #dc2626; color: #fff; padding: 5px 10px; font-size: 12px; }
+
+        .row-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
         .table-wrap {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1020px;
+            min-width: 680px;
         }
         th, td {
             border: 1px solid #334155;
-            padding: 10px 11px;
+            padding: 9px 11px;
             text-align: left;
             font-size: 13px;
-            line-height: 1.35;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
         th {
             background: #0f172a;
             color: #93c5fd;
             font-weight: 700;
-            white-space: nowrap;
         }
         td {
             background: #162032;
             color: #e2e8f0;
-            overflow-wrap: anywhere;
         }
         tr:hover td { background: #24334d; }
         .center { text-align: center; }
-        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
-        .subject-pill {
-            background: rgba(56, 189, 248, 0.16);
-            color: #7dd3fc;
-            border: 1px solid #38bdf8;
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-size: 11.5px;
-            font-weight: 600;
-            display: inline-block;
-            max-width: 100%;
-            overflow-wrap: anywhere;
+        .denied-box {
+            background: #1e293b;
+            border: 1px solid #ef4444;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            color: #fca5a5;
         }
 
-        .pass-cell-box {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 5px;
-            flex-wrap: wrap;
-            min-width: 0;
+        @media (max-width: 640px) {
+            html, body {
+                padding: 10px;
+            }
+            .topbar, .card {
+                padding: 13px 12px;
+                border-radius: 12px;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .controls, .form-actions {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .controls input,
+            .controls button,
+            .form-actions button {
+                width: 100%;
+                flex: 1 1 auto;
+            }
+            table {
+                min-width: 580px;
+            }
+            th, td {
+                padding: 8px 9px;
+                font-size: 12px;
+            }
+            #currentUserName {
+                max-width: 150px;
+            }
         }
-        table .pass-cell-box {
-            justify-content: center;
-        }
-        .pass-value {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            background: #0f172a;
-            border: 1px solid #334155;
-            padding: 3px 7px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #e2e8f0;
-            max-width: 100%;
-            overflow-wrap: anywhere;
-        }
-        .pass-hidden-text {
-            color: #64748b;
-            font-size: 12px;
-            font-style: italic;
-        }
-        .mini-btn {
-            background: #334155;
-            color: #f8fafc;
-            border: 1px solid #475569;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 11.5px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .mini-btn:hover { background: #475569; }
-        .mini-btn.edit-btn {
-            background: rgba(37, 99, 235, 0.25);
-            border-color: rgba(96, 165, 250, 0.5);
-            color: #93c5fd;
-        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="quota-banner" id="quotaBanner">
+        ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບກຳລັງໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໃນເຄື່ອງ (`localStorage`) ແລະ ຈຳກັດການໂຫຼດຊ້ຳ.
+    </div>
 
-        /* Mobile Card List */
-        .mobile-cards {
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-            min-width: 0;
+    <div class="topbar">
+        <div class="topbar-left">
+            <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
+            <h1 class="page-title">👩‍🏫 ຈັດການຄູອາຈານ</h1>
+        </div>
+        <div class="user-meta">
+            <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
+            <span id="currentUserRole" class="badge badge-role-student">STUDENT</span>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">ຈຳນວນຄູທັງໝົດ</div>
+            <div class="stat-value" id="statTotalTeachers">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">ຄູປະຈຳຫ້ອງ</div>
+            <div class="stat-value" id="statAdvisorTeachers">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">ຫ້ອງຮຽນທີ່ມີຄູ</div>
+            <div class="stat-value" id="statCoveredRooms">0</div>
+        </div>
+    </div>
+
+    <section class="card" id="teacherFormSection">
+        <div class="card-header">
+            <h2 id="teacherFormTitle">➕ ເພີ່ມ / ແກ້ໄຂ ຂໍ້ມູນຄູອາຈານ</h2>
+        </div>
+        <form id="teacherForm" onsubmit="handleTeacherSubmit(event)">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>ຊື່ຄູອາຈານ *</label>
+                    <input type="text" id="tchName" placeholder="ເຊັ່ນ: ອ.ສິລິພອນ" required />
+                </div>
+                <div class="form-group">
+                    <label>ວິຊາສອນຫຼັກ</label>
+                    <input type="text" id="tchSubject" placeholder="ເຊັ່ນ: ຄະນິດສາດ" />
+                </div>
+                <div class="form-group">
+                    <label>ຫ້ອງປະຈຳ / ຫ້ອງຮັບຜິດຊອບ</label>
+                    <input type="text" id="tchRoom" list="roomsDatalist" placeholder="ເຊັ່ນ: ມ.6/3" />
+                    <datalist id="roomsDatalist"></datalist>
+                </div>
+                <div class="form-group">
+                    <label>ເບີໂທ / ຕິດຕໍ່</label>
+                    <input type="text" id="tchPhone" placeholder="ເຊັ່ນ: 020 5555 1234" />
+                </div>
+                <div class="form-group">
+                    <label>ໝາຍເຫດ</label>
+                    <input type="text" id="tchNote" placeholder="ເຊັ່ນ: ຄູປະຈຳຫ້ອງ" />
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save" id="btnSaveTeacher">💾 ບັນທຶກຂໍ້ມູນຄູ</button>
+                <button type="button" class="btn-cancel" id="btnCancelTeacher" style="display:none;" onclick="resetTeacherForm()">↩ ຍົກເລີກ</button>
+            </div>
+        </form>
+    </section>
+
+    <div class="denied-box" id="studentReadonlyNotice" style="display:none;">
+        ℹ️ ບັນຊີນັກຮຽນ (STUDENT) ສາມາດເບິ່ງລາຍຊື່ຄູອາຈານໄດ້ຢ່າງດຽວ
+    </div>
+
+    <section class="card">
+        <div class="card-header">
+            <h2>📋 ລາຍຊື່ຄູອາຈານທັງໝົດ (ຊິ້ງກັບຫ້ອງຮຽນ & ລະບົບ)</h2>
+            <div class="controls">
+                <input type="text" id="searchTeacherInput" placeholder="ຄົ້ນຫາຊື່ຄູ, ວິຊາ, ຫ້ອງ..." oninput="renderTeachersTable()" />
+                <button type="button" class="btn-sync" id="btnReloadTeachers" onclick="loadTeachersFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນໃໝ່</button>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 55px;">ລ/ດ</th>
+                        <th>ຊື່ຄູອາຈານ</th>
+                        <th>ວິຊາສອນຫຼັກ</th>
+                        <th>ຫ້ອງປະຈຳ / ຮັບຜິດຊອບ</th>
+                        <th>ເບີໂທ / ຕິດຕໍ່</th>
+                        <th>ໝາຍເຫດ</th>
+                        <th style="width: 150px;">ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="teachersTableBody"></tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+    const QUOTA_BLOCK_UNTIL_KEY = "school_firestore_quota_blocked_until";
+    const TEACHERS_FETCH_TS_KEY = "school_teachers_last_fetch_ts";
+    const TEACHERS_COOLDOWN_MS = 60000;
+    const SUBMIT_COOLDOWN_MS = 1200;
+    const QUOTA_COOLDOWN_MS = 1800000;
+    let lastSubmitTs = 0;
+
+    function setQuotaNotice(active) {
+        const banner = document.getElementById("quotaBanner");
+        if (!banner) return;
+        if (active) banner.classList.add("show");
+        else banner.classList.remove("show");
+    }
+
+    function isQuotaBlockedNow() {
+        const blocked = Date.now() < Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (blocked) setQuotaNotice(true);
+        return blocked;
+    }
+
+    function cleanVal(v) {
+        return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
+    }
+
+    function normKey(v) {
+        return cleanVal(v).replace(/\s+/g, "").toLowerCase();
+    }
+
+    function resolveRole() {
+        try {
+            const raw = (
+                localStorage.getItem("userRole") ||
+                localStorage.getItem("role") ||
+                localStorage.getItem("user_role") ||
+                "student"
+            ).trim().toLowerCase();
+            if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
+            if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
+        } catch (e) {}
+        return "student";
+    }
+
+    const role = resolveRole();
+    const canManageTeachers = role === "admin" || role === "teacher";
+    const userName = (function () {
+        try {
+            return localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
+        } catch (e) {
+            return "ຜູ້ໃຊ້ງານ";
         }
-        .teacher-card {
-            background: #162032;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 11px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 100%;
-            min-width: 0;
+    })();
+
+    function normalizeTeacher(raw, idx = 0) {
+        const d = raw || {};
+        const name = cleanVal(d.name || d.teacherName || d.fullName || "");
+        const room = cleanVal(d.room || d.grade || d.classRoom || d.advisorRoom || "");
+        const subject = cleanVal(d.subject || d.major || d.subjectName || "");
+        const phone = cleanVal(d.phone || d.tel || d.contact || d.email || "");
+        const note = cleanVal(d.note || d.remark || "");
+        return {
+            id: cleanVal(d.id || d.firestoreId || `TCH-${idx + 1}`),
+            firestoreId: cleanVal(d.firestoreId || d.id || `TCH-${idx + 1}`),
+            name,
+            subject,
+            room,
+            phone,
+            note,
+            fromRoomAdvisor: Boolean(d.fromRoomAdvisor)
+        };
+    }
+
+    function getRoomsFromLocalStorage() {
+        try {
+            const list = JSON.parse(localStorage.getItem("school_classrooms_data") || "[]");
+            return Array.isArray(list) ? list : [];
+        } catch (_) {
+            return [];
         }
-        .teacher-card-head {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #26354d;
-            min-width: 0;
+    }
+
+    function mergeTeachersWithRoomAdvisors(baseTeachers = []) {
+        const map = new Map();
+
+        baseTeachers.forEach((raw, idx) => {
+            const t = normalizeTeacher(raw, idx);
+            if (!t.name) return;
+            const k = normKey(t.name);
+            map.set(k, t);
+        });
+
+        const rooms = getRoomsFromLocalStorage();
+        rooms.forEach((r, idx) => {
+            const advisorName = cleanVal(r.advisor || r.homeroomTeacher || r.teacher || "");
+            const roomName = cleanVal(r.name || r.roomName || r.room || r.grade || "");
+            if (!advisorName) return;
+            const k = normKey(advisorName);
+            const existing = map.get(k);
+            if (existing) {
+                map.set(k, {
+                    ...existing,
+                    room: existing.room || roomName,
+                    note: existing.note || (roomName ? `ຄູປະຈຳຫ້ອງ ${roomName}` : "ຄູປະຈຳຫ້ອງ")
+                });
+            } else {
+                map.set(k, {
+                    id: `ADV-${roomName || idx + 1}`,
+                    firestoreId: `ADV-${roomName || idx + 1}`,
+                    name: advisorName,
+                    subject: "",
+                    room: roomName,
+                    phone: "",
+                    note: roomName ? `ຄູປະຈຳຫ້ອງ ${roomName}` : "ຄູປະຈຳຫ້ອງ",
+                    fromRoomAdvisor: true
+                });
+            }
+        });
+
+        return Array.from(map.values());
+    }
+
+    let teachersData = mergeTeachersWithRoomAdvisors((function () {
+        try {
+            const raw = JSON.parse(localStorage.getItem("school_teachers_data") || "[]");
+            return Array.isArray(raw) ? raw : [];
+        } catch (_) {
+            return [];
         }
-        .teacher-card-head > div:first-child {
-            min-width: 0;
-            flex: 1 1 auto;
+    })());
+
+    let editingTeacherId = null;
+
+    function saveTeachersLocal() {
+        const cleanList = teachersData.filter((t) => cleanVal(t.name));
+        teachersData = mergeTeachersWithRoomAdvisors(cleanList);
+        try {
+            localStorage.setItem("school_teachers_data", JSON.stringify(teachersData));
+        } catch (_) {}
+    }
+
+    function syncAdvisorIntoClassroomsLocal(teacher) {
+        const advisorName = cleanVal(teacher.name);
+        const roomName = cleanVal(teacher.room);
+        if (!advisorName || !roomName) return false;
+
+        const rooms = getRoomsFromLocalStorage();
+        if (!rooms.length) return false;
+
+        let changed = false;
+        const targetRoomKey = normKey(roomName);
+        const updatedRooms = rooms.map((r) => {
+            const rName = cleanVal(r.name || r.roomName || r.room || r.grade || "");
+            if (normKey(rName) === targetRoomKey) {
+                changed = true;
+                return {
+                    ...r,
+                    advisor: advisorName,
+                    homeroomTeacher: advisorName
+                };
+            }
+            return r;
+        });
+
+        if (changed) {
+            try {
+                localStorage.setItem("school_classrooms_data", JSON.stringify(updatedRooms));
+            } catch (_) {}
         }
-        .teacher-card-name {
-            font-size: 13.5px;
-            font-weight: 700;
-            color: #f8fafc;
-            overflow-wrap: anywhere;
-            line-height: 1.35;
-        }
-        .teacher-card-sub {
-            font-size: 11.5px;
-            color: #94a3b8;
-            margin-top: 2px;
-            overflow-wrap: anywhere;
-        }
-        .teacher-card-rows {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            font-size: 12px;
-            min-width: 0;
-        }
-        .teacher-card-row {
+        return changed;
+    }
+
+    function broadcastUpdate() {
+        const payload = JSON.stringify({
+            tab: "teachers",
+            updatedBy: userName,
+            timestamp: Date.now()
+        });
+        try {
+            localStorage.setItem("schoolSystemDataUpdated", payload);
+        } catch (_) {}
+        window.dispatchEvent(new CustomEvent("school-data-updated", { detail: JSON.parse(payload) }));
+    }
+
+    function refreshRoomsDatalist() {
+        const dl = document.getElementById("roomsDatalist");
+        if (!dl) return;
+        const rooms = getRoomsFromLocalStorage();
+        const names = Array.from(new Set(
+            rooms.map((r) => cleanVal(r.name || r.roomName || r.room || r.grade || "")).filter(Boolean)
+        ));
+        dl.innerHTML = names.map((n) => `<option value="${esc(n)}"></option>`).join("");
+    }
+
+    function esc(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    function updateStats() {
+        const totalEl = document.getElementById("statTotalTeachers");
+        const 
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
