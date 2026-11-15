@@ -430,6 +430,23 @@
         return String(v || "").trim().replace(/^["']+|["']+$/g, "");
     }
 
+    function normalizeWeekCode(w) {
+        const s = cleanVal(w).toUpperCase();
+        const m = /^(\d{4})-?W(\d{1,2})$/.exec(s);
+        if (m) return `${m[1]}-W${String(parseInt(m[2], 10)).padStart(2, "0")}`;
+        return s;
+    }
+
+    function normalizeLaoDay(d) {
+        const s = cleanVal(d).replace(/^ວັນ/, "").replace(/\s+/g, "");
+        if (s === "ຄານ" || s.startsWith("ອັງ")) return "ອັງຄານ";
+        if (s.startsWith("ຈັນ")) return "ຈັນ";
+        if (s.startsWith("ພຸດ")) return "ພຸດ";
+        if (s.startsWith("ພະຫັດ") || s.startsWith("ພຫ")) return "ພະຫັດ";
+        if (s.startsWith("ສຸກ")) return "ສຸກ";
+        return s;
+    }
+
     function escapeHtml(str) {
         return String(str || "")
             .replace(/&/g, "&amp;")
@@ -448,7 +465,8 @@
     }
 
     function getDatesOfISOWeek(weekStr) {
-        const match = /^(\d{4})-W(\d{2})$/.exec(weekStr || "");
+        const normWeek = normalizeWeekCode(weekStr);
+        const match = /^(\d{4})-W(\d{2})$/.exec(normWeek || "");
         if (!match) return ["", "", "", "", ""];
         const year = parseInt(match[1], 10);
         const week = parseInt(match[2], 10);
@@ -475,7 +493,8 @@
     }
 
     function shiftISOWeek(weekStr, deltaWeeks) {
-        const match = /^(\d{4})-W(\d{2})$/.exec(weekStr || "");
+        const normWeek = normalizeWeekCode(weekStr);
+        const match = /^(\d{4})-W(\d{2})$/.exec(normWeek || "");
         if (!match) return getISOWeekString(new Date());
         const year = parseInt(match[1], 10);
         const week = parseInt(match[2], 10);
@@ -494,8 +513,8 @@
 
     function rebuildScheduleCacheAndRender() {
         const fromWeekly = weeklyDocsCache.map((d) => ({
-            week: cleanVal(d.week),
-            day: cleanVal(d.day).replace(/^ວັນ/, ""),
+            week: normalizeWeekCode(d.week),
+            day: normalizeLaoDay(d.day),
             period: cleanVal(d.period || "1"),
             room: cleanVal(d.room || d.grade),
             subject: cleanVal(d.subject),
@@ -503,8 +522,8 @@
         }));
 
         const fromTimetables = timetableDocsCache.map((d) => ({
-            week: cleanVal(d.week),
-            day: cleanVal(d.day).replace(/^ວັນ/, "") || "ຈັນ",
+            week: normalizeWeekCode(d.week),
+            day: normalizeLaoDay(d.day) || "ຈັນ",
             period: cleanVal(d.period || "1"),
             room: cleanVal(d.room || d.grade),
             subject: cleanVal(d.subject),
@@ -541,8 +560,9 @@
     }
 
     function formatWeekLabel(weekStr) {
-        const dates = getDatesOfISOWeek(weekStr);
-        return `${weekStr} (${dates[0]} - ${dates[4]})`;
+        const normWeek = normalizeWeekCode(weekStr);
+        const dates = getDatesOfISOWeek(normWeek);
+        return `${normWeek} (${dates[0]} - ${dates[4]})`;
     }
 
     function canAccessSubRoom(mode) {
@@ -584,7 +604,7 @@
     };
 
     window.onStudentWeekPickerChange = function () {
-        const val = document.getElementById("stu-week-picker").value;
+        const val = normalizeWeekCode(document.getElementById("stu-week-picker").value);
         if (val) {
             currentStudentWeek = val;
             renderStudentWeeklyTable();
@@ -597,15 +617,18 @@
 
         const room = cleanVal(document.getElementById("stu-room-select").value);
         const keyword = cleanVal(document.getElementById("stu-search-input").value).toLowerCase();
-        const dates = getDatesOfISOWeek(currentStudentWeek);
+        const normCurrentWeek = normalizeWeekCode(currentStudentWeek);
+        const dates = getDatesOfISOWeek(normCurrentWeek);
 
-        document.getElementById("stu-week-label").textContent = formatWeekLabel(currentStudentWeek);
+        document.getElementById("stu-week-label").textContent = formatWeekLabel(normCurrentWeek);
 
         tbody.innerHTML = DAYS.map((dayName, idx) => {
             const cells = [1, 2, 3, 4].map((p) => {
                 const matches = allWeeklyEntries.filter((item) => {
-                    const matchWeek = !item.week || item.week === currentStudentWeek;
-                    const matchDay = item.day === dayName;
+                    const itemWeek = normalizeWeekCode(item.week);
+                    const itemDay = normalizeLaoDay(item.day);
+                    const matchWeek = !itemWeek || itemWeek === normCurrentWeek;
+                    const matchDay = itemDay === dayName;
                     const matchPeriod = String(item.period) === String(p);
                     const matchRoom = !room || item.room === room;
                     const matchKw = !keyword ||
@@ -643,7 +666,7 @@
     };
 
     window.onTeacherWeekPickerChange = function () {
-        const val = document.getElementById("tch-week-picker").value;
+        const val = normalizeWeekCode(document.getElementById("tch-week-picker").value);
         if (val) {
             currentTeacherWeek = val;
             renderTeacherWeeklyTable();
@@ -657,15 +680,18 @@
         const teacherKw = cleanVal(document.getElementById("tch-name-search").value).toLowerCase();
         const roomFilter = cleanVal(document.getElementById("tch-room-filter").value);
         const subjKw = cleanVal(document.getElementById("tch-subject-search").value).toLowerCase();
-        const dates = getDatesOfISOWeek(currentTeacherWeek);
+        const normCurrentWeek = normalizeWeekCode(currentTeacherWeek);
+        const dates = getDatesOfISOWeek(normCurrentWeek);
 
-        document.getElementById("tch-week-label").textContent = formatWeekLabel(currentTeacherWeek);
+        document.getElementById("tch-week-label").textContent = formatWeekLabel(normCurrentWeek);
 
         tbody.innerHTML = DAYS.map((dayName, idx) => {
             const cells = [1, 2, 3, 4].map((p) => {
                 const matches = allWeeklyEntries.filter((item) => {
-                    const matchWeek = !item.week || item.week === currentTeacherWeek;
-                    const matchDay = item.day === dayName;
+                    const itemWeek = normalizeWeekCode(item.week);
+                    const itemDay = normalizeLaoDay(item.day);
+                    const matchWeek = !itemWeek || itemWeek === normCurrentWeek;
+                    const matchDay = itemDay === dayName;
                     const matchPeriod = String(item.period) === String(p);
                     const matchTeacher = !teacherKw || item.teacher.toLowerCase().includes(teacherKw);
                     const matchRoom = !roomFilter || item.room === roomFilter;
@@ -697,8 +723,8 @@
     document.getElementById("weekly-schedule-form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const entry = {
-            week: cleanVal(document.getElementById("form-week").value),
-            day: cleanVal(document.getElementById("form-day").value).replace(/^ວັນ/, ""),
+            week: normalizeWeekCode(document.getElementById("form-week").value),
+            day: normalizeLaoDay(document.getElementById("form-day").value),
             period: cleanVal(document.getElementById("form-period").value),
             room: cleanVal(document.getElementById("form-room").value),
             subject: cleanVal(document.getElementById("form-subject").value),
@@ -783,6 +809,7 @@
     }
 
     initCalendarPage();
+
 </script>
 </body>
 </html>
