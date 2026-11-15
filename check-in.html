@@ -38,7 +38,7 @@
             gap: 12px;
             flex-wrap: wrap;
         }
-        .back-btn {
+        .back-btn, a.btn-link {
             background: #334155;
             color: #f8fafc;
             text-decoration: none;
@@ -46,8 +46,13 @@
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        .back-btn:hover { background: #475569; }
+        .back-btn:hover, a.btn-link:hover { background: #475569; }
+        .btn-upd { background: #2563eb; color: #fff; padding: 7px 12px; font-size: 13px; }
+        .btn-upd:hover { background: #1d4ed8; }
         .page-title {
             margin: 0;
             font-size: 18px;
@@ -200,10 +205,12 @@
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
+            <a href="scores.html" class="btn-link">📊 ຫ້ອງຄະແນນ</a>
+            <a href="update.html?tab=scores" class="btn-link btn-upd" id="btnUpdScores" style="display: none;">🛠️ ຫ້ອງອັບເດດຄະແນນ</a>
             <h1 class="page-title">📋 5. ຈັດການການມາຮຽນ (ຄະແນນເຕັມ 20)</h1>
         </div>
         <div class="user-meta">
-          
+            <span id="fbSyncBadge" class="badge badge-fb">🔥 Firebase</span>
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
             <span id="currentUserRole" class="badge badge-role-student">STUDENT</span>
             <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
@@ -221,6 +228,10 @@
                 </select>
                 <input type="date" id="checkDate" onchange="renderCheckAbsentList()" />
                 <select id="checkGrade" onchange="renderCheckAbsentList()">
+                    <option value="ມ.1">ຫ້ອງ ມ.1</option>
+                    <option value="ມ.2">ຫ້ອງ ມ.2</option>
+                    <option value="ມ.3">ຫ້ອງ ມ.3</option>
+                    <option value="ມ.4">ຫ້ອງ ມ.4</option>
                     <option value="ມ.5">ຫ້ອງ ມ.5</option>
                     <option value="ມ.6">ຫ້ອງ ມ.6</option>
                     <option value="ມ.7">ຫ້ອງ ມ.7</option>
@@ -285,6 +296,10 @@
             <h2>📊 2. ສະຫຼຸບວັນຂາດປະຈຳອາທິດພ້ອມຕັດຄະແນນ</h2>
             <div class="controls">
                 <select id="weeklyGrade" onchange="renderWeeklySummary()">
+                    <option value="ມ.1">ຫ້ອງ ມ.1</option>
+                    <option value="ມ.2">ຫ້ອງ ມ.2</option>
+                    <option value="ມ.3">ຫ້ອງ ມ.3</option>
+                    <option value="ມ.4">ຫ້ອງ ມ.4</option>
                     <option value="ມ.5">ຫ້ອງ ມ.5</option>
                     <option value="ມ.6">ຫ້ອງ ມ.6</option>
                     <option value="ມ.7">ຫ້ອງ ມ.7</option>
@@ -315,6 +330,10 @@
             <div class="controls">
                 <input type="month" id="monthlyPicker" onchange="renderMonthlySummary()" />
                 <select id="monthlyGrade" onchange="renderMonthlySummary()">
+                    <option value="ມ.1">ຫ້ອງ ມ.1</option>
+                    <option value="ມ.2">ຫ້ອງ ມ.2</option>
+                    <option value="ມ.3">ຫ້ອງ ມ.3</option>
+                    <option value="ມ.4">ຫ້ອງ ມ.4</option>
                     <option value="ມ.5">ຫ້ອງ ມ.5</option>
                     <option value="ມ.6">ຫ້ອງ ມ.6</option>
                     <option value="ມ.7">ຫ້ອງ ມ.7</option>
@@ -345,6 +364,10 @@
             <div class="controls">
                 <input type="date" id="historyDate" onchange="renderPeriodAbsentHistory()" />
                 <select id="historyGrade" onchange="renderPeriodAbsentHistory()">
+                    <option value="ມ.1">ຫ້ອງ ມ.1</option>
+                    <option value="ມ.2">ຫ້ອງ ມ.2</option>
+                    <option value="ມ.3">ຫ້ອງ ມ.3</option>
+                    <option value="ມ.4">ຫ້ອງ ມ.4</option>
                     <option value="ມ.5">ຫ້ອງ ມ.5</option>
                     <option value="ມ.6">ຫ້ອງ ມ.6</option>
                     <option value="ມ.7">ຫ້ອງ ມ.7</option>
@@ -380,7 +403,7 @@
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, setDoc, deleteDoc, doc
+        getFirestore, collection, getDocs, onSnapshot, setDoc, deleteDoc, doc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -401,15 +424,24 @@
 
     const MAX_TERM_SCORE = 20;
     const DEDUCT_PER_ABSENT = 2;
+    const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
+    const SYNC_EVENT_NAME = "school-data-updated";
 
-    // ກວດສອບ ແລະ ກຳນົດສິດ 3 ບົດບາດ: admin, teacher, student
+    function cleanVal(v) {
+        return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
+    }
+
+    function cleanGrade(v) {
+        return cleanVal(v).replace(/\s+/g, "");
+    }
+
     function resolveRole() {
-        const raw = (
+        const raw = cleanVal(
             localStorage.getItem("userRole") ||
             localStorage.getItem("role") ||
             localStorage.getItem("user_role") ||
             "student"
-        ).trim().toLowerCase();
+        ).toLowerCase();
 
         if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
         if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
@@ -417,8 +449,8 @@
     }
 
     const role = resolveRole();
-    const userGrade = localStorage.getItem("userGrade") || "ມ.5";
-    const userName = localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
+    const userGrade = cleanGrade(localStorage.getItem("userGrade") || "ມ.5") || "ມ.5";
+    const userName = cleanVal(localStorage.getItem("userName")) || "ຜູ້ໃຊ້ງານ";
 
     const isAdmin = role === "admin";
     const isTeacher = role === "teacher";
@@ -431,19 +463,34 @@
         canViewAllGrades: isAdmin || isTeacher
     };
 
+    function broadcastSystemDataUpdated(tabKey = "scores") {
+        const payload = {
+            tab: tabKey,
+            updatedBy: userName,
+            timestamp: Date.now()
+        };
+        try {
+            localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(payload));
+        } catch (e) {}
+        window.dispatchEvent(new CustomEvent(SYNC_EVENT_NAME, { detail: payload }));
+    }
+
     const roleBadgeEl = document.getElementById("currentUserRole");
     roleBadgeEl.textContent = role.toUpperCase();
     roleBadgeEl.className = `badge badge-role-${role}`;
 
     document.getElementById("currentUserName").textContent = userName;
     document.getElementById("currentUserGrade").textContent = userGrade;
+    if (PERMISSIONS.canMarkAttendance) {
+        document.getElementById("btnUpdScores").style.display = "inline-flex";
+    }
 
     function updateSyncBadge(text) {
         const el = document.getElementById("fbSyncBadge");
         if (el) el.textContent = text;
     }
 
-    const studentsList = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
+    let studentsList = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
         { id: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5" },
         { id: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5" },
         { id: "STD-003", name: "ທ. ອານຸສອນ ວົງສາ", grade: "ມ.5" },
@@ -474,14 +521,17 @@
 
     function getActiveGrade(selectId) {
         if (!PERMISSIONS.canSelectAnyGrade) return userGrade;
-        return document.getElementById(selectId).value;
+        return cleanGrade(document.getElementById(selectId).value) || userGrade;
     }
 
     function getTermScoreForStudent(studentId, studentName, grade, term) {
+        const targetGrade = cleanGrade(grade);
         const count = absentRecords.filter((r) => {
-            const matchTerm = (r.term || "ເທີມ 1 / 2026-2027") === term;
-            const matchGrade = r.grade === grade;
-            const matchStudent = (studentId && r.studentId === studentId) || (studentName && r.studentName === studentName);
+            const matchTerm = cleanVal(r.term || "ເທີມ 1 / 2026-2027") === cleanVal(term);
+            const matchGrade = cleanGrade(r.grade) === targetGrade;
+            const matchStudent =
+                (studentId && cleanVal(r.studentId) === cleanVal(studentId)) ||
+                (studentName && cleanVal(r.studentName) === cleanVal(studentName));
             return matchTerm && matchGrade && matchStudent;
         }).length;
 
@@ -491,13 +541,16 @@
     }
 
     async function syncTermAttendanceScoresToFirestore(term, gradeVal) {
-        const roomStudents = studentsList.filter((s) => s.grade === gradeVal);
+        const cleanGr = cleanGrade(gradeVal);
+        const roomStudents = studentsList.filter((s) => cleanGrade(s.grade) === cleanGr);
         const summaries = roomStudents.map((s) => {
             const info = getTermScoreForStudent(s.id, s.name, s.grade, term);
             return {
+                id: s.id,
                 studentId: s.id,
                 studentName: s.name,
-                grade: s.grade,
+                name: s.name,
+                grade: cleanGr,
                 term,
                 absentCount: info.count,
                 deducted: info.deducted,
@@ -517,10 +570,12 @@
                 console.warn("ບໍ່ໄດ້ບັນທຶກ attendance_scores:", err.message);
             }
         }
+        broadcastSystemDataUpdated("scores");
     }
 
     function setupRolePermissions() {
-        const validGrade = ["ມ.5", "ມ.6", "ມ.7"].includes(userGrade) ? userGrade : "ມ.5";
+        const allowedGrades = ["ມ.1", "ມ.2", "ມ.3", "ມ.4", "ມ.5", "ມ.6", "ມ.7"];
+        const validGrade = allowedGrades.includes(userGrade) ? userGrade : "ມ.5";
 
         document.getElementById("checkDate").value = todayStr;
         document.getElementById("historyDate").value = todayStr;
@@ -560,7 +615,7 @@
         const periodVal = document.getElementById("checkPeriod").value;
         const tbody = document.getElementById("checkAbsentBody");
 
-        const roomStudents = studentsList.filter((s) => s.grade === gradeVal);
+        const roomStudents = studentsList.filter((s) => cleanGrade(s.grade) === gradeVal);
         if (!roomStudents.length) {
             tbody.innerHTML = `<tr><td colspan="6" class="center">ບໍ່ມີລາຍຊື່ນັກຮຽນໃນຫ້ອງ ${esc(gradeVal)}</td></tr>`;
             return;
@@ -569,11 +624,11 @@
         tbody.innerHTML = roomStudents.map((s, idx) => {
             const existing = absentRecords.find(
                 (r) =>
-                    (r.term || "ເທີມ 1 / 2026-2027") === termVal &&
+                    cleanVal(r.term || "ເທີມ 1 / 2026-2027") === cleanVal(termVal) &&
                     r.date === dateVal &&
-                    r.grade === gradeVal &&
+                    cleanGrade(r.grade) === gradeVal &&
                     r.period === periodVal &&
-                    r.studentId === s.id
+                    (cleanVal(r.studentId) === cleanVal(s.id) || cleanVal(r.studentName) === cleanVal(s.name))
             );
             const checkedAttr = existing ? "checked" : "";
             const reasonVal = existing ? existing.reason || "" : "";
@@ -603,7 +658,7 @@
             `🎯 ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ (${termVal} • ຫ້ອງ ${gradeVal}) — ຄະແນນເຕັມ ${MAX_TERM_SCORE}`;
 
         const tbody = document.getElementById("termScoreSummaryBody");
-        const roomStudents = studentsList.filter((s) => s.grade === gradeVal);
+        const roomStudents = studentsList.filter((s) => cleanGrade(s.grade) === gradeVal);
 
         if (!roomStudents.length) {
             tbody.innerHTML = `<tr><td colspan="7" class="center">ບໍ່ມີຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(gradeVal)}</td></tr>`;
@@ -641,9 +696,9 @@
 
         const oldRecords = absentRecords.filter(
             (r) =>
-                (r.term || "ເທີມ 1 / 2026-2027") === termVal &&
+                cleanVal(r.term || "ເທີມ 1 / 2026-2027") === cleanVal(termVal) &&
                 r.date === dateVal &&
-                r.grade === gradeVal &&
+                cleanGrade(r.grade) === gradeVal &&
                 r.period === periodVal
         );
 
@@ -657,19 +712,19 @@
         absentRecords = absentRecords.filter(
             (r) =>
                 !(
-                    (r.term || "ເທີມ 1 / 2026-2027") === termVal &&
+                    cleanVal(r.term || "ເທີມ 1 / 2026-2027") === cleanVal(termVal) &&
                     r.date === dateVal &&
-                    r.grade === gradeVal &&
+                    cleanGrade(r.grade) === gradeVal &&
                     r.period === periodVal
                 )
         );
 
         for (const cb of checkboxes) {
             if (cb.checked) {
-                const sid = cb.getAttribute("data-sid");
-                const sname = cb.getAttribute("data-sname");
-                const rInput = reasons.find((el) => el.getAttribute("data-sid") === sid);
-                const reasonText = (rInput ? rInput.value : "").trim() || "ຂາດຮຽນ";
+                const sid = cleanVal(cb.getAttribute("data-sid"));
+                const sname = cleanVal(cb.getAttribute("data-sname"));
+                const rInput = reasons.find((el) => cleanVal(el.getAttribute("data-sid")) === sid);
+                const reasonText = cleanVal(rInput ? rInput.value : "") || "ຂາດຮຽນ";
                 const recId = `ABS-${termVal.replace(/[^a-zA-Z0-9]/g, "")}-${dateVal}-${periodVal.replace(/\s+/g, "")}-${sid}`;
 
                 const newRec = {
@@ -681,6 +736,7 @@
                     period: periodVal,
                     studentId: sid,
                     studentName: sname,
+                    name: sname,
                     reason: reasonText
                 };
 
@@ -720,7 +776,7 @@
         const tbody = document.getElementById("weeklySummaryBody");
         const { start, end } = getCurrentWeekRange();
 
-        const roomStudents = studentsList.filter((s) => s.grade === gradeVal);
+        const roomStudents = studentsList.filter((s) => cleanGrade(s.grade) === gradeVal);
         if (!roomStudents.length) {
             tbody.innerHTML = `<tr><td colspan="5" class="center">ບໍ່ມີຂໍ້ມູນ</td></tr>`;
             return;
@@ -728,7 +784,11 @@
 
         tbody.innerHTML = roomStudents.map((s, idx) => {
             const count = absentRecords.filter((r) => {
-                if (r.grade !== gradeVal || r.studentId !== s.id) return false;
+                if (cleanGrade(r.grade) !== gradeVal) return false;
+                const matchStu =
+                    (s.id && cleanVal(r.studentId) === cleanVal(s.id)) ||
+                    (s.name && cleanVal(r.studentName || r.name) === cleanVal(s.name));
+                if (!matchStu) return false;
                 const d = new Date(r.date + "T12:00:00");
                 return d >= start && d <= end;
             }).length;
@@ -751,16 +811,20 @@
         const gradeVal = getActiveGrade("monthlyGrade");
         const tbody = document.getElementById("monthlySummaryBody");
 
-        const roomStudents = studentsList.filter((s) => s.grade === gradeVal);
+        const roomStudents = studentsList.filter((s) => cleanGrade(s.grade) === gradeVal);
         if (!roomStudents.length) {
             tbody.innerHTML = `<tr><td colspan="5" class="center">ບໍ່ມີຂໍ້ມູນ</td></tr>`;
             return;
         }
 
         tbody.innerHTML = roomStudents.map((s, idx) => {
-            const count = absentRecords.filter(
-                (r) => r.grade === gradeVal && r.studentId === s.id && String(r.date || "").startsWith(monthVal)
-            ).length;
+            const count = absentRecords.filter((r) => {
+                if (cleanGrade(r.grade) !== gradeVal || !String(r.date || "").startsWith(monthVal)) return false;
+                return (
+                    (s.id && cleanVal(r.studentId) === cleanVal(s.id)) ||
+                    (s.name && cleanVal(r.studentName || r.name) === cleanVal(s.name))
+                );
+            }).length;
 
             const deducted = count * DEDUCT_PER_ABSENT;
             return `
@@ -782,7 +846,7 @@
         const tbody = document.getElementById("periodAbsentBody");
 
         const matches = absentRecords.filter((r) => {
-            const matchGrade = r.grade === gradeVal;
+            const matchGrade = cleanGrade(r.grade) === gradeVal;
             const matchDate = !dateVal || r.date === dateVal;
             const matchPeriod = !periodVal || r.period === periodVal;
             return matchGrade && matchDate && matchPeriod;
@@ -800,7 +864,7 @@
                 <td>${esc(r.date)}</td>
                 <td>${esc(r.period)}</td>
                 <td>${esc(r.grade)}</td>
-                <td><span class="status-absent">${esc(r.studentName)}</span></td>
+                <td><span class="status-absent">${esc(r.studentName || r.name)}</span></td>
                 <td>${esc(r.reason || "-")}</td>
                 ${PERMISSIONS.canDeleteRecord ? `
                     <td>
@@ -817,7 +881,7 @@
         }
         const target = absentRecords.find((r) => r.id === recId);
         if (!target) return;
-        if (!confirm(`ຢືນຢັນລົບລາຍການຂາດຂອງ "${target.studentName}"?`)) return;
+        if (!confirm(`ຢືນຢັນລົບລາຍການຂາດຂອງ "${target.studentName || target.name}"?`)) return;
 
         const docId = target.firestoreId || target.id;
         try {
@@ -841,8 +905,34 @@
         renderPeriodAbsentHistory();
     };
 
+    async function loadStudentsFromFirestore() {
+        try {
+            const stuSnap = await getDocs(collection(db, "students"));
+            if (!stuSnap.empty) {
+                const loaded = [];
+                stuSnap.forEach((d) => {
+                    const data = d.data() || {};
+                    const sName = cleanVal(data.name || data.studentName || "");
+                    const sGrade = cleanGrade(data.grade || data.room || userGrade) || userGrade;
+                    if (sName) {
+                        loaded.push({
+                            id: cleanVal(data.id || data.studentCode || d.id),
+                            name: sName,
+                            grade: sGrade
+                        });
+                    }
+                });
+                if (loaded.length) {
+                    studentsList = loaded;
+                    localStorage.setItem("school_students_list", JSON.stringify(studentsList));
+                }
+            }
+        } catch (e) {}
+    }
+
     window.loadAbsentFromFirestore = async function (showAlert = false) {
         try {
+            await loadStudentsFromFirestore();
             const snap = await getDocs(collection(db, "absent_records"));
             if (!snap.empty) {
                 absentRecords = snap.docs.map((d) => ({
@@ -865,8 +955,25 @@
         }
     };
 
+    onSnapshot(collection(db, "absent_records"), (snap) => {
+        if (!snap.empty) {
+            absentRecords = snap.docs.map((d) => ({
+                id: d.data().id || d.id,
+                firestoreId: d.id,
+                ...d.data()
+            }));
+            saveLocalRecords();
+            renderAll();
+        }
+    }, () => {});
+
+    window.addEventListener("storage", (e) => {
+        if (e.key === SYNC_STORAGE_KEY) loadAbsentFromFirestore(false);
+    });
+    window.addEventListener(SYNC_EVENT_NAME, () => loadAbsentFromFirestore(false));
+
     function esc(str) {
-        return String(str || "")
+        return String(str ?? "")
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
