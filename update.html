@@ -895,7 +895,7 @@
         editingCollectionName = null;
         document.getElementById("dynamic-crud-form").reset();
         document.getElementById("form-heading").textContent = "➕ ເພີ່ມຂໍ້ມູນໃໝ່";
-        document.getElementById("btn-submit-record").textContent = "💾 ບັນທຶກລົງ Firebase";
+        document.getElementById("btn-submit-record").textContent = "💾 ບັນທຶກ";
         document.getElementById("btn-cancel-edit").style.display = "none";
     };
 
@@ -977,7 +977,7 @@
                     updatedAt: serverTimestamp()
                 }, { merge: true });
 
-                alert("✅ ບັນທຶກຄະແນນນັກຮຽນລົງ Firebase ສຳເລັດແລ້ວ!");
+                alert("✅ ບັນທຶກຄະແນນນັກຮຽນສຳເລັດແລ້ວ!");
             } else {
                 const payload = { ...formValues };
 
@@ -1021,7 +1021,7 @@
                         ...payload,
                         updatedAt: serverTimestamp()
                     }, { merge: true });
-                    alert("✅ ອັບເດດຂໍ້ມູນ (ບໍ່ສ້າງໂຕຊ້ຳ) ສຳເລັດແລ້ວ!");
+                    alert("✅ ອັບເດດຂໍ້ມູນ ສຳເລັດແລ້ວ!");
                 } else {
                     await addDoc(collection(db, cfg.primaryCol), {
                         ...payload,
