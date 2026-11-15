@@ -2,49 +2,83 @@
 <html lang="lo">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>12. ຫ້ອງອັບເດດຂໍ້ມູນລະບົບໂຮງຮຽນ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
-        body { background: #0f172a; color: #f8fafc; min-height: 100vh; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; -webkit-tap-highlight-color: transparent; }
+        html, body {
+            background: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            min-height: 100dvh;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
 
         .topbar {
             background: #1e293b;
             border-bottom: 1px solid #334155;
-            padding: 14px 20px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             position: sticky;
             top: 0;
             z-index: 100;
+            width: 100%;
         }
-        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
         .back-btn {
             background: #334155;
             color: #f8fafc;
             text-decoration: none;
-            padding: 8px 14px;
+            padding: 8px 13px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         .back-btn:hover { background: #475569; }
-        .page-title { font-size: 18px; font-weight: 700; color: #38bdf8; }
+        .page-title {
+            font-size: clamp(15.5px, 4vw, 18.5px);
+            font-weight: 700;
+            color: #38bdf8;
+            line-height: 1.3;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
 
         .user-pill {
             background: #0f172a;
             border: 1px solid #334155;
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 999px;
-            font-size: 13px;
+            font-size: 12.5px;
             color: #cbd5e1;
             display: flex;
             align-items: center;
             gap: 8px;
+            max-width: 100%;
+            min-width: 0;
+        }
+        .user-pill > span:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 210px;
         }
         .role-tag {
             background: #16a34a;
@@ -53,27 +87,53 @@
             border-radius: 6px;
             font-size: 11px;
             font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
-        .container { max-width: 1220px; margin: 24px auto; padding: 0 16px; }
+        .container {
+            width: 100%;
+            max-width: 1220px;
+            margin: 18px auto 28px;
+            padding: 0 14px;
+            min-width: 0;
+        }
+
+        .quota-banner {
+            background: rgba(245, 158, 11, 0.16);
+            border: 1px solid rgba(245, 158, 11, 0.55);
+            color: #fef08a;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 12px;
+            line-height: 1.4;
+            display: none;
+            margin-bottom: 14px;
+            overflow-wrap: anywhere;
+        }
+        .quota-banner.show {
+            display: block;
+        }
 
         .submenus {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+            gap: 8px;
+            margin-bottom: 16px;
         }
         .submenu-btn {
             background: #1e293b;
             color: #cbd5e1;
             border: 1px solid #334155;
-            padding: 11px 14px;
-            border-radius: 12px;
-            font-size: 13px;
+            padding: 10px 12px;
+            border-radius: 11px;
+            font-size: 12.5px;
             font-weight: 700;
             cursor: pointer;
             text-align: left;
             transition: 0.2s;
+            min-width: 0;
+            overflow-wrap: anywhere;
         }
         .submenu-btn:hover { border-color: #38bdf8; color: #fff; }
         .submenu-btn.active {
@@ -97,9 +157,11 @@
             border: 1px solid #334155;
             padding: 7px 13px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 600;
             cursor: pointer;
+            flex: 1 1 140px;
+            text-align: center;
         }
         .score-sub-btn.active {
             background: #0284c7;
@@ -111,8 +173,10 @@
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 16px;
-            padding: 20px;
+            padding: 18px;
             box-shadow: 0 10px 28px rgba(0,0,0,0.3);
+            min-width: 0;
+            width: 100%;
         }
 
         .panel-top {
@@ -124,8 +188,14 @@
             padding-bottom: 14px;
             margin-bottom: 16px;
             border-bottom: 1px solid #334155;
+            min-width: 0;
         }
-        .panel-top h2 { font-size: 18px; color: #f8fafc; }
+        .panel-top h2 {
+            font-size: clamp(15px, 4vw, 18px);
+            color: #f8fafc;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
         .sync-note {
             font-size: 12px;
             color: #86efac;
@@ -133,32 +203,43 @@
             border: 1px solid rgba(34, 197, 94, 0.35);
             padding: 5px 10px;
             border-radius: 8px;
+            overflow-wrap: anywhere;
         }
 
         .form-card {
             background: #0f172a;
             border: 1px solid #334155;
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 18px;
+            padding: 14px;
+            margin-bottom: 16px;
+            min-width: 0;
         }
-        .form-card h3 { font-size: 15px; color: #7dd3fc; margin-bottom: 12px; }
+        .form-card h3 {
+            font-size: 14.5px;
+            color: #7dd3fc;
+            margin-bottom: 12px;
+            overflow-wrap: anywhere;
+        }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
             gap: 10px;
         }
+        .form-group { min-width: 0; }
         .form-group label {
             display: block;
             font-size: 12px;
             color: #94a3b8;
             margin-bottom: 4px;
+            line-height: 1.3;
         }
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 9px 10px;
+            min-width: 0;
+            max-width: 100%;
+            padding: 8px 10px;
             border-radius: 8px;
             border: 1px solid #334155;
             background: #1e293b;
@@ -179,32 +260,47 @@
         }
 
         .btn {
-            padding: 8px 14px;
+            padding: 8px 13px;
             border-radius: 8px;
             border: 1px solid #334155;
             background: #0f172a;
             color: #e2e8f0;
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 600;
             cursor: pointer;
+            max-width: 100%;
         }
-        .btn:hover { background: #334155; }
+        .btn:hover:not(:disabled) { background: #334155; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-save { background: #16a34a; border-color: #22c55e; color: #fff; }
-        .btn-save:hover { background: #15803d; }
+        .btn-save:hover:not(:disabled) { background: #15803d; }
         .btn-edit { background: #eab308; border-color: #facc15; color: #0f172a; padding: 5px 10px; font-size: 12px; }
         .btn-del { background: #dc2626; border-color: #ef4444; color: #fff; padding: 5px 10px; font-size: 12px; }
 
-        .table-wrap { width: 100%; overflow-x: auto; }
+        .row-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 680px;
+            min-width: 640px;
         }
         th, td {
             border: 1px solid #334155;
-            padding: 10px 12px;
+            padding: 9px 11px;
             text-align: left;
             font-size: 13px;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
         th { background: #0f172a; color: #93c5fd; font-weight: 700; }
         td { background: #162032; }
@@ -212,15 +308,66 @@
 
         .denied-box {
             max-width: 560px;
-            margin: 60px auto;
+            margin: 40px 14px;
             background: #1e293b;
             border: 1px solid #ef4444;
             border-radius: 16px;
-            padding: 28px;
+            padding: 24px 18px;
             text-align: center;
         }
-        .denied-box h2 { color: #f87171; margin-bottom: 10px; }
-        .denied-box p { color: #cbd5e1; margin-bottom: 18px; }
+        @media (min-width: 600px) {
+            .denied-box { margin: 60px auto; padding: 28px; }
+        }
+        .denied-box h2 { color: #f87171; margin-bottom: 10px; font-size: 18px; }
+        .denied-box p { color: #cbd5e1; margin-bottom: 18px; font-size: 13.5px; line-height: 1.5; }
+
+        @media (max-width: 640px) {
+            html, body {
+                padding: 0;
+            }
+            .topbar {
+                padding: 10px 12px;
+            }
+            .container {
+                margin: 12px auto 22px;
+                padding: 0 10px;
+            }
+            .panel {
+                padding: 13px 12px;
+                border-radius: 12px;
+            }
+            .submenus {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 6px;
+            }
+            .submenu-btn {
+                padding: 8px 9px;
+                font-size: 11.5px;
+                border-radius: 9px;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-actions .btn {
+                width: 100%;
+                text-align: center;
+            }
+            table {
+                min-width: 540px;
+            }
+            th, td {
+                padding: 8px 9px;
+                font-size: 12px;
+            }
+            .user-pill > span:first-child {
+                max-width: 145px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -243,6 +390,10 @@
 </div>
 
 <div class="container" id="update-main-container">
+    <div class="quota-banner" id="quotaBanner">
+        ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບກຳລັງໃຊ້ຂໍ້ມູນໃນເຄື່ອງ (`localStorage`) ແລະ ຈຳກັດການໂຫຼດຊ້ຳ.
+    </div>
+
     <div class="submenus">
         <button type="button" class="submenu-btn active" data-tab="rooms" onclick="switchUpdateTab('rooms')">🏫 1. ລາຍຊື່ຫ້ອງ</button>
         <button type="button" class="submenu-btn" data-tab="teachers" onclick="switchUpdateTab('teachers')">👩‍🏫 2. ລາຍຊື່ຄູ</button>
@@ -274,9 +425,12 @@
                 <div class="form-grid" id="dynamic-fields"></div>
                 <div class="form-actions">
                     <datalist id="studentsDatalist"></datalist>
-<button type="button" class="btn" id="btn-load-students-list" onclick="loadStudentsDatalist(true)">
-    👥 ໂຫຼດລາຍຊື່ນັກຮຽນ
-</button>
+                    <button type="button" class="btn" id="btn-load-students-list" onclick="loadStudentsDatalist(true)">
+                        👥 ໂຫຼດລາຍຊື່ນັກຮຽນ
+                    </button>
+                    <button type="button" class="btn" id="btn-reload-tab" onclick="loadTabData(true)">
+                        🔄 ໂຫຼດຂໍ້ມູນໃໝ່
+                    </button>
                     <button type="submit" class="btn btn-save" id="btn-submit-record">💾 ບັນທຶກລົງ Firebase</button>
                     <button type="button" class="btn" id="btn-cancel-edit" style="display:none;" onclick="resetEditMode()">↩ ຍົກເລີກການແກ້ໄຂ</button>
                 </div>
@@ -308,8 +462,50 @@
         measurementId: "G-NPNFSW2C72"
     };
 
-    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const QUOTA_BLOCK_UNTIL_KEY = "school_firestore_quota_blocked_until";
+    const TAB_CACHE_PREFIX = "school_upd_tab_cache_v1_";
+    const TAB_FETCH_PREFIX = "school_upd_tab_ts_v1_";
+    const STUDENTS_DIR_CACHE_KEY = "school_upd_students_dir_v1";
+    const STUDENTS_DIR_TS_KEY = "school_upd_students_dir_ts_v1";
+    const TAB_COOLDOWN_MS = 60000;
+    const SUBMIT_COOLDOWN_MS = 1200;
+    const QUOTA_COOLDOWN_MS = 1800000;
+    let lastSubmitTs = 0;
+
+    function isQuotaErr(err) {
+        const code = String(err?.code || "").toLowerCase();
+        const msg = String(err?.message || "").toLowerCase();
+        return (
+            code.includes("resource-exhausted") ||
+            msg.includes("quota") ||
+            msg.includes("resource exhausted") ||
+            msg.includes("daily usage")
+        );
+    }
+
+    function setQuotaNotice(active) {
+        const banner = document.getElementById("quotaBanner");
+        if (!banner) return;
+        if (active) banner.classList.add("show");
+        else banner.classList.remove("show");
+    }
+
+    function markQuotaBlocked() {
+        localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+        setQuotaNotice(true);
+    }
+
+    function isQuotaBlockedNow() {
+        const blocked = Date.now() < Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (blocked) setQuotaNotice(true);
+        return blocked;
+    }
+
+    let db = null;
+    try {
+        const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+        db = getFirestore(app);
+    } catch (e) {}
 
     const DEFAULT_SUBJECTS = ["ຄະນິດສາດ", "ຟີຊິກສາດ", "ເຄມີສາດ", "ຊີວະສາດ", "ພາສາລາວ", "ພາສາອັງກິດ", "ໄອທີ / ຄອມ"];
     let availableSubjects = [...DEFAULT_SUBJECTS];
@@ -578,7 +774,27 @@
     let editingRecordId = null;
     let editingCollectionName = null;
 
-    async function refreshSubjectsFromFirestore() {
+    function saveTabCache(tabKey, rows) {
+        try {
+            localStorage.setItem(TAB_CACHE_PREFIX + tabKey, JSON.stringify(rows));
+        } catch (_) {}
+    }
+
+    function loadTabCache(tabKey) {
+        try {
+            const raw = JSON.parse(localStorage.getItem(TAB_CACHE_PREFIX + tabKey) || "null");
+            return Array.isArray(raw) ? raw : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    async function refreshSubjectsFromFirestore(force = false) {
+        if (!db || isQuotaBlockedNow()) return;
+        const tsKey = TAB_FETCH_PREFIX + "subjects";
+        const lastTs = Number(localStorage.getItem(tsKey) || "0");
+        if (!force && Date.now() - lastTs < TAB_COOLDOWN_MS) return;
+
         try {
             const snap = await getDocs(collection(db, "subjects"));
             if (!snap.empty) {
@@ -589,8 +805,9 @@
                     availableSubjects = Array.from(new Set([...DEFAULT_SUBJECTS, ...dbSubjs]));
                 }
             }
+            localStorage.setItem(tsKey, String(Date.now()));
         } catch (err) {
-            console.warn(err);
+            if (isQuotaErr(err)) markQuotaBlocked();
         }
     }
 
@@ -677,8 +894,10 @@
                 <td>${idx + 1}</td>
                 ${cfg.columns.map((c) => `<td>${escapeHtml(rec[c.key] || "-")}</td>`).join("")}
                 <td>
-                    <button type="button" class="btn btn-edit" onclick="startEditRecord('${escapeHtml(rec.id)}', '${escapeHtml(rec._col)}')">✏️ ແກ້ໄຂ</button>
-                    <button type="button" class="btn btn-del" onclick="deleteRecordItem('${escapeHtml(rec.id)}', '${escapeHtml(rec._col)}')">🗑️ ລົບ</button>
+                    <div class="row-actions">
+                        <button type="button" class="btn btn-edit" onclick="startEditRecord('${escapeHtml(rec.id)}', '${escapeHtml(rec._col)}')">✏️ ແກ້ໄຂ</button>
+                        <button type="button" class="btn btn-del" onclick="deleteRecordItem('${escapeHtml(rec.id)}', '${escapeHtml(rec._col)}')">🗑️ ລົບ</button>
+                    </div>
                 </td>
             </tr>
         `).join("");
@@ -722,8 +941,7 @@
         }
     }
 
-    async function loadTabData() {
-        await refreshSubjectsFromFirestore();
+    window.loadTabData = async function (force = false) {
         const cfg = TAB_CONFIGS[currentTab];
         document.getElementById("active-tab-title").textContent = cfg.title;
         document.getElementById("score-sub-bar").style.display = currentTab === "scores" ? "flex" : "none";
@@ -732,25 +950,66 @@
         renderTableHeader();
         resetEditMode();
 
-        const tbody = document.getElementById("dynamic-tbody");
-        tbody.innerHTML = `<tr><td colspan="${cfg.columns.length + 2}" class="empty-row">ກຳລັງດຶງຂໍ້ມູນຈາກ Firebase...</td></tr>`;
-
-        const merged = [];
-        for (const colName of cfg.collections) {
-            try {
-                const snap = await getDocs(collection(db, colName));
-                snap.forEach((docSnap) => {
-                    const mapped = cfg.mapDoc(docSnap.data(), docSnap.id);
-                    merged.push({ ...mapped, _col: colName });
-                });
-            } catch (err) {
-                console.warn("ບໍ່ສາມາດອ່ານ collection " + colName, err);
-            }
+        const cached = loadTabCache(currentTab);
+        if (cached) {
+            currentRecords = cached;
+            renderTableBody();
+        } else {
+            document.getElementById("dynamic-tbody").innerHTML =
+                `<tr><td colspan="${cfg.columns.length + 2}" class="empty-row">ກຳລັງດຶງຂໍ້ມູນ...</td></tr>`;
         }
 
-        currentRecords = merged;
-        renderTableBody();
-    }
+        if (!db || isQuotaBlockedNow()) {
+            renderTableBody();
+            if (force && isQuotaBlockedNow()) alert("⚠️ ໂຄຕ້າ Firebase ເຕັມ — ສະແດງຂໍ້ມູນໃນເຄື່ອງ.");
+            return;
+        }
+
+        const tsKey = TAB_FETCH_PREFIX + currentTab;
+        const lastTs = Number(localStorage.getItem(tsKey) || "0");
+        if (!force && cached && Date.now() - lastTs < TAB_COOLDOWN_MS) {
+            return;
+        }
+
+        const reloadBtn = document.getElementById("btn-reload-tab");
+        if (reloadBtn) reloadBtn.disabled = true;
+
+        try {
+            if (currentTab === "scores") {
+                await refreshSubjectsFromFirestore(force);
+                renderFormFields();
+            }
+
+            const merged = [];
+            for (const colName of cfg.collections) {
+                try {
+                    const snap = await getDocs(collection(db, colName));
+                    snap.forEach((docSnap) => {
+                        const mapped = cfg.mapDoc(docSnap.data(), docSnap.id);
+                        merged.push({ ...mapped, _col: colName });
+                    });
+                } catch (err) {
+                    if (isQuotaErr(err)) throw err;
+                }
+            }
+
+            currentRecords = merged;
+            saveTabCache(currentTab, merged);
+            localStorage.setItem(tsKey, String(Date.now()));
+            localStorage.removeItem(QUOTA_BLOCK_UNTIL_KEY);
+            setQuotaNotice(false);
+            renderTableBody();
+            if (force) alert("✅ ໂຫຼດຂໍ້ມູນໃໝ່ສຳເລັດ!");
+        } catch (err) {
+            if (isQuotaErr(err)) {
+                markQuotaBlocked();
+                renderTableBody();
+                if (force) alert("⚠️ ໂຄຕ້າ Firebase ເຕັມ — ສະແດງຂໍ້ມູນໃນເຄື່ອງ.");
+            }
+        } finally {
+            if (reloadBtn) reloadBtn.disabled = false;
+        }
+    };
 
     window.switchUpdateTab = function (tabKey) {
         if (!TAB_CONFIGS[tabKey]) return;
@@ -758,7 +1017,7 @@
         document.querySelectorAll(".submenu-btn").forEach((btn) => {
             btn.classList.toggle("active", btn.dataset.tab === tabKey);
         });
-        loadTabData();
+        loadTabData(false);
     };
 
     window.startEditRecord = function (recordId, colName) {
@@ -797,29 +1056,45 @@
         const cfg = TAB_CONFIGS[currentTab];
         const targetCol = colName || cfg.primaryCol;
 
+        currentRecords = currentRecords.filter((r) => !(r.id === recordId && r._col === targetCol));
+        saveTabCache(currentTab, currentRecords);
+        renderTableBody();
+        broadcastSystemDataUpdated(currentTab);
+
+        if (!db || isQuotaBlockedNow()) {
+            alert("🗑️ ລົບຂໍ້ມູນໃນເຄື່ອງແລ້ວ.");
+            return;
+        }
+
         try {
             await deleteDoc(doc(db, targetCol, recordId));
-            if (currentTab === "subjects") await refreshSubjectsFromFirestore();
-            broadcastSystemDataUpdated(currentTab);
-            await loadTabData();
+            localStorage.setItem(TAB_FETCH_PREFIX + currentTab, String(Date.now()));
             alert("🗑️ ລົບຂໍ້ມູນສຳເລັດ!");
         } catch (err) {
-            alert("❌ ລົບຂໍ້ມູນບໍ່ສຳເລັດ: " + err.message);
+            if (isQuotaErr(err)) markQuotaBlocked();
+            alert("🗑️ ລົບໃນເຄື່ອງແລ້ວ (ໂຄຕ້າ Firebase ອາດຈະເຕັມ).");
         }
     };
 
     document.getElementById("dynamic-crud-form").addEventListener("submit", async (e) => {
         e.preventDefault();
-        const cfg = TAB_CONFIGS[currentTab];
-        const fields = getActiveFields();
-        const formValues = {};
+        const now = Date.now();
+        if (now - lastSubmitTs < SUBMIT_COOLDOWN_MS) return;
+        lastSubmitTs = now;
 
-        fields.forEach((f) => {
-            const el = document.getElementById("fld-" + f.name);
-            formValues[f.name] = cleanVal(el ? el.value : "");
-        });
+        const submitBtn = document.getElementById("btn-submit-record");
+        if (submitBtn) submitBtn.disabled = true;
 
         try {
+            const cfg = TAB_CONFIGS[currentTab];
+            const fields = getActiveFields();
+            const formValues = {};
+
+            fields.forEach((f) => {
+                const el = document.getElementById("fld-" + f.name);
+                formValues[f.name] = cleanVal(el ? el.value : "");
+            });
+
             if (currentTab === "scores") {
                 const studentName = formValues.studentName;
                 const grade = cleanGrade(formValues.room) || "ມ.5";
@@ -862,15 +1137,33 @@
                 };
                 const annualAvg = computeAnnualAverage(merged);
                 const quarterScore = Number((annualAvg / 4).toFixed(2));
+                const fullDoc = { ...merged, annualAvg, quarterScore };
+                const mappedRow = { ...cfg.mapDoc(fullDoc, docId), _col: cfg.primaryCol };
 
-                await setDoc(doc(db, cfg.primaryCol, docId), {
-                    ...merged,
-                    annualAvg,
-                    quarterScore,
-                    updatedAt: serverTimestamp()
-                }, { merge: true });
+                const idx = currentRecords.findIndex((r) => r.id === docId);
+                if (idx >= 0) currentRecords[idx] = mappedRow;
+                else currentRecords.unshift(mappedRow);
+                saveTabCache(currentTab, currentRecords);
+                renderTableBody();
+                resetEditMode();
+                broadcastSystemDataUpdated(currentTab);
 
-                alert("✅ ບັນທຶກຄະແນນນັກຮຽນລົງ Firebase ສຳເລັດແລ້ວ!");
+                if (!db || isQuotaBlockedNow()) {
+                    alert("✅ ບັນທຶກຄະແນນໃນເຄື່ອງແລ້ວ.");
+                    return;
+                }
+
+                try {
+                    await setDoc(doc(db, cfg.primaryCol, docId), {
+                        ...fullDoc,
+                        updatedAt: serverTimestamp()
+                    }, { merge: true });
+                    localStorage.setItem(TAB_FETCH_PREFIX + currentTab, String(Date.now()));
+                    alert("✅ ບັນທຶກຄະແນນນັກຮຽນລົງ Firebase ສຳເລັດແລ້ວ!");
+                } catch (err) {
+                    if (isQuotaErr(err)) markQuotaBlocked();
+                    alert("✅ ບັນທຶກໃນເຄື່ອງແລ້ວ (ໂຄຕ້າ Firebase ອາດຈະເຕັມ).");
+                }
             } else {
                 const payload = { ...formValues };
 
@@ -893,46 +1186,54 @@
                     payload.subjectCode = payload.code;
                 }
 
+                const targetCol = editingCollectionName || cfg.primaryCol;
+                const rowId = editingRecordId || ("REC-" + Date.now());
+                const mappedRow = { ...cfg.mapDoc(payload, rowId), _col: targetCol };
+
                 if (editingRecordId) {
-                    const targetCol = editingCollectionName || cfg.primaryCol;
-                    await updateDoc(doc(db, targetCol, editingRecordId), {
-                        ...payload,
-                        updatedAt: serverTimestamp()
-                    });
-                    alert("✅ ແກ້ໄຂຂໍ້ມູນສຳເລັດ ແລະ ອັບເດດໄປທຸກໜ້າແລ້ວ!");
+                    const idx = currentRecords.findIndex((r) => r.id === editingRecordId && r._col === targetCol);
+                    if (idx >= 0) currentRecords[idx] = mappedRow;
                 } else {
-                    await addDoc(collection(db, cfg.primaryCol), {
-                        ...payload,
-                        createdAt: serverTimestamp()
-                    });
-                    alert("✅ ເພີ່ມຂໍ້ມູນໃໝ່ສຳເລັດ ແລະ ອັບເດດໄປທຸກໜ້າແລ້ວ!");
+                    currentRecords.unshift(mappedRow);
+                }
+                saveTabCache(currentTab, currentRecords);
+                renderTableBody();
+                resetEditMode();
+                broadcastSystemDataUpdated(currentTab);
+
+                if (!db || isQuotaBlockedNow()) {
+                    alert("✅ ບັນທຶກຂໍ້ມູນໃນເຄື່ອງແລ້ວ.");
+                    return;
+                }
+
+                try {
+                    if (editingRecordId) {
+                        await updateDoc(doc(db, targetCol, editingRecordId), {
+                            ...payload,
+                            updatedAt: serverTimestamp()
+                        });
+                        alert("✅ ແກ້ໄຂຂໍ້ມູນສຳເລັດ ແລະ ອັບເດດໄປທຸກໜ້າແລ້ວ!");
+                    } else {
+                        await addDoc(collection(db, cfg.primaryCol), {
+                            ...payload,
+                            createdAt: serverTimestamp()
+                        });
+                        alert("✅ ເພີ່ມຂໍ້ມູນໃໝ່ສຳເລັດ ແລະ ອັບເດດໄປທຸກໜ້າແລ້ວ!");
+                    }
+                    localStorage.setItem(TAB_FETCH_PREFIX + currentTab, String(Date.now()));
+                } catch (err) {
+                    if (isQuotaErr(err)) markQuotaBlocked();
+                    alert("✅ ບັນທຶກໃນເຄື່ອງແລ້ວ (ໂຄຕ້າ Firebase ອາດຈະເຕັມ).");
                 }
             }
-
-            broadcastSystemDataUpdated(currentTab);
-            await loadTabData();
-        } catch (err) {
-            alert("❌ ບັນທຶກບໍ່ສຳເລັດ: " + err.message);
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
         }
     });
 
-    if (userRole !== "student") {
-        loadTabData();
-    }
     let studentsDirectory = [];
 
-window.loadStudentsDatalist = async function (showToast = false) {
-    try {
-        const snap = await getDocs(collection(db, "students"));
-        studentsDirectory = snap.docs.map((d) => {
-            const data = d.data() || {};
-            return {
-                id: d.id,
-                name: cleanVal(data.name || data.studentName || ""),
-                grade: cleanGrade(data.grade || data.room || data.classRoom || "")
-            };
-        }).filter((s) => s.name);
-
+    function applyStudentsDatalistUI() {
         const dl = document.getElementById("studentsDatalist");
         if (dl) {
             dl.innerHTML = studentsDirectory.map((s) =>
@@ -953,15 +1254,60 @@ window.loadStudentsDatalist = async function (showToast = false) {
                 }
             };
         }
-
-        if (showToast) {
-            alert(`✅ ໂຫຼດລາຍຊື່ນັກຮຽນ ${studentsDirectory.length} ຄົນສຳເລັດ!`);
-        }
-    } catch (err) {
-        console.warn("ໂຫຼດລາຍຊື່ນັກຮຽນບໍ່ສຳເລັດ:", err);
-        if (showToast) alert("❌ ໂຫຼດລາຍຊື່ນັກຮຽນບໍ່ສຳເລັດ: " + err.message);
     }
-};
+
+    window.loadStudentsDatalist = async function (showToast = false) {
+        try {
+            const cachedDir = JSON.parse(localStorage.getItem(STUDENTS_DIR_CACHE_KEY) || "null");
+            if (Array.isArray(cachedDir) && cachedDir.length) {
+                studentsDirectory = cachedDir;
+                applyStudentsDatalistUI();
+            }
+        } catch (_) {}
+
+        const lastDirTs = Number(localStorage.getItem(STUDENTS_DIR_TS_KEY) || "0");
+        if (!showToast && studentsDirectory.length && Date.now() - lastDirTs < TAB_COOLDOWN_MS) {
+            return;
+        }
+
+        if (!db || isQuotaBlockedNow()) {
+            if (showToast) alert(`✅ ໃຊ້ລາຍຊື່ນັກຮຽນໃນເຄື່ອງ ${studentsDirectory.length} ຄົນ.`);
+            return;
+        }
+
+        const btn = document.getElementById("btn-load-students-list");
+        if (btn) btn.disabled = true;
+
+        try {
+            const snap = await getDocs(collection(db, "students"));
+            studentsDirectory = snap.docs.map((d) => {
+                const data = d.data() || {};
+                return {
+                    id: d.id,
+                    name: cleanVal(data.name || data.studentName || ""),
+                    grade: cleanGrade(data.grade || data.room || data.classRoom || "")
+                };
+            }).filter((s) => s.name);
+
+            localStorage.setItem(STUDENTS_DIR_CACHE_KEY, JSON.stringify(studentsDirectory));
+            localStorage.setItem(STUDENTS_DIR_TS_KEY, String(Date.now()));
+            applyStudentsDatalistUI();
+
+            if (showToast) {
+                alert(`✅ ໂຫຼດລາຍຊື່ນັກຮຽນ ${studentsDirectory.length} ຄົນສຳເລັດ!`);
+            }
+        } catch (err) {
+            if (isQuotaErr(err)) markQuotaBlocked();
+            if (showToast) alert(`⚠️ ໃຊ້ລາຍຊື່ໃນເຄື່ອງ ${studentsDirectory.length} ຄົນ (ໂຄຕ້າ Firebase ອາດຈະເຕັມ).`);
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    };
+
+    if (userRole !== "student") {
+        isQuotaBlockedNow();
+        loadTabData(false);
+    }
 </script>
 </body>
 </html>
