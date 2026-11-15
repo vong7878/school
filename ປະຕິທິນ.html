@@ -106,6 +106,10 @@
             flex-wrap: wrap;
             gap: 10px;
         }
+        .term-info-banner.closed {
+            background: linear-gradient(135deg, rgba(127, 29, 29, 0.45), rgba(15, 23, 42, 0.95));
+            border-color: #f87171;
+        }
         .term-info-main {
             display: flex;
             align-items: center;
@@ -116,6 +120,24 @@
         }
         .term-highlight {
             color: #7dd3fc;
+            font-weight: 700;
+        }
+        .term-closed-badge {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #f87171;
+            color: #fca5a5;
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .term-open-badge {
+            background: rgba(34, 197, 94, 0.18);
+            border: 1px solid #4ade80;
+            color: #86efac;
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 12px;
             font-weight: 700;
         }
         .term-pills {
@@ -339,6 +361,22 @@
             font-style: italic;
             white-space: nowrap;
         }
+        .closed-slot {
+            color: #fca5a5;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px dashed rgba(248, 113, 113, 0.45);
+            border-radius: 6px;
+            padding: 4px 7px;
+            font-size: 11.5px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* ເຊື່ອງຟອມເພີ່ມຊົ່ວໂມງສອນ */
+        #teacher-add-schedule-box,
+        #weekly-schedule-form {
+            display: none !important;
+        }
 
         .manage-box {
             margin-top: 16px;
@@ -480,6 +518,7 @@
             <span>🗓️ <strong>ເທີມຮຽນ:</strong></span>
             <span class="term-highlight" id="term-banner-title">ຍັງບໍ່ມີຂໍ້ມູນເທີມໃນ Firebase</span>
             <span id="term-banner-range" style="color:#cbd5e1;"></span>
+            <span id="term-banner-status"></span>
         </div>
         <div class="term-pills" id="term-banner-pills"></div>
     </div>
@@ -614,21 +653,21 @@
         <div class="manage-box" id="teacher-add-schedule-box" style="display: none;">
             <h3>➕ ເພີ່ມຊົ່ວໂມງສອນ / ຮຽນປະຈຳອາທິດ</h3>
             <form id="weekly-schedule-form" class="manage-grid">
-                <input type="week" id="form-week" required>
-                <select id="form-day" required>
+                <input type="week" id="form-week">
+                <select id="form-day">
                     <option value="ຈັນ">ວັນຈັນ</option>
                     <option value="ອັງຄານ">ວັນອັງຄານ</option>
                     <option value="ພຸດ">ວັນພຸດ</option>
                     <option value="ພະຫັດ">ວັນພະຫັດ</option>
                     <option value="ສຸກ">ວັນສຸກ</option>
                 </select>
-                <select id="form-period" required>
+                <select id="form-period">
                     <option value="1">ຊົ່ວໂມງທີ 1 (08:00 - 08:45)</option>
                     <option value="2">ຊົ່ວໂມງທີ 2 (08:50 - 09:35)</option>
                     <option value="3">ຊົ່ວໂມງທີ 3 (09:50 - 10:35)</option>
                     <option value="4">ຊົ່ວໂມງທີ 4 (10:40 - 11:25)</option>
                 </select>
-                <select id="form-room" required>
+                <select id="form-room">
                     <option value="ມ.6/1">ມ.6/1</option>
                     <option value="ມ.6/2">ມ.6/2</option>
                     <option value="ມ.6/3">ມ.6/3</option>
@@ -638,8 +677,8 @@
                     <option value="ມ.6">ມ.6</option>
                     <option value="ມ.5">ມ.5</option>
                 </select>
-                <input type="text" id="form-subject" placeholder="ຊື່ວິຊາ (ເຊັ່ນ: ຄະນິດສາດ)" required>
-                <input type="text" id="form-teacher" placeholder="ຊື່ຄູຜູ້ສອນ" required>
+                <input type="text" id="form-subject" placeholder="ຊື່ວິຊາ (ເຊັ່ນ: ຄະນິດສາດ)">
+                <input type="text" id="form-teacher" placeholder="ຊື່ຄູຜູ້ສອນ">
                 <button type="submit" class="btn btn-success">💾 ບັນທຶກລົງປະຕິທິນ</button>
             </form>
         </div>
@@ -664,6 +703,10 @@
     const db = getFirestore(app);
 
     const DEFAULT_ROOMS = ["ມ.6/1", "ມ.6/2", "ມ.6/3", "ມ.6/4", "ມ.6/5", "ມ.6/6", "ມ.6", "ມ.5"];
+    const MONTHS_ORDER = [
+        "ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມິຖຸນາ",
+        "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວາ"
+    ];
 
     function cleanVal(v) {
         return String(v || "").trim().replace(/^["']+|["']+$/g, "");
@@ -690,6 +733,15 @@
         return s;
     }
 
+    function parseMonthIndex(mVal) {
+        const cleaned = cleanVal(mVal).replace(/^ເດືອນ/i, "").trim();
+        const idx = MONTHS_ORDER.indexOf(cleaned);
+        if (idx >= 0) return idx + 1;
+        const num = parseInt(cleaned, 10);
+        if (num >= 1 && num <= 12) return num;
+        return 0;
+    }
+
     function escapeHtml(str) {
         return String(str || "")
             .replace(/&/g, "&amp;")
@@ -707,10 +759,10 @@
         return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
     }
 
-    function getDatesOfISOWeek(weekStr) {
+    function getWeekDateObjects(weekStr) {
         const normWeek = normalizeWeekCode(weekStr);
         const match = /^(\d{4})-W(\d{2})$/.exec(normWeek || "");
-        if (!match) return ["", "", "", "", ""];
+        if (!match) return [null, null, null, null, null];
         const year = parseInt(match[1], 10);
         const week = parseInt(match[2], 10);
 
@@ -723,16 +775,25 @@
             monday.setUTCDate(simple.getUTCDate() + 8 - simple.getUTCDay());
         }
 
-        const dates = [];
+        const list = [];
         for (let i = 0; i < 5; i++) {
             const cur = new Date(monday);
             cur.setUTCDate(monday.getUTCDate() + i);
-            const dd = String(cur.getUTCDate()).padStart(2, "0");
-            const mm = String(cur.getUTCMonth() + 1).padStart(2, "0");
-            const yyyy = cur.getUTCFullYear();
-            dates.push(`${dd}/${mm}/${yyyy}`);
+            list.push(cur);
         }
-        return dates;
+        return list;
+    }
+
+    function formatUtcDate(dateObj) {
+        if (!dateObj) return "";
+        const dd = String(dateObj.getUTCDate()).padStart(2, "0");
+        const mm = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
+        const yyyy = dateObj.getUTCFullYear();
+        return `${dd}/${mm}/${yyyy}`;
+    }
+
+    function getDatesOfISOWeek(weekStr) {
+        return getWeekDateObjects(weekStr).map(formatUtcDate);
     }
 
     function shiftISOWeek(weekStr, deltaWeeks) {
@@ -787,12 +848,42 @@
         return allRoomTerms.length ? allRoomTerms : termPeriodsCache;
     }
 
+    function getActiveTerm(roomFilter = "") {
+        const list = getMatchingTerms(roomFilter);
+        if (!list.length) return null;
+        return list.find((t, idx) => (t.id || `${t.academicYear}__${t.term}__${t.grade}__${idx}`) === selectedTermKey) || list[0];
+    }
+
+    function isDateInTerm(dateObj, termObj) {
+        if (!dateObj || !termObj) return true;
+        const startM = parseMonthIndex(termObj.startMonth);
+        const endM = parseMonthIndex(termObj.endMonth);
+        if (!startM || !endM) return true;
+        const m = dateObj.getUTCMonth() + 1;
+
+        if (startM <= endM) {
+            return m >= startM && m <= endM;
+        }
+        // ຊ່ວງເທີມຂ້າມປີ ເຊັ່ນ ເປີດເທີມເດືອນ 9 (ກັນຍາ) - ປິດເທີມເດືອນ 1 (ມັງກອນ)
+        // ເມື່ອເຂົ້າເດືອນ 2 ຫາ 8 ຈະຖືວ່າປິດເທີມ/ລໍຖ້າເທີມຕໍ່ໄປ
+        return m >= startM || m <= endM;
+    }
+
+    function isWeekActiveInTerm(weekStr, termObj) {
+        if (!termObj) return true;
+        const weekDates = getWeekDateObjects(weekStr).filter(Boolean);
+        if (!weekDates.length) return true;
+        return weekDates.some((d) => isDateInTerm(d, termObj));
+    }
+
     function renderTermBannerAndSelects() {
         const stuRoom = normalizeRoomName(document.getElementById("stu-room-select")?.value || "");
         const tchRoom = normalizeRoomName(document.getElementById("tch-room-filter")?.value || "");
-        const activeRoomForTerm = activeRole === "teacher" ? (tchRoom || "") : stuRoom;
-        const list = getMatchingTerms(activeRoomForTerm);
+        const isTchMode = document.getElementById("subroom-teacher")?.style.display !== "none";
+        const activeRoomForTerm = isTchMode ? (tchRoom || "") : stuRoom;
+        const activeWeek = isTchMode ? currentTeacherWeek : currentStudentWeek;
 
+        const list = getMatchingTerms(activeRoomForTerm);
         const stuSel = document.getElementById("stu-term-select");
         const tchSel = document.getElementById("tch-term-select");
 
@@ -820,18 +911,25 @@
             }
         }
 
+        const bannerEl = document.getElementById("term-info-banner");
         const titleEl = document.getElementById("term-banner-title");
         const rangeEl = document.getElementById("term-banner-range");
+        const statusEl = document.getElementById("term-banner-status");
         const pillsEl = document.getElementById("term-banner-pills");
 
-        const chosen = list.find((t, idx) => (t.id || `${t.academicYear}__${t.term}__${t.grade}__${idx}`) === selectedTermKey) || list[0];
+        const chosen = getActiveTerm(activeRoomForTerm);
 
         if (!chosen) {
+            if (bannerEl) bannerEl.classList.remove("closed");
             if (titleEl) titleEl.textContent = "ຍັງບໍ່ມີຂໍ້ມູນເທີມໃນ Firebase";
             if (rangeEl) rangeEl.textContent = "";
+            if (statusEl) statusEl.innerHTML = "";
             if (pillsEl) pillsEl.innerHTML = "";
-            return;
+            return chosen;
         }
+
+        const weekOpen = isWeekActiveInTerm(activeWeek, chosen);
+        if (bannerEl) bannerEl.classList.toggle("closed", !weekOpen);
 
         if (titleEl) {
             titleEl.textContent = `${chosen.term}${chosen.academicYear ? ` (${chosen.academicYear})` : ""}`;
@@ -839,19 +937,33 @@
         if (rangeEl) {
             rangeEl.textContent = chosen.termRange ? `• ເປີດເທີມ – ປິດເທີມ: ${chosen.termRange}` : "";
         }
+        if (statusEl) {
+            statusEl.innerHTML = weekOpen
+                ? `<span class="term-open-badge">🟢 ກຳລັງເປີດເທີມ</span>`
+                : `<span class="term-closed-badge">🔴 ປິດເທີມ / ລໍຖ້າເປີດເທີມຕໍ່ໄປ</span>`;
+        }
+
+        const totalAllowedPeriods = Math.max(1, Number(chosen.totalPeriods) || 40);
+        const scheduledCount = allWeeklyEntries.filter((e) => {
+            if (!activeRoomForTerm) return true;
+            return normalizeRoomName(e.room).replace(/\s+/g, "").toLowerCase() === activeRoomForTerm.replace(/\s+/g, "").toLowerCase();
+        }).length;
+
         if (pillsEl) {
             pillsEl.innerHTML = `
                 <span class="term-pill">🏫 ${chosen.grade === "ALL" ? "ທຸກຫ້ອງ" : `ຫ້ອງ ${escapeHtml(chosen.grade)}`}</span>
-                <span class="term-pill">⏱️ ${escapeHtml(String(chosen.totalPeriods))} ຄາບ</span>
+                <span class="term-pill">⏱️ ຄາບ ${Math.min(scheduledCount, totalAllowedPeriods)} / ${totalAllowedPeriods}</span>
                 <span class="term-pill">🎯 ເຕັມ ${escapeHtml(String(chosen.maxScore))} ຄະແນນ</span>
             `;
         }
+        return chosen;
     }
 
     window.onTermSelectionChange = function (mode) {
         const sel = document.getElementById(mode === "teacher" ? "tch-term-select" : "stu-term-select");
         selectedTermKey = sel ? sel.value : "";
-        renderTermBannerAndSelects();
+        renderStudentWeeklyTable();
+        renderTeacherWeeklyTable();
     };
 
     async function refreshRoomSelects(extraRooms = []) {
@@ -974,6 +1086,8 @@
             onSnapshot(collection(db, "term_periods"), (termSnap) => {
                 termPeriodsCache = termSnap.docs.map((docSnap) => normalizeTermDoc(docSnap.data(), docSnap.id));
                 renderTermBannerAndSelects();
+                renderStudentWeeklyTable();
+                renderTeacherWeeklyTable();
             }, (err) => {
                 console.warn("ບໍ່ສາມາດຟັງ term_periods ຈາກ Firestore:", err);
             });
@@ -1046,16 +1160,29 @@
         const tbody = document.getElementById("stu-weekly-tbody");
         if (!tbody) return;
 
-        renderTermBannerAndSelects();
-        const room = normalizeRoomName(document.getElementById("stu-room-select").value).toLowerCase();
+        const roomRaw = document.getElementById("stu-room-select").value;
+        const room = normalizeRoomName(roomRaw).toLowerCase();
         const keyword = cleanVal(document.getElementById("stu-search-input").value).toLowerCase();
         const normCurrentWeek = normalizeWeekCode(currentStudentWeek);
-        const dates = getDatesOfISOWeek(normCurrentWeek);
+        const weekDates = getWeekDateObjects(normCurrentWeek);
+        const activeTerm = getActiveTerm(roomRaw);
+        const maxPeriods = activeTerm ? Math.max(1, Number(activeTerm.totalPeriods) || 40) : Infinity;
 
+        renderTermBannerAndSelects();
         document.getElementById("stu-week-label").textContent = formatWeekLabel(normCurrentWeek);
 
+        let periodCounter = 0;
+
         tbody.innerHTML = DAYS.map((dayName, idx) => {
+            const dateObj = weekDates[idx];
+            const dateLabel = formatUtcDate(dateObj);
+            const dayInTerm = isDateInTerm(dateObj, activeTerm);
+
             const cells = [1, 2, 3, 4].map((p) => {
+                if (!dayInTerm) {
+                    return `<td><span class="closed-slot">ປິດເທີມ / ລໍຖ້າເທີມໃໝ່</span></td>`;
+                }
+
                 const matches = allWeeklyEntries.filter((item) => {
                     const itemWeek = normalizeWeekCode(item.week);
                     const itemDay = normalizeLaoDay(item.day);
@@ -1073,7 +1200,16 @@
                     return `<td><span class="empty-slot">- ວ່າງ -</span></td>`;
                 }
 
-                return `<td>${matches.map((m) => `
+                const allowedMatches = matches.filter(() => {
+                    periodCounter += 1;
+                    return periodCounter <= maxPeriods;
+                });
+
+                if (!allowedMatches.length) {
+                    return `<td><span class="empty-slot">- ຄົບຈຳນວນຄາບເທີມ -</span></td>`;
+                }
+
+                return `<td>${allowedMatches.map((m) => `
                     <div class="slot-card" style="margin-bottom:4px;">
                         <div class="slot-subject">${escapeHtml(m.subject)}</div>
                         <div class="slot-meta">👩‍🏫 ${escapeHtml(m.teacher)}</div>
@@ -1084,7 +1220,7 @@
 
             return `
                 <tr>
-                    <td class="day-cell">ວັນ${dayName}<span class="day-date">${dates[idx]}</span></td>
+                    <td class="day-cell">ວັນ${dayName}<span class="day-date">${dateLabel}</span></td>
                     ${cells}
                 </tr>
             `;
@@ -1109,17 +1245,30 @@
         const tbody = document.getElementById("tch-weekly-tbody");
         if (!tbody) return;
 
-        renderTermBannerAndSelects();
         const teacherKw = cleanVal(document.getElementById("tch-name-search").value).toLowerCase();
-        const roomFilter = normalizeRoomName(document.getElementById("tch-room-filter").value).toLowerCase();
+        const roomFilterRaw = document.getElementById("tch-room-filter").value;
+        const roomFilter = normalizeRoomName(roomFilterRaw).toLowerCase();
         const subjKw = cleanVal(document.getElementById("tch-subject-search").value).toLowerCase();
         const normCurrentWeek = normalizeWeekCode(currentTeacherWeek);
-        const dates = getDatesOfISOWeek(normCurrentWeek);
+        const weekDates = getWeekDateObjects(normCurrentWeek);
+        const activeTerm = getActiveTerm(roomFilterRaw);
+        const maxPeriods = activeTerm ? Math.max(1, Number(activeTerm.totalPeriods) || 40) : Infinity;
 
+        renderTermBannerAndSelects();
         document.getElementById("tch-week-label").textContent = formatWeekLabel(normCurrentWeek);
 
+        let periodCounter = 0;
+
         tbody.innerHTML = DAYS.map((dayName, idx) => {
+            const dateObj = weekDates[idx];
+            const dateLabel = formatUtcDate(dateObj);
+            const dayInTerm = isDateInTerm(dateObj, activeTerm);
+
             const cells = [1, 2, 3, 4].map((p) => {
+                if (!dayInTerm) {
+                    return `<td><span class="closed-slot">ປິດເທີມ / ບໍ່ມີການສອນ</span></td>`;
+                }
+
                 const matches = allWeeklyEntries.filter((item) => {
                     const itemWeek = normalizeWeekCode(item.week);
                     const itemDay = normalizeLaoDay(item.day);
@@ -1136,7 +1285,16 @@
                     return `<td><span class="empty-slot">- ບໍ່ມີຊົ່ວໂມງສອນ -</span></td>`;
                 }
 
-                return `<td>${matches.map((m) => `
+                const allowedMatches = matches.filter(() => {
+                    periodCounter += 1;
+                    return periodCounter <= maxPeriods;
+                });
+
+                if (!allowedMatches.length) {
+                    return `<td><span class="empty-slot">- ຄົບຈຳນວນຄາບເທີມ -</span></td>`;
+                }
+
+                return `<td>${allowedMatches.map((m) => `
                     <div class="slot-card teaching" style="margin-bottom:4px;">
                         <div class="slot-subject">${escapeHtml(m.subject)} (${escapeHtml(m.room)})</div>
                         <div class="slot-meta">👩‍🏫 ${escapeHtml(m.teacher)}</div>
@@ -1146,7 +1304,7 @@
 
             return `
                 <tr>
-                    <td class="day-cell">ວັນ${dayName}<span class="day-date">${dates[idx]}</span></td>
+                    <td class="day-cell">ວັນ${dayName}<span class="day-date">${dateLabel}</span></td>
                     ${cells}
                 </tr>
             `;
@@ -1220,23 +1378,22 @@
         activeRole = userRole;
         const tabStu = document.getElementById("tab-student-cal");
         const tabTch = document.getElementById("tab-teacher-cal");
+        const addScheduleBox = document.getElementById("teacher-add-schedule-box");
+        if (addScheduleBox) addScheduleBox.style.display = "none";
 
         if (userRole === "student") {
             if (tabStu) tabStu.style.display = "inline-flex";
             if (tabTch) tabTch.style.display = "none";
-            document.getElementById("teacher-add-schedule-box").style.display = "none";
             switchSubRoom("student");
         } else if (userRole === "teacher") {
             if (tabStu) tabStu.style.display = "none";
             if (tabTch) tabTch.style.display = "inline-flex";
-            document.getElementById("teacher-add-schedule-box").style.display = "block";
             document.getElementById("form-teacher").value = userName;
             document.getElementById("tch-name-search").value = userName;
             switchSubRoom("teacher");
         } else {
             if (tabStu) tabStu.style.display = "inline-flex";
             if (tabTch) tabTch.style.display = "inline-flex";
-            document.getElementById("teacher-add-schedule-box").style.display = "block";
             switchSubRoom("student");
         }
 
