@@ -354,7 +354,9 @@
             return `room:${cleanGrade(item.name).toLowerCase()}`;
         }
         if (tabKey === "teachers") {
-            return `teacher:${cleanVal(item.name).replace(/\s+/g, " ").toLowerCase()}`;
+            const code = cleanVal(item.code).toLowerCase();
+            const name = cleanVal(item.name).replace(/\s+/g, " ").toLowerCase();
+            return code ? `code:${code}` : `teacher:${name}`;
         }
         if (tabKey === "subjects") {
             return `subj:${cleanVal(item.name).toLowerCase()}__${cleanGrade(item.grade).toLowerCase()}`;
@@ -385,7 +387,9 @@
                 const prevTime = prev._raw?.updatedAt?.seconds || prev._raw?.createdAt?.seconds || 0;
                 const nextTime = item._raw?.updatedAt?.seconds || item._raw?.createdAt?.seconds || 0;
                 if (nextScore > prevScore || (nextScore === prevScore && nextTime >= prevTime)) {
-                    map.set(key, item);
+                    map.set(key, { ...prev, ...item });
+                } else {
+                    map.set(key, { ...item, ...prev });
                 }
             }
         });
@@ -454,25 +458,45 @@
             collections: ["teachers"],
             primaryCol: "teachers",
             fields: [
-                { name: "name", label: "ຊື່ຄູອາຈານ", type: "text", required: true, placeholder: "ອ. ..." },
-                { name: "subject", label: "ວິຊາສອນຫຼັກ", type: "text", required: true, placeholder: "ຄະນິດສາດ" },
-                { name: "room", label: "ຫ້ອງຮັບຜິດຊອບ", type: "text", required: false, placeholder: "ມ.6/1" },
-                { name: "phone", label: "ເບີໂທ / ອີເມວ", type: "text", required: false, placeholder: "020..." }
+                { name: "code", label: "ລະຫັດຄູ", type: "text", required: true, placeholder: "ເຊັ່ນ: TCH-004" },
+                { name: "name", label: "ຊື່ ແລະ ນາມສະກຸນຄູ", type: "text", required: true, placeholder: "ເຊັ່ນ: ອ. ວິໄລວັນ ພົມມະຈັນ" },
+                { name: "subject", label: "ວິຊາສອນ", type: "text", required: true, placeholder: "ເຊັ່ນ: ຄະນິດສາດ" },
+                { name: "duty", label: "ໜ້າທີ່ຮັບຜິດຊອບ", type: "text", required: false, placeholder: "ເຊັ່ນ: ປະຈຳຫ້ອງ ມ.5, ດູແລກິດຈະກຳ" },
+                { name: "department", label: "ພາກວິຊາ / ກອງ", type: "select", required: false, options: ["ວິທະຍາສາດ ແລະ ຄະນິດສາດ", "ພາສາ ແລະ ສັງຄົມສາດ", "ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ"] },
+                { name: "joinYear", label: "ປີເຂົ້າເຮັດວຽກ", type: "text", required: false, placeholder: "ເຊັ່ນ: 2021" },
+                { name: "education", label: "ວຸດທິການສຶກສາ", type: "text", required: false, placeholder: "ເຊັ່ນ: ປະລິນຍາຕີ ຄູຄະນິດສາດ" },
+                { name: "phone", label: "ເບີໂທຕິດຕໍ່", type: "text", required: false, placeholder: "ເຊັ່ນ: 020 5555 1234" },
+                { name: "history", label: "ປະຫວັດການສອນ / ຜົນງານ / ບັນທຶກປະຫວັດ", type: "text", required: false, placeholder: "ບັນທຶກປະຫວັດການສອນ, ຜົນງານ ຫຼື ໝາຍເຫດ" }
             ],
             columns: [
-                { key: "name", label: "ຊື່ຄູ" },
+                { key: "code", label: "ລະຫັດຄູ" },
+                { key: "name", label: "ຊື່ ແລະ ນາມສະກຸນຄູ" },
                 { key: "subject", label: "ວິຊາສອນ" },
-                { key: "room", label: "ຫ້ອງ" },
-                { key: "phone", label: "ຕິດຕໍ່" }
+                { key: "duty", label: "ໜ້າທີ່ຮັບຜິດຊອບ" },
+                { key: "department", label: "ພາກວິຊາ/ກອງ" },
+                { key: "joinYear", label: "ປີເຂົ້າເຮັດວຽກ" },
+                { key: "education", label: "ວຸດທິການສຶກສາ" },
+                { key: "phone", label: "ເບີໂທຕິດຕໍ່" },
+                { key: "history", label: "ປະຫວັດການສອນ/ຜົນງານ/ບັນທຶກປະຫວັດ" }
             ],
-            mapDoc: (d, id) => ({
-                id,
-                name: cleanVal(d.name || d.teacherName),
-                subject: cleanVal(d.subject || d.major || ""),
-                room: cleanVal(d.room || d.grade || ""),
-                phone: cleanVal(d.phone || d.email || ""),
-                _raw: d
-            })
+            mapDoc: (d, id) => {
+                const dutyVal = cleanVal(d.duty || d.responsibility || d.rooms || d.room || d.grade || "");
+                return {
+                    id,
+                    code: cleanVal(d.code || d.teacherCode || d.id || id),
+                    name: cleanVal(d.name || d.teacherName || ""),
+                    subject: cleanVal(d.subject || d.major || ""),
+                    duty: dutyVal,
+                    rooms: dutyVal,
+                    room: dutyVal,
+                    department: cleanVal(d.department || ""),
+                    joinYear: cleanVal(d.joinYear || ""),
+                    education: cleanVal(d.education || ""),
+                    phone: cleanVal(d.phone || d.tel || d.email || ""),
+                    history: cleanVal(d.history || d.record || d.achievements || d.note || ""),
+                    _raw: d
+                };
+            }
         },
         students: {
             title: "🎓 ເພີ່ມ / ແກ້ໄຂ / ລົບ ລາຍຊື່ນັກຮຽນ",
@@ -954,6 +978,9 @@
                     payload.grade = payload.name;
                 } else if (currentTab === "teachers") {
                     payload.teacherName = payload.name;
+                    payload.responsibility = payload.duty;
+                    payload.rooms = payload.duty;
+                    payload.room = payload.duty;
                 } else if (currentTab === "students") {
                     payload.studentId = payload.studentCode;
                     payload.room = payload.grade;
