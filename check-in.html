@@ -235,7 +235,7 @@
                     <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
                 </select>
                 <input type="date" id="checkDate" onchange="renderCheckAbsentList()" />
-                <select id="checkGrade" onchange="renderCheckAbsentList()">
+                <select id="checkGrade" onchange="renderAll()">
                     <option value="ມ.1">ຫ້ອງ ມ.1</option>
                     <option value="ມ.2">ຫ້ອງ ມ.2</option>
                     <option value="ມ.3">ຫ້ອງ ມ.3</option>
@@ -473,7 +473,6 @@
 
     const isAdmin = role === "admin";
     const isTeacher = role === "teacher";
-    const isStudent = role === "student";
 
     const PERMISSIONS = {
         canMarkAttendance: isAdmin || isTeacher,
@@ -528,7 +527,8 @@
 
     function getActiveGrade(selectId) {
         if (!PERMISSIONS.canSelectAnyGrade) return userGrade;
-        return cleanGrade(document.getElementById(selectId).value) || userGrade;
+        const el = document.getElementById(selectId);
+        return cleanGrade(el ? el.value : "") || userGrade;
     }
 
     function getTermScoreForStudent(studentId, studentName, grade, term) {
@@ -581,7 +581,7 @@
         broadcastSystemDataUpdated("scores");
     }
 
-    async function syncAllRoomSelects(extraRooms = []) {
+    async function syncAllRoomSelects(extraRooms = [], preserveCurrent = true) {
         const roomMap = new Map();
         const addRoom = (rawName) => {
             const cleaned = cleanVal(rawName).replace(/^ຫ້ອງ\s*/i, "");
@@ -610,19 +610,40 @@
         GRADE_SELECT_IDS.forEach((id) => {
             const selectEl = document.getElementById(id);
             if (!selectEl) return;
-            const prevValue = cleanGrade(selectEl.value);
-            selectEl.innerHTML = roomList
-                .map((r) => `<option value="${esc(r)}">ຫ້ອງ ${esc(r)}</option>`)
-                .join("");
 
-            const targetMatch = roomList.find((r) => cleanGrade(r).toLowerCase() === prevValue.toLowerCase());
-            if (targetMatch) {
-                selectEl.value = targetMatch;
-            } else {
-                const fallbackMatch = roomList.find((r) => isSameGrade(r, userGrade)) || roomList[0];
-                if (fallbackMatch) selectEl.value = fallbackMatch;
-            }
+            const prevValue = cleanGrade(selectEl.value);
+            const existingKeys = new Set(
+                Array.from(selectEl.options).map((o) => cleanGrade(o.value).toLowerCase())
+            );
+
+            roomList.forEach((r) => {
+                const key = cleanGrade(r).toLowerCase();
+                if (key && !existingKeys.has(key)) {
+                    const opt = document.createElement("option");
+                    opt.value = r;
+                    opt.textContent = `ຫ້ອງ ${r}`;
+                    selectEl.appendChild(opt);
+                    existingKeys.add(key);
+                }
+            });
+
             selectEl.disabled = !PERMISSIONS.canSelectAnyGrade;
+            selectEl.style.pointerEvents = "auto";
+
+            if (!PERMISSIONS.canSelectAnyGrade) {
+                const matchedUser = Array.from(selectEl.options).find((o) => isSameGrade(o.value, userGrade));
+                if (matchedUser) selectEl.value = matchedUser.value;
+            } else if (preserveCurrent && prevValue) {
+                const matchedPrev = Array.from(selectEl.options).find(
+                    (o) => cleanGrade(o.value).toLowerCase() === prevValue.toLowerCase()
+                );
+                if (matchedPrev) {
+                    selectEl.value = matchedPrev.value;
+                }
+            } else if (!selectEl.value) {
+                const fallback = Array.from(selectEl.options).find((o) => isSameGrade(o.value, userGrade)) || selectEl.options[0];
+                if (fallback) selectEl.value = fallback.value;
+            }
         });
     }
 
@@ -631,7 +652,7 @@
         document.getElementById("historyDate").value = todayStr;
         document.getElementById("monthlyPicker").value = currentMonthStr;
 
-        await syncAllRoomSelects();
+        await syncAllRoomSelects([], false);
 
         document.getElementById("btnSaveAbsent").style.display = PERMISSIONS.canMarkAttendance ? "inline-block" : "none";
         document.getElementById("historyActionCol").style.display = PERMISSIONS.canDeleteRecord ? "" : "none";
@@ -1010,7 +1031,7 @@
                 ...d.data()
             }));
             saveLocalRecords();
-            await syncAllRoomSelects();
+            await syncAllRoomSelects([], true);
             const termVal = document.getElementById("checkTerm").value;
             const gradeVal = getActiveGrade("checkGrade");
             await syncTermAttendanceScoresToFirestore(termVal, gradeVal);
@@ -1019,26 +1040,25 @@
             if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນການມາຮຽນສຳເລັດ!");
         } catch (err) {
             console.warn("ບໍ່ໄດ້ໂຫຼດ absent_records ຈາກ Firestore:", err.message);
-            await syncAllRoomSelects();
+            await syncAllRoomSelects([], true);
             updateSyncBadge("⚠️ Offline (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
             renderAll();
         }
     };
 
-    onSnapshot(collection(db, "absent_records"), async (snap) => {
+    onSnapshot(collection(db, "absent_records"), (snap) => {
         absentRecords = snap.docs.map((d) => ({
             id: d.data().id || d.id,
             firestoreId: d.id,
             ...d.data()
         }));
         saveLocalRecords();
-        await syncAllRoomSelects();
         renderAll();
     }, () => {});
 
     ["classrooms", "rooms"].forEach((colName) => {
         onSnapshot(collection(db, colName), async () => {
-            await syncAllRoomSelects();
+            await syncAllRoomSelects([], true);
             renderAll();
         }, () => {});
     });
