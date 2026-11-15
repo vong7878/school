@@ -178,6 +178,10 @@
             font-family: inherit;
             font-size: 13px;
         }
+        .cell-input {
+            padding: 6px 8px;
+            font-size: 13px;
+        }
         button, a.btn-link {
             font-family: inherit;
             border: none;
@@ -227,7 +231,25 @@
             color: #e2e8f0;
         }
         tr:hover td { background: #24334d; }
+
+        tr.row-summary-total td {
+            background: #172554;
+            color: #bfdbfe;
+            font-weight: 700;
+        }
+        tr.row-summary-avg td {
+            background: #134e4a;
+            color: #ccfbf1;
+            font-weight: 700;
+        }
+        tr.row-summary-status td {
+            background: #1e293b;
+            color: #f8fafc;
+            font-weight: 700;
+        }
+
         .center { text-align: center; }
+        .right { text-align: right; }
         .actions { display: flex; gap: 6px; flex-wrap: wrap; }
         .slip-thumb {
             width: 54px;
@@ -245,6 +267,7 @@
             border-radius: 999px;
             font-size: 12px;
             font-weight: 600;
+            display: inline-block;
         }
         .status-approved {
             background: rgba(34, 197, 94, 0.2);
@@ -254,6 +277,7 @@
             border-radius: 999px;
             font-size: 12px;
             font-weight: 600;
+            display: inline-block;
         }
         .status-rejected {
             background: rgba(239, 68, 68, 0.2);
@@ -263,42 +287,34 @@
             border-radius: 999px;
             font-size: 12px;
             font-weight: 600;
+            display: inline-block;
         }
         .admin-only-hide { display: none !important; }
         .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
         body[data-role="admin"] #upload-slip-subroom {
             display: none !important;
         }
-        /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
-#fbSyncBadge,
-.badge-fb,
-[data-hide-firebase="true"],
-[class*="firebase" i],
-[id*="firebase" i] {
-  display: none !important;
-}
-        /* ເຊື່ອງປຸ່ມ "ເພີ່ມຄ່າຮຽນ" ແລະ "ຫ້ອງອັບເດດ (ເມນູ 6)" */
-a[href*="update.html"][href*="tab=tuition"],
-a[href*="update"][href*="tuition"],
-a[href*="tab=tuition"],
-button[onclick*="addTuition"],
-button[onclick*="openAddTuition"],
-.btn-add-tuition,
-#btnAddTuition {
-  display: none !important;
-}
-        /* ເຊື່ອງປຸ່ມເພີ່ມຄ່າຮຽນ */
-#btnAddTuition,
-#addTuitionBtn,
-.btn-add-tuition,
-button[id*="tuition" i][id*="add" i],
-button[class*="tuition" i][class*="add" i],
-button[onclick*="tuition" i],
-button[onclick*="Tuition" i],
-select + button.btn-success,
-select + button {
-    display: none !important;
-}
+        #fbSyncBadge,
+        .badge-fb,
+        [data-hide-firebase="true"],
+        [class*="firebase" i],
+        [id*="firebase" i] {
+            display: none !important;
+        }
+        a[href*="update.html"][href*="tab=tuition"],
+        a[href*="update"][href*="tuition"],
+        a[href*="tab=tuition"],
+        button[onclick*="addTuition"],
+        button[onclick*="openAddTuition"],
+        .btn-add-tuition,
+        #btnAddTuition,
+        #addTuitionBtn,
+        button[id*="tuition" i][id*="add" i],
+        button[class*="tuition" i][class*="add" i],
+        button[onclick*="tuition" i],
+        button[onclick*="Tuition" i] {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -306,7 +322,7 @@ select + button {
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
-            <h1 class="page-title">💰 ຈັດການການເງິນ ແລະ ຄ່າຮຽນ</h1>
+            <h1 class="page-title">💰 ຈັດການການເງິນ &amp; ຄ່າຮຽນ</h1>
         </div>
         <div class="user-meta">
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
@@ -316,6 +332,34 @@ select + button {
     </div>
 
     <div class="paid-banner" id="paidTermBanner"></div>
+
+    <!-- ຕາຕະລາງຄ່າຮຽນຕາມໜ່ວຍກິດ (ແຖວ 1-7 ຊື່ວິຊາຢູ່ໜ້າ, 8 ລວມ, 9 ສະເລ່ຍໜ່ວຍກິດ, 10 ສະຖານະການຈ່າຍ) -->
+    <section class="card" id="subject-credit-section">
+        <div class="card-header">
+            <h2>📚 ຕາຕະລາງຄິດໄລ່ຄ່າຮຽນຕາມໜ່ວຍກິດ (1–7 ວິຊາ)</h2>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button type="button" class="btn-add" onclick="saveSubjectTable()">💾 ບັນທຶກຕາຕະລາງ</button>
+                <button type="button" class="btn-copy" onclick="resetSubjectTable()">↺ ຄ່າເລີ່ມຕົ້ນ</button>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">ແຖວ</th>
+                        <th>ຊື່ວິຊາ (1–7)</th>
+                        <th style="width: 150px;">ຈຳນວນໜ່ວຍກິດ</th>
+                        <th style="width: 190px;">ລາຄາຕໍ່ໜ່ວຍກິດ (ກີບ)</th>
+                        <th style="width: 190px;">ຄ່າຮຽນວິຊາ (ກີບ)</th>
+                    </tr>
+                </thead>
+                <tbody id="subjectTableBody"></tbody>
+            </table>
+        </div>
+        <div class="note-text">
+            * ແຖວ 1–7: ຊື່ວິຊາຢູ່ທາງໜ້າ | ແຖວ 8: ລວມແຕ່ເທິງລົງລຸ່ມ (ໜ່ວຍກິດ &amp; ຄ່າຮຽນ) | ແຖວ 9: ສະເລ່ຍຄ່າໜ່ວຍກິດຮຽນ (ລວມຄ່າຮຽນ ÷ ລວມໜ່ວຍກິດ) | ແຖວ 10: ສະຖານະການຈ່າຍ
+        </div>
+    </section>
 
     <section class="card" id="qr-and-fee-section">
         <div class="card-header">
@@ -491,6 +535,7 @@ select + button {
     const db = getFirestore(app);
     const TUITION_COLLECTION = "tuition";
     const LEGACY_FEE_COLLECTION = "fee_items";
+    const SUBJECT_STORAGE_KEY = "school_subject_credit_rows_10";
 
     function getNormalizedRole() {
         const raw = (
@@ -518,6 +563,177 @@ select + button {
     document.getElementById("currentUserName").textContent = userName;
     document.getElementById("currentUserRole").textContent = role.toUpperCase();
     document.getElementById("currentUserGrade").textContent = userGrade;
+
+    const DEFAULT_SUBJECTS = [
+        { subject: "ວິຊາທີ 1: ຄະນິດສາດ", credits: 3, pricePerCredit: 200000 },
+        { subject: "ວິຊາທີ 2: ຟີຊິກສາດ", credits: 3, pricePerCredit: 200000 },
+        { subject: "ວິຊາທີ 3: ເຄມີສາດ", credits: 2, pricePerCredit: 200000 },
+        { subject: "ວິຊາທີ 4: ພາສາລາວ", credits: 2, pricePerCredit: 150000 },
+        { subject: "ວິຊາທີ 5: ພາສາອັງກິດ", credits: 3, pricePerCredit: 180000 },
+        { subject: "ວິຊາທີ 6: ໄອທີ / ຄອມພິວເຕີ", credits: 2, pricePerCredit: 220000 },
+        { subject: "ວິຊາທີ 7: ພະລະສຶກສາ", credits: 1, pricePerCredit: 150000 }
+    ];
+
+    let subjectRows = JSON.parse(localStorage.getItem(SUBJECT_STORAGE_KEY) || "null");
+    if (!Array.isArray(subjectRows) || subjectRows.length !== 7) {
+        subjectRows = DEFAULT_SUBJECTS.map((s) => ({ ...s }));
+    }
+
+    let paymentRecords = JSON.parse(localStorage.getItem("school_payment_records") || "null") || [];
+
+    function getPaymentStatusInfo() {
+        const selectedTerm = document.getElementById("termSelect")?.value || "ເທີມ 1 / 2026-2027";
+        const matched = paymentRecords.filter(
+            (r) => r.studentName === userName && r.term === selectedTerm
+        );
+        if (matched.some((r) => r.status === "approved")) {
+            return { label: `ຊຳລະແລ້ວ (${selectedTerm})`, cssClass: "status-approved" };
+        }
+        if (matched.some((r) => r.status === "pending")) {
+            return { label: `ລໍຖ້າອະນຸມັດ (${selectedTerm})`, cssClass: "status-pending" };
+        }
+        if (matched.some((r) => r.status === "rejected")) {
+            return { label: `ປະຕິເສດ (${selectedTerm})`, cssClass: "status-rejected" };
+        }
+        return { label: `ຍັງບໍ່ທັນຊຳລະ (${selectedTerm})`, cssClass: "status-pending" };
+    }
+
+    window.updateSubjectRow = function (index, field, value) {
+        if (!subjectRows[index]) return;
+        if (field === "subject") {
+            subjectRows[index].subject = value;
+        } else if (field === "credits") {
+            subjectRows[index].credits = Math.max(0, Number(value) || 0);
+        } else if (field === "pricePerCredit") {
+            subjectRows[index].pricePerCredit = Math.max(0, Number(value) || 0);
+        }
+        localStorage.setItem(SUBJECT_STORAGE_KEY, JSON.stringify(subjectRows));
+        renderSubjectTable(false);
+    };
+
+    window.saveSubjectTable = function () {
+        localStorage.setItem(SUBJECT_STORAGE_KEY, JSON.stringify(subjectRows));
+        renderSubjectTable(true);
+        alert("✅ ບັນທຶກຕາຕະລາງ 10 ແຖວສຳເລັດແລ້ວ!");
+    };
+
+    window.resetSubjectTable = function () {
+        subjectRows = DEFAULT_SUBJECTS.map((s) => ({ ...s }));
+        localStorage.setItem(SUBJECT_STORAGE_KEY, JSON.stringify(subjectRows));
+        renderSubjectTable(true);
+    };
+
+    function renderSubjectTable(rebuildInputs = true) {
+        const tbody = document.getElementById("subjectTableBody");
+        if (!tbody) return;
+
+        let totalCredits = 0;
+        let totalTuition = 0;
+
+        const rowHtmlList = subjectRows.slice(0, 7).map((r, idx) => {
+            const rowNum = idx + 1;
+            const credits = Number(r.credits) || 0;
+            const price = Number(r.pricePerCredit) || 0;
+            const subTotal = credits * price;
+            totalCredits += credits;
+            totalTuition += subTotal;
+
+            return `
+                <tr data-row="${rowNum}">
+                    <td class="center"><strong>${rowNum}</strong></td>
+                    <td>
+                        <input
+                            type="text"
+                            class="cell-input"
+                            value="${esc(r.subject)}"
+                            placeholder="ຊື່ວິຊາທີ ${rowNum}"
+                            oninput="updateSubjectRow(${idx}, 'subject', this.value)"
+                        />
+                    </td>
+                    <td>
+                        <input
+                            type="number"
+                            class="cell-input right"
+                            min="0"
+                            step="0.5"
+                            value="${credits}"
+                            oninput="updateSubjectRow(${idx}, 'credits', this.value)"
+                        />
+                    </td>
+                    <td>
+                        <input
+                            type="number"
+                            class="cell-input right"
+                            min="0"
+                            step="1000"
+                            value="${price}"
+                            oninput="updateSubjectRow(${idx}, 'pricePerCredit', this.value)"
+                        />
+                    </td>
+                    <td class="right" id="subTotalCell_${idx}">
+                        <strong>${subTotal.toLocaleString()} ກີບ</strong>
+                    </td>
+                </tr>
+            `;
+        });
+
+        const avgCreditFee = totalCredits > 0 ? Math.round(totalTuition / totalCredits) : 0;
+        const payStatus = getPaymentStatusInfo();
+
+        // ແຖວທີ 8: ລວມແຕ່ເທິງລົງລຸ່ມ
+        const row8Html = `
+            <tr data-row="8" class="row-summary-total">
+                <td class="center">8</td>
+                <td>ລວມແຕ່ເທິງລົງລຸ່ມ (ແຖວ 1–7)</td>
+                <td class="right" id="totalCreditsCell">${totalCredits.toLocaleString()} ໜ່ວຍກິດ</td>
+                <td class="center">-</td>
+                <td class="right" id="totalTuitionCell">${totalTuition.toLocaleString()} ກີບ</td>
+            </tr>
+        `;
+
+        // ແຖວທີ 9: ໄລ່ສະເລ່ຍຄ່າໜ່ວຍກິດຮຽນ
+        const row9Html = `
+            <tr data-row="9" class="row-summary-avg">
+                <td class="center">9</td>
+                <td>ສະເລ່ຍຄ່າໜ່ວຍກິດຮຽນ (ລວມເງິນ ÷ ລວມໜ່ວຍກິດ)</td>
+                <td class="center">-</td>
+                <td class="right" id="avgCreditCell">${avgCreditFee.toLocaleString()} ກີບ / ໜ່ວຍກິດ</td>
+                <td class="right" id="avgCreditSummaryCell">${avgCreditFee.toLocaleString()} ກີບ</td>
+            </tr>
+        `;
+
+        // ແຖວທີ 10: ສະຖານະການຈ່າຍ
+        const row10Html = `
+            <tr data-row="10" class="row-summary-status">
+                <td class="center">10</td>
+                <td>ສະຖານະການຈ່າຍ</td>
+                <td colspan="3" id="paymentStatusCell">
+                    <span class="${payStatus.cssClass}">${esc(payStatus.label)}</span>
+                </td>
+            </tr>
+        `;
+
+        if (rebuildInputs || tbody.children.length !== 10) {
+            tbody.innerHTML = rowHtmlList.join("") + row8Html + row9Html + row10Html;
+        } else {
+            subjectRows.slice(0, 7).forEach((r, idx) => {
+                const subTotal = (Number(r.credits) || 0) * (Number(r.pricePerCredit) || 0);
+                const cell = document.getElementById(`subTotalCell_${idx}`);
+                if (cell) cell.innerHTML = `<strong>${subTotal.toLocaleString()} ກີບ</strong>`;
+            });
+            const totCredEl = document.getElementById("totalCreditsCell");
+            const totTuiEl = document.getElementById("totalTuitionCell");
+            const avgCellEl = document.getElementById("avgCreditCell");
+            const avgSumEl = document.getElementById("avgCreditSummaryCell");
+            const statusEl = document.getElementById("paymentStatusCell");
+
+            if (totCredEl) totCredEl.textContent = `${totalCredits.toLocaleString()} ໜ່ວຍກິດ`;
+            if (totTuiEl) totTuiEl.textContent = `${totalTuition.toLocaleString()} ກີບ`;
+            if (avgCellEl) avgCellEl.textContent = `${avgCreditFee.toLocaleString()} ກີບ / ໜ່ວຍກິດ`;
+            if (avgSumEl) avgSumEl.textContent = `${avgCreditFee.toLocaleString()} ກີບ`;
+            if (statusEl) statusEl.innerHTML = `<span class="${payStatus.cssClass}">${esc(payStatus.label)}</span>`;
+        }
+    }
 
     const DEFAULT_QR = "https://quickchart.io/qr?text=SCHOOL-TUITION-PAYMENT&size=200";
     let schoolQrUrl = localStorage.getItem("school_qr_code_url") || DEFAULT_QR;
@@ -735,8 +951,6 @@ select + button {
         saveFeeItemsLocal();
         renderFeeTable();
     };
-
-    let paymentRecords = JSON.parse(localStorage.getItem("school_payment_records") || "null") || [];
 
     function savePaymentsLocal() {
         localStorage.setItem("school_payment_records", JSON.stringify(paymentRecords));
@@ -1008,6 +1222,7 @@ select + button {
         const paidBanner = document.getElementById("paidTermBanner");
         const btnSubmitSlip = document.getElementById("btnSubmitSlip");
 
+        renderSubjectTable(false);
         renderFeeTable();
         renderPendingSlips();
         renderPaidHistory();
@@ -1101,6 +1316,7 @@ select + button {
     window.addEventListener("school-data-updated", () => loadFinanceFromFirestore());
 
     applyAdminVisibility();
+    renderSubjectTable(true);
     refreshFinanceView();
     loadFinanceFromFirestore();
 </script>
