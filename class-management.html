@@ -514,23 +514,17 @@
         return `<div><strong>${subjText}</strong>${tchText}</div>`;
     }
 
-    let termPeriodsList = JSON.parse(localStorage.getItem("school_term_periods") || "null") || [];
+    // ຂໍ້ມູນທັງໝົດດຶງຈາກ Firebase (ບໍ່ມີຂໍ້ມູນຕົວຢ່າງ)
+    let termPeriodsList = [];
     let latestSubmittedYearFromMenu8 = "";
-
-    let studentsData = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
-        { id: "STD-001", code: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", status: "ປົກກະຕິ" },
-        { id: "STD-002", code: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", status: "ປົກກະຕິ" },
-        { id: "STD-003", code: "STD-003", name: "ທ. ອານຸສອນ ວົງສາ", grade: "ມ.5", status: "ປົກກະຕິ" },
-        { id: "STD-004", code: "STD-004", name: "ນ. ດາລາວັນ ແກ້ວມະນີ", grade: "ມ.6", status: "ປົກກະຕິ" }
-    ];
+    let studentsData = [];
+    let rawScheduleEntries = [];
+    let classTimetables = {};
+    let teachingSchedules = [];
 
     function saveStudents() {
         localStorage.setItem("school_students_list", JSON.stringify(studentsData));
     }
-
-    let rawScheduleEntries = [];
-    let classTimetables = JSON.parse(localStorage.getItem("school_class_timetables") || "null") || {};
-    let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [];
 
     function saveTeachingSchedules() {
         localStorage.setItem("school_teaching_schedules", JSON.stringify(teachingSchedules));
@@ -771,7 +765,7 @@
         });
 
         if (!filtered.length) {
-            tbody.innerHTML = `<tr><td colspan="5" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນ</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນ Firebase</td></tr>`;
             return;
         }
 
@@ -884,7 +878,7 @@
 
         const rows = buildRowsForGrade(g, yearVal, semVal);
         if (!rows.length) {
-            tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນສຳລັບຫ້ອງ ${esc(g)} (${esc(semVal)} • ${esc(yearVal)})</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນໃນ Firebase ສຳລັບຫ້ອງ ${esc(g)} (${esc(semVal)} • ${esc(yearVal)})</td></tr>`;
             return;
         }
 
@@ -925,7 +919,7 @@
             : scopedList;
 
         if (!list.length) {
-            tbody.innerHTML = `<tr><td colspan="6" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນສຳລັບ ${esc(semVal)} • ສົກຮຽນ ${esc(yearVal)} — ສ້າງໄດ້ທີ່ ໜ້າ 12. ອັບເດດລະບົບ (ເມນູ 4)</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນໃນ Firebase ສຳລັບ ${esc(semVal)} • ສົກຮຽນ ${esc(yearVal)} — ສ້າງໄດ້ທີ່ ໜ້າ 12. ອັບເດດລະບົບ (ເມນູ 4)</td></tr>`;
             return;
         }
 
@@ -1009,16 +1003,16 @@
 
         try {
             const stdSnap = await getDocs(collection(db, "students"));
-            if (!stdSnap.empty) {
-                studentsData = stdSnap.docs.map((d) => ({
+            studentsData = stdSnap.empty
+                ? []
+                : stdSnap.docs.map((d) => ({
                     id: d.data().id || d.id,
                     firestoreId: d.id,
                     ...d.data()
                 }));
-                saveStudents();
-                await syncRoomSelectOptions();
-                renderStudents();
-            }
+            saveStudents();
+            await syncRoomSelectOptions();
+            renderStudents();
         } catch (err) {}
 
         try {
@@ -1057,12 +1051,12 @@
         }, () => {});
 
         onSnapshot(collection(db, "students"), async (snap) => {
-            if (!snap.empty) {
-                studentsData = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
-                saveStudents();
-                await syncRoomSelectOptions();
-                renderStudents();
-            }
+            studentsData = snap.empty
+                ? []
+                : snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
+            saveStudents();
+            await syncRoomSelectOptions();
+            renderStudents();
         }, () => {});
 
         onSnapshot(collection(db, "class_timetables"), async (snap) => {
@@ -1109,3 +1103,4 @@
 </script>
 </body>
 </html>
+```[cite: 10]
