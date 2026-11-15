@@ -762,12 +762,14 @@
                 { name: "name", label: "ຊື່ຫ້ອງ (ເຊັ່ນ: ມ.6/1)", type: "text", required: true, placeholder: "ມ.6/1" },
                 { name: "level", label: "ຊັ້ນຮຽນ", type: "text", required: false, placeholder: "ມ.6" },
                 { name: "advisor", label: "ຄູປະຈຳຫ້ອງ", type: "text", required: false, placeholder: "ອ. ..." },
+                { name: "phone", label: "ເບີໂທຕິດຕໍ່", type: "text", required: false, placeholder: "ເຊັ່ນ: 020 5555 1234" },
                 { name: "capacity", label: "ຈຳນວນນັກຮຽນ", type: "number", required: false, placeholder: "35" }
             ],
             columns: [
                 { key: "name", label: "ຊື່ຫ້ອງ" },
                 { key: "level", label: "ຊັ້ນ" },
                 { key: "advisor", label: "ຄູປະຈຳຫ້ອງ" },
+                { key: "phone", label: "ເບີໂທ" },
                 { key: "capacity", label: "ຈຳນວນ" }
             ],
             mapDoc: (d, id) => ({
@@ -775,6 +777,7 @@
                 name: cleanVal(d.name || d.roomName || d.grade),
                 level: cleanVal(d.level || d.grade || ""),
                 advisor: cleanVal(d.advisor || d.homeroomTeacher || ""),
+                phone: cleanVal(d.phone || d.tel || d.contact || ""),
                 capacity: cleanVal(d.capacity || d.studentCount || ""),
                 _raw: d
             })
@@ -1554,6 +1557,7 @@
                             firestoreId: mirrorId,
                             name: payload.name,
                             advisor: payload.advisor,
+                            phone: payload.phone,
                             building: payload.level,
                             studentCount: Number(payload.capacity || 0),
                             note: payload.note || "",
@@ -1574,6 +1578,7 @@
                             firestoreId: mirrorId,
                             name: payload.name,
                             advisor: payload.advisor,
+                            phone: payload.phone,
                             building: payload.level,
                             studentCount: Number(payload.capacity || 0),
                             note: payload.note || "",
