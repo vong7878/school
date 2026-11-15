@@ -2,121 +2,198 @@
 <html lang="lo">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>🏫 ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ &amp; ຕາຕະລາງ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        * { box-sizing: border-box; }
-        body {
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
             margin: 0;
+            padding: 0;
             font-family: 'Noto Sans Lao', sans-serif;
             background: #0f172a;
             color: #e2e8f0;
-            padding: 16px;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+        body {
+            padding: 12px;
         }
         .container {
             max-width: 1180px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 12px;
+            width: 100%;
+            min-width: 0;
         }
         .topbar {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .back-btn, a.btn-link {
-            background: #334155;
-            color: #f8fafc;
-            text-decoration: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: background 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .back-btn:hover, a.btn-link:hover { background: #475569; }
-        .btn-upd { background: #2563eb; color: #fff; padding: 7px 12px; font-size: 13px; }
-        .btn-upd:hover { background: #1d4ed8; }
-        .page-title {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 700;
-            color: #f8fafc;
-        }
-        .user-meta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            flex-wrap: wrap;
-        }
-        .badge {
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-weight: 600;
-            font-size: 12px;
-        }
-        .badge-role { background: #2563eb; color: #fff; }
-        .badge-grade { background: #0f766e; color: #ccfbf1; }
-
-        .card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 14px;
-            padding: 18px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-        }
-        .card-header {
+            padding: 12px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 10px;
-            padding-bottom: 12px;
-            margin-bottom: 14px;
-            border-bottom: 1px solid #334155;
+            transition: background 0.2s;
+            min-width: 0;
+            width: 100%;
         }
-        .card-header h2 {
-            margin: 0;
-            font-size: 16px;
-            font-weight: 700;
-            color: #f8fafc;
-        }
-        .controls {
+        .topbar-left {
             display: flex;
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .back-btn, a.btn-link {
+            background: #334155;
+            color: #f8fafc;
+            text-decoration: none;
+            padding: 7px 11px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+        .back-btn:hover, a.btn-link:hover { background: #475569; }
+        .btn-upd { background: #2563eb; color: #fff; padding: 7px 11px; font-size: 12.5px; }
+        .btn-upd:hover { background: #1d4ed8; }
+        .btn-sync {
+            background: #0284c7;
+            color: #fff;
+            font-family: inherit;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+        .btn-sync:hover { opacity: 0.92; }
+        .btn-sync:disabled { opacity: 0.6; cursor: not-allowed; }
+        .page-title {
+            margin: 0;
+            font-size: clamp(14.5px, 4.2vw, 18px);
+            font-weight: 700;
+            color: #f8fafc;
+            line-height: 1.3;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            flex-wrap: wrap;
+            min-width: 0;
+            max-width: 100%;
+        }
+        #currentUserName {
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .badge {
+            padding: 4px 9px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 11.5px;
+            white-space: nowrap;
+        }
+        .badge-role { background: #2563eb; color: #fff; }
+        .badge-grade { background: #0f766e; color: #ccfbf1; }
+
+        .quota-banner {
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: #fde68a;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 12px;
+            line-height: 1.4;
+            display: none;
+            overflow-wrap: anywhere;
+        }
+        .quota-banner.show {
+            display: block;
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            min-width: 0;
+            width: 100%;
+        }
+        .card-header {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #334155;
+            min-width: 0;
+        }
+        .card-header h2 {
+            margin: 0;
+            font-size: clamp(14px, 3.9vw, 16px);
+            font-weight: 700;
+            color: #f8fafc;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+            gap: 8px;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
         }
         select, input {
             background: #0f172a;
             color: #f8fafc;
             border: 1px solid #475569;
             border-radius: 8px;
-            padding: 7px 11px;
+            padding: 8px 10px;
             font-family: inherit;
             font-size: 13px;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #38bdf8;
         }
         .table-wrap {
             width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         table {
             width: 100%;
@@ -125,23 +202,197 @@
         }
         th, td {
             border: 1px solid #334155;
-            padding: 10px 12px;
+            padding: 9px 11px;
             text-align: left;
             font-size: 13px;
+            line-height: 1.35;
         }
         th {
             background: #0f172a;
             color: #93c5fd;
             font-weight: 700;
+            white-space: nowrap;
         }
         td {
             background: #162032;
             color: #e2e8f0;
+            overflow-wrap: anywhere;
         }
         tr:hover td { background: #24334d; }
         .center { text-align: center; }
         .hidden-section { display: none !important; }
-        .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+        .note-text {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 8px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        /* Mobile Card List */
+        .mobile-cards {
+            display: none;
+            flex-direction: column;
+            gap: 9px;
+            width: 100%;
+            min-width: 0;
+        }
+        .cm-card {
+            background: #162032;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 10px 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            width: 100%;
+            min-width: 0;
+        }
+        .cm-card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid #26354d;
+            min-width: 0;
+        }
+        .cm-card-head > div:first-child {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .cm-card-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #f8fafc;
+            overflow-wrap: anywhere;
+            line-height: 1.35;
+        }
+        .cm-card-sub {
+            font-size: 11.5px;
+            color: #94a3b8;
+            margin-top: 2px;
+            overflow-wrap: anywhere;
+        }
+        .cm-card-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 12px;
+            min-width: 0;
+        }
+        .cm-card-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            min-width: 0;
+        }
+        .cm-card-label {
+            color: #94a3b8;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .cm-card-val {
+            text-align: right;
+            color: #e2e8f0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .period-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px;
+        }
+        .period-box {
+            background: #0f172a;
+            border: 1px solid #26354d;
+            border-radius: 8px;
+            padding: 7px 8px;
+            font-size: 11.5px;
+            line-height: 1.35;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+        .period-box-title {
+            color: #93c5fd;
+            font-weight: 700;
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 14px;
+            left: 50%;
+            transform: translate(-50%, 12px);
+            background: #1e293b;
+            border: 1px solid #38bdf8;
+            color: #f8fafc;
+            padding: 9px 13px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+            z-index: 1200;
+            opacity: 0;
+            transition: 0.2s;
+            pointer-events: none;
+            max-width: calc(100% - 20px);
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+        .toast-msg.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 10px;
+                gap: 8px;
+            }
+            .topbar-left, .user-meta {
+                width: 100%;
+            }
+            .user-meta {
+                justify-content: space-between;
+            }
+            #currentUserName {
+                max-width: 150px;
+            }
+            .card {
+                padding: 10px;
+                border-radius: 12px;
+            }
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            .btn-sync {
+                width: 100%;
+                text-align: center;
+            }
+            .table-wrap { display: none; }
+            .mobile-cards { display: flex; }
+        }
+
+        @media (max-width: 380px) {
+            body { padding: 6px; }
+            .back-btn, a.btn-link {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+            #currentUserName { max-width: 110px; }
+            .cm-card { padding: 9px; }
+            .cm-card-head { flex-direction: column; align-items: stretch; gap: 5px; }
+            .period-grid { grid-template-columns: 1fr; }
+        }
+
         /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
         #fbSyncBadge,
         .badge-fb,
@@ -159,6 +410,7 @@
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
             <a href="update.html?tab=students" class="btn-link btn-upd" id="btnUpdStudents" style="display: none;">🛠️ 12. ອັບເດດລະບົບ (ນັກຮຽນ)</a>
             <a href="update.html?tab=schedules" class="btn-link btn-upd" id="btnUpdSchedule" style="display: none;">🛠️ 12. ອັບເດດລະບົບ (ຕາຕະລາງສອນ)</a>
+            <button type="button" class="btn-sync" id="syncBtn" onclick="loadFromFirestoreIfAvailable(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
             <h1 class="page-title">🏫 ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ &amp; ຕາຕະລາງ</h1>
         </div>
         <div class="user-meta">
@@ -166,6 +418,10 @@
             <span id="currentUserRole" class="badge badge-role">ROLE</span>
             <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
         </div>
+    </div>
+
+    <div class="quota-banner" id="quotaBanner">
+        ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບກຳລັງໃຊ້ຂໍ້ມູນທີ່ເກັບໃນເຄື່ອງ (`localStorage`) ແລະ ຫຼຸດການເອີ້ນຖານຂໍ້ມູນອັດຕະໂນມັດ.
     </div>
 
     <section class="card" id="sec-students">
@@ -199,6 +455,7 @@
                 <tbody id="studentsTableBody"></tbody>
             </table>
         </div>
+        <div class="mobile-cards" id="studentsCards"></div>
     </section>
 
     <section class="card" id="sec-class-timetable">
@@ -239,6 +496,7 @@
                 <tbody id="classTimetableBody"></tbody>
             </table>
         </div>
+        <div class="mobile-cards" id="classTimetableCards"></div>
     </section>
 
     <section class="card" id="sec-teaching-timetable">
@@ -263,138 +521,19 @@
                 <tbody id="teachingTimetableBody"></tbody>
             </table>
         </div>
+        <div class="mobile-cards" id="teachingTimetableCards"></div>
         <div class="note-text">
             * ສ່ວນທີ 3 (ຕາຕະລາງສອນປະຈຳພາກ) ຖືກຊ່ອນຈາກນັກຮຽນ; ເມື່ອອັບເດດໃນ ໜ້າ 12 (ເມນູ 4) ທັງຕາຕະລາງຮຽນ (ສ່ວນທີ 2) ແລະ ຕາຕະລາງສອນ (ສ່ວນທີ 3) ຈະອັບເດດຕາມອັດຕາສ່ວນ.
         </div>
     </section>
 </div>
 
-<script>
-(function () {
-    const STYLE_ID = "js-responsive-class-mgmt-style";
-
-    function buildClassMgmtResponsiveCss(width) {
-        const isSmallMobile = width <= 480;
-        const isMobile = width <= 768;
-        const isTablet = width <= 1024;
-        const isWide = width >= 1440;
-
-        const bodyPadding = isSmallMobile ? "10px" : isMobile ? "12px" : "16px";
-        const containerMaxWidth = isWide ? "1360px" : "1180px";
-        const cardPadding = isSmallMobile ? "12px" : isTablet ? "15px" : "18px";
-        const titleSize = isSmallMobile ? "15.5px" : isTablet ? "17px" : "18px";
-        const h2Size = isSmallMobile ? "14.5px" : "16px";
-        const minTableWidth = isSmallMobile ? "520px" : isMobile ? "600px" : "680px";
-
-        return `
-            html, body {
-                max-width: 100% !important;
-                overflow-x: hidden !important;
-            }
-            body {
-                padding: ${bodyPadding} !important;
-            }
-            .container, .topbar, .card, .card-header, .controls, .table-wrap {
-                min-width: 0 !important;
-                max-width: 100% !important;
-            }
-            .container {
-                max-width: ${containerMaxWidth} !important;
-                gap: ${isMobile ? "12px" : "18px"} !important;
-            }
-            .topbar {
-                padding: ${isSmallMobile ? "11px 12px" : "14px 18px"} !important;
-            }
-            .page-title {
-                font-size: ${titleSize} !important;
-            }
-            .card {
-                padding: ${cardPadding} !important;
-                border-radius: ${isSmallMobile ? "12px" : "14px"} !important;
-            }
-            .card-header h2 {
-                font-size: ${h2Size} !important;
-            }
-            .table-wrap {
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch !important;
-                width: 100% !important;
-            }
-            table {
-                min-width: ${minTableWidth} !important;
-            }
-            ${isMobile ? `
-                .card-header {
-                    flex-direction: column !important;
-                    align-items: stretch !important;
-                }
-                .controls {
-                    width: 100% !important;
-                    display: grid !important;
-                    grid-template-columns: ${isSmallMobile ? "1fr" : "repeat(auto-fit, minmax(140px, 1fr))"} !important;
-                    gap: 8px !important;
-                }
-                .controls select,
-                .controls input {
-                    width: 100% !important;
-                    min-width: 0 !important;
-                }
-                th, td {
-                    padding: 8px 9px !important;
-                    font-size: 12px !important;
-                }
-            ` : ""}
-            ${isSmallMobile ? `
-                .topbar {
-                    flex-direction: column !important;
-                    align-items: stretch !important;
-                }
-                .topbar-left .back-btn,
-                .topbar-left .btn-link {
-                    flex: 1 1 auto !important;
-                    justify-content: center !important;
-                }
-                .user-meta {
-                    justify-content: space-between !important;
-                }
-            ` : ""}
-        `;
-    }
-
-    function applyClassMgmtResponsiveLayout() {
-        const width = window.innerWidth || document.documentElement.clientWidth || 1024;
-        document.documentElement.dataset.screenMode =
-            width <= 480 ? "mobile-xs" :
-            width <= 768 ? "mobile" :
-            width <= 1024 ? "tablet" :
-            width >= 1440 ? "desktop-xl" : "desktop";
-
-        let styleEl = document.getElementById(STYLE_ID);
-        if (!styleEl) {
-            styleEl = document.createElement("style");
-            styleEl.id = STYLE_ID;
-            document.head.appendChild(styleEl);
-        }
-        styleEl.textContent = buildClassMgmtResponsiveCss(width);
-    }
-
-    let resizeTimer = null;
-    window.addEventListener("resize", () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(applyClassMgmtResponsiveLayout, 80);
-    });
-    window.addEventListener("orientationchange", () => {
-        setTimeout(applyClassMgmtResponsiveLayout, 120);
-    });
-    document.addEventListener("DOMContentLoaded", applyClassMgmtResponsiveLayout);
-    applyClassMgmtResponsiveLayout();
-})();
-</script>
+<div class="toast-msg" id="toastMsg"></div>
 
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, onSnapshot
+        getFirestore, collection, getDocs
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -425,6 +564,43 @@
     const DEFAULT_ACADEMIC_YEAR = "2026-2027";
     const DEFAULT_YEARS = ["2026-2027", "2027-2028", "2025-2026"];
     const DEFAULT_SEMESTER = "ພາກຮຽນທີ 1";
+
+    const LAST_FETCH_TS_KEY = "school_classmgmt_last_fetch_ts";
+    const QUOTA_BLOCK_UNTIL_KEY = "school_firestore_quota_blocked_until";
+    const FETCH_COOLDOWN_MS = 60000;
+    const QUOTA_COOLDOWN_MS = 1800000;
+
+    function showToast(message) {
+        const el = document.getElementById("toastMsg");
+        if (!el) return;
+        el.textContent = message;
+        el.classList.add("show");
+        clearTimeout(showToast._timer);
+        showToast._timer = setTimeout(() => {
+            el.classList.remove("show");
+        }, 3200);
+    }
+
+    function isQuotaError(err) {
+        const code = String(err?.code || "").toLowerCase();
+        const msg = String(err?.message || "").toLowerCase();
+        return (
+            code.includes("resource-exhausted") ||
+            msg.includes("quota") ||
+            msg.includes("resource exhausted") ||
+            msg.includes("daily usage")
+        );
+    }
+
+    function setQuotaNotice(active) {
+        const banner = document.getElementById("quotaBanner");
+        if (!banner) return;
+        if (active) {
+            banner.classList.add("show");
+        } else {
+            banner.classList.remove("show");
+        }
+    }
 
     function cleanVal(v) {
         if (Array.isArray(v)) return v.map(cleanVal).filter(Boolean).join(", ");
@@ -514,13 +690,12 @@
         return `<div><strong>${subjText}</strong>${tchText}</div>`;
     }
 
-    // ຂໍ້ມູນທັງໝົດດຶງຈາກ Firebase (ບໍ່ມີຂໍ້ມູນຕົວຢ່າງ)
     let termPeriodsList = [];
     let latestSubmittedYearFromMenu8 = "";
-    let studentsData = [];
+    let studentsData = JSON.parse(localStorage.getItem("school_students_list") || "null") || [];
     let rawScheduleEntries = [];
-    let classTimetables = {};
-    let teachingSchedules = [];
+    let classTimetables = JSON.parse(localStorage.getItem("school_class_timetables") || "null") || {};
+    let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [];
 
     function saveStudents() {
         localStorage.setItem("school_students_list", JSON.stringify(studentsData));
@@ -666,7 +841,7 @@
         };
     }
 
-    async function syncRoomSelectOptions(extraRooms = []) {
+    function syncRoomSelectOptions(extraRooms = []) {
         const roomMap = new Map();
         const addRoom = (rawName) => {
             const cleaned = cleanVal(rawName).replace(/^ຫ້ອງ\s*/i, "");
@@ -685,18 +860,6 @@
         ];
 
         [...DEFAULT_GRADES, userGrade, ...studentRooms, ...scheduleRooms, ...extraRooms].forEach(addRoom);
-
-        if (db) {
-            for (const colName of ["classrooms", "rooms"]) {
-                try {
-                    const snap = await getDocs(collection(db, colName));
-                    snap.forEach((d) => {
-                        const data = d.data() || {};
-                        addRoom(data.name || data.roomName || data.room || data.grade);
-                    });
-                } catch (err) {}
-            }
-        }
 
         const roomList = Array.from(roomMap.values());
 
@@ -744,6 +907,7 @@
         const gradeFilterEl = document.getElementById("studentGradeFilter");
         const searchVal = (document.getElementById("studentSearch").value || "").trim().toLowerCase();
         const tbody = document.getElementById("studentsTableBody");
+        const cards = document.getElementById("studentsCards");
 
         let selectedGrade = cleanGrade(gradeFilterEl.value);
         if (gradeFilterEl.value === "ALL") selectedGrade = "ALL";
@@ -765,7 +929,8 @@
         });
 
         if (!filtered.length) {
-            tbody.innerHTML = `<tr><td colspan="5" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນ Firebase</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນ</td></tr>`;
+            cards.innerHTML = `<div class="cm-card" style="text-align:center;color:#94a3b8;">ບໍ່ພົບຂໍ້ມູນນັກຮຽນ</div>`;
             return;
         }
 
@@ -781,6 +946,30 @@
                     <td>${esc(gradeVal)}</td>
                     <td>${esc(cleanVal(s.status) || "ປົກກະຕິ")}</td>
                 </tr>
+            `;
+        }).join("");
+
+        cards.innerHTML = filtered.map((s, idx) => {
+            const codeVal = cleanVal(s.code || s.studentCode || s.id || "-");
+            const nameVal = cleanVal(s.name || s.studentName || "-");
+            const gradeVal = cleanGrade(s.grade || s.room || "-");
+            const statusVal = cleanVal(s.status) || "ປົກກະຕິ";
+            return `
+                <div class="cm-card">
+                    <div class="cm-card-head">
+                        <div>
+                            <div class="cm-card-name">#${idx + 1} • ${esc(nameVal)}</div>
+                            <div class="cm-card-sub">ລະຫັດ: ${esc(codeVal)}</div>
+                        </div>
+                        <span class="badge badge-grade">ຫ້ອງ ${esc(gradeVal)}</span>
+                    </div>
+                    <div class="cm-card-rows">
+                        <div class="cm-card-row">
+                            <span class="cm-card-label">ສະຖານະ:</span>
+                            <span class="cm-card-val">${esc(statusVal)}</span>
+                        </div>
+                    </div>
+                </div>
             `;
         }).join("");
     };
@@ -859,6 +1048,7 @@
         const selectEl = document.getElementById("classTimetableGrade");
         const titleEl = document.getElementById("classTimetableTitle");
         const tbody = document.getElementById("classTimetableBody");
+        const cards = document.getElementById("classTimetableCards");
 
         if (!selectEl || !tbody) return;
 
@@ -878,7 +1068,8 @@
 
         const rows = buildRowsForGrade(g, yearVal, semVal);
         if (!rows.length) {
-            tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນໃນ Firebase ສຳລັບຫ້ອງ ${esc(g)} (${esc(semVal)} • ${esc(yearVal)})</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນ ສຳລັບຫ້ອງ ${esc(g)} (${esc(semVal)} • ${esc(yearVal)})</td></tr>`;
+            cards.innerHTML = `<div class="cm-card" style="text-align:center;color:#94a3b8;">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນ ສຳລັບຫ້ອງ ${esc(g)}</div>`;
             return;
         }
 
@@ -891,11 +1082,39 @@
                 <td>${formatClassCell(r.p4, r.t4)}</td>
             </tr>
         `).join("");
+
+        cards.innerHTML = rows.map((r) => `
+            <div class="cm-card">
+                <div class="cm-card-head">
+                    <div class="cm-card-name">ມື້${esc(r.day)}</div>
+                    <span class="badge badge-grade">ຫ້ອງ ${esc(g)}</span>
+                </div>
+                <div class="period-grid">
+                    <div class="period-box">
+                        <div class="period-box-title">ຊ.ມ. 1 (08:00-08:45)</div>
+                        ${formatClassCell(r.p1, r.t1)}
+                    </div>
+                    <div class="period-box">
+                        <div class="period-box-title">ຊ.ມ. 2 (08:50-09:35)</div>
+                        ${formatClassCell(r.p2, r.t2)}
+                    </div>
+                    <div class="period-box">
+                        <div class="period-box-title">ຊ.ມ. 3 (09:50-10:35)</div>
+                        ${formatClassCell(r.p3, r.t3)}
+                    </div>
+                    <div class="period-box">
+                        <div class="period-box-title">ຊ.ມ. 4 (10:40-11:25)</div>
+                        ${formatClassCell(r.p4, r.t4)}
+                    </div>
+                </div>
+            </div>
+        `).join("");
     };
 
     window.renderTeachingTimetable = function () {
         if (isStudent) return;
         const tbody = document.getElementById("teachingTimetableBody");
+        const cards = document.getElementById("teachingTimetableCards");
         const titleEl = document.getElementById("teachingTimetableTitle");
         const q = cleanVal(document.getElementById("teachingSearch")?.value || "").toLowerCase();
         const yearVal = getSelectedYear();
@@ -919,7 +1138,8 @@
             : scopedList;
 
         if (!list.length) {
-            tbody.innerHTML = `<tr><td colspan="6" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນໃນ Firebase ສຳລັບ ${esc(semVal)} • ສົກຮຽນ ${esc(yearVal)} — ສ້າງໄດ້ທີ່ ໜ້າ 12. ອັບເດດລະບົບ (ເມນູ 4)</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນ ສຳລັບ ${esc(semVal)} • ສົກຮຽນ ${esc(yearVal)}</td></tr>`;
+            cards.innerHTML = `<div class="cm-card" style="text-align:center;color:#94a3b8;">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນ ສຳລັບ ${esc(semVal)}</div>`;
             return;
         }
 
@@ -933,6 +1153,28 @@
                 <td>${esc(item.schedule || "-")}</td>
             </tr>
         `).join("");
+
+        cards.innerHTML = list.map((item, idx) => `
+            <div class="cm-card">
+                <div class="cm-card-head">
+                    <div>
+                        <div class="cm-card-name">#${idx + 1} • ${esc(item.subject || "-")}</div>
+                        <div class="cm-card-sub">👩‍🏫 ${esc(item.teacher || "-")}</div>
+                    </div>
+                    <span class="badge badge-grade">ຫ້ອງ ${esc(item.grade || "-")}</span>
+                </div>
+                <div class="cm-card-rows">
+                    <div class="cm-card-row">
+                        <span class="cm-card-label">ພາກ / ສົກຮຽນ:</span>
+                        <span class="cm-card-val">${esc(normalizeSemester(item.semester))} • ${esc(normalizeAcademicYear(item.academicYear))}</span>
+                    </div>
+                    <div class="cm-card-row">
+                        <span class="cm-card-label">ມື້ / ເວລາ:</span>
+                        <span class="cm-card-val">${esc(item.schedule || "-")}</span>
+                    </div>
+                </div>
+            </div>
+        `).join("");
     };
 
     window.onTermPeriodChange = function () {
@@ -943,6 +1185,12 @@
 
     async function syncSchedulesFromAllCollections() {
         if (!db) return;
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (Date.now() < blockedUntil) {
+            setQuotaNotice(true);
+            return;
+        }
+
         const collected = [];
         const seenKeys = new Set();
 
@@ -958,14 +1206,22 @@
                         collected.push(norm);
                     }
                 });
-            } catch (e) {}
+            } catch (e) {
+                if (isQuotaError(e)) {
+                    localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                    setQuotaNotice(true);
+                    break;
+                }
+            }
         }
 
-        rawScheduleEntries = collected;
-        teachingSchedules = collected;
-        saveTeachingSchedules();
+        if (collected.length) {
+            rawScheduleEntries = collected;
+            teachingSchedules = collected;
+            saveTeachingSchedules();
+        }
         syncAcademicYearSelectOptions();
-        await syncRoomSelectOptions();
+        syncRoomSelectOptions();
         renderTeachingTimetable();
         renderClassTimetable();
     }
@@ -981,11 +1237,37 @@
         }
     }
 
-    async function loadFromFirestoreIfAvailable() {
+    window.loadFromFirestoreIfAvailable = async function (showAlert = false) {
         readLocalTermPeriods();
         syncAcademicYearSelectOptions();
 
+        const now = Date.now();
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        const lastFetchTs = Number(localStorage.getItem(LAST_FETCH_TS_KEY) || "0");
+
         if (!db) return;
+
+        if (now < blockedUntil) {
+            setQuotaNotice(true);
+            syncRoomSelectOptions();
+            renderStudents();
+            renderClassTimetable();
+            renderTeachingTimetable();
+            if (showAlert) showToast("ໂຄຕ້າ Firebase ເຕັມ ກຳລັງໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+            return;
+        }
+
+        if (!showAlert && now - lastFetchTs < FETCH_COOLDOWN_MS) {
+            syncRoomSelectOptions();
+            renderStudents();
+            renderClassTimetable();
+            renderTeachingTimetable();
+            return;
+        }
+
+        const syncBtn = document.getElementById("syncBtn");
+        if (syncBtn) syncBtn.disabled = true;
+
         try {
             const tpSnap = await getDocs(collection(db, TERM_PERIODS_COL));
             if (!tpSnap.empty) {
@@ -995,36 +1277,50 @@
                     ...d.data()
                 }));
                 localStorage.setItem("school_term_periods", JSON.stringify(termPeriodsList));
-                syncAcademicYearSelectOptions();
-                renderClassTimetable();
-                renderTeachingTimetable();
             }
-        } catch (err) {}
 
-        try {
             const stdSnap = await getDocs(collection(db, "students"));
-            studentsData = stdSnap.empty
-                ? []
-                : stdSnap.docs.map((d) => ({
+            if (!stdSnap.empty) {
+                studentsData = stdSnap.docs.map((d) => ({
                     id: d.data().id || d.id,
                     firestoreId: d.id,
                     ...d.data()
                 }));
-            saveStudents();
-            await syncRoomSelectOptions();
-            renderStudents();
-        } catch (err) {}
+                saveStudents();
+            }
 
-        try {
             const clsSnap = await getDocs(collection(db, "class_timetables"));
             if (!clsSnap.empty) {
                 clsSnap.forEach((d) => storeClassTimetableDoc(d.id, d.data() || {}));
                 localStorage.setItem("school_class_timetables", JSON.stringify(classTimetables));
             }
-        } catch (err) {}
 
-        await syncSchedulesFromAllCollections();
-    }
+            await syncSchedulesFromAllCollections();
+            localStorage.setItem(LAST_FETCH_TS_KEY, String(Date.now()));
+            localStorage.removeItem(QUOTA_BLOCK_UNTIL_KEY);
+            setQuotaNotice(false);
+            syncAcademicYearSelectOptions();
+            syncRoomSelectOptions();
+            renderStudents();
+            renderClassTimetable();
+            renderTeachingTimetable();
+            if (showAlert) showToast("✅ ໂຫຼດຂໍ້ມູນສຳເລັດແລ້ວ");
+        } catch (err) {
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+                if (showAlert) showToast("⚠️ ໂຄຕ້າ Firebase ປະຈຳມື້ເຕັມ ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+            } else if (showAlert) {
+                showToast("⚠️ ເຊື່ອມຕໍ່ຊ້າ ໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໃນເຄື່ອງ");
+            }
+            syncRoomSelectOptions();
+            renderStudents();
+            renderClassTimetable();
+            renderTeachingTimetable();
+        } finally {
+            if (syncBtn) syncBtn.disabled = false;
+        }
+    };
 
     function handleMenu8SubmitSync(detail) {
         if (detail && detail.tab === "terms") {
@@ -1036,54 +1332,20 @@
                 }
             }
         }
-        loadFromFirestoreIfAvailable();
+        try {
+            studentsData = JSON.parse(localStorage.getItem("school_students_list") || "null") || studentsData;
+            classTimetables = JSON.parse(localStorage.getItem("school_class_timetables") || "null") || classTimetables;
+            teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || teachingSchedules;
+        } catch (e) {}
+        syncAcademicYearSelectOptions();
+        syncRoomSelectOptions();
+        renderStudents();
+        renderClassTimetable();
+        renderTeachingTimetable();
     }
 
-    if (db) {
-        onSnapshot(collection(db, TERM_PERIODS_COL), (snap) => {
-            if (!snap.empty) {
-                termPeriodsList = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
-                localStorage.setItem("school_term_periods", JSON.stringify(termPeriodsList));
-                syncAcademicYearSelectOptions();
-                renderClassTimetable();
-                renderTeachingTimetable();
-            }
-        }, () => {});
-
-        onSnapshot(collection(db, "students"), async (snap) => {
-            studentsData = snap.empty
-                ? []
-                : snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
-            saveStudents();
-            await syncRoomSelectOptions();
-            renderStudents();
-        }, () => {});
-
-        onSnapshot(collection(db, "class_timetables"), async (snap) => {
-            if (!snap.empty) {
-                snap.forEach((d) => storeClassTimetableDoc(d.id, d.data() || {}));
-                localStorage.setItem("school_class_timetables", JSON.stringify(classTimetables));
-                await syncRoomSelectOptions();
-                renderClassTimetable();
-            }
-        }, () => {});
-
-        for (const colName of TEACHING_COLS) {
-            onSnapshot(collection(db, colName), () => {
-                syncSchedulesFromAllCollections();
-            }, () => {});
-        }
-
-        ["classrooms", "rooms"].forEach((colName) => {
-            onSnapshot(collection(db, colName), async () => {
-                await syncRoomSelectOptions();
-                renderStudents();
-                renderClassTimetable();
-            }, () => {});
-        });
-    }
     window.addEventListener("storage", (e) => {
-        if (e.key === SYNC_STORAGE_KEY || e.key === "school_term_periods") {
+        if (e.key === SYNC_STORAGE_KEY || e.key === "school_term_periods" || e.key === "school_students_list") {
             let parsed = null;
             try {
                 if (e.key === SYNC_STORAGE_KEY && e.newValue) parsed = JSON.parse(e.newValue);
@@ -1094,11 +1356,11 @@
     window.addEventListener(SYNC_EVENT_NAME, (e) => handleMenu8SubmitSync(e.detail));
 
     syncAcademicYearSelectOptions();
-    await syncRoomSelectOptions();
+    syncRoomSelectOptions();
     renderStudents();
     renderClassTimetable();
     renderTeachingTimetable();
-    loadFromFirestoreIfAvailable();
+    loadFromFirestoreIfAvailable(false);
 </script>
 </body>
 </html>
