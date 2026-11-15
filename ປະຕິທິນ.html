@@ -99,7 +99,7 @@
             border: 1px solid #3b82f6;
             border-radius: 14px;
             padding: 13px 16px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -156,36 +156,38 @@
             white-space: nowrap;
         }
 
+        /* ປຸ່ມຫ້ອງນ້ອຍນັກຮຽນ & ຫ້ອງນ້ອຍຄູອາຈານ ແບບນ້ອຍກະທັດຮັດ */
         .subroom-tabs {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 10px;
-            margin-bottom: 16px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px;
+            margin-bottom: 12px;
         }
         .subroom-tab {
             background: #1e293b;
             color: #cbd5e1;
             border: 1px solid #334155;
-            padding: 11px 15px;
-            border-radius: 12px;
-            font-size: 14px;
+            padding: 7px 10px;
+            border-radius: 9px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            gap: 8px;
-            line-height: 1.35;
+            gap: 5px;
+            line-height: 1.25;
             transition: 0.2s;
             width: 100%;
+            min-width: 0;
         }
         .subroom-tab:hover { border-color: #38bdf8; color: #fff; }
         .subroom-tab.active {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             color: #ffffff;
             border-color: #60a5fa;
-            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
         .panel {
@@ -417,12 +419,14 @@
                 border-radius: 12px;
             }
             .subroom-tabs {
-                grid-template-columns: 1fr;
-                gap: 8px;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 5px;
+                margin-bottom: 10px;
             }
             .subroom-tab {
-                padding: 10px 12px;
-                font-size: 13px;
+                padding: 6px 8px;
+                font-size: 11px;
+                border-radius: 7px;
             }
             .filter-bar {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -545,10 +549,10 @@
 
     <div class="subroom-tabs">
         <button type="button" class="subroom-tab active" id="tab-student-cal" onclick="switchSubRoom('student')">
-            🎓 ຫ້ອງນ້ອຍ 1: ໜ້ານັກຮຽນ (ຕາຕະລາງຮຽນປະຈຳອາທິດ)
+            🎓 ຫ້ອງນ້ອຍ 1: ໜ້ານັກຮຽນ
         </button>
         <button type="button" class="subroom-tab" id="tab-teacher-cal" onclick="switchSubRoom('teacher')">
-            👩‍🏫 ຫ້ອງນ້ອຍ 2: ໜ້າຄູອາຈານ (ຕາຕະລາງການສອນປະຈຳອາທິດ)
+            👩‍🏫 ຫ້ອງນ້ອຍ 2: ໜ້າຄູອາຈານ
         </button>
     </div>
 
