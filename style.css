@@ -811,3 +811,38 @@ a[href*="scores.html"] {
         background: #162032;
         color: #e2e8f0;
     }
+/* ແກ້ໄຂໂຕໜັງສືໃນ Sidebar ໃຫ້ສະເໝີກັນ ແລະ ອ່ານງ່າຍ */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+aside,
+nav,
+.sidebar,
+[class*="sidebar" i],
+[id*="sidebar" i],
+[class*="drawer" i],
+[id*="drawer" i],
+[class*="menu" i] a,
+[class*="menu" i] button,
+[class*="nav" i] a,
+[class*="nav" i] button {
+    font-family: 'Noto Sans Lao', 'Phetsarath OT', 'Saysettha OT', sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    line-height: 1.55 !important;
+    letter-spacing: 0 !important;
+    font-variant-numeric: normal !important;
+}
+
+aside *,
+nav *,
+.sidebar *,
+[class*="sidebar" i] *,
+[id*="sidebar" i] *,
+[class*="drawer" i] *,
+[id*="drawer" i] * {
+    font-family: inherit !important;
+    line-height: 1.55 !important;
+}
