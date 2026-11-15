@@ -165,6 +165,11 @@
             color: #f8fafc;
             font-size: 13px;
         }
+        .form-group input[readonly] {
+            background: #0b1220;
+            color: #38bdf8;
+            font-weight: 700;
+        }
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
@@ -464,6 +469,9 @@
             .replace(/&/g, "&amp;").replace(/</g, "&lt;")
             .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
+    function formatNum(v) {
+        return Number(v || 0).toLocaleString("en-US");
+    }
 
     function computeAnnualAverage(data) {
         const map = data.courseworkBySubject || {};
@@ -503,7 +511,7 @@
             return `sched:${cleanVal(item.week).toLowerCase()}__${cleanVal(item.day).toLowerCase()}__${cleanVal(item.period)}__${cleanGrade(item.room).toLowerCase()}`;
         }
         if (tabKey === "tuition") {
-            return `tuition:${cleanVal(item.item).toLowerCase()}__${cleanGrade(item.room).toLowerCase()}__${cleanVal(item.term).toLowerCase()}`;
+            return `tuition:${cleanVal(item.studentId).toLowerCase()}__${cleanGrade(item.room).toLowerCase()}__${cleanVal(item.term).toLowerCase()}__${cleanVal(item.subject).toLowerCase()}`;
         }
         if (tabKey === "terms") {
             const g = (!cleanVal(item.grade) || cleanVal(item.grade).toUpperCase() === "ALL") ? "all" : cleanGrade(item.grade).toLowerCase();
@@ -765,28 +773,53 @@
             collections: ["tuition", "fee_items", "finance", "payments"],
             primaryCol: "tuition",
             fields: [
-                { name: "item", label: "ລາຍການຄ່າຮຽນ / ຊື່ນັກຮຽນ", type: "text", required: true, placeholder: "ຄ່າຮຽນປະຈຳເທີມ" },
-                { name: "room", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.5" },
-                { name: "term", label: "ເທີມ", type: "text", required: false, placeholder: "ເທີມ 1 / 2026-2027" },
-                { name: "amount", label: "ຈຳນວນເງິນ (ກີບ)", type: "text", required: true, placeholder: "1,500,000 ກີບ" },
-                { name: "status", label: "ສະຖານະ", type: "text", required: true, placeholder: "ຄ້າງຈ່າຍ / ຈ່າຍແລ້ວ" }
+                { name: "studentId", label: "1. ລະຫັດນັກຮຽນ", type: "text", required: true, placeholder: "STD-001" },
+                { name: "studentName", label: "2. ຊື່ ແລະ ນາມສະກຸນ", type: "text", required: true, placeholder: "ຊື່ ແລະ ນາມສະກຸນ" },
+                { name: "room", label: "3. ຫ້ອງ", type: "text", required: true, placeholder: "ມ.5" },
+                { name: "term", label: "4. ເທີມ", type: "text", required: true, placeholder: "ເທີມ 1 / 2026-2027" },
+                { name: "subject", label: "5. ຊື່ວິຊາ", type: "text", required: true, placeholder: "ຊື່ວິຊາ" },
+                { name: "credits", label: "6. ຈຳນວນໜ່ວຍກິດ", type: "number", required: true, placeholder: "3", min: 0, max: 50, step: "0.5" },
+                { name: "pricePerCredit", label: "7. ລາຄາຕໍ່ໜ່ວຍກິດ", type: "number", required: true, placeholder: "150000", min: 0, max: 100000000, step: "any" },
+                { name: "tuitionFee", label: "8. ຄ່າຮຽນວິຊາ (ອັດຕະໂນມັດ)", type: "number", required: false, placeholder: "0", readonly: true },
+                { name: "status", label: "9. ສະຖານະການຈ່າຍ", type: "select", required: true, options: ["ຄ້າງຈ່າຍ", "ຈ່າຍບາງສ່ວນ", "ຈ່າຍແລ້ວ"] }
             ],
             columns: [
-                { key: "item", label: "ລາຍການ / ຊື່" },
+                { key: "studentId", label: "ລະຫັດນັກຮຽນ" },
+                { key: "studentName", label: "ຊື່ ແລະ ນາມສະກຸນ" },
                 { key: "room", label: "ຫ້ອງ" },
                 { key: "term", label: "ເທີມ" },
-                { key: "amount", label: "ຈຳນວນເງິນ" },
-                { key: "status", label: "ສະຖານະ" }
+                { key: "subject", label: "ຊື່ວິຊາ" },
+                { key: "creditsDisplay", label: "ໜ່ວຍກິດ" },
+                { key: "priceDisplay", label: "ລາຄາ/ໜ່ວຍກິດ" },
+                { key: "tuitionFeeDisplay", label: "ຄ່າຮຽນວິຊາ" },
+                { key: "status", label: "ສະຖານະການຈ່າຍ" }
             ],
-            mapDoc: (d, id) => ({
-                id,
-                item: cleanVal(d.item || d.studentName || d.name),
-                room: cleanGrade(d.room || d.grade),
-                term: cleanVal(d.term || "ເທີມ 1 / 2026-2027"),
-                amount: cleanVal(d.amount || d.fee || ""),
-                status: cleanVal(d.status || "ຄ້າງຈ່າຍ"),
-                _raw: d
-            })
+            mapDoc: (d, id) => {
+                const credits = Math.max(0, Number(d.credits) || 0);
+                const pricePerCredit = Math.max(0, Number(d.pricePerCredit) || 0);
+                const rawFee = d.tuitionFee !== undefined && d.tuitionFee !== ""
+                    ? Number(d.tuitionFee)
+                    : (credits * pricePerCredit || Number(String(d.amount || "0").replace(/[^\d.-]/g, "")) || 0);
+                const tuitionFee = Math.max(0, rawFee);
+                const studentName = cleanVal(d.studentName || d.name || d.item || "");
+                const subject = cleanVal(d.subject || d.subjectName || d.item || "");
+                return {
+                    id,
+                    studentId: cleanVal(d.studentId || d.studentCode || ""),
+                    studentName,
+                    room: cleanGrade(d.room || d.grade || ""),
+                    term: cleanVal(d.term || "ເທີມ 1 / 2026-2027"),
+                    subject,
+                    credits,
+                    pricePerCredit,
+                    tuitionFee,
+                    creditsDisplay: credits ? formatNum(credits) : "-",
+                    priceDisplay: pricePerCredit ? formatNum(pricePerCredit) : "-",
+                    tuitionFeeDisplay: formatNum(tuitionFee),
+                    status: cleanVal(d.status || "ຄ້າງຈ່າຍ"),
+                    _raw: d
+                };
+            }
         },
         subjects: {
             title: "📚 7. ເພີ່ມ / ແກ້ໄຂ / ລົບ ວິຊາຮຽນ",
@@ -911,6 +944,24 @@
         window.dispatchEvent(new CustomEvent("school-data-updated", { detail: JSON.parse(payload) }));
     }
 
+    function bindTuitionAutoCalculation() {
+        if (currentTab !== "tuition") return;
+        const creditsEl = document.getElementById("fld-credits");
+        const priceEl = document.getElementById("fld-pricePerCredit");
+        const feeEl = document.getElementById("fld-tuitionFee");
+        if (!creditsEl || !priceEl || !feeEl) return;
+
+        const recalc = () => {
+            const c = Math.max(0, Number(creditsEl.value) || 0);
+            const p = Math.max(0, Number(priceEl.value) || 0);
+            feeEl.value = c * p;
+        };
+
+        creditsEl.addEventListener("input", recalc);
+        priceEl.addEventListener("input", recalc);
+        recalc();
+    }
+
     function renderFormFields() {
         const fields = getActiveFields();
         const container = document.getElementById("dynamic-fields");
@@ -931,7 +982,8 @@
             const extraAttrs = [
                 f.min !== undefined ? `min="${f.min}"` : "",
                 f.max !== undefined ? `max="${f.max}"` : "",
-                f.step !== undefined ? `step="${f.step}"` : ""
+                f.step !== undefined ? `step="${f.step}"` : "",
+                f.readonly ? "readonly" : ""
             ].filter(Boolean).join(" ");
 
             return `
@@ -958,6 +1010,14 @@
             if (grEl && !grEl.value) grEl.value = "ALL";
             if (tpEl && !tpEl.value) tpEl.value = "40";
             if (msEl && !msEl.value) msEl.value = "20";
+        }
+
+        if (currentTab === "tuition") {
+            const termEl = document.getElementById("fld-term");
+            const feeEl = document.getElementById("fld-tuitionFee");
+            if (termEl && !termEl.value) termEl.value = "ເທີມ 1 / 2026-2027";
+            if (feeEl && !feeEl.value) feeEl.value = "0";
+            bindTuitionAutoCalculation();
         }
     }
 
@@ -1093,8 +1153,11 @@
         } else {
             getActiveFields().forEach((f) => {
                 const el = document.getElementById("fld-" + f.name);
-                if (el) el.value = target[f.name] || (f.type === "select" ? (f.options?.[0] || "") : "");
+                if (el) el.value = target[f.name] ?? (f.type === "select" ? (f.options?.[0] || "") : "");
             });
+            if (currentTab === "tuition") {
+                bindTuitionAutoCalculation();
+            }
         }
 
         document.getElementById("form-heading").textContent = "✏️ ກຳລັງແກ້ໄຂຂໍ້ມູນ";
@@ -1115,6 +1178,12 @@
             if (grEl) grEl.value = "ALL";
             if (tpEl) tpEl.value = "40";
             if (msEl) msEl.value = "20";
+        }
+        if (currentTab === "tuition") {
+            const termEl = document.getElementById("fld-term");
+            const feeEl = document.getElementById("fld-tuitionFee");
+            if (termEl) termEl.value = "ເທີມ 1 / 2026-2027";
+            if (feeEl) feeEl.value = "0";
         }
         document.getElementById("form-heading").textContent = "➕ ເພີ່ມຂໍ້ມູນໃໝ່";
         document.getElementById("btn-submit-record").textContent = "💾 ບັນທຶກ";
@@ -1250,10 +1319,24 @@
                 } else if (currentTab === "schedules") {
                     payload.grade = payload.room;
                 } else if (currentTab === "tuition") {
-                    payload.studentName = payload.item;
-                    payload.name = payload.item;
+                    const credits = Math.max(0, Number(formValues.credits) || 0);
+                    const pricePerCredit = Math.max(0, Number(formValues.pricePerCredit) || 0);
+                    const tuitionFee = credits * pricePerCredit;
+
+                    payload.studentId = cleanVal(formValues.studentId);
+                    payload.studentName = cleanVal(formValues.studentName);
+                    payload.name = payload.studentName;
+                    payload.room = cleanGrade(formValues.room);
                     payload.grade = payload.room;
-                    if (!payload.term) payload.term = "ເທີມ 1 / 2026-2027";
+                    payload.term = cleanVal(formValues.term) || "ເທີມ 1 / 2026-2027";
+                    payload.subject = cleanVal(formValues.subject);
+                    payload.subjectName = payload.subject;
+                    payload.item = `${payload.subject} (${payload.studentName})`;
+                    payload.credits = credits;
+                    payload.pricePerCredit = pricePerCredit;
+                    payload.tuitionFee = tuitionFee;
+                    payload.amount = `${formatNum(tuitionFee)} ກີບ`;
+                    payload.status = cleanVal(formValues.status) || "ຄ້າງຈ່າຍ";
                 } else if (currentTab === "subjects") {
                     payload.subjectName = payload.name;
                     payload.subject = payload.name;
