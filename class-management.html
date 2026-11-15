@@ -114,6 +114,46 @@
             font-family: inherit;
             font-size: 13px;
         }
+        button {
+            font-family: inherit;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover { opacity: 0.92; }
+        .btn-save { background: #16a34a; color: #fff; }
+        .btn-cancel { background: #475569; color: #f8fafc; }
+        .btn-edit { background: #eab308; color: #0f172a; padding: 5px 9px; font-size: 12px; }
+        .btn-del { background: #dc2626; color: #fff; padding: 5px 9px; font-size: 12px; }
+        .period-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .field-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .field-box label {
+            font-size: 12px;
+            color: #93c5fd;
+            font-weight: 600;
+        }
+        .pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(56, 189, 248, 0.18);
+            color: #7dd3fc;
+            border: 1px solid #38bdf8;
+        }
         .table-wrap {
             width: 100%;
             overflow-x: auto;
@@ -167,6 +207,67 @@
             <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
         </div>
     </div>
+
+    <!-- 0. ຫ້ອງສ້າງຄາບຮຽນປະຈຳເທີມ -->
+    <section class="card" id="sec-term-periods">
+        <div class="card-header">
+            <h2>⏱️ ສ້າງ / ຈັດການຄາບຮຽນປະຈຳເທີມ</h2>
+            <span class="note-text" style="margin:0;">ໃຊ້ເປັນຈຳນວນຄາບທັງໝົດໃນການຄິດໄລ່ຄະແນນການມາຮຽນ</span>
+        </div>
+        <div class="period-form">
+            <div class="field-box">
+                <label for="periodYearInput">ສົກຮຽນ</label>
+                <select id="periodYearInput">
+                    <option value="2026-2027">2026-2027</option>
+                    <option value="2027-2028">2027-2028</option>
+                    <option value="2025-2026">2025-2026</option>
+                </select>
+            </div>
+            <div class="field-box">
+                <label for="periodTermInput">ເທີມ</label>
+                <select id="periodTermInput">
+                    <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
+                    <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
+                    <option value="ເທີມ 1 / 2027-2028">ເທີມ 1 / 2027-2028</option>
+                    <option value="ເທີມ 2 / 2027-2028">ເທີມ 2 / 2027-2028</option>
+                </select>
+            </div>
+            <div class="field-box">
+                <label for="periodGradeInput">ຫ້ອງ</label>
+                <select id="periodGradeInput">
+                    <option value="ALL">ທຸກຫ້ອງ</option>
+                </select>
+            </div>
+            <div class="field-box">
+                <label for="periodCountInput">ຈຳນວນຄາບທັງໝົດ</label>
+                <input type="number" id="periodCountInput" min="1" max="500" value="40" placeholder="ເຊັ່ນ: 40" />
+            </div>
+            <div class="field-box">
+                <label for="periodMaxScoreInput">ຄະແນນເຕັມ</label>
+                <input type="number" id="periodMaxScoreInput" min="1" max="100" value="20" placeholder="ເຊັ່ນ: 20" />
+            </div>
+        </div>
+        <div class="controls" style="margin-bottom:14px;">
+            <button type="button" class="btn-save" id="btnSaveTermPeriod" onclick="saveTermPeriodConfig()">💾 ບັນທຶກຄາບຮຽນ</button>
+            <button type="button" class="btn-cancel" id="btnCancelTermPeriod" onclick="resetTermPeriodForm()" style="display:none;">↩ ຍົກເລີກການແກ້ໄຂ</button>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:60px;">ລ/ດ</th>
+                        <th>ສົກຮຽນ</th>
+                        <th>ເທີມ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ຈຳນວນຄາບ</th>
+                        <th>ຄະແນນເຕັມ</th>
+                        <th style="width:140px;">ຈັດການ</th>
+                    </tr>
+                </thead>
+                <tbody id="termPeriodsTableBody"></tbody>
+            </table>
+        </div>
+    </section>
 
     <section class="card" id="sec-students">
         <div class="card-header">
@@ -264,7 +365,7 @@
             </table>
         </div>
         <div class="note-text">
-            * ສ່ວນທີ 3 (ຕາຕະລາງສອນປະຈຳພາກ) ຖືກຊ່ອນຈາກນັກຮຽນ; ເມື່ອອັບເດດໃນ ໜ້າ 12 (ເມນູ 4) ທັງຕາຕະລາງຮຽນ (ສ່ວນທີ 2) ແລະ ຕາຕະລາງສອນ (ສ່ວນທີ 3) ຈະອັບເດດຕາມອັດຕະໂນມັດ.
+            * ສ່ວນທີ 3 (ຕາຕະລາງສອນປະຈຳພາກ) ຖືກຊ່ອນຈາກນັກຮຽນ; ເມື່ອອັບເດດໃນ ໜ້າ 12 (ເມນູ 4) ທັງຕາຕະລາງຮຽນ (ສ່ວນທີ 2) ແລະ ຕາຕະລາງສອນ (ສ່ວນທີ 3) ຈະອັບເດດຕາມອັດຕາສ່ວນ.
         </div>
     </section>
 </div>
@@ -272,7 +373,7 @@
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, onSnapshot
+        getFirestore, collection, getDocs, onSnapshot, setDoc, deleteDoc, doc
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -297,6 +398,7 @@
     const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
     const SYNC_EVENT_NAME = "school-data-updated";
     const TEACHING_COLS = ["weekly_schedules", "timetables", "teaching_schedules", "schedules"];
+    const TERM_PERIODS_COL = "term_periods";
     const DAYS_ORDER = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"];
     const DEFAULT_GRADES = ["ມ.1", "ມ.2", "ມ.3", "ມ.4", "ມ.5", "ມ.6", "ມ.7"];
     const DEFAULT_ACADEMIC_YEAR = "2026-2027";
@@ -348,7 +450,9 @@
     const userGrade = cleanGrade(localStorage.getItem("userGrade") || "ມ.5") || "ມ.5";
     const userName = cleanVal(localStorage.getItem("userName")) || "ຜູ້ໃຊ້ງານ";
     const isAdmin = role === "admin";
+    const isTeacher = role === "teacher";
     const isStudent = role === "student";
+    const canManagePeriods = isAdmin || isTeacher;
 
     document.getElementById("currentUserName").textContent = userName;
     document.getElementById("currentUserRole").textContent = role.toUpperCase();
@@ -361,6 +465,15 @@
 
     if (isStudent) {
         document.getElementById("sec-teaching-timetable").classList.add("hidden-section");
+        document.getElementById("sec-term-periods").classList.add("hidden-section");
+    }
+
+    function broadcastSync() {
+        const payload = { tab: "periods", updatedBy: userName, timestamp: Date.now() };
+        try {
+            localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(payload));
+        } catch (e) {}
+        window.dispatchEvent(new CustomEvent(SYNC_EVENT_NAME, { detail: payload }));
     }
 
     function esc(str) {
@@ -425,6 +538,147 @@
         };
     }
 
+    // -------------------- 0. ຄາບຮຽນປະຈຳເທີມ --------------------
+    let termPeriodsList = JSON.parse(localStorage.getItem("school_term_periods") || "null") || [
+        {
+            id: "TP_2026-2027_term1_ALL",
+            academicYear: "2026-2027",
+            term: "ເທີມ 1 / 2026-2027",
+            grade: "ALL",
+            totalPeriods: 40,
+            maxScore: 20
+        },
+        {
+            id: "TP_2026-2027_term2_ALL",
+            academicYear: "2026-2027",
+            term: "ເທີມ 2 / 2026-2027",
+            grade: "ALL",
+            totalPeriods: 40,
+            maxScore: 20
+        }
+    ];
+    let editingPeriodId = null;
+
+    function saveTermPeriodsLocal() {
+        try {
+            localStorage.setItem("school_term_periods", JSON.stringify(termPeriodsList));
+        } catch (e) {}
+    }
+
+    window.resetTermPeriodForm = function () {
+        editingPeriodId = null;
+        document.getElementById("periodYearInput").value = DEFAULT_ACADEMIC_YEAR;
+        document.getElementById("periodTermInput").value = "ເທີມ 1 / 2026-2027";
+        document.getElementById("periodGradeInput").value = "ALL";
+        document.getElementById("periodCountInput").value = 40;
+        document.getElementById("periodMaxScoreInput").value = 20;
+        document.getElementById("btnSaveTermPeriod").textContent = "💾 ບັນທຶກຄາບຮຽນ";
+        document.getElementById("btnCancelTermPeriod").style.display = "none";
+    };
+
+    window.editTermPeriodConfig = function (id) {
+        if (!canManagePeriods) return alert("❌ ສະເພາະ ຄູ ແລະ ແອັດມິນ ເທົ່ານັ້ນ!");
+        const target = termPeriodsList.find((x) => x.id === id);
+        if (!target) return;
+        editingPeriodId = target.id;
+        document.getElementById("periodYearInput").value = target.academicYear || DEFAULT_ACADEMIC_YEAR;
+        document.getElementById("periodTermInput").value = target.term || "ເທີມ 1 / 2026-2027";
+        document.getElementById("periodGradeInput").value = target.grade || "ALL";
+        document.getElementById("periodCountInput").value = target.totalPeriods || 40;
+        document.getElementById("periodMaxScoreInput").value = target.maxScore || 20;
+        document.getElementById("btnSaveTermPeriod").textContent = "✅ ອັບເດດຄາບຮຽນ";
+        document.getElementById("btnCancelTermPeriod").style.display = "inline-block";
+    };
+
+    window.deleteTermPeriodConfig = async function (id) {
+        if (!canManagePeriods) return alert("❌ ສະເພາະ ຄູ ແລະ ແອັດມິນ ເທົ່ານັ້ນ!");
+        const target = termPeriodsList.find((x) => x.id === id);
+        if (!target) return;
+        if (!confirm(`ຢືນຢັນລົບການຕັ້ງຄ່າຄາບຂອງ "${target.term}" (${target.grade === "ALL" ? "ທຸກຫ້ອງ" : target.grade})?`)) return;
+
+        if (db) {
+            try {
+                await deleteDoc(doc(db, TERM_PERIODS_COL, target.firestoreId || target.id));
+            } catch (err) {}
+        }
+        termPeriodsList = termPeriodsList.filter((x) => x.id !== id);
+        saveTermPeriodsLocal();
+        broadcastSync();
+        renderTermPeriodsTable();
+    };
+
+    window.saveTermPeriodConfig = async function () {
+        if (!canManagePeriods) return alert("❌ ສະເພາະ ຄູ ແລະ ແອັດມິນ ເທົ່ານັ້ນທີ່ສ້າງ ຫຼື ແກ້ໄຂຄາບຮຽນໄດ້!");
+
+        const academicYear = normalizeAcademicYear(document.getElementById("periodYearInput").value);
+        const term = cleanVal(document.getElementById("periodTermInput").value) || "ເທີມ 1 / 2026-2027";
+        const rawGrade = cleanVal(document.getElementById("periodGradeInput").value);
+        const grade = rawGrade === "ALL" || !rawGrade ? "ALL" : cleanGrade(rawGrade);
+        const totalPeriods = Math.max(1, Number(document.getElementById("periodCountInput").value) || 40);
+        const maxScore = Math.max(1, Number(document.getElementById("periodMaxScoreInput").value) || 20);
+
+        const safeKey = `${academicYear}_${term}_${grade}`
+            .replace(/[\/\\?#%]/g, "_")
+            .replace(/\s+/g, "_");
+        const docId = editingPeriodId || `TP_${safeKey}`;
+
+        const record = {
+            id: docId,
+            firestoreId: docId,
+            academicYear,
+            term,
+            grade,
+            totalPeriods,
+            maxScore,
+            updatedAt: new Date().toISOString()
+        };
+
+        const idx = termPeriodsList.findIndex((x) => x.id === docId || (x.academicYear === academicYear && x.term === term && x.grade === grade));
+        if (idx >= 0) {
+            termPeriodsList[idx] = record;
+        } else {
+            termPeriodsList.push(record);
+        }
+
+        saveTermPeriodsLocal();
+        if (db) {
+            try {
+                await setDoc(doc(db, TERM_PERIODS_COL, docId), record, { merge: true });
+            } catch (err) {
+                console.warn("Save term_periods error:", err.message);
+            }
+        }
+
+        broadcastSync();
+        resetTermPeriodForm();
+        renderTermPeriodsTable();
+        alert(`✅ ບັນທຶກຄາບຮຽນສຳເລັດ (${totalPeriods} ຄາບ • ຄະແນນເຕັມ ${maxScore})`);
+    };
+
+    window.renderTermPeriodsTable = function () {
+        if (isStudent) return;
+        const tbody = document.getElementById("termPeriodsTableBody");
+        if (!tbody) return;
+        if (!termPeriodsList.length) {
+            tbody.innerHTML = `<tr><td colspan="7" class="center">ຍັງບໍ່ມີການຕັ້ງຄ່າຄາບຮຽນ</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = termPeriodsList.map((item, idx) => `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${esc(item.academicYear || DEFAULT_ACADEMIC_YEAR)}</td>
+                <td>${esc(item.term || "-")}</td>
+                <td>${item.grade === "ALL" ? '<span class="pill">ທຸກຫ້ອງ</span>' : esc(item.grade)}</td>
+                <td><strong>${Number(item.totalPeriods) || 40} ຄາບ</strong></td>
+                <td>${Number(item.maxScore) || 20}</td>
+                <td>
+                    <button type="button" class="btn-edit" onclick="editTermPeriodConfig('${esc(item.id)}')">ແກ້ໄຂ</button>
+                    <button type="button" class="btn-del" onclick="deleteTermPeriodConfig('${esc(item.id)}')">ລົບ</button>
+                </td>
+            </tr>
+        `).join("");
+    };
+
     let studentsData = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
         { id: "STD-001", code: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", status: "ປົກກະຕິ" },
         { id: "STD-002", code: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", status: "ປົກກະຕິ" },
@@ -477,6 +731,20 @@
         }
 
         const roomList = Array.from(roomMap.values());
+
+        const periodGradeSelect = document.getElementById("periodGradeInput");
+        if (periodGradeSelect) {
+            const prevP = periodGradeSelect.value;
+            periodGradeSelect.innerHTML =
+                `<option value="ALL">ທຸກຫ້ອງ</option>` +
+                roomList.map((r) => `<option value="${esc(r)}">ຫ້ອງ ${esc(r)}</option>`).join("");
+            if (prevP === "ALL") {
+                periodGradeSelect.value = "ALL";
+            } else {
+                const matchP = roomList.find((r) => cleanGrade(r).toLowerCase() === cleanGrade(prevP).toLowerCase());
+                if (matchP) periodGradeSelect.value = matchP;
+            }
+        }
 
         const filterSelect = document.getElementById("studentGradeFilter");
         if (filterSelect) {
@@ -760,6 +1028,19 @@
     async function loadFromFirestoreIfAvailable() {
         if (!db) return;
         try {
+            const tpSnap = await getDocs(collection(db, TERM_PERIODS_COL));
+            if (!tpSnap.empty) {
+                termPeriodsList = tpSnap.docs.map((d) => ({
+                    id: d.data().id || d.id,
+                    firestoreId: d.id,
+                    ...d.data()
+                }));
+                saveTermPeriodsLocal();
+                renderTermPeriodsTable();
+            }
+        } catch (err) {}
+
+        try {
             const stdSnap = await getDocs(collection(db, "students"));
             if (!stdSnap.empty) {
                 studentsData = stdSnap.docs.map((d) => ({
@@ -785,6 +1066,14 @@
     }
 
     if (db) {
+        onSnapshot(collection(db, TERM_PERIODS_COL), (snap) => {
+            if (!snap.empty) {
+                termPeriodsList = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
+                saveTermPeriodsLocal();
+                renderTermPeriodsTable();
+            }
+        }, () => {});
+
         onSnapshot(collection(db, "students"), async (snap) => {
             if (!snap.empty) {
                 studentsData = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
@@ -824,6 +1113,7 @@
     window.addEventListener(SYNC_EVENT_NAME, () => loadFromFirestoreIfAvailable());
 
     await syncRoomSelectOptions();
+    renderTermPeriodsTable();
     renderStudents();
     renderClassTimetable();
     renderTeachingTimetable();
