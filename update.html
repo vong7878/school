@@ -6,12 +6,13 @@
     <title>12. ຫ້ອງອັບເດດຂໍ້ມູນລະບົບໂຮງຮຽນ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; -webkit-tap-highlight-color: transparent; }
         html, body {
             background: #0f172a;
             color: #f8fafc;
             min-height: 100vh;
             min-height: 100dvh;
+            width: 100%;
             max-width: 100%;
             overflow-x: hidden;
             -webkit-text-size-adjust: 100%;
@@ -29,6 +30,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            width: 100%;
         }
         .topbar-left {
             display: flex;
@@ -98,6 +100,22 @@
             min-width: 0;
         }
 
+        .quota-banner {
+            background: rgba(245, 158, 11, 0.16);
+            border: 1px solid rgba(245, 158, 11, 0.55);
+            color: #fef08a;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 12px;
+            line-height: 1.4;
+            display: none;
+            margin-bottom: 14px;
+            overflow-wrap: anywhere;
+        }
+        .quota-banner.show {
+            display: block;
+        }
+
         .submenus {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
@@ -160,6 +178,7 @@
             padding: 18px;
             box-shadow: 0 10px 28px rgba(0,0,0,0.3);
             min-width: 0;
+            width: 100%;
         }
 
         .panel-top {
@@ -177,6 +196,13 @@
             color: #f8fafc;
             line-height: 1.35;
             overflow-wrap: anywhere;
+        }
+        .panel-top-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            max-width: 100%;
         }
         .sync-note {
             font-size: 12px;
@@ -259,9 +285,11 @@
             white-space: nowrap;
             transition: 0.2s;
         }
-        .btn:hover { background: #334155; }
+        .btn:hover:not(:disabled) { background: #334155; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-save { background: #16a34a; border-color: #22c55e; color: #fff; }
-        .btn-save:hover { background: #15803d; }
+        .btn-save:hover:not(:disabled) { background: #15803d; }
+        .btn-refresh { background: #0284c7; border-color: #38bdf8; color: #fff; padding: 6px 11px; font-size: 12px; }
         .btn-edit { background: #eab308; border-color: #facc15; color: #0f172a; padding: 5px 10px; font-size: 12px; }
         .btn-del { background: #dc2626; border-color: #ef4444; color: #fff; padding: 5px 10px; font-size: 12px; }
 
@@ -303,15 +331,6 @@
         }
         .denied-box h2 { color: #f87171; margin-bottom: 10px; font-size: clamp(17px, 3vw, 22px); }
         .denied-box p { color: #cbd5e1; margin-bottom: 18px; font-size: 14px; line-height: 1.5; }
-
-        /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
-        #fbSyncBadge,
-        .badge-fb,
-        [data-hide-firebase="true"],
-        [class*="firebase" i],
-        [id*="firebase" i] {
-            display: none !important;
-        }
     </style>
 </head>
 <body>
@@ -334,6 +353,10 @@
 </div>
 
 <div class="container" id="update-main-container">
+    <div class="quota-banner" id="quotaBanner">
+        ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບກຳລັງໃຊ້ຂໍ້ມູນທີ່ເກັບໃນເຄື່ອງ (`localStorage`) ແລະ ຈຳກັດການຮ້ອງຂໍຊ້ຳ.
+    </div>
+
     <div class="submenus">
         <button type="button" class="submenu-btn active" data-tab="rooms" onclick="switchUpdateTab('rooms')">🏫 1. ລາຍຊື່ຫ້ອງ</button>
         <button type="button" class="submenu-btn" data-tab="teachers" onclick="switchUpdateTab('teachers')">👩‍🏫 2. ລາຍຊື່ຄູ</button>
@@ -348,7 +371,10 @@
     <section class="panel">
         <div class="panel-top">
             <h2 id="active-tab-title">🏫 ເພີ່ມ / ແກ້ໄຂ / ລົບ ລາຍຊື່ຫ້ອງ</h2>
-            <span class="sync-note">⚡ ກັ່ນຕອງໂຕບໍ່ຊ້ຳກັນ &amp; ຊິ້ງໄປທຸກໜ້າໃນລະບົບ</span>
+            <div class="panel-top-right">
+                <span class="sync-note">⚡ ກັ່ນຕອງໂຕບໍ່ຊ້ຳກັນ &amp; ຊິ້ງໄປທຸກໜ້າໃນລະບົບ</span>
+                <button type="button" class="btn btn-refresh" id="btn-refresh-tab" onclick="refreshCurrentTabManual()">🔄 ໂຫຼດໃໝ່</button>
+            </div>
         </div>
 
         <div class="form-card">
@@ -506,7 +532,7 @@
                     padding: ${isTinyMobile ? "6px 10px" : "7px 12px"} !important;
                     font-size: ${isTinyMobile ? "12px" : "13px"} !important;
                 }
-                .sync-note {
+                .panel-top-right, .sync-note {
                     width: 100% !important;
                     font-size: 11.5px !important;
                 }
@@ -574,14 +600,65 @@
         apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
         authDomain: "my-school-c1104.firebaseapp.com",
         projectId: "my-school-c1104",
-        storageBucket: "my-school-c1104.appspot.com",
+        storageBucket: "my-school-c1104.firebasestorage.app",
         messagingSenderId: "339930418459",
         appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
         measurementId: "G-NPNFSW2C72"
     };
 
-    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    let db = null;
+    try {
+        const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+        db = getFirestore(app);
+    } catch (e) {}
+
+    const QUOTA_BLOCK_UNTIL_KEY = "school_firestore_quota_blocked_until";
+    const TAB_CACHE_PREFIX = "school_update_tab_cache_v1_";
+    const TAB_FETCH_TS_PREFIX = "school_update_tab_fetch_ts_";
+    const TAB_COOLDOWN_MS = 60000;
+    const SUBMIT_COOLDOWN_MS = 1500;
+    const QUOTA_COOLDOWN_MS = 1800000;
+
+    function isQuotaError(err) {
+        const code = String(err?.code || "").toLowerCase();
+        const msg = String(err?.message || "").toLowerCase();
+        return (
+            code.includes("resource-exhausted") ||
+            msg.includes("quota") ||
+            msg.includes("resource exhausted") ||
+            msg.includes("daily usage")
+        );
+    }
+
+    function setQuotaNotice(active) {
+        const banner = document.getElementById("quotaBanner");
+        if (!banner) return;
+        if (active) banner.classList.add("show");
+        else banner.classList.remove("show");
+    }
+
+    function serializeRecordsForCache(list) {
+        return list.map((r) => {
+            const copy = { ...r };
+            delete copy._raw;
+            return copy;
+        });
+    }
+
+    function saveTabCache(tabKey, list) {
+        try {
+            localStorage.setItem(TAB_CACHE_PREFIX + tabKey, JSON.stringify(serializeRecordsForCache(list)));
+        } catch (_) {}
+    }
+
+    function loadTabCache(tabKey) {
+        try {
+            const raw = JSON.parse(localStorage.getItem(TAB_CACHE_PREFIX + tabKey) || "null");
+            return Array.isArray(raw) ? raw : null;
+        } catch (_) {
+            return null;
+        }
+    }
 
     const DAYS_ORDER = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"];
     const MONTHS_ORDER = [
@@ -735,6 +812,9 @@
 
     async function checkPrerequisitesForRoom(roomName) {
         const cleanedRoom = cleanGrade(roomName).toLowerCase();
+        if (!db) {
+            return { hasAnyStudents: true, hasRoomStudents: true, roomStudentCount: 0, hasAnyTeachers: true };
+        }
         const [studentSnap, teacherSnap] = await Promise.all([
             getDocs(collection(db, "students")),
             getDocs(collection(db, "teachers"))
@@ -1108,8 +1188,11 @@
     let currentRecords = [];
     let editingRecordId = null;
     let editingCollectionName = null;
+    let lastSubmitTs = 0;
 
     async function refreshSubjectsFromFirestore() {
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (!db || Date.now() < blockedUntil) return;
         try {
             const snap = await getDocs(collection(db, "subjects"));
             if (!snap.empty) {
@@ -1121,7 +1204,10 @@
                 }
             }
         } catch (err) {
-            console.warn(err);
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
         }
     }
 
@@ -1317,41 +1403,109 @@
         }
     }
 
-    async function loadTabData() {
-        await refreshSubjectsFromFirestore();
-        const cfg = TAB_CONFIGS[currentTab];
+    async function loadTabData(force = false) {
+        const tabAtStart = currentTab;
+        const cfg = TAB_CONFIGS[tabAtStart];
+
         document.querySelectorAll(".submenu-btn").forEach((btn) => {
-            btn.classList.toggle("active", btn.dataset.tab === currentTab);
+            btn.classList.toggle("active", btn.dataset.tab === tabAtStart);
         });
         document.getElementById("active-tab-title").textContent = cfg.title;
-        document.getElementById("score-sub-bar").style.display = currentTab === "scores" ? "flex" : "none";
+        document.getElementById("score-sub-bar").style.display = tabAtStart === "scores" ? "flex" : "none";
 
         renderFormFields();
         renderTableHeader();
         resetEditMode();
 
-        const tbody = document.getElementById("dynamic-tbody");
-        tbody.innerHTML = `<tr><td colspan="${cfg.columns.length + 2}" class="empty-row">ກຳລັງດຶງຂໍ້ມູນຈາກ Firebase...</td></tr>`;
+        const cached = loadTabCache(tabAtStart);
+        if (cached) {
+            currentRecords = dedupeRecords(tabAtStart, cached);
+            if (tabAtStart === "terms") syncTermsCache(currentRecords);
+            renderTableBody();
+        }
 
-        const merged = [];
-        for (const colName of cfg.collections) {
-            try {
-                const snap = await getDocs(collection(db, colName));
-                snap.forEach((docSnap) => {
-                    const mapped = cfg.mapDoc(docSnap.data(), docSnap.id);
-                    merged.push({ ...mapped, _col: colName });
-                });
-            } catch (err) {
-                console.warn("ບໍ່ສາມາດອ່ານ collection " + colName, err);
+        const now = Date.now();
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        const lastFetch = Number(localStorage.getItem(TAB_FETCH_TS_PREFIX + tabAtStart) || "0");
+
+        if (now < blockedUntil) {
+            setQuotaNotice(true);
+            if (!cached) {
+                currentRecords = [];
+                renderTableBody();
+            }
+            return;
+        }
+
+        if (!force && cached && now - lastFetch < TAB_COOLDOWN_MS) {
+            return;
+        }
+
+        if (!db) {
+            if (!cached) {
+                currentRecords = [];
+                renderTableBody();
+            }
+            return;
+        }
+
+        if (!cached) {
+            const tbody = document.getElementById("dynamic-tbody");
+            tbody.innerHTML = `<tr><td colspan="${cfg.columns.length + 2}" class="empty-row">ກຳລັງດຶງຂໍ້ມູນຈາກ Firebase...</td></tr>`;
+        }
+
+        try {
+            if (tabAtStart === "scores") {
+                await refreshSubjectsFromFirestore();
+            }
+
+            const merged = [];
+            for (const colName of cfg.collections) {
+                try {
+                    const snap = await getDocs(collection(db, colName));
+                    snap.forEach((docSnap) => {
+                        const mapped = cfg.mapDoc(docSnap.data(), docSnap.id);
+                        merged.push({ ...mapped, _col: colName });
+                    });
+                } catch (err) {
+                    if (isQuotaError(err)) throw err;
+                }
+            }
+
+            const deduped = dedupeRecords(tabAtStart, merged);
+            saveTabCache(tabAtStart, deduped);
+            localStorage.setItem(TAB_FETCH_TS_PREFIX + tabAtStart, String(Date.now()));
+            localStorage.removeItem(QUOTA_BLOCK_UNTIL_KEY);
+            setQuotaNotice(false);
+
+            if (currentTab === tabAtStart) {
+                currentRecords = deduped;
+                if (tabAtStart === "terms") {
+                    syncTermsCache(currentRecords);
+                }
+                renderTableBody();
+            }
+        } catch (err) {
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
+            if (!cached && currentTab === tabAtStart) {
+                currentRecords = [];
+                renderTableBody();
             }
         }
-
-        currentRecords = dedupeRecords(currentTab, merged);
-        if (currentTab === "terms") {
-            syncTermsCache(currentRecords);
-        }
-        renderTableBody();
     }
+
+    window.refreshCurrentTabManual = async function () {
+        const btn = document.getElementById("btn-refresh-tab");
+        if (btn) btn.disabled = true;
+        try {
+            await loadTabData(true);
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    };
 
     window.switchUpdateTab = function (tabKey) {
         if (!TAB_CONFIGS[tabKey]) return;
@@ -1359,7 +1513,7 @@
             return alert("❌ ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເຂົ້າໃຊ້ເມນູຈັດການເທີມຮຽນໄດ້!");
         }
         currentTab = tabKey;
-        loadTabData();
+        loadTabData(false);
     };
 
     window.startEditRecord = function (recordId, colName) {
@@ -1416,14 +1570,27 @@
         const cfg = TAB_CONFIGS[currentTab];
         const targetCol = colName || cfg.primaryCol;
 
+        currentRecords = currentRecords.filter((r) => !(r.id === recordId && r._col === targetCol));
+        saveTabCache(currentTab, currentRecords);
+        renderTableBody();
+
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (!db || Date.now() < blockedUntil) {
+            broadcastSystemDataUpdated(currentTab);
+            alert("🗑️ ລົບໃນເຄື່ອງແລ້ວ (ໂຄຕ້າ Firebase ອາດເຕັມ)");
+            return;
+        }
+
         try {
             await deleteDoc(doc(db, targetCol, recordId));
-            if (currentTab === "subjects") await refreshSubjectsFromFirestore();
             broadcastSystemDataUpdated(currentTab);
-            await loadTabData();
             alert("🗑️ ລົບຂໍ້ມູນສຳເລັດ!");
         } catch (err) {
-            alert("❌ ລົບຂໍ້ມູນບໍ່ສຳເລັດ: " + err.message);
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
+            alert("⚠️ ລົບໃນເຄື່ອງແລ້ວ: " + err.message);
         }
     };
 
@@ -1432,6 +1599,13 @@
         if (TAB_CONFIGS[currentTab]?.adminOnly && !isAdmin) {
             return alert("❌ ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມ, ແກ້ໄຂ ຫຼື ລົບເທີມຮຽນໄດ້!");
         }
+
+        const now = Date.now();
+        if (now - lastSubmitTs < SUBMIT_COOLDOWN_MS) return;
+        lastSubmitTs = now;
+
+        const submitBtn = document.getElementById("btn-submit-record");
+        if (submitBtn) submitBtn.disabled = true;
 
         const cfg = TAB_CONFIGS[currentTab];
         const fields = getActiveFields();
@@ -1443,7 +1617,10 @@
         });
 
         try {
-            if (currentTab === "rooms") {
+            const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+            const canUseFirestore = Boolean(db) && Date.now() >= blockedUntil;
+
+            if (currentTab === "rooms" && canUseFirestore) {
                 const prereq = await checkPrerequisitesForRoom(formValues.name);
                 if (!prereq.hasAnyStudents || !prereq.hasAnyTeachers) {
                     const missingParts = [];
@@ -1503,14 +1680,23 @@
                 const annualAvg = computeAnnualAverage(merged);
                 const quarterScore = Number((annualAvg / 4).toFixed(2));
 
-                await setDoc(doc(db, cfg.primaryCol, docId), {
-                    ...merged,
-                    annualAvg,
-                    quarterScore,
-                    updatedAt: serverTimestamp()
-                }, { merge: true });
+                if (canUseFirestore) {
+                    await setDoc(doc(db, cfg.primaryCol, docId), {
+                        ...merged,
+                        annualAvg,
+                        quarterScore,
+                        updatedAt: serverTimestamp()
+                    }, { merge: true });
+                }
 
-                alert("✅ ບັນທຶກຄະແນນນັກຮຽນສຳເລັດແລ້ວ!");
+                const mapped = cfg.mapDoc({ ...merged, annualAvg, quarterScore }, docId);
+                currentRecords = dedupeRecords("scores", [
+                    ...currentRecords.filter((r) => r.id !== docId),
+                    { ...mapped, _col: cfg.primaryCol }
+                ]);
+                saveTabCache("scores", currentRecords);
+                renderTableBody();
+                alert(canUseFirestore ? "✅ ບັນທຶກຄະແນນນັກຮຽນສຳເລັດແລ້ວ!" : "✅ ບັນທຶກຄະແນນໃນເຄື່ອງແລ້ວ!");
             } else if (currentTab === "terms") {
                 const term = formValues.term;
                 const academicYear = formValues.academicYear || "2026-2027";
@@ -1535,20 +1721,31 @@
                     termRange,
                     grade,
                     totalPeriods,
-                    maxScore,
-                    updatedAt: serverTimestamp()
+                    maxScore
                 };
 
-                await setDoc(doc(db, cfg.primaryCol, docId), termPayload, { merge: true });
-                alert(`✅ ບັນທຶກເທີມ "${term}" (${termRange}, ${totalPeriods} ຄາບ) ສຳເລັດແລ້ວ!`);
+                if (canUseFirestore) {
+                    await setDoc(doc(db, cfg.primaryCol, docId), {
+                        ...termPayload,
+                        updatedAt: serverTimestamp()
+                    }, { merge: true });
+                }
+
+                const mapped = cfg.mapDoc(termPayload, docId);
+                currentRecords = dedupeRecords("terms", [
+                    ...currentRecords.filter((r) => r.id !== docId),
+                    { ...mapped, _col: cfg.primaryCol }
+                ]);
+                saveTabCache("terms", currentRecords);
+                syncTermsCache(currentRecords);
+                renderTableBody();
+                alert(canUseFirestore ? `✅ ບັນທຶກເທີມ "${term}" (${termRange}, ${totalPeriods} ຄາບ) ສຳເລັດແລ້ວ!` : `✅ ບັນທຶກເທີມ "${term}" ໃນເຄື່ອງແລ້ວ!`);
             } else {
                 const payload = { ...formValues };
 
                 if (currentTab === "rooms") {
-                    const prereq = await checkPrerequisitesForRoom(payload.name);
                     payload.room = payload.name;
                     payload.grade = payload.name;
-                    payload.capacity = String(prereq.roomStudentCount || Number(payload.capacity || 0));
                 } else if (currentTab === "teachers") {
                     payload.teacherName = payload.name;
                     payload.email = cleanVal(formValues.email).toLowerCase();
@@ -1599,81 +1796,51 @@
                     ? currentRecords.find((r) => getDedupKey(currentTab, r) === candidateKey)
                     : null;
 
-                if (editingRecordId || matchedExisting) {
-                    const targetId = editingRecordId || matchedExisting.id;
-                    const targetCol = editingCollectionName || matchedExisting?._col || cfg.primaryCol;
-                    const prevRaw = matchedExisting?._raw || {};
-                    await setDoc(doc(db, targetCol, targetId), {
-                        ...prevRaw,
-                        ...payload,
-                        updatedAt: serverTimestamp()
-                    }, { merge: true });
+                let finalId = editingRecordId || matchedExisting?.id || ("LOCAL-" + Date.now());
+                const targetCol = editingCollectionName || matchedExisting?._col || cfg.primaryCol;
 
-                    if (currentTab === "rooms") {
-                        const mirrorId = "ROOM-" + cleanGrade(payload.name).replace(/[^\p{L}\p{N}_-]+/gu, "-") || targetId;
-                        await setDoc(doc(db, "classrooms", mirrorId), {
-                            id: mirrorId,
-                            firestoreId: mirrorId,
-                            name: payload.name,
-                            advisor: payload.advisor,
-                            phone: payload.phone,
-                            building: payload.level,
-                            studentCount: Number(payload.capacity || 0),
-                            note: payload.note || "",
+                if (canUseFirestore) {
+                    if (editingRecordId || matchedExisting) {
+                        const prevRaw = matchedExisting?._raw || {};
+                        await setDoc(doc(db, targetCol, finalId), {
+                            ...prevRaw,
+                            ...payload,
                             updatedAt: serverTimestamp()
                         }, { merge: true });
+                    } else {
+                        const docRef = await addDoc(collection(db, cfg.primaryCol), {
+                            ...payload,
+                            createdAt: serverTimestamp()
+                        });
+                        finalId = docRef.id;
                     }
-                    alert("✅ ອັບເດດຂໍ້ມູນ ສຳເລັດແລ້ວ!");
-                } else {
-                    const docRef = await addDoc(collection(db, cfg.primaryCol), {
-                        ...payload,
-                        createdAt: serverTimestamp()
-                    });
-
-                    if (currentTab === "rooms") {
-                        const mirrorId = "ROOM-" + cleanGrade(payload.name).replace(/[^\p{L}\p{N}_-]+/gu, "-") || docRef.id;
-                        await setDoc(doc(db, "classrooms", mirrorId), {
-                            id: mirrorId,
-                            firestoreId: mirrorId,
-                            name: payload.name,
-                            advisor: payload.advisor,
-                            phone: payload.phone,
-                            building: payload.level,
-                            studentCount: Number(payload.capacity || 0),
-                            note: payload.note || "",
-                            updatedAt: serverTimestamp()
-                        }, { merge: true });
-                    }
-
-                    if (currentTab === "students") {
-                        const stdDocId = "STD-" + Date.now();
-                        await setDoc(doc(db, "student_scores", stdDocId), {
-                            id: payload.studentCode || stdDocId,
-                            firestoreId: stdDocId,
-                            name: payload.name,
-                            grade: cleanGrade(payload.grade),
-                            totalCredits: 24,
-                            earnedCredits: 24,
-                            coursework: { attendance: 10, participation: 10, homework: 18, midterm: 20, final: 28 },
-                            annualAvg: 86,
-                            quarterScore: 21.5,
-                            updatedAt: serverTimestamp()
-                        }, { merge: true });
-                    }
-
-                    alert("✅ ເພີ່ມຂໍ້ມູນໃໝ່ສຳເລັດ ແລະ ອັບເດດໄປທຸກໜ້າແລ້ວ!");
                 }
+
+                const mapped = cfg.mapDoc(payload, finalId);
+                currentRecords = dedupeRecords(currentTab, [
+                    ...currentRecords.filter((r) => r.id !== finalId),
+                    { ...mapped, _col: targetCol }
+                ]);
+                saveTabCache(currentTab, currentRecords);
+                renderTableBody();
+                resetEditMode();
+                alert(canUseFirestore ? "✅ ບັນທຶກຂໍ້ມູນສຳເລັດແລ້ວ!" : "✅ ບັນທຶກຂໍ້ມູນໃນເຄື່ອງແລ້ວ!");
             }
 
             broadcastSystemDataUpdated(currentTab);
-            await loadTabData();
         } catch (err) {
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
             alert("❌ ບັນທຶກບໍ່ສຳເລັດ: " + err.message);
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
         }
     });
 
     if (userRole !== "student") {
-        loadTabData();
+        loadTabData(false);
     }
 </script>
 </body>
