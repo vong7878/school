@@ -244,27 +244,13 @@
 
 <div class="container" id="update-main-container">
     <div class="submenus">
-        <button type="button" class="submenu-btn active" data-tab="rooms" onclick="switchUpdateTab('rooms')">
-            🏫 1. ລາຍຊື່ຫ້ອງ
-        </button>
-        <button type="button" class="submenu-btn" data-tab="teachers" onclick="switchUpdateTab('teachers')">
-            👩‍🏫 2. ລາຍຊື່ຄູ
-        </button>
-        <button type="button" class="submenu-btn" data-tab="students" onclick="switchUpdateTab('students')">
-            🎓 3. ລາຍຊື່ນັກຮຽນ
-        </button>
-        <button type="button" class="submenu-btn" data-tab="schedules" onclick="switchUpdateTab('schedules')">
-            📅 4. ຕາຕະລາງສອນ (ວັນ-ອາທິດ)
-        </button>
-        <button type="button" class="submenu-btn" data-tab="scores" onclick="switchUpdateTab('scores')">
-            📊 5. ຄະແນນນັກຮຽນ
-        </button>
-        <button type="button" class="submenu-btn" data-tab="tuition" onclick="switchUpdateTab('tuition')">
-            💰 6. ລາຍການຄ່າຮຽນ
-        </button>
-        <button type="button" class="submenu-btn" data-tab="subjects" onclick="switchUpdateTab('subjects')">
-            📚 7. ວິຊາຮຽນ
-        </button>
+        <button type="button" class="submenu-btn active" data-tab="rooms" onclick="switchUpdateTab('rooms')">🏫 1. ລາຍຊື່ຫ້ອງ</button>
+        <button type="button" class="submenu-btn" data-tab="teachers" onclick="switchUpdateTab('teachers')">👩‍🏫 2. ລາຍຊື່ຄູ</button>
+        <button type="button" class="submenu-btn" data-tab="students" onclick="switchUpdateTab('students')">🎓 3. ລາຍຊື່ນັກຮຽນ</button>
+        <button type="button" class="submenu-btn" data-tab="schedules" onclick="switchUpdateTab('schedules')">📅 4. ຕາຕະລາງສອນ (ວັນ-ອາທິດ)</button>
+        <button type="button" class="submenu-btn" data-tab="scores" onclick="switchUpdateTab('scores')">📊 5. ຄະແນນນັກຮຽນ</button>
+        <button type="button" class="submenu-btn" data-tab="tuition" onclick="switchUpdateTab('tuition')">💰 6. ລາຍການຄ່າຮຽນ</button>
+        <button type="button" class="submenu-btn" data-tab="subjects" onclick="switchUpdateTab('subjects')">📚 7. ວິຊາຮຽນ</button>
     </div>
 
     <section class="panel">
@@ -321,33 +307,29 @@
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const SUBJECTS = ["ຄະນິດສາດ", "ຟີຊິກສາດ", "ເຄມີສາດ", "ຊີວະສາດ", "ພາສາລາວ", "ພາສາອັງກິດ", "ໄອທີ / ຄອມ"];
+    const DEFAULT_SUBJECTS = ["ຄະນິດສາດ", "ຟີຊິກສາດ", "ເຄມີສາດ", "ຊີວະສາດ", "ພາສາລາວ", "ພາສາອັງກິດ", "ໄອທີ / ຄອມ"];
+    let availableSubjects = [...DEFAULT_SUBJECTS];
 
     function cleanVal(v) {
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
     }
-
     function cleanGrade(v) {
         return cleanVal(v).replace(/\s+/g, "");
     }
-
     function boundNum(v, min, max, fallback = 0) {
         const n = Number(v);
         if (!Number.isFinite(n)) return fallback;
         return Math.max(min, Math.min(max, n));
     }
-
     function escapeHtml(str) {
         return String(str ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;");
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
     function computeAnnualAverage(data) {
         const map = data.courseworkBySubject || {};
-        const totals = SUBJECTS.map((subj) => {
+        const totals = availableSubjects.map((subj) => {
             const cw = map[subj] || data.coursework || {};
             return boundNum(cw.attendance, 0, 10, 8)
                 + boundNum(cw.participation, 0, 10, 8)
@@ -370,16 +352,18 @@
         document.getElementById("access-denied").style.display = "block";
     }
 
-    const SUBJECT_SCORE_FIELDS = [
-        { name: "studentName", label: "ຊື່ນັກຮຽນ", type: "text", required: true, placeholder: "ສົມໃຈ ໃຈດີ" },
-        { name: "room", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.5" },
-        { name: "subject", label: "ວິຊາ", type: "select", required: true, options: SUBJECTS },
-        { name: "attendance", label: "ຄະແນນການມາຮຽນ (0-10)", type: "number", required: true, placeholder: "10", min: 0, max: 10, step: "0.5" },
-        { name: "participation", label: "ຄະແນນການມີສ່ວນຮ່ວມ (0-10)", type: "number", required: true, placeholder: "10", min: 0, max: 10, step: "0.5" },
-        { name: "homework", label: "ຄະແນນບົດເຝິກຫັດ (0-20)", type: "number", required: true, placeholder: "18", min: 0, max: 20, step: "0.5" },
-        { name: "midterm", label: "ຄະແນນສອບເສັງກາງພາກ (0-25)", type: "number", required: true, placeholder: "20", min: 0, max: 25, step: "0.5" },
-        { name: "final", label: "ຄະແນນສອບເສັງທ້າຍພາກ (0-35)", type: "number", required: true, placeholder: "28", min: 0, max: 35, step: "0.5" }
-    ];
+    function getSubjectScoreFields() {
+        return [
+            { name: "studentName", label: "ຊື່ນັກຮຽນ", type: "text", required: true, placeholder: "ສົມໃຈ ໃຈດີ" },
+            { name: "room", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.5" },
+            { name: "subject", label: "ວິຊາ", type: "select", required: true, options: availableSubjects },
+            { name: "attendance", label: "ຄະແນນການມາຮຽນ (0-10)", type: "number", required: true, placeholder: "10", min: 0, max: 10, step: "0.5" },
+            { name: "participation", label: "ຄະແນນການມີສ່ວນຮ່ວມ (0-10)", type: "number", required: true, placeholder: "10", min: 0, max: 10, step: "0.5" },
+            { name: "homework", label: "ຄະແນນບົດເຝິກຫັດ (0-20)", type: "number", required: true, placeholder: "18", min: 0, max: 20, step: "0.5" },
+            { name: "midterm", label: "ຄະແນນສອບເສັງກາງພາກ (0-25)", type: "number", required: true, placeholder: "20", min: 0, max: 25, step: "0.5" },
+            { name: "final", label: "ຄະແນນສອບເສັງທ້າຍພາກ (0-35)", type: "number", required: true, placeholder: "28", min: 0, max: 35, step: "0.5" }
+        ];
+    }
 
     const ANNUAL_SCORE_FIELDS = [
         { name: "studentName", label: "ຊື່ນັກຮຽນ", type: "text", required: true, placeholder: "ສົມໃຈ ໃຈດີ" },
@@ -495,7 +479,7 @@
             title: "📊 5. ຄະແນນນັກຮຽນ (ລາຍວິຊາ & ສະເລ່ຍໝົດປີ)",
             collections: ["student_scores"],
             primaryCol: "student_scores",
-            getFields: (subMode) => subMode === "annual" ? ANNUAL_SCORE_FIELDS : SUBJECT_SCORE_FIELDS,
+            getFields: (subMode) => subMode === "annual" ? ANNUAL_SCORE_FIELDS : getSubjectScoreFields(),
             columns: [
                 { key: "studentName", label: "ຊື່ນັກຮຽນ" },
                 { key: "room", label: "ຫ້ອງ" },
@@ -589,6 +573,22 @@
     let currentRecords = [];
     let editingRecordId = null;
     let editingCollectionName = null;
+
+    async function refreshSubjectsFromFirestore() {
+        try {
+            const snap = await getDocs(collection(db, "subjects"));
+            if (!snap.empty) {
+                const dbSubjs = snap.docs
+                    .map((d) => cleanVal(d.data().name || d.data().subjectName || d.data().subject))
+                    .filter(Boolean);
+                if (dbSubjs.length) {
+                    availableSubjects = Array.from(new Set([...DEFAULT_SUBJECTS, ...dbSubjs]));
+                }
+            }
+        } catch (err) {
+            console.warn(err);
+        }
+    }
 
     function getActiveFields() {
         const cfg = TAB_CONFIGS[currentTab];
@@ -694,7 +694,7 @@
     function populateScoreFormFromRecord(target) {
         const raw = target._raw || {};
         const subjSelect = document.getElementById("fld-subject");
-        const activeSubj = cleanVal(subjSelect?.value) || SUBJECTS[0];
+        const activeSubj = cleanVal(subjSelect?.value) || availableSubjects[0];
         const cw = (raw.courseworkBySubject && raw.courseworkBySubject[activeSubj]) || raw.coursework || {};
 
         const setVal = (name, val) => {
@@ -719,6 +719,7 @@
     }
 
     async function loadTabData() {
+        await refreshSubjectsFromFirestore();
         const cfg = TAB_CONFIGS[currentTab];
         document.getElementById("active-tab-title").textContent = cfg.title;
         document.getElementById("score-sub-bar").style.display = currentTab === "scores" ? "flex" : "none";
@@ -794,6 +795,7 @@
 
         try {
             await deleteDoc(doc(db, targetCol, recordId));
+            if (currentTab === "subjects") await refreshSubjectsFromFirestore();
             broadcastSystemDataUpdated(currentTab);
             await loadTabData();
             alert("🗑️ ລົບຂໍ້ມູນສຳເລັດ!");
@@ -831,7 +833,7 @@
                 let earnedCredits = prevRaw.earnedCredits ?? 24;
 
                 if (currentScoreSubMode === "subject") {
-                    const subj = cleanVal(formValues.subject) || SUBJECTS[0];
+                    const subj = cleanVal(formValues.subject) || availableSubjects[0];
                     updatedCourseworkBySubject[subj] = {
                         attendance: boundNum(formValues.attendance, 0, 10, 0),
                         participation: boundNum(formValues.participation, 0, 10, 0),
