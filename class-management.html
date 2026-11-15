@@ -246,7 +246,7 @@
             </table>
         </div>
         <div class="note-text">
-            * ສ່ວນທີ 3 (ຕາຕະລາງສອນ) ຖືກຊ່ອນຈາກນັກຮຽນ; ການເພີ່ມ/ແກ້ໄຂ/ລົບຂໍ້ມູນໃຫ້ຈັດການທີ່ ໜ້າ 12. ອັບເດດລະບົບ (ເມນູ 4. ຕາຕະລາງສອນ).
+            * ສ່ວນທີ 3 (ຕາຕະລາງສອນ) ຖືກຊ່ອນຈາກນັກຮຽນ; ເມື່ອອັບເດດໃນ ໜ້າ 12 (ເມນູ 4) ທັງຕາຕະລາງຮຽນ (ສ່ວນທີ 2) ແລະ ຕາຕະລາງສອນ (ສ່ວນທີ 3) ຈະອັບເດດຕາມອັດຕະໂນມັດ.
         </div>
     </section>
 </div>
@@ -279,6 +279,7 @@
     const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
     const SYNC_EVENT_NAME = "school-data-updated";
     const TEACHING_COLS = ["weekly_schedules", "timetables", "teaching_schedules", "schedules"];
+    const DAYS_ORDER = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"];
 
     function cleanVal(v) {
         if (Array.isArray(v)) return v.map(cleanVal).filter(Boolean).join(", ");
@@ -289,6 +290,15 @@
         return cleanVal(v)
             .replace(/^ຫ້ອງ\s*/i, "")
             .replace(/\s+/g, "");
+    }
+
+    function cleanDay(v) {
+        return cleanVal(v).replace(/^ວັນ/i, "").trim();
+    }
+
+    function parsePeriodNum(v) {
+        const m = String(v ?? "").match(/[1-4]/);
+        return m ? Number(m[0]) : null;
     }
 
     function resolveRole() {
@@ -333,7 +343,7 @@
         return `<div><strong>${subjText}</strong>${tchText}</div>`;
     }
 
-    function normalizeTeachingItem(docId, raw = {}) {
+    function normalizeScheduleEntry(docId, raw = {}) {
         const teacher = cleanVal(
             raw.teacher || raw.teacherName || raw.instructor || raw.advisor || raw.name || ""
         );
@@ -343,21 +353,24 @@
         const grade = cleanGrade(
             raw.room || raw.grade || raw.roomName || raw.className || ""
         );
-
-        const weekPart = cleanVal(raw.week || "");
-        const dayPart = cleanVal(raw.day || raw.days || "").replace(/^ວັນ/, "");
+        const week = cleanVal(raw.week || "");
+        const day = cleanDay(raw.day || raw.days || "");
         const periodRaw = cleanVal(raw.period || raw.periods || "");
-        const periodPart = periodRaw ? (periodRaw.includes("ຊົ່ວໂມງ") ? periodRaw : `ຊົ່ວໂມງທີ ${periodRaw}`) : "";
+        const periodNum = parsePeriodNum(periodRaw);
+        const periodLabel = periodRaw ? (periodRaw.includes("ຊົ່ວໂມງ") ? periodRaw : `ຊົ່ວໂມງທີ ${periodRaw}`) : "";
         const timePart = cleanVal(raw.time || raw.timeRange || "");
 
         const schedule = cleanVal(raw.schedule || raw.scheduleText) ||
-            [dayPart, periodPart, timePart, weekPart ? `(${weekPart})` : ""].filter(Boolean).join(" • ") || "-";
+            [day, periodLabel, timePart, week ? `(${week})` : ""].filter(Boolean).join(" • ") || "-";
 
         return {
             id: cleanVal(raw.id) || docId,
             teacher,
             subject,
             grade,
+            week,
+            day,
+            periodNum,
             schedule
         };
     }
@@ -419,18 +432,54 @@
         }).join("");
     };
 
-    // -------------------- 2. ຕາຕະລາງຮຽນ --------------------
-    const defaultClassTimetables = {
-        "ມ.5": [
-            { id: "C5-1", day: "ຈັນ", p1: "ຄະນິດສາດ", t1: "ອ. ຄຳຜາຍ ສີສະຫວັດ", p2: "ຟີຊິກສາດ", t2: "ອ. ສຸກສາຄອນ ແສງດາວ", p3: "ພາສາລາວ", t3: "ອ. ບົວໄລ ພົມມະຈັນ", p4: "ພາສາອັງກິດ", t4: "ອ. ວັນນາ ໄຊຍະວົງ" },
-            { id: "C5-2", day: "ອັງຄານ", p1: "ເຄມີສາດ", t1: "ອ. ພອນໄຊ ແກ້ວປະເສີດ", p2: "ຊີວະສາດ", t2: "ອ. ຈັນທາ ວົງສະຫວັດ", p3: "ປະຫວັດສາດ", t3: "ອ. ແສງທອງ ສີບຸນເຮືອງ", p4: "ໄອທີ / ຄອມ", t4: "ອ. ສາຍສະຖອນ ວົງວິໄລ" },
-            { id: "C5-3", day: "ພຸດ", p1: "ຄະນິດສາດ", t1: "ອ. ຄຳຜາຍ ສີສະຫວັດ", p2: "ພູມສາດ", t2: "ອ. ທອງສຸກ ມະນີວົງ", p3: "ພາສາອັງກິດ", t3: "ອ. ວັນນາ ໄຊຍະວົງ", p4: "ພະລະສຶກສາ", t4: "ອ. ສົມພອນ ດວງມາລາ" },
-            { id: "C5-4", day: "ພະຫັດ", p1: "ຟີຊິກສາດ", t1: "ອ. ສຸກສາຄອນ ແສງດາວ", p2: "ເຄມີສາດ", t2: "ອ. ພອນໄຊ ແກ້ວປະເສີດ", p3: "ພາສາລາວ", t3: "ອ. ບົວໄລ ພົມມະຈັນ", p4: "ສຶກສາພົນລະເມືອງ", t4: "ອ. ຄຳດີ ສຸວັນນະວົງ" },
-            { id: "C5-5", day: "ສຸກ", p1: "ຄະນິດສາດ", t1: "ອ. ຄຳຜາຍ ສີສະຫວັດ", p2: "ຊີວະສາດ", t2: "ອ. ຈັນທາ ວົງສະຫວັດ", p3: "ກິດຈະກຳຫ້ອງ", t3: "ອ. ປະຈຳຫ້ອງ ມ.5", p4: "ສະຫຼຸບປະຈຳອາທິດ", t4: "ອ. ປະຈຳຫ້ອງ ມ.5" }
-        ]
-    };
+    // -------------------- 2. ຕາຕະລາງຮຽນ (ປະກອບຈາກ weekly_schedules + class_timetables) --------------------
+    let rawScheduleEntries = [];
+    let classTimetables = JSON.parse(localStorage.getItem("school_class_timetables") || "null") || {};
 
-    let classTimetables = JSON.parse(localStorage.getItem("school_class_timetables") || "null") || defaultClassTimetables;
+    function buildRowsForGrade(gradeKey) {
+        const g = cleanGrade(gradeKey);
+        const dayMap = new Map();
+
+        const baseRows = Array.isArray(classTimetables[g]) ? classTimetables[g] : [];
+        baseRows.forEach((r) => {
+            const dName = cleanDay(r.day);
+            if (!dName) return;
+            dayMap.set(dName, {
+                day: dName,
+                p1: r.p1 || "-", t1: r.t1 || "",
+                p2: r.p2 || "-", t2: r.t2 || "",
+                p3: r.p3 || "-", t3: r.t3 || "",
+                p4: r.p4 || "-", t4: r.t4 || ""
+            });
+        });
+
+        // ທັບດ້ວຍຂໍ້ມູນລ່າສຸດຈາກຕາຕະລາງສອນ (weekly_schedules) ຂອງຫ້ອງນັ້ນ
+        rawScheduleEntries
+            .filter((entry) => cleanGrade(entry.grade) === g && entry.day && entry.periodNum)
+            .forEach((entry) => {
+                if (!dayMap.has(entry.day)) {
+                    dayMap.set(entry.day, {
+                        day: entry.day,
+                        p1: "-", t1: "",
+                        p2: "-", t2: "",
+                        p3: "-", t3: "",
+                        p4: "-", t4: ""
+                    });
+                }
+                const row = dayMap.get(entry.day);
+                row[`p${entry.periodNum}`] = entry.subject || "-";
+                row[`t${entry.periodNum}`] = entry.teacher || "";
+            });
+
+        return Array.from(dayMap.values()).sort((a, b) => {
+            const ia = DAYS_ORDER.indexOf(a.day);
+            const ib = DAYS_ORDER.indexOf(b.day);
+            if (ia === -1 && ib === -1) return a.day.localeCompare(b.day);
+            if (ia === -1) return 1;
+            if (ib === -1) return -1;
+            return ia - ib;
+        });
+    }
 
     window.renderClassTimetable = function () {
         const selectEl = document.getElementById("classTimetableGrade");
@@ -446,12 +495,11 @@
             selectEl.disabled = true;
         }
 
-        if (!classTimetables[g]) classTimetables[g] = [];
         if (titleEl) titleEl.textContent = `📅 2. ຕາຕະລາງຮຽນ (${g})`;
 
-        const rows = classTimetables[g];
+        const rows = buildRowsForGrade(g);
         if (!rows.length) {
-            tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນ</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນສຳລັບຫ້ອງ ${esc(g)}</td></tr>`;
             return;
         }
 
@@ -500,8 +548,8 @@
         `).join("");
     };
 
-    async function syncTeachingFromAllCollections() {
-        if (!db || isStudent) return;
+    async function syncSchedulesFromAllCollections() {
+        if (!db) return;
         const collected = [];
         const seenKeys = new Set();
 
@@ -509,9 +557,9 @@
             try {
                 const snap = await getDocs(collection(db, colName));
                 snap.forEach((d) => {
-                    const norm = normalizeTeachingItem(d.id, d.data() || {});
+                    const norm = normalizeScheduleEntry(d.id, d.data() || {});
                     if (!norm.teacher && !norm.subject && norm.schedule === "-") return;
-                    const dedupKey = `${norm.teacher}|${norm.subject}|${norm.grade}|${norm.schedule}`.toLowerCase();
+                    const dedupKey = `${norm.week}|${norm.day}|${norm.periodNum}|${norm.grade}|${norm.subject}|${norm.teacher}`.toLowerCase();
                     if (!seenKeys.has(dedupKey)) {
                         seenKeys.add(dedupKey);
                         collected.push(norm);
@@ -520,9 +568,11 @@
             } catch (e) {}
         }
 
+        rawScheduleEntries = collected;
         teachingSchedules = collected;
         saveTeachingSchedules();
         renderTeachingTimetable();
+        renderClassTimetable();
     }
 
     async function loadFromFirestoreIfAvailable() {
@@ -551,11 +601,10 @@
                     }
                 });
                 localStorage.setItem("school_class_timetables", JSON.stringify(classTimetables));
-                renderClassTimetable();
             }
         } catch (err) {}
 
-        await syncTeachingFromAllCollections();
+        await syncSchedulesFromAllCollections();
     }
 
     if (db) {
@@ -579,12 +628,10 @@
             }
         }, () => {});
 
-        if (!isStudent) {
-            for (const colName of TEACHING_COLS) {
-                onSnapshot(collection(db, colName), () => {
-                    syncTeachingFromAllCollections();
-                }, () => {});
-            }
+        for (const colName of TEACHING_COLS) {
+            onSnapshot(collection(db, colName), () => {
+                syncSchedulesFromAllCollections();
+            }, () => {});
         }
     }
 
