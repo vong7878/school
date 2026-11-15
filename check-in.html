@@ -2,75 +2,107 @@
 <html lang="lo">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>📋 5. ຈັດການການມາຮຽນ (ຕາມຈຳນວນຄາບ)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        * { box-sizing: border-box; }
-        body {
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
             margin: 0;
+            padding: 0;
             font-family: 'Noto Sans Lao', sans-serif;
             background: #0f172a;
             color: #e2e8f0;
-            padding: 16px;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+        body {
+            padding: 12px;
         }
         .container {
             max-width: 1180px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 12px;
+            width: 100%;
+            min-width: 0;
         }
         .topbar {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            padding: 14px 18px;
+            padding: 12px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
+            min-width: 0;
+            width: 100%;
         }
         .topbar-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             flex-wrap: wrap;
+            min-width: 0;
+            flex: 1 1 auto;
         }
         .back-btn, a.btn-link {
             background: #334155;
             color: #f8fafc;
             text-decoration: none;
-            padding: 8px 14px;
+            padding: 7px 11px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 12.5px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+            white-space: nowrap;
+            max-width: 100%;
         }
         .back-btn:hover, a.btn-link:hover { background: #475569; }
-        .btn-upd { background: #2563eb; color: #fff; padding: 7px 12px; font-size: 13px; }
+        .btn-upd { background: #2563eb; color: #fff; padding: 7px 11px; font-size: 12.5px; }
         .btn-upd:hover { background: #1d4ed8; }
         .page-title {
             margin: 0;
-            font-size: 18px;
+            font-size: clamp(14.5px, 4.2vw, 18px);
             font-weight: 700;
             color: #f8fafc;
+            line-height: 1.3;
+            min-width: 0;
+            overflow-wrap: anywhere;
         }
         .user-meta {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 13px;
+            gap: 6px;
+            font-size: 12px;
             flex-wrap: wrap;
+            min-width: 0;
+            max-width: 100%;
+        }
+        #currentUserName {
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .badge {
-            padding: 4px 10px;
+            padding: 4px 9px;
             border-radius: 999px;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11.5px;
+            white-space: nowrap;
         }
         .badge-role-admin { background: #dc2626; color: #fff; }
         .badge-role-teacher { background: #7c3aed; color: #fff; }
@@ -78,65 +110,104 @@
         .badge-grade { background: #0f766e; color: #ccfbf1; }
         .badge-fb { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
 
+        .quota-banner {
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: #fde68a;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 12px;
+            line-height: 1.4;
+            display: none;
+            overflow-wrap: anywhere;
+        }
+        .quota-banner.show {
+            display: block;
+        }
+
         .card {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            padding: 18px;
+            padding: 14px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            min-width: 0;
+            width: 100%;
         }
         .card-header {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: stretch;
             gap: 10px;
-            padding-bottom: 12px;
-            margin-bottom: 14px;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
             border-bottom: 1px solid #334155;
+            min-width: 0;
         }
         .card-header h2 {
             margin: 0;
-            font-size: 16px;
+            font-size: clamp(14px, 3.9vw, 16px);
             font-weight: 700;
             color: #f8fafc;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
         }
         .controls {
-            display: flex;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
             gap: 8px;
-            flex-wrap: wrap;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
         }
         select, input {
             background: #0f172a;
             color: #f8fafc;
             border: 1px solid #475569;
             border-radius: 8px;
-            padding: 7px 11px;
+            padding: 8px 10px;
             font-family: inherit;
             font-size: 13px;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #ef4444;
+            cursor: pointer;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #38bdf8;
         }
         button {
             font-family: inherit;
             border: none;
             border-radius: 8px;
-            padding: 7px 12px;
-            font-size: 13px;
+            padding: 8px 12px;
+            font-size: 12.5px;
             font-weight: 600;
             cursor: pointer;
+            max-width: 100%;
         }
         button:hover { opacity: 0.92; }
-        .btn-save { background: #16a34a; color: #fff; }
-        .btn-sync { background: #0284c7; color: #fff; }
-        .btn-del { background: #dc2626; color: #fff; padding: 5px 9px; font-size: 12px; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-save { background: #16a34a; color: #fff; white-space: nowrap; }
+        .btn-sync { background: #0284c7; color: #fff; white-space: nowrap; }
+        .btn-del { background: #dc2626; color: #fff; padding: 5px 9px; font-size: 11.5px; white-space: nowrap; }
 
         .deduct-info {
             font-size: 12px;
             color: #93c5fd;
             background: #0f172a;
             border: 1px solid #334155;
-            padding: 6px 10px;
+            padding: 7px 10px;
             border-radius: 8px;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+            min-width: 0;
         }
         .deduct-val {
             color: #f87171;
@@ -146,16 +217,18 @@
             background: rgba(37, 99, 235, 0.22);
             color: #93c5fd;
             border: 1px solid #3b82f6;
-            padding: 3px 10px;
+            padding: 3px 9px;
             border-radius: 999px;
             font-weight: 700;
-            font-size: 12px;
+            font-size: 11.5px;
             display: inline-block;
+            white-space: nowrap;
         }
 
         .table-wrap {
             width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         table {
             width: 100%;
@@ -164,18 +237,21 @@
         }
         th, td {
             border: 1px solid #334155;
-            padding: 10px 12px;
+            padding: 9px 11px;
             text-align: left;
             font-size: 13px;
+            line-height: 1.35;
         }
         th {
             background: #0f172a;
             color: #93c5fd;
             font-weight: 700;
+            white-space: nowrap;
         }
         td {
             background: #162032;
             color: #e2e8f0;
+            overflow-wrap: anywhere;
         }
         tr:hover td { background: #24334d; }
         .center { text-align: center; }
@@ -185,8 +261,10 @@
             border: 1px solid #ef4444;
             padding: 3px 8px;
             border-radius: 999px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
+            display: inline-block;
+            white-space: nowrap;
         }
         .status-present {
             background: rgba(34, 197, 94, 0.18);
@@ -194,10 +272,170 @@
             border: 1px solid #22c55e;
             padding: 3px 8px;
             border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 600;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .note-text {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 8px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        /* Mobile Card List */
+        .mobile-cards {
+            display: none;
+            flex-direction: column;
+            gap: 9px;
+            width: 100%;
+            min-width: 0;
+        }
+        .att-card {
+            background: #162032;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 10px 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            width: 100%;
+            min-width: 0;
+        }
+        .att-card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid #26354d;
+            min-width: 0;
+        }
+        .att-card-head > div:first-child {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .att-card-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #f8fafc;
+            overflow-wrap: anywhere;
+            line-height: 1.35;
+        }
+        .att-card-sub {
+            font-size: 11.5px;
+            color: #94a3b8;
+            margin-top: 2px;
+            overflow-wrap: anywhere;
+        }
+        .att-card-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 12px;
+            min-width: 0;
+        }
+        .att-card-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            min-width: 0;
+        }
+        .att-card-label {
+            color: #94a3b8;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .att-card-val {
+            text-align: right;
+            color: #e2e8f0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .att-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #26354d;
+            flex-wrap: wrap;
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 14px;
+            left: 50%;
+            transform: translate(-50%, 12px);
+            background: #1e293b;
+            border: 1px solid #38bdf8;
+            color: #f8fafc;
+            padding: 9px 13px;
+            border-radius: 10px;
             font-size: 12px;
             font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+            z-index: 1200;
+            opacity: 0;
+            transition: 0.2s;
+            pointer-events: none;
+            max-width: calc(100% - 20px);
+            text-align: center;
+            overflow-wrap: anywhere;
         }
-        .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+        .toast-msg.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 10px;
+                gap: 8px;
+            }
+            .topbar-left, .user-meta {
+                width: 100%;
+            }
+            .user-meta {
+                justify-content: space-between;
+            }
+            #currentUserName {
+                max-width: 150px;
+            }
+            .card {
+                padding: 10px;
+                border-radius: 12px;
+            }
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            .btn-save, .btn-sync {
+                width: 100%;
+                text-align: center;
+            }
+            .table-wrap { display: none; }
+            .mobile-cards { display: flex; }
+        }
+
+        @media (max-width: 380px) {
+            body { padding: 6px; }
+            .back-btn, a.btn-link {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+            #currentUserName { max-width: 110px; }
+            .att-card { padding: 9px; }
+            .att-card-head { flex-direction: column; align-items: stretch; gap: 5px; }
+        }
+
         /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
         #fbSyncBadge,
         .badge-fb,
@@ -223,6 +461,10 @@
             <span id="currentUserRole" class="badge badge-role-student">STUDENT</span>
             <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
         </div>
+    </div>
+
+    <div class="quota-banner" id="quotaBanner">
+        ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບກຳລັງໃຊ້ຂໍ້ມູນທີ່ເກັບໃນເຄື່ອງ (`localStorage`) ແລະ ຫຼຸດການເອີ້ນຖານຂໍ້ມູນອັດຕະໂນມັດ.
     </div>
 
     <!-- 1. ກວດລາຍຊື່ນັກຮຽນຂາດຮຽນ -->
@@ -270,6 +512,7 @@
                 <tbody id="checkAbsentBody"></tbody>
             </table>
         </div>
+        <div class="mobile-cards" id="checkAbsentCards"></div>
         <div class="note-text" id="checkAbsentPermissionNote"></div>
     </section>
 
@@ -279,7 +522,7 @@
             <h2 id="termScoreTitle">🎯 ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ</h2>
             <div class="controls">
                 <span class="deduct-info" id="termFormulaInfo">ຄະແນນເຕັມ: <strong>20</strong> • ຄາບທັງໝົດ: <strong>40 ຄາບ</strong> • ຄິດຕາມອັດຕາສ່ວນການມາຮຽນ</span>
-                <button type="button" class="btn-sync" onclick="loadAbsentFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
+                <button type="button" class="btn-sync" id="syncBtn" onclick="loadAbsentFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
             </div>
         </div>
         <div class="table-wrap">
@@ -298,6 +541,7 @@
                 <tbody id="termScoreSummaryBody"></tbody>
             </table>
         </div>
+        <div class="mobile-cards" id="termScoreSummaryCards"></div>
     </section>
 
     <!-- 2. ສະຫຼຸບວັນຂາດປະຈຳອາທິດພ້ອມຕັດຄະແນນ -->
@@ -331,6 +575,7 @@
                 <tbody id="weeklySummaryBody"></tbody>
             </table>
         </div>
+        <div class="mobile-cards" id="weeklySummaryCards"></div>
     </section>
 
     <!-- 3. ສະຫຼຸບວັນຂາດປະຈຳເດືອນພ້ອມຕັດຄະແນນ -->
@@ -365,6 +610,7 @@
                 <tbody id="monthlySummaryBody"></tbody>
             </table>
         </div>
+        <div class="mobile-cards" id="monthlySummaryCards"></div>
     </section>
 
     <!-- 4. ກວດເບິ່ງລາຍຊື່ຄົນຂາດໃນຊົ່ວໂມງນັ້ນ -->
@@ -406,14 +652,17 @@
                 <tbody id="periodAbsentBody"></tbody>
             </table>
         </div>
+        <div class="mobile-cards" id="periodAbsentCards"></div>
         <div class="note-text" id="historyScopeNote"></div>
     </section>
 </div>
 
+<div class="toast-msg" id="toastMsg"></div>
+
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, onSnapshot, setDoc, deleteDoc, doc
+        getFirestore, collection, getDocs, setDoc, deleteDoc, doc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -438,6 +687,43 @@
     const SYNC_EVENT_NAME = "school-data-updated";
     const DEFAULT_GRADES = ["ມ.1", "ມ.2", "ມ.3", "ມ.4", "ມ.5", "ມ.6", "ມ.7"];
     const GRADE_SELECT_IDS = ["checkGrade", "weeklyGrade", "monthlyGrade", "historyGrade"];
+
+    const LAST_FETCH_TS_KEY = "school_checkin_last_fetch_ts";
+    const QUOTA_BLOCK_UNTIL_KEY = "school_firestore_quota_blocked_until";
+    const FETCH_COOLDOWN_MS = 60000;
+    const QUOTA_COOLDOWN_MS = 1800000;
+
+    function showToast(message) {
+        const el = document.getElementById("toastMsg");
+        if (!el) return;
+        el.textContent = message;
+        el.classList.add("show");
+        clearTimeout(showToast._timer);
+        showToast._timer = setTimeout(() => {
+            el.classList.remove("show");
+        }, 3200);
+    }
+
+    function isQuotaError(err) {
+        const code = String(err?.code || "").toLowerCase();
+        const msg = String(err?.message || "").toLowerCase();
+        return (
+            code.includes("resource-exhausted") ||
+            msg.includes("quota") ||
+            msg.includes("resource exhausted") ||
+            msg.includes("daily usage")
+        );
+    }
+
+    function setQuotaNotice(active) {
+        const banner = document.getElementById("quotaBanner");
+        if (!banner) return;
+        if (active) {
+            banner.classList.add("show");
+        } else {
+            banner.classList.remove("show");
+        }
+    }
 
     function cleanVal(v) {
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
@@ -599,18 +885,29 @@
             localStorage.setItem("school_attendance_scores_20", JSON.stringify(summaries));
         } catch (e) {}
 
+        broadcastSystemDataUpdated("scores");
+
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (Date.now() < blockedUntil) {
+            setQuotaNotice(true);
+            return;
+        }
+
         for (const item of summaries) {
             const docId = encodeURIComponent(`${item.studentId}_${item.grade}_${item.term}`);
             try {
                 await setDoc(doc(db, "attendance_scores", docId), item, { merge: true });
             } catch (err) {
-                console.warn("ບໍ່ໄດ້ບັນທຶກ attendance_scores:", err.message);
+                if (isQuotaError(err)) {
+                    localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                    setQuotaNotice(true);
+                    break;
+                }
             }
         }
-        broadcastSystemDataUpdated("scores");
     }
 
-    async function syncAllRoomSelects(extraRooms = [], preserveCurrent = true) {
+    function syncAllRoomSelects(extraRooms = [], preserveCurrent = true) {
         const roomMap = new Map();
         const addRoom = (rawName) => {
             const cleaned = cleanVal(rawName).replace(/^ຫ້ອງ\s*/i, "");
@@ -624,16 +921,6 @@
         const studentRooms = studentsList.map((s) => s.grade);
         const absentRooms = absentRecords.map((r) => r.grade);
         [...DEFAULT_GRADES, userGrade, ...studentRooms, ...absentRooms, ...extraRooms].forEach(addRoom);
-
-        for (const colName of ["classrooms", "rooms"]) {
-            try {
-                const snap = await getDocs(collection(db, colName));
-                snap.forEach((d) => {
-                    const data = d.data() || {};
-                    addRoom(data.name || data.roomName || data.room || data.grade);
-                });
-            } catch (err) {}
-        }
 
         const roomList = Array.from(roomMap.values());
         GRADE_SELECT_IDS.forEach((id) => {
@@ -676,12 +963,12 @@
         });
     }
 
-    async function setupRolePermissions() {
+    function setupRolePermissions() {
         document.getElementById("checkDate").value = todayStr;
         document.getElementById("historyDate").value = todayStr;
         document.getElementById("monthlyPicker").value = currentMonthStr;
 
-        await syncAllRoomSelects([], false);
+        syncAllRoomSelects([], false);
 
         document.getElementById("btnSaveAbsent").style.display = PERMISSIONS.canMarkAttendance ? "inline-block" : "none";
         document.getElementById("historyActionCol").style.display = PERMISSIONS.canDeleteRecord ? "" : "none";
@@ -704,18 +991,31 @@
         }
     }
 
+    window.syncMobileAbsentState = function (sid) {
+        const cb = document.querySelector(`.absent-cb[data-sid="${CSS.escape(sid)}"]`);
+        const reasonInput = document.querySelector(`.absent-reason[data-sid="${CSS.escape(sid)}"]`);
+        const mCb = document.querySelector(`.mobile-absent-cb[data-sid="${CSS.escape(sid)}"]`);
+        const mReason = document.querySelector(`.mobile-absent-reason[data-sid="${CSS.escape(sid)}"]`);
+        if (cb && mCb) cb.checked = mCb.checked;
+        if (reasonInput && mReason) reasonInput.value = mReason.value;
+    };
+
     window.renderCheckAbsentList = function () {
         const termVal = document.getElementById("checkTerm").value;
         const dateVal = document.getElementById("checkDate").value || todayStr;
         const gradeVal = getActiveGrade("checkGrade");
         const periodVal = document.getElementById("checkPeriod").value;
         const tbody = document.getElementById("checkAbsentBody");
+        const cards = document.getElementById("checkAbsentCards");
 
         const roomStudents = studentsList.filter((s) => isSameGrade(s.grade, gradeVal));
         if (!roomStudents.length) {
             tbody.innerHTML = `<tr><td colspan="6" class="center">ບໍ່ມີລາຍຊື່ນັກຮຽນໃນຫ້ອງ ${esc(gradeVal)}</td></tr>`;
+            cards.innerHTML = `<div class="att-card" style="text-align:center;color:#94a3b8;">ບໍ່ມີລາຍຊື່ນັກຮຽນໃນຫ້ອງ ${esc(gradeVal)}</div>`;
             return;
         }
+
+        const disabledAttr = PERMISSIONS.canMarkAttendance ? "" : "disabled";
 
         tbody.innerHTML = roomStudents.map((s, idx) => {
             const existing = absentRecords.find(
@@ -729,7 +1029,6 @@
             );
             const checkedAttr = existing ? "checked" : "";
             const reasonVal = existing ? existing.reason || "" : "";
-            const disabledAttr = PERMISSIONS.canMarkAttendance ? "" : "disabled";
 
             return `
                 <tr>
@@ -744,6 +1043,41 @@
                         <input type="text" class="absent-reason" data-sid="${esc(s.id)}" value="${esc(reasonVal)}" placeholder="ເຊັ່ນ: ຂາດບໍ່ແຈ້ງ, ລາປ່ວຍ..." ${disabledAttr} style="width: 100%;" />
                     </td>
                 </tr>
+            `;
+        }).join("");
+
+        cards.innerHTML = roomStudents.map((s, idx) => {
+            const existing = absentRecords.find(
+                (r) =>
+                    cleanVal(r.term || "ເທີມ 1 / 2026-2027") === cleanVal(termVal) &&
+                    r.date === dateVal &&
+                    isSameGrade(r.grade, gradeVal) &&
+                    r.period === periodVal &&
+                    ((s.id && cleanVal(r.studentId) === cleanVal(s.id)) ||
+                     (s.name && cleanVal(r.studentName || r.name) === cleanVal(s.name)))
+            );
+            const checkedAttr = existing ? "checked" : "";
+            const reasonVal = existing ? existing.reason || "" : "";
+
+            return `
+                <div class="att-card">
+                    <div class="att-card-head">
+                        <div>
+                            <div class="att-card-name">#${idx + 1} • ${esc(s.name)}</div>
+                            <div class="att-card-sub">ລະຫັດ: ${esc(s.id)}</div>
+                        </div>
+                        <span class="score-pill">ຫ້ອງ ${esc(s.grade)}</span>
+                    </div>
+                    <div class="att-card-rows">
+                        <div class="att-card-row">
+                            <span class="att-card-label">❌ ຂາດຮຽນ:</span>
+                            <input type="checkbox" class="mobile-absent-cb" data-sid="${esc(s.id)}" ${checkedAttr} ${disabledAttr} onchange="syncMobileAbsentState('${esc(s.id)}')" />
+                        </div>
+                    </div>
+                    <div>
+                        <input type="text" class="mobile-absent-reason" data-sid="${esc(s.id)}" value="${esc(reasonVal)}" placeholder="ເຫດຜົນ / ໝາຍເຫດ..." ${disabledAttr} oninput="syncMobileAbsentState('${esc(s.id)}')" />
+                    </div>
+                </div>
             `;
         }).join("");
     };
@@ -761,10 +1095,12 @@
             `ຄະແນນມາຮຽນ (ເຕັມ ${rule.maxScore})`;
 
         const tbody = document.getElementById("termScoreSummaryBody");
+        const cards = document.getElementById("termScoreSummaryCards");
         const roomStudents = studentsList.filter((s) => isSameGrade(s.grade, gradeVal));
 
         if (!roomStudents.length) {
             tbody.innerHTML = `<tr><td colspan="7" class="center">ບໍ່ມີຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(gradeVal)}</td></tr>`;
+            cards.innerHTML = `<div class="att-card" style="text-align:center;color:#94a3b8;">ບໍ່ມີຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(gradeVal)}</div>`;
             return;
         }
 
@@ -782,11 +1118,36 @@
                 </tr>
             `;
         }).join("");
+
+        cards.innerHTML = roomStudents.map((s, idx) => {
+            const info = getTermScoreForStudent(s.id, s.name, s.grade, termVal);
+            return `
+                <div class="att-card">
+                    <div class="att-card-head">
+                        <div>
+                            <div class="att-card-name">#${idx + 1} • ${esc(s.name)}</div>
+                            <div class="att-card-sub">${esc(termVal)}</div>
+                        </div>
+                        <span class="score-pill">${info.score} / ${info.maxScore}</span>
+                    </div>
+                    <div class="att-card-rows">
+                        <div class="att-card-row">
+                            <span class="att-card-label">ຂາດຮຽນ:</span>
+                            <span class="att-card-val"><span class="${info.count > 0 ? "status-absent" : "status-present"}">${info.count} / ${info.totalPeriods} ຄາບ</span></span>
+                        </div>
+                        <div class="att-card-row">
+                            <span class="att-card-label">ຖືກຕັດ:</span>
+                            <span class="att-card-val"><strong class="deduct-val">-${info.deducted}</strong></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join("");
     };
 
     window.saveAbsentRecords = async function () {
         if (!PERMISSIONS.canMarkAttendance) {
-            return alert("❌ ນັກຮຽນບໍ່ມີສິດບັນທຶກການຂາດຮຽນ (ສະເພາະ ຄູ ແລະ ແອັດມິນ)!");
+            return showToast("❌ ນັກຮຽນບໍ່ມີສິດບັນທຶກການຂາດຮຽນ (ສະເພາະ ຄູ ແລະ ແອັດມິນ)!");
         }
 
         const termVal = document.getElementById("checkTerm").value;
@@ -805,13 +1166,6 @@
                 r.period === periodVal
         );
 
-        for (const oldRec of oldRecords) {
-            const docId = oldRec.firestoreId || oldRec.id;
-            try {
-                await deleteDoc(doc(db, "absent_records", docId));
-            } catch (err) {}
-        }
-
         absentRecords = absentRecords.filter(
             (r) =>
                 !(
@@ -824,6 +1178,7 @@
 
         let savedCount = 0;
         const savedNames = [];
+        const newAdded = [];
 
         for (const cb of checkboxes) {
             if (cb.checked) {
@@ -850,14 +1205,9 @@
                 };
 
                 absentRecords.push(newRec);
+                newAdded.push(newRec);
                 savedCount++;
                 savedNames.push(sname);
-
-                try {
-                    await setDoc(doc(db, "absent_records", recId), newRec);
-                } catch (err) {
-                    console.error("Firestore save absent error:", err);
-                }
             }
         }
 
@@ -872,13 +1222,44 @@
         }
         document.getElementById("historyPeriod").value = periodVal;
 
-        updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId} (ບັນທຶກແລ້ວ)`);
         renderAll();
 
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (Date.now() < blockedUntil) {
+            setQuotaNotice(true);
+            showToast(`ບັນທຶກໃນເຄື່ອງແລ້ວ (${savedCount} ຄົນ) • ໂຄຕ້າ Firebase ເຕັມ`);
+            return;
+        }
+
+        for (const oldRec of oldRecords) {
+            const docId = oldRec.firestoreId || oldRec.id;
+            try {
+                await deleteDoc(doc(db, "absent_records", docId));
+            } catch (err) {
+                if (isQuotaError(err)) {
+                    localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                    setQuotaNotice(true);
+                    break;
+                }
+            }
+        }
+
+        for (const rec of newAdded) {
+            try {
+                await setDoc(doc(db, "absent_records", rec.id), rec);
+            } catch (err) {
+                if (isQuotaError(err)) {
+                    localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                    setQuotaNotice(true);
+                    break;
+                }
+            }
+        }
+
         if (savedCount > 0) {
-            alert(`✅ ບັນທຶກຄົນຂາດຮຽນສຳເລັດ (${savedCount} ຄົນ: ${savedNames.join(", ")})!`);
+            showToast(`✅ ບັນທຶກຄົນຂາດຮຽນສຳເລັດ (${savedCount} ຄົນ)`);
         } else {
-            alert(`✅ ບັນທຶກການກວດການມາຮຽນສຳເລັດ (ບໍ່ມີຄົນຂາດໃນຊົ່ວໂມງນີ້)`);
+            showToast(`✅ ບັນທຶກການກວດການມາຮຽນສຳເລັດ`);
         }
     };
 
@@ -905,11 +1286,13 @@
             `ຄິດຕາມອັດຕາສ່ວນ ${rule.totalPeriods} ຄາບ (ເຕັມ ${rule.maxScore})`;
 
         const tbody = document.getElementById("weeklySummaryBody");
+        const cards = document.getElementById("weeklySummaryCards");
         const { start, end } = getCurrentWeekRange();
 
         const roomStudents = studentsList.filter((s) => isSameGrade(s.grade, gradeVal));
         if (!roomStudents.length) {
             tbody.innerHTML = `<tr><td colspan="5" class="center">ບໍ່ມີຂໍ້ມູນ</td></tr>`;
+            cards.innerHTML = `<div class="att-card" style="text-align:center;color:#94a3b8;">ບໍ່ມີຂໍ້ມູນ</div>`;
             return;
         }
 
@@ -935,6 +1318,37 @@
                 </tr>
             `;
         }).join("");
+
+        cards.innerHTML = roomStudents.map((s, idx) => {
+            const count = absentRecords.filter((r) => {
+                if (!isSameGrade(r.grade, gradeVal)) return false;
+                const matchStu =
+                    (s.id && cleanVal(r.studentId) === cleanVal(s.id)) ||
+                    (s.name && cleanVal(r.studentName || r.name) === cleanVal(s.name));
+                if (!matchStu) return false;
+                const d = new Date(r.date + "T12:00:00");
+                return d >= start && d <= end;
+            }).length;
+
+            const calc = calcScoreByPeriods(count, termVal, gradeVal);
+            return `
+                <div class="att-card">
+                    <div class="att-card-head">
+                        <div>
+                            <div class="att-card-name">#${idx + 1} • ${esc(s.name)}</div>
+                            <div class="att-card-sub">ຫ້ອງ ${esc(s.grade)} • ອາທິດນີ້</div>
+                        </div>
+                        <span class="${count > 0 ? "status-absent" : "status-present"}">${count} ຄັ້ງ</span>
+                    </div>
+                    <div class="att-card-rows">
+                        <div class="att-card-row">
+                            <span class="att-card-label">ຖືກຕັດ:</span>
+                            <span class="att-card-val"><strong class="deduct-val">-${calc.deducted} ຄະແນນ</strong></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join("");
     };
 
     window.renderMonthlySummary = function () {
@@ -946,10 +1360,12 @@
             `ຄິດຕາມອັດຕາສ່ວນ ${rule.totalPeriods} ຄາບ (ເຕັມ ${rule.maxScore})`;
 
         const tbody = document.getElementById("monthlySummaryBody");
+        const cards = document.getElementById("monthlySummaryCards");
 
         const roomStudents = studentsList.filter((s) => isSameGrade(s.grade, gradeVal));
         if (!roomStudents.length) {
             tbody.innerHTML = `<tr><td colspan="5" class="center">ບໍ່ມີຂໍ້ມູນ</td></tr>`;
+            cards.innerHTML = `<div class="att-card" style="text-align:center;color:#94a3b8;">ບໍ່ມີຂໍ້ມູນ</div>`;
             return;
         }
 
@@ -973,6 +1389,35 @@
                 </tr>
             `;
         }).join("");
+
+        cards.innerHTML = roomStudents.map((s, idx) => {
+            const count = absentRecords.filter((r) => {
+                if (!isSameGrade(r.grade, gradeVal) || !String(r.date || "").startsWith(monthVal)) return false;
+                return (
+                    (s.id && cleanVal(r.studentId) === cleanVal(s.id)) ||
+                    (s.name && cleanVal(r.studentName || r.name) === cleanVal(s.name))
+                );
+            }).length;
+
+            const calc = calcScoreByPeriods(count, termVal, gradeVal);
+            return `
+                <div class="att-card">
+                    <div class="att-card-head">
+                        <div>
+                            <div class="att-card-name">#${idx + 1} • ${esc(s.name)}</div>
+                            <div class="att-card-sub">ຫ້ອງ ${esc(s.grade)} • ${esc(monthVal)}</div>
+                        </div>
+                        <span class="${count > 0 ? "status-absent" : "status-present"}">${count} ຄັ້ງ</span>
+                    </div>
+                    <div class="att-card-rows">
+                        <div class="att-card-row">
+                            <span class="att-card-label">ຖືກຕັດ:</span>
+                            <span class="att-card-val"><strong class="deduct-val">-${calc.deducted} ຄະແນນ</strong></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join("");
     };
 
     window.renderPeriodAbsentHistory = function () {
@@ -980,6 +1425,7 @@
         const gradeVal = getActiveGrade("historyGrade");
         const periodVal = document.getElementById("historyPeriod").value;
         const tbody = document.getElementById("periodAbsentBody");
+        const cards = document.getElementById("periodAbsentCards");
 
         const matches = absentRecords.filter((r) => {
             const matchGrade = isSameGrade(r.grade, gradeVal);
@@ -991,6 +1437,7 @@
         const cols = PERMISSIONS.canDeleteRecord ? 7 : 6;
         if (!matches.length) {
             tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ບໍ່ມີນັກຮຽນຂາດໃນຊົ່ວໂມງນີ້ (${esc(gradeVal)} • ${esc(dateVal || "ທຸກວັນ")})</td></tr>`;
+            cards.innerHTML = `<div class="att-card" style="text-align:center;color:#94a3b8;">ບໍ່ມີນັກຮຽນຂາດໃນຊົ່ວໂມງນີ້ (${esc(gradeVal)})</div>`;
             return;
         }
 
@@ -1009,28 +1456,67 @@
                 ` : ""}
             </tr>
         `).join("");
+
+        cards.innerHTML = matches.map((r, idx) => `
+            <div class="att-card">
+                <div class="att-card-head">
+                    <div>
+                        <div class="att-card-name">#${idx + 1} • ${esc(r.studentName || r.name)}</div>
+                        <div class="att-card-sub">${esc(r.date)} • ${esc(r.period)}</div>
+                    </div>
+                    <span class="status-absent">ຂາດຮຽນ</span>
+                </div>
+                <div class="att-card-rows">
+                    <div class="att-card-row">
+                        <span class="att-card-label">ຫ້ອງ:</span>
+                        <span class="att-card-val">${esc(r.grade)}</span>
+                    </div>
+                    <div class="att-card-row">
+                        <span class="att-card-label">ເຫດຜົນ:</span>
+                        <span class="att-card-val">${esc(r.reason || "-")}</span>
+                    </div>
+                </div>
+                ${PERMISSIONS.canDeleteRecord ? `
+                    <div class="att-card-footer">
+                        <button type="button" class="btn-del" onclick="deleteAbsentRecord('${esc(r.id)}')">ລົບ</button>
+                    </div>
+                ` : ""}
+            </div>
+        `).join("");
     };
 
     window.deleteAbsentRecord = async function (recId) {
         if (!PERMISSIONS.canDeleteRecord) {
-            return alert("❌ ນັກຮຽນບໍ່ມີສິດລົບລາຍການ (ສະເພາະ ຄູ ແລະ ແອັດມິນ)!");
+            return showToast("❌ ນັກຮຽນບໍ່ມີສິດລົບລາຍການ (ສະເພາະ ຄູ ແລະ ແອັດມິນ)!");
         }
         const target = absentRecords.find((r) => r.id === recId);
         if (!target) return;
         if (!confirm(`ຢືນຢັນລົບລາຍການຂາດຂອງ "${target.studentName || target.name}"?`)) return;
-
-        const docId = target.firestoreId || target.id;
-        try {
-            await deleteDoc(doc(db, "absent_records", docId));
-        } catch (err) {
-            console.error("Firestore delete absent error:", err);
-        }
 
         absentRecords = absentRecords.filter((r) => r.id !== recId);
         saveLocalRecords();
         const termVal = document.getElementById("checkTerm").value;
         await syncTermAttendanceScoresToFirestore(termVal, target.grade);
         renderAll();
+
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (Date.now() < blockedUntil) {
+            setQuotaNotice(true);
+            showToast("ລົບໃນເຄື່ອງແລ້ວ (ໂຄຕ້າ Firebase ເຕັມ)");
+            return;
+        }
+
+        const docId = target.firestoreId || target.id;
+        try {
+            await deleteDoc(doc(db, "absent_records", docId));
+            showToast("ລົບລາຍການສຳເລັດແລ້ວ");
+        } catch (err) {
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
+            showToast("ລົບໃນເຄື່ອງແລ້ວ");
+        }
     };
 
     window.renderAll = function () {
@@ -1052,7 +1538,12 @@
                 }));
                 localStorage.setItem("school_term_periods", JSON.stringify(termPeriodsConfigs));
             }
-        } catch (e) {}
+        } catch (e) {
+            if (isQuotaError(e)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
+        }
     }
 
     async function loadStudentsFromFirestore() {
@@ -1077,72 +1568,78 @@
                     localStorage.setItem("school_students_list", JSON.stringify(studentsList));
                 }
             }
-        } catch (e) {}
+        } catch (e) {
+            if (isQuotaError(e)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
+        }
     }
 
     window.loadAbsentFromFirestore = async function (showAlert = false) {
+        const now = Date.now();
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        const lastFetchTs = Number(localStorage.getItem(LAST_FETCH_TS_KEY) || "0");
+
+        if (now < blockedUntil) {
+            setQuotaNotice(true);
+            syncAllRoomSelects([], true);
+            renderAll();
+            if (showAlert) showToast("ໂຄຕ້າ Firebase ເຕັມ ກຳລັງໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+            return;
+        }
+
+        if (!showAlert && now - lastFetchTs < FETCH_COOLDOWN_MS) {
+            syncAllRoomSelects([], true);
+            renderAll();
+            return;
+        }
+
+        const syncBtn = document.getElementById("syncBtn");
+        if (syncBtn) syncBtn.disabled = true;
+
         try {
             await Promise.all([loadTermPeriodsFromFirestore(), loadStudentsFromFirestore()]);
             const snap = await getDocs(collection(db, "absent_records"));
-            absentRecords = snap.docs.map((d) => ({
-                id: d.data().id || d.id,
-                firestoreId: d.id,
-                ...d.data()
-            }));
-            saveLocalRecords();
-            await syncAllRoomSelects([], true);
+            if (!snap.empty) {
+                absentRecords = snap.docs.map((d) => ({
+                    id: d.data().id || d.id,
+                    firestoreId: d.id,
+                    ...d.data()
+                }));
+                saveLocalRecords();
+            }
+            localStorage.setItem(LAST_FETCH_TS_KEY, String(Date.now()));
+            localStorage.removeItem(QUOTA_BLOCK_UNTIL_KEY);
+            setQuotaNotice(false);
+            syncAllRoomSelects([], true);
             const termVal = document.getElementById("checkTerm").value;
             const gradeVal = getActiveGrade("checkGrade");
             await syncTermAttendanceScoresToFirestore(termVal, gradeVal);
-            updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId}`);
             renderAll();
-            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນການມາຮຽນສຳເລັດ!");
+            if (showAlert) showToast("✅ ໂຫຼດຂໍ້ມູນການມາຮຽນສຳເລັດ!");
         } catch (err) {
-            console.warn("ບໍ່ໄດ້ໂຫຼດ absent_records ຈາກ Firestore:", err.message);
-            await syncAllRoomSelects([], true);
-            updateSyncBadge("⚠️ Offline (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+                if (showAlert) showToast("⚠️ ໂຄຕ້າ Firebase ປະຈຳມື້ເຕັມ ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+            } else if (showAlert) {
+                showToast("⚠️ ເຊື່ອມຕໍ່ຊ້າ ໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໃນເຄື່ອງ");
+            }
+            syncAllRoomSelects([], true);
             renderAll();
+        } finally {
+            if (syncBtn) syncBtn.disabled = false;
         }
     };
 
-    onSnapshot(collection(db, "term_periods"), (snap) => {
-        if (!snap.empty) {
-            termPeriodsConfigs = snap.docs.map((d) => ({
-                id: d.data().id || d.id,
-                firestoreId: d.id,
-                ...d.data()
-            }));
-            localStorage.setItem("school_term_periods", JSON.stringify(termPeriodsConfigs));
-            renderAll();
-        }
-    }, () => {});
-
-    onSnapshot(collection(db, "absent_records"), (snap) => {
-        absentRecords = snap.docs.map((d) => ({
-            id: d.data().id || d.id,
-            firestoreId: d.id,
-            ...d.data()
-        }));
-        saveLocalRecords();
-        renderAll();
-    }, () => {});
-
-    ["classrooms", "rooms"].forEach((colName) => {
-        onSnapshot(collection(db, colName), async () => {
-            await syncAllRoomSelects([], true);
-            renderAll();
-        }, () => {});
-    });
-
     window.addEventListener("storage", (e) => {
-        if (e.key === SYNC_STORAGE_KEY || e.key === "school_term_periods") {
+        if (e.key === SYNC_STORAGE_KEY || e.key === "school_term_periods" || e.key === "school_absent_records") {
             termPeriodsConfigs = JSON.parse(localStorage.getItem("school_term_periods") || "null") || termPeriodsConfigs;
-            loadAbsentFromFirestore(false);
+            absentRecords = JSON.parse(localStorage.getItem("school_absent_records") || "null") || absentRecords;
+            syncAllRoomSelects([], true);
+            renderAll();
         }
-    });
-    window.addEventListener(SYNC_EVENT_NAME, () => {
-        termPeriodsConfigs = JSON.parse(localStorage.getItem("school_term_periods") || "null") || termPeriodsConfigs;
-        loadAbsentFromFirestore(false);
     });
 
     function esc(str) {
@@ -1153,7 +1650,7 @@
             .replace(/"/g, "&quot;");
     }
 
-    await setupRolePermissions();
+    setupRolePermissions();
     renderAll();
     loadAbsentFromFirestore(false);
 </script>
