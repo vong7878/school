@@ -15,7 +15,7 @@
             padding: 16px;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1240px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
@@ -71,6 +71,43 @@
         .badge-grade { background: #0f766e; color: #ccfbf1; }
         .badge-fb { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
 
+        /* 2 ຄະແນນໃຫຍ່ */
+        .main-groups-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+        .main-group-btn {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 2px solid #334155;
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        .main-group-btn:hover {
+            border-color: #3b82f6;
+            background: #24334d;
+        }
+        .main-group-btn.active {
+            background: #1d4ed8;
+            border-color: #60a5fa;
+            color: #ffffff;
+        }
+        .main-group-sub {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            color: #cbd5e1;
+            margin-top: 4px;
+        }
+
+        /* ຫ້ອງຍ່ອຍພາຍໃນແຕ່ລະຄະແນນໃຫຍ່ */
         .subrooms-nav {
             display: flex;
             gap: 8px;
@@ -85,7 +122,7 @@
             color: #cbd5e1;
             border: 1px solid #334155;
             border-radius: 10px;
-            padding: 8px 14px;
+            padding: 8px 13px;
             font-family: inherit;
             font-size: 13px;
             font-weight: 600;
@@ -97,8 +134,8 @@
             color: #f8fafc;
         }
         .subroom-btn.active {
-            background: #2563eb;
-            border-color: #3b82f6;
+            background: #0284c7;
+            border-color: #38bdf8;
             color: #ffffff;
         }
 
@@ -162,7 +199,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 680px;
+            min-width: 720px;
         }
         th, td {
             border: 1px solid #334155;
@@ -182,7 +219,7 @@
         tr:hover td { background: #24334d; }
         .center { text-align: center; }
         .actions { display: flex; gap: 6px; flex-wrap: wrap; }
-        .grade-pill {
+        .pill {
             display: inline-block;
             padding: 3px 10px;
             border-radius: 999px;
@@ -192,12 +229,17 @@
             color: #7dd3fc;
             border: 1px solid #38bdf8;
         }
-        .grade-a {
+        .pill-good {
             background: rgba(34, 197, 94, 0.2);
             color: #86efac;
             border-color: #22c55e;
         }
-        .grade-f {
+        .pill-warn {
+            background: rgba(234, 179, 8, 0.2);
+            color: #fde047;
+            border-color: #eab308;
+        }
+        .pill-bad {
             background: rgba(239, 68, 68, 0.2);
             color: #fca5a5;
             border-color: #ef4444;
@@ -222,194 +264,24 @@
         </div>
     </div>
 
-    <!-- ແຖບເລືອກຫ້ອງນ້ອຍ -->
-    <nav class="subrooms-nav" aria-label="ຫ້ອງນ້ອຍຈັດການຄະແນນ">
-        <button type="button" class="subroom-btn active" data-subroom="attendance" onclick="switchSubroom('attendance')">
-            1. ຄະແນນການມາຮຽນ
+    <!-- 2 ຄະແນນໃຫຍ່ -->
+    <div class="main-groups-nav" role="tablist" aria-label="2 ຄະແນນໃຫຍ່">
+        <button type="button" class="main-group-btn active" id="group-btn-subject" onclick="switchMainGroup('subject')">
+            1. ຄະແນນລາຍວິຊາ
+            <span class="main-group-sub">ການມາຮຽນ • ການມີສ່ວນຮ່ວມ • ບົດເຝິກຫັດ • ກາງພາກ • ທ້າຍພາກ • ຈັດເກຣດ</span>
         </button>
-        <button type="button" class="subroom-btn" data-subroom="homework" onclick="switchSubroom('homework')">
-            2. ຄະແນນບົດຝຶກຫັດ
+        <button type="button" class="main-group-btn" id="group-btn-annual" onclick="switchMainGroup('annual')">
+            2. ຄະແນນສະເລ່ຍໝົດປີ
+            <span class="main-group-sub">ຄະແນນ 1 ໃນ 4 • ຈັດປະເພດ • ໜ່ວຍກິດສະສົມ</span>
         </button>
-        <button type="button" class="subroom-btn" data-subroom="midterm" onclick="switchSubroom('midterm')">
-            3. ຄະແນນສອບເສັງກາງພາກ
-        </button>
-        <button type="button" class="subroom-btn" data-subroom="final" onclick="switchSubroom('final')">
-            4. ຄະແນນສອບເສັງທ້າຍພາກ
-        </button>
-        <button type="button" class="subroom-btn" data-subroom="annual" onclick="switchSubroom('annual')">
-            5. ຄະແນນສະເລ່ຍໝົດປີ
-        </button>
-        <button type="button" class="subroom-btn" data-subroom="grade" onclick="switchSubroom('grade')">
-            6. ຈັດເກຣດ
-        </button>
-        <button type="button" class="subroom-btn" data-subroom="subjects" onclick="switchSubroom('subjects')">
-            7. ຄະແນນລາຍວິຊາ
-        </button>
-    </nav>
+    </div>
 
-    <!-- ຫ້ອງນ້ອຍທີ 1: ຄະແນນການມາຮຽນ -->
-    <section class="card subroom-panel" id="panel-attendance">
-        <div class="card-header">
-            <h2 id="title-attendance">📌 1. ຄະແນນການມາຮຽນ</h2>
+    <!-- ແຖບຄວບຄຸມລວມ (ຕົວກອງວິຊາ + ຄົ້ນຫາ + ໂຫຼດຂໍ້ມູນ + ເພີ່ມນັກຮຽນ) -->
+    <div class="card" style="padding: 12px 16px;">
+        <div class="controls" style="justify-content: space-between;">
             <div class="controls">
-                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
-                <button type="button" class="btn-sync" onclick="loadScoresFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
-                <button type="button" class="btn-add admin-action" onclick="addStudentScoreRow()">➕ ເພີ່ມນັກຮຽນ</button>
-            </div>
-        </div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">ລ/ດ</th>
-                        <th>ຊື່ນັກຮຽນ</th>
-                        <th>ຫ້ອງ</th>
-                        <th>ຈຳນວນຄັ້ງຂາດ</th>
-                        <th>ຄະແນນການມາຮຽນ (ເຕັມ 20)</th>
-                        <th class="admin-action" style="width: 150px;">ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-attendance"></tbody>
-            </table>
-        </div>
-        <div class="note-text">* ຄະແນນການມາຮຽນຄຳນວນຈາກ 20 ຄະແນນ (ຫັກຄັ້ງລະ 2 ຄະແນນຕາມການຂາດຮຽນ, ຕ່ຳສຸດ 0) ແລະ Admin ສາມາດແກ້ໄຂ/ລົບໄດ້.</div>
-    </section>
-
-    <!-- ຫ້ອງນ້ອຍທີ 2: ຄະແນນບົດຝຶກຫັດ -->
-    <section class="card subroom-panel" id="panel-homework" style="display: none;">
-        <div class="card-header">
-            <h2 id="title-homework">📘 2. ຄະແນນບົດຝຶກຫັດ</h2>
-            <div class="controls">
-                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
-                <button type="button" class="btn-add admin-action" onclick="addStudentScoreRow()">➕ ເພີ່ມນັກຮຽນ</button>
-            </div>
-        </div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">ລ/ດ</th>
-                        <th>ຊື່ນັກຮຽນ</th>
-                        <th>ຫ້ອງ</th>
-                        <th>ຄະແນນບົດຝຶກຫັດ (ເຕັມ 30)</th>
-                        <th class="admin-action" style="width: 150px;">ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-homework"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- ຫ້ອງນ້ອຍທີ 3: ຄະແນນສອບເສັງກາງພາກ -->
-    <section class="card subroom-panel" id="panel-midterm" style="display: none;">
-        <div class="card-header">
-            <h2 id="title-midterm">📄 3. ຄະແນນສອບເສັງກາງພາກ</h2>
-            <div class="controls">
-                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
-                <button type="button" class="btn-add admin-action" onclick="addStudentScoreRow()">➕ ເພີ່ມນັກຮຽນ</button>
-            </div>
-        </div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">ລ/ດ</th>
-                        <th>ຊື່ນັກຮຽນ</th>
-                        <th>ຫ້ອງ</th>
-                        <th>ຄະແນນສອບເສັງກາງພາກ (ເຕັມ 50)</th>
-                        <th class="admin-action" style="width: 150px;">ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-midterm"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- ຫ້ອງນ້ອຍທີ 4: ຄະແນນສອບເສັງທ້າຍພາກ -->
-    <section class="card subroom-panel" id="panel-final" style="display: none;">
-        <div class="card-header">
-            <h2 id="title-final">📕 4. ຄະແນນສອບເສັງທ້າຍພາກ</h2>
-            <div class="controls">
-                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
-                <button type="button" class="btn-add admin-action" onclick="addStudentScoreRow()">➕ ເພີ່ມນັກຮຽນ</button>
-            </div>
-        </div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">ລ/ດ</th>
-                        <th>ຊື່ນັກຮຽນ</th>
-                        <th>ຫ້ອງ</th>
-                        <th>ຄະແນນສອບເສັງທ້າຍພາກ (ເຕັມ 100)</th>
-                        <th class="admin-action" style="width: 150px;">ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-final"></tbody>
-            </table>
-        </div>
-        <div class="note-text">* ຄະແນນສອບເສັງທ້າຍພາກ (ເຕັມ 100) ຈະຖືກນຳມາຄິດໄລ່ນ້ຳໜັກ 50% ຮ່ວມກັບຄະແນນສະສົມ/ກາງພາກ 50% ໃນຄະແນນສະເລ່ຍໝົດປີ.</div>
-    </section>
-
-    <!-- ຫ້ອງນ້ອຍທີ 5: ຄະແນນສະເລ່ຍໝົດປີ -->
-    <section class="card subroom-panel" id="panel-annual" style="display: none;">
-        <div class="card-header">
-            <h2 id="title-annual">📈 5. ຄະແນນສະເລ່ຍໝົດປີ</h2>
-            <div class="controls">
-                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
-            </div>
-        </div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">ລ/ດ</th>
-                        <th>ຊື່ນັກຮຽນ</th>
-                        <th>ຫ້ອງ</th>
-                        <th>ມາຮຽນ (20)</th>
-                        <th>ບົດຝຶກຫັດ (30)</th>
-                        <th>ກາງພາກ (50)</th>
-                        <th>ທ້າຍພາກ (100)</th>
-                        <th>ຄະແນນສະເລ່ຍໝົດປີ (100)</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-annual"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- ຫ້ອງນ້ອຍທີ 6: ຈັດເກຣດ -->
-    <section class="card subroom-panel" id="panel-grade" style="display: none;">
-        <div class="card-header">
-            <h2 id="title-grade">🏅 6. ຈັດເກຣດ</h2>
-            <div class="controls">
-                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
-            </div>
-        </div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">ລ/ດ</th>
-                        <th>ຊື່ນັກຮຽນ</th>
-                        <th>ຫ້ອງ</th>
-                        <th>ຄະແນນສະເລ່ຍໝົດປີ</th>
-                        <th>ເກຣດທີ່ໄດ້</th>
-                        <th>ໝາຍເຫດຜົນການຮຽນ</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-grade"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- ຫ້ອງນ້ອຍທີ 7: ຄະແນນລາຍວິຊາ -->
-    <section class="card subroom-panel" id="panel-subjects" style="display: none;">
-        <div class="card-header">
-            <h2 id="title-subjects">📚 7. ຄະແນນລາຍວິຊາ</h2>
-            <div class="controls">
-                <select id="subjectFilterSelect" onchange="renderAllRooms()">
-                    <option value="">ທຸກວິຊາ</option>
+                <label for="subjectSelect" style="font-size:13px; color:#cbd5e1;">ວິຊາ:</label>
+                <select id="subjectSelect" onchange="renderAll()">
                     <option value="ຄະນິດສາດ">ຄະນິດສາດ</option>
                     <option value="ຟີຊິກສາດ">ຟີຊິກສາດ</option>
                     <option value="ເຄມີສາດ">ເຄມີສາດ</option>
@@ -418,28 +290,234 @@
                     <option value="ພາສາອັງກິດ">ພາສາອັງກິດ</option>
                     <option value="ໄອທີ / ຄອມ">ໄອທີ / ຄອມ</option>
                 </select>
-                <input type="text" class="score-search" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAllRooms()" />
-                <button type="button" class="btn-add admin-action" onclick="addSubjectScorePrompt()">➕ ເພີ່ມ/ແກ້ໄຂວິຊາ</button>
+                <input type="text" id="studentSearchInput" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAll()" />
+            </div>
+            <div class="controls">
+                <button type="button" class="btn-sync" onclick="loadFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
+                <button type="button" class="btn-add admin-action" onclick="addStudentRecord()">➕ ເພີ່ມນັກຮຽນ</button>
             </div>
         </div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">ລ/ດ</th>
-                        <th>ຊື່ນັກຮຽນ</th>
-                        <th>ຫ້ອງ</th>
-                        <th>ວິຊາ</th>
-                        <th>ຄະແນນລາຍວິຊາ (100)</th>
-                        <th>ເກຣດວິຊາ</th>
-                        <th class="admin-action" style="width: 110px;">ຈັດການ</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-subjects"></tbody>
-            </table>
-        </div>
-        <div class="note-text">* ສະແດງຄະແນນແຍກລາຍວິຊາຂອງນັກຮຽນໃນຫ້ອງ ແລະ Admin ສາມາດແກ້ໄຂບັນທຶກລົງ Firestore ໄດ້.</div>
-    </section>
+    </div>
+
+    <!-- ==================== ກຸ່ມໃຫຍ່ທີ 1: 1. ຄະແນນລາຍວິຊາ ==================== -->
+    <div id="group-panel-subject">
+        <nav class="subrooms-nav" aria-label="ຫ້ອງຍ່ອຍ ຄະແນນລາຍວິຊາ">
+            <button type="button" class="subroom-btn active" data-sub="attendance" onclick="switchSub('subject', 'attendance')">1. ຄະແນນການມາຮຽນ</button>
+            <button type="button" class="subroom-btn" data-sub="participation" onclick="switchSub('subject', 'participation')">2. ຄະແນນການມີສ່ວນຮ່ວມ</button>
+            <button type="button" class="subroom-btn" data-sub="homework" onclick="switchSub('subject', 'homework')">3. ຄະແນນບົດເຝິກຫັດ</button>
+            <button type="button" class="subroom-btn" data-sub="midterm" onclick="switchSub('subject', 'midterm')">4. ຄະແນນສອບເສັງກາງພາກ</button>
+            <button type="button" class="subroom-btn" data-sub="final" onclick="switchSub('subject', 'final')">5. ຄະແນນສອບເສັງທ້າຍພາກ</button>
+            <button type="button" class="subroom-btn" data-sub="grade" onclick="switchSub('subject', 'grade')">6. ຈັດເກຣດ</button>
+        </nav>
+
+        <!-- 1.1 ຄະແນນການມາຮຽນ -->
+        <section class="card sub-panel-subject" id="sub-attendance" style="margin-top:12px;">
+            <div class="card-header">
+                <h2 id="title-attendance">📌 1. ຄະແນນການມາຮຽນ</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">ລ/ດ</th>
+                            <th>ຊື່ນັກຮຽນ</th>
+                            <th>ຫ້ອງ</th>
+                            <th>ວິຊາ</th>
+                            <th>ຄະແນນການມາຮຽນ (ເຕັມ 10)</th>
+                            <th class="admin-action" style="width:150px;">ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-attendance"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 1.2 ຄະແນນການມີສ່ວນຮ່ວມ -->
+        <section class="card sub-panel-subject" id="sub-participation" style="display:none; margin-top:12px;">
+            <div class="card-header">
+                <h2 id="title-participation">🙋 2. ຄະແນນການມີສ່ວນຮ່ວມ</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">ລ/ດ</th>
+                            <th>ຊື່ນັກຮຽນ</th>
+                            <th>ຫ້ອງ</th>
+                            <th>ວິຊາ</th>
+                            <th>ຄະແນນການມີສ່ວນຮ່ວມ (ເຕັມ 10)</th>
+                            <th class="admin-action" style="width:150px;">ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-participation"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 1.3 ຄະແນນບົດເຝິກຫັດ -->
+        <section class="card sub-panel-subject" id="sub-homework" style="display:none; margin-top:12px;">
+            <div class="card-header">
+                <h2 id="title-homework">📘 3. ຄະແນນບົດເຝິກຫັດ</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">ລ/ດ</th>
+                            <th>ຊື່ນັກຮຽນ</th>
+                            <th>ຫ້ອງ</th>
+                            <th>ວິຊາ</th>
+                            <th>ຄະແນນບົດເຝິກຫັດ (ເຕັມ 20)</th>
+                            <th class="admin-action" style="width:150px;">ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-homework"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 1.4 ຄະແນນສອບເສັງກາງພາກ -->
+        <section class="card sub-panel-subject" id="sub-midterm" style="display:none; margin-top:12px;">
+            <div class="card-header">
+                <h2 id="title-midterm">📄 4. ຄະແນນສອບເສັງກາງພາກ</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">ລ/ດ</th>
+                            <th>ຊື່ນັກຮຽນ</th>
+                            <th>ຫ້ອງ</th>
+                            <th>ວິຊາ</th>
+                            <th>ຄະແນນສອບເສັງກາງພາກ (ເຕັມ 25)</th>
+                            <th class="admin-action" style="width:150px;">ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-midterm"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 1.5 ຄະແນນສອບເສັງທ້າຍພາກ -->
+        <section class="card sub-panel-subject" id="sub-final" style="display:none; margin-top:12px;">
+            <div class="card-header">
+                <h2 id="title-final">📕 5. ຄະແນນສອບເສັງທ້າຍພາກ</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">ລ/ດ</th>
+                            <th>ຊື່ນັກຮຽນ</th>
+                            <th>ຫ້ອງ</th>
+                            <th>ວິຊາ</th>
+                            <th>ຄະແນນສອບເສັງທ້າຍພາກ (ເຕັມ 35)</th>
+                            <th class="admin-action" style="width:150px;">ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-final"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 1.6 ຈັດເກຣດ -->
+        <section class="card sub-panel-subject" id="sub-grade" style="display:none; margin-top:12px;">
+            <div class="card-header">
+                <h2 id="title-grade">🏅 6. ຈັດເກຣດລາຍວິຊາ</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">ລ/ດ</th>
+                            <th>ຊື່ນັກຮຽນ</th>
+                            <th>ຫ້ອງ</th>
+                            <th>ວິຊາ</th>
+                            <th>ຄະແນນລວມວິຊາ (100)</th>
+                            <th>ເກຣດ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-grade"></tbody>
+                </table>
+            </div>
+            <div class="note-text">* ຄະແນນລວມວິຊາ = ມາຮຽນ (10) + ມີສ່ວນຮ່ວມ (10) + ບົດເຝິກຫັດ (20) + ກາງພາກ (25) + ທ້າຍພາກ (35) = 100.</div>
+        </section>
+    </div>
+
+    <!-- ==================== ກຸ່ມໃຫຍ່ທີ 2: 2. ຄະແນນສະເລ່ຍໝົດປີ ==================== -->
+    <div id="group-panel-annual" style="display:none;">
+        <nav class="subrooms-nav" aria-label="ຫ້ອງຍ່ອຍ ຄະແນນສະເລ່ຍໝົດປີ">
+            <button type="button" class="subroom-btn active" data-sub="quarter" onclick="switchSub('annual', 'quarter')">1. ຄະແນນ 1 ໃນ 4</button>
+            <button type="button" class="subroom-btn" data-sub="category" onclick="switchSub('annual', 'category')">2. ຈັດປະເພດ</button>
+            <button type="button" class="subroom-btn" data-sub="credits" onclick="switchSub('annual', 'credits')">3. ໜ່ວຍກິດສະສົມ</button>
+        </nav>
+
+        <!-- 2.1 ຄະແນນ 1 ໃນ 4 -->
+        <section class="card sub-panel-annual" id="sub-quarter" style="margin-top:12px;">
+            <div class="card-header">
+                <h2 id="title-quarter">📊 1. ຄະແນນ 1 ໃນ 4 (ສະເລ່ຍໝົດປີ)</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">ລ/ດ</th>
+                            <th>ຊື່ນັກຮຽນ</th>
+                            <th>ຫ້ອງ</th>
+                            <th>ຄະແນນສະເລ່ຍໝົດປີ (100)</th>
+                            <th>ຄະແນນ 1 ໃນ 4 (25)</th>
+                            <th>GPA (4.00)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-quarter"></tbody>
+                </table>
+            </div>
+            <div class="note-text">* ຄະແນນ 1 ໃນ 4 = ຄະແນນສະເລ່ຍໝົດປີ ÷ 4 (ເຕັມ 25).</div>
+        </section>
+
+        <!-- 2.2 ຈັດປະເພດ -->
+        <section class="card sub-panel-annual" id="sub-category" style="display:none; margin-top:12px;">
+            <div class="card-header">
+                <h2 id="title-category">🏆 2. ຈັດປະເພດຜົນການຮຽນ</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">ລ/ດ</th>
+                            <th>ຊື່ນັກຮຽນ</th>
+                            <th>ຫ້ອງ</th>
+                            <th>ຄະແນນສະເລ່ຍໝົດປີ</th>
+                            <th>ປະເພດຜົນການຮຽນ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-category"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 2.3 ໜ່ວຍກິດສະສົມ -->
+        <section class="card sub-panel-annual" id="sub-credits" style="display:none; margin-top:12px;">
+            <div class="card-header">
+                <h2 id="title-credits">🎓 3. ໜ່ວຍກິດສະສົມ</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">ລ/ດ</th>
+                            <th>ຊື່ນັກຮຽນ</th>
+                            <th>ຫ້ອງ</th>
+                            <th>ໜ່ວຍກິດທັງໝົດ</th>
+                            <th>ໜ່ວຍກິດສະສົມ (ຜ່ານ)</th>
+                            <th class="admin-action" style="width:120px;">ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-credits"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
 </div>
 
 <script type="module">
@@ -459,671 +537,363 @@
     };
 
     const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
-    window.FIREBASE_CONFIG = firebaseConfig;
-
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const COLLECTION_NAME = "student_scores";
 
-    const DEFAULT_SUBJECTS = [
-        "ຄະນິດສາດ",
-        "ຟີຊິກສາດ",
-        "ເຄມີສາດ",
-        "ຊີວະສາດ",
-        "ພາສາລາວ",
-        "ພາສາອັງກິດ",
-        "ໄອທີ / ຄອມ"
-    ];
+    const SUBJECTS = ["ຄະນິດສາດ", "ຟີຊິກສາດ", "ເຄມີສາດ", "ຊີວະສາດ", "ພາສາລາວ", "ພາສາອັງກິດ", "ໄອທີ / ຄອມ"];
 
     function cleanText(v) {
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
     }
-
     function cleanGrade(v) {
         return cleanText(v).replace(/\s+/g, "");
     }
-
-    function parseBoundedNumber(raw, min, max, fallback = 0) {
-        const n = Number(raw);
+    function boundNum(v, min, max, fallback = 0) {
+        const n = Number(v);
         if (!Number.isFinite(n)) return fallback;
         return Math.max(min, Math.min(max, n));
     }
+    function esc(str) {
+        return String(str ?? "")
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
 
-    function getNormalizedRole() {
+    function getRole() {
         const raw = cleanText(
-            localStorage.getItem("userRole") ||
-            localStorage.getItem("role") ||
-            localStorage.getItem("user_role") ||
-            "student"
+            localStorage.getItem("userRole") || localStorage.getItem("role") || "student"
         ).toLowerCase();
         if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
-        if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
+        if (["teacher", "ຄູ", "ครู"].includes(raw)) return "teacher";
         return "student";
     }
 
-    const role = getNormalizedRole();
+    const role = getRole();
     const userGrade = cleanGrade(localStorage.getItem("userGrade") || "ມ.5") || "ມ.5";
     const userName = cleanText(localStorage.getItem("userName")) || "ຜູ້ໃຊ້ງານ";
+    const currentUserId = cleanText(localStorage.getItem("userId") || localStorage.getItem("studentId") || "");
     const isAdmin = role === "admin";
 
     document.getElementById("currentUserName").textContent = userName;
     document.getElementById("currentUserRole").textContent = role.toUpperCase();
     document.getElementById("currentUserGrade").textContent = userGrade;
+    document.getElementById("fbSyncBadge").textContent = `🔥 Firebase: ${firebaseConfig.projectId}`;
 
-    ["attendance", "homework", "midterm", "final", "annual", "grade", "subjects"].forEach((key) => {
-        const titleEl = document.getElementById("title-" + key);
-        if (titleEl && !titleEl.textContent.includes(`(${userGrade})`)) {
-            titleEl.textContent = `${titleEl.textContent} (${userGrade})`;
+    let students = JSON.parse(localStorage.getItem("school_student_scores") || "null") || [
+        {
+            id: "STD-001", name: "ສົມໃຈ ໃຈດີ", grade: "ມ.5", totalCredits: 24, earnedCredits: 24,
+            coursework: {
+                attendance: 9, participation: 9, homework: 18, midterm: 22, final: 31
+            }
+        },
+        {
+            id: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", totalCredits: 24, earnedCredits: 21,
+            coursework: {
+                attendance: 8, participation: 8, homework: 16, midterm: 19, final: 27
+            }
         }
-    });
-
-    const absentRecords = JSON.parse(localStorage.getItem("school_absent_records") || "[]");
-    function getAbsentCountForStudent(studentId, studentName, grade) {
-        const gClean = cleanGrade(grade);
-        const nameClean = cleanText(studentName).toLowerCase();
-        return absentRecords.filter((r) => {
-            const sameGrade = !r.grade || cleanGrade(r.grade) === gClean;
-            const matchId = studentId && r.studentId === studentId;
-            const matchName = nameClean && cleanText(r.studentName).toLowerCase() === nameClean;
-            return sameGrade && (matchId || matchName);
-        }).length;
-    }
-
-    let scoresData = JSON.parse(localStorage.getItem("school_student_scores") || "null") || [
-        { id: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", attendanceScore: null, homeworkScore: 26, midtermScore: 42, finalScore: 84 },
-        { id: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", attendanceScore: null, homeworkScore: 28, midtermScore: 45, finalScore: 90 },
-        { id: "STD-003", name: "ທ. ອານຸສອນ ວົງສາ", grade: "ມ.5", attendanceScore: null, homeworkScore: 22, midtermScore: 36, finalScore: 74 },
-        { id: "STD-004", name: "ນ. ດາລາວັນ ແກ້ວມະນີ", grade: "ມ.6", attendanceScore: 20, homeworkScore: 27, midtermScore: 44, finalScore: 86 }
     ];
 
-    function saveScoresLocal() {
-        localStorage.setItem("school_student_scores", JSON.stringify(scoresData));
+    function saveLocal() {
+        localStorage.setItem("school_student_scores", JSON.stringify(students));
     }
 
-    function updateSyncBadge(text) {
-        const el = document.getElementById("fbSyncBadge");
-        if (el) el.textContent = text;
+    function getCoursework(s, subj) {
+        const bySubj = s.courseworkBySubject?.[subj] || s.coursework || {};
+        return {
+            attendance: boundNum(bySubj.attendance, 0, 10, 8),
+            participation: boundNum(bySubj.participation, 0, 10, 8),
+            homework: boundNum(bySubj.homework, 0, 20, 15),
+            midterm: boundNum(bySubj.midterm, 0, 25, 18),
+            final: boundNum(bySubj.final, 0, 35, 25)
+        };
     }
 
-    function getAttendanceScore(item) {
-        if (typeof item.attendanceScore === "number" && Number.isFinite(item.attendanceScore)) {
-            return parseBoundedNumber(item.attendanceScore, 0, 20, 0);
-        }
-        const absentCount = getAbsentCountForStudent(item.id, item.name, item.grade);
-        return Math.max(0, 20 - absentCount * 2);
+    function calcSubjectTotal(s, subj) {
+        const cw = getCoursework(s, subj);
+        return Number((cw.attendance + cw.participation + cw.homework + cw.midterm + cw.final).toFixed(1));
     }
 
-    function getFinalScore(item) {
-        return parseBoundedNumber(item.finalScore, 0, 100, 0);
-    }
-
-    function calcAverageScore(item) {
-        const att = getAttendanceScore(item);
-        const hw = parseBoundedNumber(item.homeworkScore, 0, 30, 0);
-        const mid = parseBoundedNumber(item.midtermScore, 0, 50, 0);
-        const fin = getFinalScore(item);
-
-        const continuousTotal = att + hw + mid;
-        const avg = continuousTotal * 0.5 + fin * 0.5;
+    function calcAnnualAvg(s) {
+        const list = SUBJECTS.map((subj) => calcSubjectTotal(s, subj));
+        const avg = list.reduce((a, b) => a + b, 0) / list.length;
         return Number(avg.toFixed(1));
     }
 
-    function getGradeInfo(avg) {
-        if (avg >= 80) return { grade: "A", remark: "ດີເລີດ", cls: "grade-a" };
-        if (avg >= 75) return { grade: "B+", remark: "ດີຫຼາຍ", cls: "" };
-        if (avg >= 70) return { grade: "B", remark: "ດີ", cls: "" };
-        if (avg >= 65) return { grade: "C+", remark: "ພໍໃຊ້ (ຂ້ອນຂ້າງດີ)", cls: "" };
-        if (avg >= 60) return { grade: "C", remark: "ພໍໃຊ້", cls: "" };
-        if (avg >= 55) return { grade: "D+", remark: "ຜ່ານເກນ", cls: "" };
-        if (avg >= 50) return { grade: "D", remark: "ຄວນປັບປຸງ", cls: "" };
-        return { grade: "F", remark: "ບໍ່ຜ່ານ / ຕ້ອງສ້ອມແຊມ", cls: "grade-f" };
+    function getGradeLetter(score) {
+        if (score >= 80) return { g: "A", cls: "pill-good" };
+        if (score >= 70) return { g: "B", cls: "" };
+        if (score >= 60) return { g: "C", cls: "pill-warn" };
+        if (score >= 50) return { g: "D", cls: "pill-warn" };
+        return { g: "F", cls: "pill-bad" };
     }
 
-    function getStudentSubjectScoresMap(student) {
-        const baseAvg = calcAverageScore(student);
-        const savedMap = (student && typeof student.subjects === "object" && student.subjects !== null)
-            ? student.subjects
-            : {};
-
-        const result = {};
-        DEFAULT_SUBJECTS.forEach((subj, idx) => {
-            if (savedMap[subj] !== undefined && savedMap[subj] !== null && savedMap[subj] !== "") {
-                result[subj] = parseBoundedNumber(savedMap[subj], 0, 100, baseAvg);
-            } else {
-                const offset = ((idx % 5) - 2) * 2;
-                result[subj] = parseBoundedNumber(Number((baseAvg + offset).toFixed(1)), 0, 100, baseAvg);
-            }
-        });
-
-        Object.keys(savedMap).forEach((k) => {
-            const cleanK = cleanText(k);
-            if (cleanK) {
-                result[cleanK] = parseBoundedNumber(savedMap[k], 0, 100, baseAvg);
-            }
-        });
-
-        return result;
+    function getCategoryInfo(avg) {
+        if (avg >= 85) return { label: "ດີເດັ່ນ (Honor)", cls: "pill-good" };
+        if (avg >= 70) return { label: "ດີ (Good)", cls: "" };
+        if (avg >= 50) return { label: "ປົກກະຕິ (Pass)", cls: "pill-warn" };
+        return { label: "ຕ້ອງປັບປຸງ (At Risk)", cls: "pill-bad" };
     }
 
-    window.switchSubroom = function (subroomKey) {
-        document.querySelectorAll(".subroom-btn").forEach((btn) => {
-            btn.classList.toggle("active", btn.getAttribute("data-subroom") === subroomKey);
+    window.switchMainGroup = function (group) {
+        document.getElementById("group-btn-subject").classList.toggle("active", group === "subject");
+        document.getElementById("group-btn-annual").classList.toggle("active", group === "annual");
+        document.getElementById("group-panel-subject").style.display = group === "subject" ? "block" : "none";
+        document.getElementById("group-panel-annual").style.display = group === "annual" ? "block" : "none";
+    };
+
+    window.switchSub = function (group, subKey) {
+        const panelClass = group === "subject" ? ".sub-panel-subject" : ".sub-panel-annual";
+        const navContainer = document.getElementById(group === "subject" ? "group-panel-subject" : "group-panel-annual");
+        navContainer.querySelectorAll(".subroom-btn").forEach((btn) => {
+            btn.classList.toggle("active", btn.getAttribute("data-sub") === subKey);
         });
-        document.querySelectorAll(".subroom-panel").forEach((panel) => {
-            panel.style.display = panel.id === "panel-" + subroomKey ? "block" : "none";
+        document.querySelectorAll(panelClass).forEach((sec) => {
+            sec.style.display = sec.id === "sub-" + subKey ? "block" : "none";
         });
     };
 
-    function applyAdminPermissions() {
+    function isOwnStudent(s) {
+        const myName = cleanText(userName).toLowerCase();
+        const rName = cleanText(s.name).toLowerCase();
+        const byId = Boolean(currentUserId && cleanText(s.id) === currentUserId);
+        const byName = Boolean(myName && rName && (rName === myName || rName.includes(myName) || myName.includes(rName)));
+        return byId || byName;
+    }
+
+    function getVisibleStudents() {
+        const kw = cleanText(document.getElementById("studentSearchInput")?.value || "").toLowerCase();
+        return students.filter((s) => {
+            if (cleanGrade(s.grade) !== userGrade) return false;
+            if (role === "student") return isOwnStudent(s);
+            return !kw || cleanText(s.name).toLowerCase().includes(kw);
+        });
+    }
+
+    function applyAdminUI() {
         document.querySelectorAll(".admin-action").forEach((el) => {
-            if (isAdmin) {
-                el.classList.remove("admin-only-hide");
-                el.style.removeProperty("display");
-            } else {
-                el.classList.add("admin-only-hide");
-                el.style.setProperty("display", "none", "important");
+            el.style.display = isAdmin ? "" : "none";
+        });
+    }
+
+    window.editCourseworkField = async function (studentId, field, maxVal, label) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂໄດ້!");
+        const subj = document.getElementById("subjectSelect").value;
+        const s = students.find((x) => x.id === studentId);
+        if (!s) return;
+
+        const cw = getCoursework(s, subj);
+        const input = prompt(`ແກ້ໄຂ${label} (${subj}) ຂອງ "${s.name}" (0 - ${maxVal}):`, String(cw[field]));
+        if (input === null) return;
+
+        const updatedCw = { ...cw, [field]: boundNum(input, 0, maxVal, cw[field]) };
+        s.courseworkBySubject = { ...(s.courseworkBySubject || {}), [subj]: updatedCw };
+
+        const docId = s.firestoreId || s.id;
+        try {
+            await setDoc(doc(db, COLLECTION_NAME, docId), { courseworkBySubject: s.courseworkBySubject }, { merge: true });
+        } catch (err) {
+            console.error(err);
+        }
+        saveLocal();
+        renderAll();
+    };
+
+    window.editCredits = async function (studentId) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂໄດ້!");
+        const s = students.find((x) => x.id === studentId);
+        if (!s) return;
+
+        const totalIn = prompt(`ໜ່ວຍກິດທັງໝົດຂອງ "${s.name}":`, String(s.totalCredits ?? 24));
+        if (totalIn === null) return;
+        const earnedIn = prompt(`ໜ່ວຍກິດສະສົມ (ຜ່ານ) ຂອງ "${s.name}":`, String(s.earnedCredits ?? 24));
+        if (earnedIn === null) return;
+
+        s.totalCredits = boundNum(totalIn, 0, 200, 24);
+        s.earnedCredits = boundNum(earnedIn, 0, s.totalCredits, 24);
+
+        const docId = s.firestoreId || s.id;
+        try {
+            await setDoc(doc(db, COLLECTION_NAME, docId), {
+                totalCredits: s.totalCredits,
+                earnedCredits: s.earnedCredits
+            }, { merge: true });
+        } catch (err) {
+            console.error(err);
+        }
+        saveLocal();
+        renderAll();
+    };
+
+    window.addStudentRecord = async function () {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມໄດ້!");
+        const name = prompt(`ປ້ອນຊື່ນັກຮຽນ (ຫ້ອງ ${userGrade}):`);
+        if (!name || !cleanText(name)) return;
+
+        const newId = "STD-" + Date.now();
+        const item = {
+            id: newId,
+            firestoreId: newId,
+            name: cleanText(name),
+            grade: userGrade,
+            totalCredits: 24,
+            earnedCredits: 24,
+            coursework: { attendance: 10, participation: 10, homework: 18, midterm: 20, final: 28 }
+        };
+
+        try {
+            await setDoc(doc(db, COLLECTION_NAME, newId), item);
+        } catch (err) {
+            console.error(err);
+        }
+        students.push(item);
+        saveLocal();
+        renderAll();
+    };
+
+    window.deleteStudentRecord = async function (studentId) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບໄດ້!");
+        const s = students.find((x) => x.id === studentId);
+        if (!s || !confirm(`ຢືນຢັນລົບ "${s.name}"?`)) return;
+
+        try {
+            await deleteDoc(doc(db, COLLECTION_NAME, s.firestoreId || s.id));
+        } catch (err) {
+            console.error(err);
+        }
+        students = students.filter((x) => x.id !== studentId);
+        saveLocal();
+        renderAll();
+    };
+
+    window.renderAll = function () {
+        const list = getVisibleStudents();
+        const subj = document.getElementById("subjectSelect").value;
+        const emptyRow = (cols) => `<tr><td colspan="${cols}" class="center">ບໍ່ພົບຂໍ້ມູນ</td></tr>`;
+
+        const renderScoreSubTable = (tbodyId, field, maxVal, label) => {
+            const tb = document.getElementById(tbodyId);
+            if (!list.length) {
+                tb.innerHTML = emptyRow(isAdmin ? 6 : 5);
+                return;
             }
-        });
-    }
-
-    function getActiveSearchQuery() {
-        const visiblePanel = Array.from(document.querySelectorAll(".subroom-panel"))
-            .find((p) => p.style.display !== "none");
-        const visibleInput = visiblePanel?.querySelector(".score-search");
-        if (visibleInput && visibleInput.value.trim()) {
-            return visibleInput.value.trim().toLowerCase();
-        }
-        return Array.from(document.querySelectorAll(".score-search"))
-            .map((i) => i.value.trim().toLowerCase())
-            .find((v) => v.length > 0) || "";
-    }
-
-    const currentUserId = cleanText(
-    localStorage.getItem("userId") ||
-    localStorage.getItem("studentId") ||
-    localStorage.getItem("username") ||
-    ""
-);
-
-function isOwnStudentRecord(s) {
-    const myName = cleanText(userName).toLowerCase();
-    const rowName = cleanText(s.name).toLowerCase();
-    const rowId = cleanText(s.id || s.studentId || s.userId || "").toLowerCase();
-    const myId = cleanText(currentUserId).toLowerCase();
-
-    const matchById = Boolean(myId && rowId && rowId === myId);
-    const matchByName = Boolean(
-        myName &&
-        rowName &&
-        (rowName === myName || rowName.includes(myName) || myName.includes(rowName))
-    );
-
-    return matchById || matchByName;
-}
-
-function getFilteredRoomStudents() {
-    const activeQuery = getActiveSearchQuery();
-    return scoresData.filter((s) => {
-        const sameGrade = cleanGrade(s.grade) === userGrade;
-        if (!sameGrade) return false;
-
-        // นักเรียนดูได้เฉพาะคะแนนของตัวเองเท่านั้น
-        if (role === "student") {
-            return isOwnStudentRecord(s);
-        }
-
-        const matchName = !activeQuery || cleanText(s.name).toLowerCase().includes(activeQuery);
-        return matchName;
-    });
-}
-
-    function renderSubjectsSubroom(list) {
-        const tbSubj = document.getElementById("tbody-subjects");
-        if (!tbSubj) return;
-
-        const selectedSubject = cleanText(document.getElementById("subjectFilterSelect")?.value || "");
-        const subjectsToShow = selectedSubject ? [selectedSubject] : DEFAULT_SUBJECTS;
-        const rows = [];
-
-        list.forEach((student) => {
-            const subjMap = getStudentSubjectScoresMap(student);
-            subjectsToShow.forEach((subjName) => {
-                if (subjMap[subjName] !== undefined) {
-                    rows.push({
-                        studentId: student.id,
-                        studentName: student.name,
-                        grade: student.grade,
-                        subject: subjName,
-                        score: subjMap[subjName]
-                    });
-                }
-            });
-        });
-
-        if (!rows.length) {
-            tbSubj.innerHTML = `<tr><td colspan="${isAdmin ? 7 : 6}" class="center">ບໍ່ພົບຂໍ້ມູນຄະແນນລາຍວິຊາໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
-            return;
-        }
-
-        tbSubj.innerHTML = rows.map((r, idx) => {
-            const gInfo = getGradeInfo(r.score);
-            return `
-                <tr>
-                    <td>${idx + 1}</td>
-                    <td>${esc(r.studentName)}</td>
-                    <td>${esc(r.grade)}</td>
-                    <td><strong>${esc(r.subject)}</strong></td>
-                    <td><strong>${r.score}</strong> / 100</td>
-                    <td><span class="grade-pill ${gInfo.cls}">${gInfo.grade}</span></td>
-                    ${isAdmin ? `
-                        <td>
-                            <button type="button" class="btn-edit" onclick="editSingleSubjectScore('${esc(r.studentId)}', '${esc(r.subject)}')">ແກ້ໄຂ</button>
-                        </td>
-                    ` : ""}
-                </tr>
-            `;
-        }).join("");
-    }
-
-    window.renderAllRooms = function () {
-        const list = getFilteredRoomStudents();
-
-        // 1. ຄະແນນການມາຮຽນ
-        const tbAtt = document.getElementById("tbody-attendance");
-        if (!list.length) {
-            tbAtt.innerHTML = `<tr><td colspan="${isAdmin ? 6 : 5}" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
-        } else {
-            tbAtt.innerHTML = list.map((s, idx) => {
-                const absCount = getAbsentCountForStudent(s.id, s.name, s.grade);
-                const attScore = getAttendanceScore(s);
+            tb.innerHTML = list.map((s, idx) => {
+                const cw = getCoursework(s, subj);
                 return `
                     <tr>
                         <td>${idx + 1}</td>
                         <td>${esc(s.name)}</td>
                         <td>${esc(s.grade)}</td>
-                        <td>${absCount} ຄັ້ງ</td>
-                        <td><strong>${attScore}</strong> / 20</td>
+                        <td>${esc(subj)}</td>
+                        <td><strong>${cw[field]}</strong> / ${maxVal}</td>
                         ${isAdmin ? `
                             <td>
                                 <div class="actions">
-                                    <button type="button" class="btn-edit" onclick="editStudentScore('${esc(s.id)}')">ແກ້ໄຂ</button>
-                                    <button type="button" class="btn-del" onclick="deleteStudentScore('${esc(s.id)}')">ລົບ</button>
+                                    <button type="button" class="btn-edit" onclick="editCourseworkField('${esc(s.id)}','${field}',${maxVal},'${label}')">ແກ້ໄຂ</button>
+                                    <button type="button" class="btn-del" onclick="deleteStudentRecord('${esc(s.id)}')">ລົບ</button>
                                 </div>
                             </td>
                         ` : ""}
                     </tr>
                 `;
             }).join("");
-        }
+        };
 
-        // 2. ຄະແນນບົດຝຶກຫັດ
-        const tbHw = document.getElementById("tbody-homework");
-        if (!list.length) {
-            tbHw.innerHTML = `<tr><td colspan="${isAdmin ? 5 : 4}" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
-        } else {
-            tbHw.innerHTML = list.map((s, idx) => `
-                <tr>
-                    <td>${idx + 1}</td>
-                    <td>${esc(s.name)}</td>
-                    <td>${esc(s.grade)}</td>
-                    <td><strong>${parseBoundedNumber(s.homeworkScore, 0, 30, 0)}</strong> / 30</td>
-                    ${isAdmin ? `
-                        <td>
-                            <div class="actions">
-                                <button type="button" class="btn-edit" onclick="editStudentScore('${esc(s.id)}')">ແກ້ໄຂ</button>
-                                <button type="button" class="btn-del" onclick="deleteStudentScore('${esc(s.id)}')">ລົບ</button>
-                            </div>
-                        </td>
-                    ` : ""}
-                </tr>
-            `).join("");
-        }
+        renderScoreSubTable("tbody-attendance", "attendance", 10, "ຄະແນນການມາຮຽນ");
+        renderScoreSubTable("tbody-participation", "participation", 10, "ຄະແນນການມີສ່ວນຮ່ວມ");
+        renderScoreSubTable("tbody-homework", "homework", 20, "ຄະແນນບົດເຝິກຫັດ");
+        renderScoreSubTable("tbody-midterm", "midterm", 25, "ຄະແນນສອບເສັງກາງພາກ");
+        renderScoreSubTable("tbody-final", "final", 35, "ຄະແນນສອບເສັງທ້າຍພາກ");
 
-        // 3. ຄະແນນສອບເສັງກາງພາກ
-        const tbMid = document.getElementById("tbody-midterm");
-        if (!list.length) {
-            tbMid.innerHTML = `<tr><td colspan="${isAdmin ? 5 : 4}" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
-        } else {
-            tbMid.innerHTML = list.map((s, idx) => `
-                <tr>
-                    <td>${idx + 1}</td>
-                    <td>${esc(s.name)}</td>
-                    <td>${esc(s.grade)}</td>
-                    <td><strong>${parseBoundedNumber(s.midtermScore, 0, 50, 0)}</strong> / 50</td>
-                    ${isAdmin ? `
-                        <td>
-                            <div class="actions">
-                                <button type="button" class="btn-edit" onclick="editStudentScore('${esc(s.id)}')">ແກ້ໄຂ</button>
-                                <button type="button" class="btn-del" onclick="deleteStudentScore('${esc(s.id)}')">ລົບ</button>
-                            </div>
-                        </td>
-                    ` : ""}
-                </tr>
-            `).join("");
-        }
-
-        // 4. ຄະແນນສອບເສັງທ້າຍພາກ
-        const tbFinal = document.getElementById("tbody-final");
-        if (!list.length) {
-            tbFinal.innerHTML = `<tr><td colspan="${isAdmin ? 5 : 4}" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
-        } else {
-            tbFinal.innerHTML = list.map((s, idx) => `
-                <tr>
-                    <td>${idx + 1}</td>
-                    <td>${esc(s.name)}</td>
-                    <td>${esc(s.grade)}</td>
-                    <td><strong>${getFinalScore(s)}</strong> / 100</td>
-                    ${isAdmin ? `
-                        <td>
-                            <div class="actions">
-                                <button type="button" class="btn-edit" onclick="editStudentScore('${esc(s.id)}')">ແກ້ໄຂ</button>
-                                <button type="button" class="btn-del" onclick="deleteStudentScore('${esc(s.id)}')">ລົບ</button>
-                            </div>
-                        </td>
-                    ` : ""}
-                </tr>
-            `).join("");
-        }
-
-        // 5. ຄະແນນສະເລ່ຍໝົດປີ
-        const tbAnnual = document.getElementById("tbody-annual");
-        if (!list.length) {
-            tbAnnual.innerHTML = `<tr><td colspan="8" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
-        } else {
-            tbAnnual.innerHTML = list.map((s, idx) => {
-                const att = getAttendanceScore(s);
-                const hw = parseBoundedNumber(s.homeworkScore, 0, 30, 0);
-                const mid = parseBoundedNumber(s.midtermScore, 0, 50, 0);
-                const fin = getFinalScore(s);
-                const avg = calcAverageScore(s);
-                return `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td>${esc(s.name)}</td>
-                        <td>${esc(s.grade)}</td>
-                        <td>${att}</td>
-                        <td>${hw}</td>
-                        <td>${mid}</td>
-                        <td>${fin}</td>
-                        <td><strong>${avg}</strong> / 100</td>
-                    </tr>
-                `;
-            }).join("");
-        }
-
-        // 6. ຈັດເກຣດ
         const tbGrade = document.getElementById("tbody-grade");
-        if (!list.length) {
-            tbGrade.innerHTML = `<tr><td colspan="6" class="center">ບໍ່ພົບຂໍ້ມູນນັກຮຽນໃນຫ້ອງ ${esc(userGrade)}</td></tr>`;
-        } else {
-            tbGrade.innerHTML = list.map((s, idx) => {
-                const avg = calcAverageScore(s);
-                const gInfo = getGradeInfo(avg);
-                return `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td>${esc(s.name)}</td>
-                        <td>${esc(s.grade)}</td>
-                        <td><strong>${avg}</strong></td>
-                        <td><span class="grade-pill ${gInfo.cls}">${gInfo.grade}</span></td>
-                        <td>${esc(gInfo.remark)}</td>
-                    </tr>
-                `;
-            }).join("");
-        }
+        tbGrade.innerHTML = !list.length ? emptyRow(6) : list.map((s, idx) => {
+            const tot = calcSubjectTotal(s, subj);
+            const g = getGradeLetter(tot);
+            return `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${esc(s.name)}</td>
+                    <td>${esc(s.grade)}</td>
+                    <td>${esc(subj)}</td>
+                    <td><strong>${tot}</strong> / 100</td>
+                    <td><span class="pill ${g.cls}">${g.g}</span></td>
+                </tr>
+            `;
+        }).join("");
 
-        // 7. ຄະແນນລາຍວິຊາ
-        renderSubjectsSubroom(list);
+        const tbQuarter = document.getElementById("tbody-quarter");
+        tbQuarter.innerHTML = !list.length ? emptyRow(6) : list.map((s, idx) => {
+            const avg = calcAnnualAvg(s);
+            const qScore = Number((avg / 4).toFixed(2));
+            const gpa = Number(((avg / 100) * 4).toFixed(2));
+            return `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${esc(s.name)}</td>
+                    <td>${esc(s.grade)}</td>
+                    <td><strong>${avg}</strong> / 100</td>
+                    <td><strong>${qScore}</strong> / 25</td>
+                    <td>${gpa.toFixed(2)}</td>
+                </tr>
+            `;
+        }).join("");
 
-        applyAdminPermissions();
+        const tbCategory = document.getElementById("tbody-category");
+        tbCategory.innerHTML = !list.length ? emptyRow(5) : list.map((s, idx) => {
+            const avg = calcAnnualAvg(s);
+            const cat = getCategoryInfo(avg);
+            return `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${esc(s.name)}</td>
+                    <td>${esc(s.grade)}</td>
+                    <td><strong>${avg}</strong> / 100</td>
+                    <td><span class="pill ${cat.cls}">${esc(cat.label)}</span></td>
+                </tr>
+            `;
+        }).join("");
+
+        const tbCredits = document.getElementById("tbody-credits");
+        tbCredits.innerHTML = !list.length ? emptyRow(isAdmin ? 6 : 5) : list.map((s, idx) => `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${esc(s.name)}</td>
+                <td>${esc(s.grade)}</td>
+                <td>${boundNum(s.totalCredits, 0, 200, 24)}</td>
+                <td><strong>${boundNum(s.earnedCredits, 0, 200, 24)}</strong></td>
+                ${isAdmin ? `<td><button type="button" class="btn-edit" onclick="editCredits('${esc(s.id)}')">ແກ້ໄຂ</button></td>` : ""}
+            </tr>
+        `).join("");
+
+        applyAdminUI();
     };
 
-    window.editSingleSubjectScore = async function (studentId, subjectName) {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂຄະແນນລາຍວິຊາໄດ້!");
-        const target = scoresData.find((s) => s.id === studentId);
-        if (!target) return;
-
-        const currentMap = getStudentSubjectScoresMap(target);
-        const currentScore = currentMap[subjectName] ?? calcAverageScore(target);
-        const inputVal = prompt(`ປ້ອນຄະແນນວິຊາ "${subjectName}" (0 - 100) ຂອງ "${target.name}":`, String(currentScore));
-        if (inputVal === null) return;
-
-        target.subjects = {
-            ...currentMap,
-            [subjectName]: parseBoundedNumber(inputVal, 0, 100, currentScore)
-        };
-
-        const docId = target.firestoreId || target.id;
-        target.firestoreId = docId;
-
-        try {
-            await setDoc(doc(db, COLLECTION_NAME, docId), { subjects: target.subjects }, { merge: true });
-            updateSyncBadge("ບັນທຶກຄະແນນວິຊາແລ້ວ");
-        } catch (err) {
-            console.error("Firestore subject score save error:", err);
-        }
-
-        saveScoresLocal();
-        renderAllRooms();
-    };
-
-    window.addSubjectScorePrompt = async function () {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ຈັດການຄະແນນລາຍວິຊາໄດ້!");
-        const roomStudents = scoresData.filter((s) => cleanGrade(s.grade) === userGrade);
-        if (!roomStudents.length) return alert(`ບໍ່ມີນັກຮຽນໃນຫ້ອງ ${userGrade}`);
-
-        const sampleNames = roomStudents.map((s, i) => `${i + 1}. ${s.name}`).join("\n");
-        const chosenIdxInput = prompt(`ເລືອກລຳດັບນັກຮຽນໃນຫ້ອງ ${userGrade}:\n${sampleNames}`, "1");
-        if (chosenIdxInput === null) return;
-
-        const idx = parseInt(chosenIdxInput, 10) - 1;
-        const student = roomStudents[idx];
-        if (!student) return alert("ບໍ່ພົບນັກຮຽນຕາມລຳດັບທີ່ເລືອກ");
-
-        const subjInput = prompt("ປ້ອນຊື່ວິຊາ (ເຊັ່ນ ຄະນິດສາດ, ຟີຊິກສາດ, ໄອທີ / ຄອມ):", "ຄະນິດສາດ");
-        if (!subjInput || !cleanText(subjInput)) return;
-
-        const subjectName = cleanText(subjInput);
-        const currentMap = getStudentSubjectScoresMap(student);
-        const currentScore = currentMap[subjectName] ?? calcAverageScore(student);
-        const scoreInput = prompt(`ປ້ອນຄະແນນວິຊາ "${subjectName}" (0 - 100):`, String(currentScore));
-        if (scoreInput === null) return;
-
-        student.subjects = {
-            ...currentMap,
-            [subjectName]: parseBoundedNumber(scoreInput, 0, 100, currentScore)
-        };
-
-        const docId = student.firestoreId || student.id;
-        student.firestoreId = docId;
-
-        try {
-            await setDoc(doc(db, COLLECTION_NAME, docId), { subjects: student.subjects }, { merge: true });
-            updateSyncBadge("ບັນທຶກຄະແນນວິຊາແລ້ວ");
-        } catch (err) {
-            console.error("Firestore subject score add error:", err);
-        }
-
-        saveScoresLocal();
-        renderAllRooms();
-    };
-
-    window.addStudentScoreRow = async function () {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມຄະແນນໄດ້!");
-
-        const name = prompt(`ປ້ອນຊື່ນັກຮຽນ (ຫ້ອງ ${userGrade}):`);
-        if (!name || !cleanText(name)) return;
-
-        const hwInput = prompt("ປ້ອນຄະແນນບົດຝຶກຫັດ (0 - 30):", "25");
-        if (hwInput === null) return;
-        const midInput = prompt("ປ້ອນຄະແນນສອບເສັງກາງພາກ (0 - 50):", "40");
-        if (midInput === null) return;
-        const finalInput = prompt("ປ້ອນຄະແນນສອບເສັງທ້າຍພາກ (0 - 100):", "80");
-        if (finalInput === null) return;
-
-        const newId = "STD-" + Date.now();
-        const newItem = {
-            id: newId,
-            firestoreId: newId,
-            name: cleanText(name),
-            grade: userGrade,
-            attendanceScore: null,
-            homeworkScore: parseBoundedNumber(hwInput, 0, 30, 0),
-            midtermScore: parseBoundedNumber(midInput, 0, 50, 0),
-            finalScore: parseBoundedNumber(finalInput, 0, 100, 0)
-        };
-
-        try {
-            await setDoc(doc(db, COLLECTION_NAME, newId), newItem);
-            updateSyncBadge("ບັນທຶກສຳເລັດ");
-        } catch (err) {
-            console.error("Firestore score add error:", err);
-        }
-
-        scoresData.push(newItem);
-        saveScoresLocal();
-        renderAllRooms();
-    };
-
-    window.editStudentScore = async function (id) {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂຄະແນນໄດ້!");
-        const target = scoresData.find((s) => s.id === id);
-        if (!target) return;
-
-        const currentAtt = getAttendanceScore(target);
-        const attInput = prompt(`ແກ້ໄຂຄະແນນການມາຮຽນ (0 - 20) ຂອງ "${target.name}":`, String(currentAtt));
-        if (attInput === null) return;
-
-        const hwInput = prompt(`ແກ້ໄຂຄະແນນບົດຝຶກຫັດ (0 - 30) ຂອງ "${target.name}":`, String(parseBoundedNumber(target.homeworkScore, 0, 30, 0)));
-        if (hwInput === null) return;
-
-        const midInput = prompt(`ແກ້ໄຂຄະແນນສອບເສັງກາງພາກ (0 - 50) ຂອງ "${target.name}":`, String(parseBoundedNumber(target.midtermScore, 0, 50, 0)));
-        if (midInput === null) return;
-
-        const finalInput = prompt(`ແກ້ໄຂຄະແນນສອບເສັງທ້າຍພາກ (0 - 100) ຂອງ "${target.name}":`, String(getFinalScore(target)));
-        if (finalInput === null) return;
-
-        target.attendanceScore = parseBoundedNumber(attInput, 0, 20, 0);
-        target.homeworkScore = parseBoundedNumber(hwInput, 0, 30, 0);
-        target.midtermScore = parseBoundedNumber(midInput, 0, 50, 0);
-        target.finalScore = parseBoundedNumber(finalInput, 0, 100, 0);
-
-        const docId = target.firestoreId || target.id;
-        target.firestoreId = docId;
-
-        try {
-            await setDoc(doc(db, COLLECTION_NAME, docId), target, { merge: true });
-            updateSyncBadge("ອັບເດດແລ້ວ");
-        } catch (err) {
-            console.error("Firestore score update error:", err);
-        }
-
-        saveScoresLocal();
-        renderAllRooms();
-    };
-
-    window.deleteStudentScore = async function (id) {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບຄະແນນໄດ້!");
-        const target = scoresData.find((s) => s.id === id);
-        if (!target) return;
-        if (!confirm(`ຢືນຢັນລົບຂໍ້ມູນຄະແນນຂອງ "${target.name}"?`)) return;
-
-        const docId = target.firestoreId || target.id;
-        try {
-            await deleteDoc(doc(db, COLLECTION_NAME, docId));
-            updateSyncBadge("ລົບຂໍ້ມູນແລ້ວ");
-        } catch (err) {
-            console.error("Firestore score delete error:", err);
-        }
-
-        scoresData = scoresData.filter((s) => s.id !== id);
-        saveScoresLocal();
-        renderAllRooms();
-    };
-
-    window.loadScoresFromFirestore = async function (showAlert = false) {
+    window.loadFromFirestore = async function (showAlert = false) {
         try {
             const snap = await getDocs(collection(db, COLLECTION_NAME));
             if (!snap.empty) {
-                scoresData = snap.docs.map((d) => ({
-                    id: d.data().id || d.id,
-                    firestoreId: d.id,
-                    ...d.data()
-                }));
-                saveScoresLocal();
+                students = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
+                saveLocal();
             }
-            updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId}`);
-            renderAllRooms();
-            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຄະແນນສຳເລັດ!");
+            renderAll();
+            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນສຳເລັດ!");
         } catch (err) {
-            console.warn("ບໍ່ໄດ້ໂຫຼດ student_scores ຈາກ Firestore:", err.message);
-            updateSyncBadge("⚠️ Offline (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
-            renderAllRooms();
+            console.warn(err);
+            renderAll();
         }
     };
 
     onSnapshot(collection(db, COLLECTION_NAME), (snap) => {
         if (!snap.empty) {
-            scoresData = snap.docs.map((d) => ({
-                id: d.data().id || d.id,
-                firestoreId: d.id,
-                ...d.data()
-            }));
-            saveScoresLocal();
-            updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId}`);
-            renderAllRooms();
+            students = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
+            saveLocal();
+            renderAll();
         }
-    }, (err) => {
-        console.warn("Realtime listener student_scores:", err.message);
-    });
+    }, () => {});
 
-    function esc(str) {
-        return String(str ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;");
-    }
-
-    applyAdminPermissions();
-    renderAllRooms();
-    loadScoresFromFirestore(false);
-    let extraSubjectRows = [];
-
-function mergeExtraSubjectScoresIntoStudents() {
-    if (!Array.isArray(extraSubjectRows) || !extraSubjectRows.length) return;
-
-    extraSubjectRows.forEach((row) => {
-        const rName = cleanText(row.studentName || row.name || "").toLowerCase();
-        const rGrade = cleanGrade(row.grade || row.room || "");
-        const rSubject = cleanText(row.subject || row.subjectName || "");
-        const rScore = row.score ?? row.value ?? row.points;
-
-        if (!rName || !rSubject || rScore === undefined || rScore === null || rScore === "") return;
-
-        const targetStudent = scoresData.find((s) => {
-            const sName = cleanText(s.name).toLowerCase();
-            const sameName = sName === rName || sName.includes(rName) || rName.includes(sName);
-            const sameGrade = !rGrade || !s.grade || cleanGrade(s.grade) === rGrade;
-            return sameName && sameGrade;
-        });
-
-        if (targetStudent) {
-            targetStudent.subjects = {
-                ...(targetStudent.subjects || {}),
-                [rSubject]: parseBoundedNumber(rScore, 0, 100, 0)
-            };
-        }
-    });
-
-    saveScoresLocal();
-}
-
-onSnapshot(collection(db, "subject_scores"), (snap) => {
-    extraSubjectRows = snap.docs.map((d) => d.data());
-    mergeExtraSubjectScoresIntoStudents();
-    renderAllRooms();
-}, () => {});
+    renderAll();
+    loadFromFirestore(false);
 </script>
 </body>
 </html>
