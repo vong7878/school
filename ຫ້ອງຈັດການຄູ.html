@@ -108,6 +108,21 @@
         .badge-grade { background: #0f766e; color: #ccfbf1; }
         .badge-fb { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
 
+        .quota-banner {
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: #fde68a;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 12px;
+            line-height: 1.4;
+            display: none;
+            overflow-wrap: anywhere;
+        }
+        .quota-banner.show {
+            display: block;
+        }
+
         .admin-only,
         #nav-manage,
         #panel-manage,
@@ -570,6 +585,10 @@
         </div>
     </div>
 
+    <div class="quota-banner" id="quotaBanner">
+        ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບກຳລັງໃຊ້ຂໍ້ມູນທີ່ເກັບໃນເຄື່ອງ (`localStorage`) ແລະ ຫຼຸດການເອີ້ນຖານຂໍ້ມູນອັດຕະໂນມັດ.
+    </div>
+
     <section class="card" id="panel-history">
         <div class="card-header">
             <h2>🔍 ຄົ້ນຫາ ແລະ ເບິ່ງປະຫວັດຄູໃນໂຮງຮຽນ (ໂຕບໍ່ຊ້ຳກັນ)</h2>
@@ -581,7 +600,7 @@
                     <option value="ພາສາ ແລະ ສັງຄົມສາດ">ພາສາ ແລະ ສັງຄົມສາດ</option>
                     <option value="ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ">ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ</option>
                 </select>
-                <button type="button" class="btn-sync" onclick="loadTeachersFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
+                <button type="button" class="btn-sync" id="syncBtn" onclick="loadTeachersFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
             </div>
         </div>
 
@@ -643,7 +662,7 @@
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, onSnapshot, doc, setDoc
+        getFirestore, collection, getDocs, doc, setDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -663,8 +682,10 @@
     const db = getFirestore(app);
     const COLLECTION_NAME = "teachers";
     const CRED_OVERRIDE_STORAGE_KEY = "school_teacher_cred_overrides_v1";
-    const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
-    const SYNC_EVENT_NAME = "school-data-updated";
+    const LAST_FETCH_TS_KEY = "school_teachers_last_fetch_ts";
+    const QUOTA_BLOCK_UNTIL_KEY = "school_firestore_quota_blocked_until";
+    const FETCH_COOLDOWN_MS = 60000;
+    const QUOTA_COOLDOWN_MS = 1800000; // 30 นาที
 
     function cleanVal(v) {
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
@@ -676,6 +697,27 @@
 
     function isEmailLike(v) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanVal(v));
+    }
+
+    function isQuotaError(err) {
+        const code = String(err?.code || "").toLowerCase();
+        const msg = String(err?.message || "").toLowerCase();
+        return (
+            code.includes("resource-exhausted") ||
+            msg.includes("quota") ||
+            msg.includes("resource exhausted") ||
+            msg.includes("daily usage")
+        );
+    }
+
+    function setQuotaNotice(active) {
+        const banner = document.getElementById("quotaBanner");
+        if (!banner) return;
+        if (active) {
+            banner.classList.add("show");
+        } else {
+            banner.classList.remove("show");
+        }
     }
 
     function resolveRole() {
@@ -720,7 +762,7 @@
         clearTimeout(showToast._timer);
         showToast._timer = setTimeout(() => {
             el.classList.remove("show");
-        }, 3000);
+        }, 3200);
     }
 
     function getLocalOverrides() {
@@ -975,7 +1017,18 @@
         saveLocalOverride(t, newEmail, newPassword, allowEmail, allowPass);
         saveTeachersLocal();
 
-        const withTimeout = (promise, ms = 12000) =>
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (Date.now() < blockedUntil) {
+            setQuotaNotice(true);
+            renderTeachersTable();
+            closeEditModal();
+            saveBtn.disabled = false;
+            saveBtn.textContent = "ບັນທຶກ";
+            showToast("ບັນທຶກໃນເຄື່ອງແລ້ວ (ໂຄຕ້າ Firebase ເຕັມ)");
+            return;
+        }
+
+        const withTimeout = (promise, ms = 9000) =>
             Promise.race([
                 promise,
                 new Promise((_, reject) =>
@@ -989,16 +1042,20 @@
                 const payload = { name: t.name, code: t.code || safeId };
                 if (allowEmail) payload.email = newEmail;
                 if (allowPass) payload.password = newPassword;
-                await withTimeout(setDoc(doc(db, COLLECTION_NAME, safeId), payload, { merge: true }), 12000);
+                await withTimeout(setDoc(doc(db, COLLECTION_NAME, safeId), payload, { merge: true }), 9000);
             }
+            setQuotaNotice(false);
             renderTeachersTable();
             closeEditModal();
             showToast("ບັນທຶກຂໍ້ມູນສຳເລັດແລ້ວ");
         } catch (err) {
-            console.warn("Teacher credential save:", err);
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
             renderTeachersTable();
             closeEditModal();
-            showToast("ບັນທຶກໃນເຄື່ອງແລ້ວ (Firestore ເຊື່ອມຕໍ່ຊ້າ/ບໍ່ໄດ້)");
+            showToast("ບັນທຶກໃນເຄື່ອງແລ້ວ (Firebase ບໍ່ສາມາດຂຽນໄດ້ຊົ່ວຄາວ)");
         } finally {
             saveBtn.disabled = false;
             saveBtn.textContent = "ບັນທຶກ";
@@ -1149,8 +1206,32 @@
     };
 
     window.loadTeachersFromFirestore = async function (showAlert = false) {
+        const now = Date.now();
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        const lastFetchTs = Number(localStorage.getItem(LAST_FETCH_TS_KEY) || "0");
+
+        if (now < blockedUntil) {
+            setQuotaNotice(true);
+            updateSyncBadge("⚠️ ໂຄຕ້າເຕັມ (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
+            renderTeachersTable();
+            if (showAlert) showToast("ໂຄຕ້າ Firebase ເຕັມ ກຳລັງໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+            return;
+        }
+
+        if (!showAlert && now - lastFetchTs < FETCH_COOLDOWN_MS) {
+            renderTeachersTable();
+            return;
+        }
+
+        const syncBtn = document.getElementById("syncBtn");
+        if (syncBtn) syncBtn.disabled = true;
+
         try {
             const snap = await getDocs(collection(db, COLLECTION_NAME));
+            localStorage.setItem(LAST_FETCH_TS_KEY, String(Date.now()));
+            localStorage.removeItem(QUOTA_BLOCK_UNTIL_KEY);
+            setQuotaNotice(false);
+
             if (!snap.empty) {
                 const loaded = snap.docs.map((d) => normalizeTeacherRecord(d.data(), d.id));
                 teachersData = dedupeTeachers(loaded);
@@ -1158,27 +1239,22 @@
             }
             updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId}`);
             renderTeachersTable();
-            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຄູ (ໂຕບໍ່ຊ້ຳກັນ) ສຳເລັດ!");
+            if (showAlert) showToast("✅ ໂຫຼດຂໍ້ມູນຄູສຳເລັດ!");
         } catch (err) {
-            console.warn("Firestore teachers load error:", err.message);
-            updateSyncBadge("⚠️ Offline (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+                updateSyncBadge("⚠️ ໂຄຕ້າເຕັມ (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
+                if (showAlert) showToast("⚠️ ໂຄຕ້າ Firebase ປະຈຳມື້ເຕັມ ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+            } else {
+                updateSyncBadge("⚠️ Offline (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
+                if (showAlert) showToast("⚠️ ເຊື່ອມຕໍ່ຊ້າ ໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໃນເຄື່ອງ");
+            }
             renderTeachersTable();
+        } finally {
+            if (syncBtn) syncBtn.disabled = false;
         }
     };
-
-    onSnapshot(collection(db, COLLECTION_NAME), (snap) => {
-        if (!snap.empty) {
-            const loaded = snap.docs.map((d) => normalizeTeacherRecord(d.data(), d.id));
-            teachersData = dedupeTeachers(loaded);
-            saveTeachersLocal();
-            renderTeachersTable();
-        }
-    }, () => {});
-
-    window.addEventListener("storage", (e) => {
-        if (e.key === SYNC_STORAGE_KEY || e.key === CRED_OVERRIDE_STORAGE_KEY) loadTeachersFromFirestore(false);
-    });
-    window.addEventListener(SYNC_EVENT_NAME, () => loadTeachersFromFirestore(false));
 
     function esc(str) {
         return String(str ?? "")
