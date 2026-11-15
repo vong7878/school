@@ -2,12 +2,20 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Noto Sans Lao', sans-serif;
+    font-family: 'Noto Sans Lao', 'Phetsarath OT', 'Saysettha OT', sans-serif;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
-    background-color: #f4f7f6;
-    color: #333;
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans Lao', 'Phetsarath OT', 'Saysettha OT', sans-serif;
 }
 
 .container {
@@ -18,9 +26,10 @@ body {
 .sidebar {
     width: 260px;
     background-color: #1e293b;
-    color: white;
+    color: #f8fafc;
     padding: 20px 0;
     flex-shrink: 0;
+    border-right: 1px solid #334155;
 }
 
 .sidebar .logo {
@@ -28,6 +37,7 @@ body {
     padding-bottom: 20px;
     border-bottom: 1px solid #334155;
     margin-bottom: 20px;
+    color: #f8fafc;
 }
 
 .nav-links {
@@ -37,17 +47,25 @@ body {
 .nav-links li {
     padding: 15px 25px;
     cursor: pointer;
-    transition: background 0.3s;
-    font-size: 16px;
+    transition: background 0.2s;
+    font-size: 15px;
+    color: #e2e8f0;
 }
 
-.nav-links li:hover, .nav-links li.active {
-    background-color: #3b82f6;
+.nav-links li:hover,
+.nav-links li.active {
+    background-color: #2563eb;
+    color: #ffffff;
 }
 
 .main-content {
     flex-grow: 1;
-    padding: 30px;
+    padding: 16px 20px 32px;
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .section {
@@ -58,77 +76,87 @@ body {
     display: block;
 }
 
-h1 {
-    margin-bottom: 25px;
-    color: #1e293b;
+h1, h2, h3 {
+    color: #f8fafc;
 }
 
 .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
 }
 
 .card {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    border-left: 5px solid #3b82f6;
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    padding: 18px 20px;
+    border-radius: 12px;
+    border: 1px solid #334155 !important;
+    border-left: 4px solid #38bdf8 !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 
 .card h3 {
-    font-size: 16px;
-    color: #64748b;
-    margin-bottom: 10px;
+    font-size: 14px;
+    color: #cbd5e1 !important;
+    margin-bottom: 8px;
+    font-weight: 600;
 }
 
 .card p {
-    font-size: 32px;
-    font-weight: bold;
-    color: #1e293b;
+    font-size: 28px;
+    font-weight: 700;
+    color: #38bdf8 !important;
 }
 
 .form-container {
-    background: white;
+    background: #1e293b;
+    color: #f8fafc;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    margin-bottom: 25px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    margin-bottom: 20px;
 }
 
 .form-container h3 {
     margin-bottom: 15px;
-    font-size: 18px;
+    font-size: 17px;
+    color: #f8fafc;
 }
 
-form, .filter-box {
+form,
+.filter-box {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
+    gap: 14px;
 }
 
-input, select {
+input,
+select {
     padding: 10px 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
+    border: 1px solid #475569;
+    border-radius: 8px;
     font-size: 14px;
+    background: #0f172a;
+    color: #f8fafc;
     outline: none;
 }
 
-input:focus, select:focus {
-    border-color: #3b82f6;
+input:focus,
+select:focus {
+    border-color: #38bdf8;
 }
 
 .btn-add {
     background-color: #10b981;
-    color: white;
+    color: #ffffff;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 10px 15px;
     cursor: pointer;
-    font-weight: bold;
-    transition: background 0.3s;
+    font-weight: 700;
+    transition: background 0.2s;
 }
 
 .btn-add:hover {
@@ -136,10 +164,12 @@ input:focus, select:focus {
 }
 
 .table-container {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
     overflow-x: auto;
 }
 
@@ -155,29 +185,36 @@ table {
     text-align: left;
 }
 
-th, td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #e2e8f0;
+th,
+td {
+    padding: 11px 14px;
+    border: 1px solid #334155;
+    color: #e2e8f0;
 }
 
 th {
-    background-color: #f8fafc;
-    color: #475569;
-    font-weight: 600;
+    background-color: #0f172a;
+    color: #93c5fd;
+    font-weight: 700;
 }
 
-tr:hover {
-    background-color: #f1f5f9;
+td {
+    background-color: #162032;
+}
+
+tr:hover td {
+    background-color: #24334d;
 }
 
 .btn-delete {
     background-color: #ef4444;
-    color: white;
+    color: #ffffff;
     border: none;
     padding: 6px 12px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 13px;
+    font-weight: 600;
 }
 
 .btn-delete:hover {
@@ -190,11 +227,15 @@ tr:hover {
     }
     .sidebar {
         width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #334155;
     }
 }
-/* ຕົບແຕ່ງ Sidebar ໃຫ້ຕົວຫນັງສືເຫັນຊັດເຈນ */
-.sidebar ul li a, sidebar a {
-    color: #ffffff !important; /* เปลี่ยนເປັນສີຂາວ */
+
+/* ຕົບແຕ່ງ Sidebar ໃຫ້ຕົວໜັງສືເຫັນຊັດເຈນ */
+.sidebar ul li a,
+sidebar a {
+    color: #f8fafc !important;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -204,110 +245,121 @@ tr:hover {
     transition: background 0.2s;
 }
 
-/* ເວລານຳເມົ້າໄປຊີ້ (Hover) ໃຫ້ມີສີ້ນັ້ນຕ່າງ */
 .sidebar ul li a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.12);
 }
-        body {
-            font-family: 'Noto Sans Lao', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f6f9;
-        }
-        /* ຕົບແຕ່ງສ່ວນ Header ດ້ານເທິງ */
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #ffffff;
-            padding: 15px 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        /* 📌 ປຸ່ມ 3 ຂີດ ສຳລັບກົດເຊື່ອງ/ເປີດ Sidebar */
-        .sidebar-toggle-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 5px 10px;
-            color: #333;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        .sidebar-toggle-btn:hover {
-            background: #f1f3f5;
-        }
-        .app-title h2 {
-            margin: 0;
-            color: #333;
-            font-size: 20px;
-        }
-        /* ໄອຄອນໂປຣໄຟລ໌ ແລະ ຂໍ້ມູນຜູ້ໃຊ້ */
-        .user-profile-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #f8f9fa;
-            padding: 6px 15px;
-            border-radius: 30px;
-            border: 1px solid #e9ecef;
-        }
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-        #user-display-name {
-            font-weight: bold;
-            color: #333;
-            font-size: 14px;
-        }
-        #user-display-role {
-            font-size: 10px;
-            background: #007bff;
-            color: white;
-            padding: 1px 6px;
-            border-radius: 10px;
-            text-transform: uppercase;
-            width: fit-content;
-            margin-top: 2px;
-        }
-        .logout-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Noto Sans Lao', sans-serif;
-            font-size: 13px;
-            transition: background 0.2s;
-        }
-        .logout-btn:hover {
-            background: #c82333;
-        }
+
+/* ຕົບແຕ່ງສ່ວນ Header ດ້ານເທິງ */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 14px 24px;
+    border-bottom: 1px solid #334155;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.sidebar-toggle-btn {
+    background: #334155;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 6px 10px;
+    color: #f8fafc;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.sidebar-toggle-btn:hover {
+    background: #475569;
+}
+
+.app-title h2 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 19px;
+}
+
+.user-profile-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    padding: 12px 16px;
+    margin: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #334155 !important;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+#user-display-name {
+    font-weight: 700;
+    color: #f8fafc !important;
+    font-size: 14px;
+    display: block;
+}
+
+#user-display-role {
+    font-size: 11px;
+    background: #2563eb;
+    color: #ffffff !important;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    width: fit-content;
+    margin-top: 4px;
+    display: inline-block;
+}
+
+.logout-btn {
+    background: #dc2626;
+    color: #ffffff;
+    border: none;
+    padding: 7px 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Noto Sans Lao', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.logout-btn:hover {
+    background: #b91c1c;
+}
 
 .topbar {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 10px 16px;
-    background: #ffffff;
-    border-bottom: 1px solid #dee2e6;
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border-bottom: 1px solid #334155 !important;
     position: sticky;
     top: 0;
     z-index: 1001;
 }
 
 .hamburger-btn {
-    background: #2c3e50;
+    background: #334155;
     color: #ffffff;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     width: 40px;
     height: 40px;
     font-size: 20px;
@@ -319,7 +371,7 @@ tr:hover {
 }
 
 .hamburger-btn:hover {
-    background: #1a252f;
+    background: #475569;
 }
 
 .hamburger-btn:active {
@@ -329,10 +381,9 @@ tr:hover {
 .topbar-title {
     font-weight: 700;
     font-size: 16px;
-    color: #2c3e50;
+    color: #f8fafc;
 }
 
-/* ຕອນເຊື່ອງ Sidebar */
 .app-sidebar.collapsed {
     display: none;
 }
@@ -350,7 +401,7 @@ tr:hover {
 .app-sidebar ul li a,
 .app-sidebar ul li a:visited {
     display: block;
-    color: #f8f9fa;
+    color: #f8fafc;
     text-decoration: none;
     padding: 8px 12px;
     border-radius: 6px;
@@ -362,42 +413,44 @@ tr:hover {
 .app-sidebar ul li a:hover {
     background: rgba(255, 255, 255, 0.14);
 }
+
 .top-navbar {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        background: #1e293b;
-        color: #ffffff;
-        padding: 10px 16px;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    }
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #1e293b;
+    color: #ffffff;
+    padding: 10px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
 
-    .menu-toggle-btn {
-        background: #334155;
-        color: #ffffff;
-        border: none;
-        border-radius: 8px;
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: background 0.2s ease;
-    }
+.menu-toggle-btn {
+    background: #334155;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
 
-    .menu-toggle-btn:hover {
-        background: #475569;
-    }
+.menu-toggle-btn:hover {
+    background: #475569;
+}
 
-    .top-navbar-title {
-        font-size: 16px;
-        font-weight: 700;
-    }
+.top-navbar-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f8fafc !important;
+}
 
 .slide-menubar {
     position: fixed !important;
@@ -411,7 +464,7 @@ tr:hover {
     z-index: 9999 !important;
     padding: 16px !important;
     overflow-y: auto !important;
-    box-shadow: 4px 0 18px rgba(0, 0, 0, 0.25) !important;
+    box-shadow: 4px 0 18px rgba(0, 0, 0, 0.35) !important;
     transform: translateX(-100%) !important;
     transition: transform 0.25s ease !important;
     display: block !important;
@@ -425,7 +478,7 @@ tr:hover {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.45);
+    background: rgba(2, 6, 23, 0.65);
     z-index: 9990;
 }
 
@@ -442,6 +495,7 @@ tr:hover {
     padding-bottom: 12px;
     margin-bottom: 14px;
     border-bottom: 1px solid #334155;
+    color: #f8fafc;
 }
 
 .menu-close-btn {
@@ -495,64 +549,11 @@ tr:hover {
 .menubar-list li.menu-highlight a:hover {
     background: #0d9488;
 }
-body {
-    background-color: #0f172a !important;
-    color: #e2e8f0 !important;
-    margin: 0;
-    font-family: 'Noto Sans Lao', sans-serif;
-}
-
-.topbar {
-    background: #1e293b !important;
-    color: #f8fafc !important;
-    border-bottom: 1px solid #334155 !important;
-}
-
-.top-navbar-title {
-    color: #f8fafc !important;
-}
-
-.user-profile-badge {
-    background: #1e293b !important;
-    color: #f8fafc !important;
-    border: 1px solid #334155 !important;
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-#user-display-name {
-    color: #f8fafc !important;
-    font-weight: 700;
-    display: block;
-}
-
-#user-display-role {
-    background: #2563eb;
-    color: #ffffff !important;
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    display: inline-block;
-    margin-top: 4px;
-}
-
-.main-content {
-    padding: 12px 16px 32px;
-    max-width: 1100px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
 
 .panel-card {
-    background: #1e293b;
-    border: 1px solid #334155;
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+    border: 1px solid #334155 !important;
     border-radius: 14px;
     padding: 18px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
@@ -572,7 +573,7 @@ body {
 .panel-header h3 {
     margin: 0;
     font-size: 16px;
-    color: #f8fafc;
+    color: #f8fafc !important;
 }
 
 .room-badge {
@@ -665,6 +666,7 @@ body {
 .dark-table tr:hover td {
     background: #24334d;
 }
+
 .role-view-badge {
     background: #334155;
     color: #cbd5e1;
@@ -686,6 +688,7 @@ body {
 #mainContent button[onclick*="delete"] {
     display: none !important;
 }
+
 #menu-scores,
 #menu-scores a,
 a[href*="scores.html"] {
@@ -694,129 +697,140 @@ a[href*="scores.html"] {
     opacity: 1 !important;
     pointer-events: auto !important;
 }
-.detail-mini-btn {
-        background: #2563eb;
-        color: #ffffff;
-        border: 1px solid #3b82f6;
-        border-radius: 7px;
-        padding: 4px 10px;
-        font-family: inherit;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-    }
-    .detail-mini-btn:hover {
-        background: #1d4ed8;
-    }
 
-    .schedule-modal-backdrop {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(2, 6, 23, 0.78);
-        z-index: 9999;
-        padding: 16px;
-        align-items: center;
-        justify-content: center;
-    }
-    .schedule-modal-backdrop.open {
-        display: flex;
-    }
-    .schedule-modal-card {
-        width: 100%;
-        max-width: 960px;
-        max-height: 88vh;
-        overflow-y: auto;
-        background: #1e293b;
-        color: #e2e8f0;
-        border: 1px solid #334155;
-        border-radius: 16px;
-        padding: 18px;
-        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
-    }
-    .schedule-modal-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        padding-bottom: 12px;
-        margin-bottom: 14px;
-        border-bottom: 1px solid #334155;
-        flex-wrap: wrap;
-    }
-    .schedule-modal-title {
-        margin: 0;
-        font-size: 17px;
-        font-weight: 700;
-        color: #f8fafc;
-    }
-    .schedule-close-btn {
-        background: #334155;
-        color: #f8fafc;
-        border: none;
-        border-radius: 8px;
-        padding: 6px 12px;
-        font-family: inherit;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-    .schedule-type-tabs {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-bottom: 14px;
-    }
-    .schedule-type-btn {
-        background: #0f172a;
-        color: #cbd5e1;
-        border: 1px solid #334155;
-        border-radius: 10px;
-        padding: 8px 14px;
-        font-family: inherit;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-    .schedule-type-btn.active {
-        background: #2563eb;
-        border-color: #3b82f6;
-        color: #ffffff;
-    }
-    .schedule-table-wrap {
-        width: 100%;
-        overflow-x: auto;
-    }
-    .schedule-detail-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 620px;
-    }
-    .schedule-detail-table th,
-    .schedule-detail-table td {
-        border: 1px solid #334155;
-        padding: 9px 11px;
-        text-align: left;
-        font-size: 13px;
-    }
-    .schedule-detail-table th {
-        background: #0f172a;
-        color: #93c5fd;
-        font-weight: 700;
-    }
-    .schedule-detail-table td {
-        background: #162032;
-        color: #e2e8f0;
-    }
-/* ແກ້ໄຂໂຕໜັງສືໃນ Sidebar ໃຫ້ສະເໝີກັນ ແລະ ອ່ານງ່າຍ */
-html {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+.detail-mini-btn {
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #3b82f6;
+    border-radius: 7px;
+    padding: 4px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 
+.detail-mini-btn:hover {
+    background: #1d4ed8;
+}
+
+.schedule-modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.78);
+    z-index: 9999;
+    padding: 16px;
+    align-items: center;
+    justify-content: center;
+}
+
+.schedule-modal-backdrop.open {
+    display: flex;
+}
+
+.schedule-modal-card {
+    width: 100%;
+    max-width: 960px;
+    max-height: 88vh;
+    overflow-y: auto;
+    background: #1e293b;
+    color: #e2e8f0;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+}
+
+.schedule-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #334155;
+    flex-wrap: wrap;
+}
+
+.schedule-modal-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.schedule-close-btn {
+    background: #334155;
+    color: #f8fafc;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.schedule-type-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.schedule-type-btn {
+    background: #0f172a;
+    color: #cbd5e1;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.schedule-type-btn.active {
+    background: #2563eb;
+    border-color: #3b82f6;
+    color: #ffffff;
+}
+
+.schedule-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.schedule-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 620px;
+}
+
+.schedule-detail-table th,
+.schedule-detail-table td {
+    border: 1px solid #334155;
+    padding: 9px 11px;
+    text-align: left;
+    font-size: 13px;
+}
+
+.schedule-detail-table th {
+    background: #0f172a;
+    color: #93c5fd;
+    font-weight: 700;
+}
+
+.schedule-detail-table td {
+    background: #162032;
+    color: #e2e8f0;
+}
+
+/* ແກ້ໄຂໂຕໜັງສືໃນ Sidebar ໃຫ້ສະເໝີກັນ ແລະ ອ່ານງ່າຍ */
 aside,
 nav,
 .sidebar,
@@ -846,6 +860,7 @@ nav *,
     font-family: inherit !important;
     line-height: 1.55 !important;
 }
+
 /* ແກ້ໄຂພື້ນສີຂາວ ແລະ ຕົວໜັງສືບໍ່ແຈ້ງໃນໜ້າ Dashboard */
 .dashboard-section,
 .dashboard-card,
@@ -867,10 +882,9 @@ nav *,
 .dashboard-section span,
 .dashboard-section div,
 [class*="stat"] * {
-    color: #e2e8f0;
+    color: #e2e8f0 !important;
 }
 
-/* ບັງຄັບສີຕົວເລກສະຖິຕິໃຫ້ເດັ່ນຊັດ */
 .stat-value,
 .stat-number,
 [class*="stat"] strong,
