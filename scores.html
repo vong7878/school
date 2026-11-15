@@ -53,6 +53,19 @@
         .back-btn:hover, a.nav-link:hover { background: #475569; }
         a.nav-checkin { background: #0f766e; color: #ccfbf1; }
         a.nav-checkin:hover { background: #0d9488; }
+        a.btn-add-link {
+            background: #16a34a;
+            color: #fff;
+            text-decoration: none;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        a.btn-add-link:hover { background: #15803d; }
         .page-title {
             margin: 0;
             font-size: 18px;
@@ -190,7 +203,6 @@
             cursor: pointer;
         }
         button:hover { opacity: 0.92; }
-        .btn-add { background: #16a34a; color: #fff; }
         .btn-edit { background: #eab308; color: #0f172a; padding: 5px 9px; font-size: 12px; }
         .btn-del { background: #dc2626; color: #fff; padding: 5px 9px; font-size: 12px; }
         .btn-sync { background: #0284c7; color: #fff; }
@@ -286,7 +298,7 @@
             </div>
             <div class="controls">
                 <button type="button" class="btn-sync" onclick="loadFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
-                <button type="button" class="btn-add admin-action" onclick="addStudentRecord()">➕ ເພີ່ມນັກຮຽນ</button>
+                <a href="update.html?tab=students" class="btn-add-link admin-action" id="linkAddStudentUpdate">➕ ເພີ່ມນັກຮຽນ (ຫ້ອງອັບເດດ 3)</a>
             </div>
         </div>
     </div>
@@ -319,7 +331,7 @@
                     <tbody id="tbody-attendance"></tbody>
                 </table>
             </div>
-            <div class="note-text">* ຄະແນນການມາຮຽນດຶງອັດຕະໂນມັດຈາກລະບົບກວດຄົນຂາດ (ຄະແນນເຕັມ 20 ປັບເປັນສະເກນ 10 = ຄະແນນ ÷ 2) ແລະ ຊິ້ງ Real-time ຜ່ານ Firebase.</div>
+            <div class="note-text">* ຄະແນນການມາຮຽນດຶງອັດຕະໂນມັດຈາກລະບົບກວດຄົນຂາດ (ຄະແນນເຕັມ 20 ປັບເປັນສະເກນ 10 = ຄະແນນ ÷ 2) ແລະ ຊິ້ງ Real-time ຜ່ານ Firebase[cite: 6].</div>
         </section>
 
         <section class="card sub-panel-subject" id="sub-participation" style="display:none; margin-top:12px;">
@@ -727,7 +739,7 @@
 
     function applyAdminUI() {
         document.querySelectorAll(".admin-action").forEach((el) => {
-            el.style.display = isAdmin ? "" : "none";
+            el.style.display = isAdmin ? (el.tagName === "A" ? "inline-flex" : "") : "none";
         });
     }
 
@@ -788,35 +800,6 @@
         } catch (err) {
             console.error(err);
         }
-        saveLocal();
-        renderAll();
-    };
-
-    window.addStudentRecord = async function () {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມໄດ້!");
-        const name = prompt(`ປ້ອນຊື່ນັກຮຽນ (ຫ້ອງ ${userGrade}):`);
-        if (!name || !cleanText(name)) return;
-
-        const cleanStudentName = cleanText(name).replace(/\s+/g, " ");
-        const newId = "STD-" + Date.now();
-        const item = {
-            id: newId,
-            firestoreId: newId,
-            name: cleanStudentName,
-            grade: userGrade,
-            totalCredits: 24,
-            earnedCredits: 24,
-            coursework: { attendance: 10, participation: 10, homework: 18, midterm: 20, final: 28 }
-        };
-        item.annualAvg = calcAnnualAvg(item);
-        item.quarterScore = Number((item.annualAvg / 4).toFixed(2));
-
-        try {
-            await setDoc(doc(db, COLLECTION_NAME, newId), item);
-        } catch (err) {
-            console.error(err);
-        }
-        students.push(item);
         saveLocal();
         renderAll();
     };
