@@ -203,8 +203,17 @@
 
     <section class="card" id="sec-class-timetable">
         <div class="card-header">
-            <h2 id="classTimetableTitle">📅 2. ຕາຕະລາງຮຽນ</h2>
+            <h2 id="classTimetableTitle">📅 2. ຕາຕະລາງຮຽນປະຈຳພາກ</h2>
             <div class="controls">
+                <select id="academicYearSelect" onchange="onTermPeriodChange()">
+                    <option value="2026-2027">ສົກຮຽນ 2026-2027</option>
+                    <option value="2027-2028">ສົກຮຽນ 2027-2028</option>
+                    <option value="2025-2026">ສົກຮຽນ 2025-2026</option>
+                </select>
+                <select id="semesterSelect" onchange="onTermPeriodChange()">
+                    <option value="ພາກຮຽນທີ 1">ພາກຮຽນທີ 1</option>
+                    <option value="ພາກຮຽນທີ 2">ພາກຮຽນທີ 2</option>
+                </select>
                 <select id="classTimetableGrade" onchange="renderClassTimetable()">
                     <option value="ມ.1">ຫ້ອງ ມ.1</option>
                     <option value="ມ.2">ຫ້ອງ ມ.2</option>
@@ -234,7 +243,7 @@
 
     <section class="card" id="sec-teaching-timetable">
         <div class="card-header">
-            <h2>👩‍🏫 3. ຕາຕະລາງສອນ</h2>
+            <h2 id="teachingTimetableTitle">👩‍🏫 3. ຕາຕະລາງສອນປະຈຳພາກ</h2>
             <div class="controls">
                 <input type="text" id="teachingSearch" placeholder="🔍 ຄົ້ນຫາຄູ / ວິຊາ / ຫ້ອງ..." oninput="renderTeachingTimetable()" />
             </div>
@@ -247,6 +256,7 @@
                         <th>ຊື່ຄູຜູ້ສອນ</th>
                         <th>ວິຊາສອນ</th>
                         <th>ຫ້ອງ</th>
+                        <th>ພາກ / ສົກຮຽນ</th>
                         <th>ມື້ / ເວລາສອນ</th>
                     </tr>
                 </thead>
@@ -254,7 +264,7 @@
             </table>
         </div>
         <div class="note-text">
-            * ສ່ວນທີ 3 (ຕາຕະລາງສອນ) ຖືກຊ່ອນຈາກນັກຮຽນ; ເມື່ອອັບເດດໃນ ໜ້າ 12 (ເມນູ 4) ທັງຕາຕະລາງຮຽນ (ສ່ວນທີ 2) ແລະ ຕາຕະລາງສອນ (ສ່ວນທີ 3) ຈະອັບເດດຕາມອັດຕະໂນມັດ.
+            * ສ່ວນທີ 3 (ຕາຕະລາງສອນປະຈຳພາກ) ຖືກຊ່ອນຈາກນັກຮຽນ; ເມື່ອອັບເດດໃນ ໜ້າ 12 (ເມນູ 4) ທັງຕາຕະລາງຮຽນ (ສ່ວນທີ 2) ແລະ ຕາຕະລາງສອນ (ສ່ວນທີ 3) ຈະອັບເດດຕາມອັດຕະໂນມັດ.
         </div>
     </section>
 </div>
@@ -289,6 +299,8 @@
     const TEACHING_COLS = ["weekly_schedules", "timetables", "teaching_schedules", "schedules"];
     const DAYS_ORDER = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"];
     const DEFAULT_GRADES = ["ມ.1", "ມ.2", "ມ.3", "ມ.4", "ມ.5", "ມ.6", "ມ.7"];
+    const DEFAULT_ACADEMIC_YEAR = "2026-2027";
+    const DEFAULT_SEMESTER = "ພາກຮຽນທີ 1";
 
     function cleanVal(v) {
         if (Array.isArray(v)) return v.map(cleanVal).filter(Boolean).join(", ");
@@ -303,6 +315,19 @@
 
     function cleanDay(v) {
         return cleanVal(v).replace(/^ວັນ/i, "").trim();
+    }
+
+    function normalizeSemester(v) {
+        const s = cleanVal(v);
+        if (!s) return DEFAULT_SEMESTER;
+        if (s === "1" || s.includes("1")) return "ພາກຮຽນທີ 1";
+        if (s === "2" || s.includes("2")) return "ພາກຮຽນທີ 2";
+        return s;
+    }
+
+    function normalizeAcademicYear(v) {
+        const y = cleanVal(v);
+        return y || DEFAULT_ACADEMIC_YEAR;
     }
 
     function parsePeriodNum(v) {
@@ -352,6 +377,14 @@
         return `<div><strong>${subjText}</strong>${tchText}</div>`;
     }
 
+    function getSelectedYear() {
+        return normalizeAcademicYear(document.getElementById("academicYearSelect")?.value);
+    }
+
+    function getSelectedSemester() {
+        return normalizeSemester(document.getElementById("semesterSelect")?.value);
+    }
+
     function normalizeScheduleEntry(docId, raw = {}) {
         const teacher = cleanVal(
             raw.teacher || raw.teacherName || raw.instructor || raw.advisor || raw.name || ""
@@ -361,6 +394,12 @@
         );
         const grade = cleanGrade(
             raw.room || raw.grade || raw.roomName || raw.className || ""
+        );
+        const academicYear = normalizeAcademicYear(
+            raw.academicYear || raw.schoolYear || raw.year || ""
+        );
+        const semester = normalizeSemester(
+            raw.semester || raw.term || ""
         );
         const week = cleanVal(raw.week || "");
         const day = cleanDay(raw.day || raw.days || "");
@@ -377,6 +416,8 @@
             teacher,
             subject,
             grade,
+            academicYear,
+            semester,
             week,
             day,
             periodNum,
@@ -384,7 +425,6 @@
         };
     }
 
-    // -------------------- 1. ລາຍຊື່ນັກຮຽນ --------------------
     let studentsData = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
         { id: "STD-001", code: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", status: "ປົກກະຕິ" },
         { id: "STD-002", code: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", status: "ປົກກະຕິ" },
@@ -399,6 +439,10 @@
     let rawScheduleEntries = [];
     let classTimetables = JSON.parse(localStorage.getItem("school_class_timetables") || "null") || {};
     let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [];
+
+    function saveTeachingSchedules() {
+        localStorage.setItem("school_teaching_schedules", JSON.stringify(teachingSchedules));
+    }
 
     async function syncRoomSelectOptions(extraRooms = []) {
         const roomMap = new Map();
@@ -519,15 +563,31 @@
         }).join("");
     };
 
-    // -------------------- 2. ຕາຕະລາງຮຽນ (ປະກອບຈາກ weekly_schedules + class_timetables) --------------------
-    function buildRowsForGrade(gradeKey) {
+    function getBaseRowsForGradeAndTerm(gradeKey, yearVal, semVal) {
+        const g = cleanGrade(gradeKey).toLowerCase();
+        const scopedKey = `${yearVal}__${semVal}__${g}`;
+        if (Array.isArray(classTimetables[scopedKey])) {
+            return classTimetables[scopedKey];
+        }
+        const entry = Object.entries(classTimetables || {}).find(
+            ([k]) => k.toLowerCase() === scopedKey
+        );
+        if (entry && Array.isArray(entry[1])) {
+            return entry[1];
+        }
+        if (yearVal === DEFAULT_ACADEMIC_YEAR && semVal === DEFAULT_SEMESTER) {
+            return Array.isArray(classTimetables[gradeKey])
+                ? classTimetables[gradeKey]
+                : (Object.entries(classTimetables || {}).find(([k]) => cleanGrade(k).toLowerCase() === g)?.[1] || []);
+        }
+        return [];
+    }
+
+    function buildRowsForGrade(gradeKey, yearVal, semVal) {
         const g = cleanGrade(gradeKey).toLowerCase();
         const dayMap = new Map();
 
-        const baseRows = Array.isArray(classTimetables[gradeKey])
-            ? classTimetables[gradeKey]
-            : (Object.entries(classTimetables || {}).find(([k]) => cleanGrade(k).toLowerCase() === g)?.[1] || []);
-
+        const baseRows = getBaseRowsForGradeAndTerm(gradeKey, yearVal, semVal);
         baseRows.forEach((r) => {
             const dName = cleanDay(r.day);
             if (!dName) return;
@@ -541,7 +601,13 @@
         });
 
         rawScheduleEntries
-            .filter((entry) => cleanGrade(entry.grade).toLowerCase() === g && entry.day && entry.periodNum)
+            .filter((entry) =>
+                cleanGrade(entry.grade).toLowerCase() === g &&
+                normalizeAcademicYear(entry.academicYear) === yearVal &&
+                normalizeSemester(entry.semester) === semVal &&
+                entry.day &&
+                entry.periodNum
+            )
             .forEach((entry) => {
                 if (!dayMap.has(entry.day)) {
                     dayMap.set(entry.day, {
@@ -581,11 +647,16 @@
             selectEl.disabled = true;
         }
 
-        if (titleEl) titleEl.textContent = `📅 2. ຕາຕະລາງຮຽນ (${g})`;
+        const yearVal = getSelectedYear();
+        const semVal = getSelectedSemester();
 
-        const rows = buildRowsForGrade(g);
+        if (titleEl) {
+            titleEl.textContent = `📅 2. ຕາຕະລາງຮຽນ (${g} • ${semVal} • ສົກຮຽນ ${yearVal})`;
+        }
+
+        const rows = buildRowsForGrade(g, yearVal, semVal);
         if (!rows.length) {
-            tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນສຳລັບຫ້ອງ ${esc(g)}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນສຳລັບຫ້ອງ ${esc(g)} (${esc(semVal)} • ${esc(yearVal)})</td></tr>`;
             return;
         }
 
@@ -600,24 +671,33 @@
         `).join("");
     };
 
-    // -------------------- 3. ຕາຕະລາງສອນ --------------------
-    function saveTeachingSchedules() {
-        localStorage.setItem("school_teaching_schedules", JSON.stringify(teachingSchedules));
-    }
-
     window.renderTeachingTimetable = function () {
         if (isStudent) return;
         const tbody = document.getElementById("teachingTimetableBody");
+        const titleEl = document.getElementById("teachingTimetableTitle");
         const q = cleanVal(document.getElementById("teachingSearch")?.value || "").toLowerCase();
+        const yearVal = getSelectedYear();
+        const semVal = getSelectedSemester();
+
+        if (titleEl) {
+            titleEl.textContent = `👩‍🏫 3. ຕາຕະລາງສອນ (${semVal} • ສົກຮຽນ ${yearVal})`;
+        }
+
+        const scopedList = teachingSchedules.filter(
+            (x) =>
+                normalizeAcademicYear(x.academicYear) === yearVal &&
+                normalizeSemester(x.semester) === semVal
+        );
 
         const list = q
-            ? teachingSchedules.filter((x) =>
-                [x.teacher, x.subject, x.grade, x.schedule].some((v) => cleanVal(v).toLowerCase().includes(q))
+            ? scopedList.filter((x) =>
+                [x.teacher, x.subject, x.grade, x.semester, x.academicYear, x.schedule]
+                    .some((v) => cleanVal(v).toLowerCase().includes(q))
             )
-            : teachingSchedules;
+            : scopedList;
 
         if (!list.length) {
-            tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນ — ສ້າງໄດ້ທີ່ ໜ້າ 12. ອັບເດດລະບົບ (ເມນູ 4)</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນສຳລັບ ${esc(semVal)} • ສົກຮຽນ ${esc(yearVal)} — ສ້າງໄດ້ທີ່ ໜ້າ 12. ອັບເດດລະບົບ (ເມນູ 4)</td></tr>`;
             return;
         }
 
@@ -627,9 +707,15 @@
                 <td>${esc(item.teacher || "-")}</td>
                 <td>${esc(item.subject || "-")}</td>
                 <td>${esc(item.grade || "-")}</td>
+                <td>${esc(normalizeSemester(item.semester))} • ${esc(normalizeAcademicYear(item.academicYear))}</td>
                 <td>${esc(item.schedule || "-")}</td>
             </tr>
         `).join("");
+    };
+
+    window.onTermPeriodChange = function () {
+        renderClassTimetable();
+        renderTeachingTimetable();
     };
 
     async function syncSchedulesFromAllCollections() {
@@ -643,7 +729,7 @@
                 snap.forEach((d) => {
                     const norm = normalizeScheduleEntry(d.id, d.data() || {});
                     if (!norm.teacher && !norm.subject && norm.schedule === "-") return;
-                    const dedupKey = `${norm.week}|${norm.day}|${norm.periodNum}|${norm.grade}|${norm.subject}|${norm.teacher}`.toLowerCase();
+                    const dedupKey = `${norm.academicYear}|${norm.semester}|${norm.week}|${norm.day}|${norm.periodNum}|${norm.grade}|${norm.subject}|${norm.teacher}`.toLowerCase();
                     if (!seenKeys.has(dedupKey)) {
                         seenKeys.add(dedupKey);
                         collected.push(norm);
@@ -658,6 +744,17 @@
         await syncRoomSelectOptions();
         renderTeachingTimetable();
         renderClassTimetable();
+    }
+
+    function storeClassTimetableDoc(docId, data = {}) {
+        const gKey = cleanGrade(data.grade || data.room || docId);
+        if (!gKey || !Array.isArray(data.rows)) return;
+        const yr = normalizeAcademicYear(data.academicYear || data.schoolYear || data.year);
+        const sem = normalizeSemester(data.semester || data.term);
+        classTimetables[`${yr}__${sem}__${gKey.toLowerCase()}`] = data.rows;
+        if (yr === DEFAULT_ACADEMIC_YEAR && sem === DEFAULT_SEMESTER) {
+            classTimetables[gKey] = data.rows;
+        }
     }
 
     async function loadFromFirestoreIfAvailable() {
@@ -679,13 +776,7 @@
         try {
             const clsSnap = await getDocs(collection(db, "class_timetables"));
             if (!clsSnap.empty) {
-                clsSnap.forEach((d) => {
-                    const data = d.data() || {};
-                    const gKey = cleanGrade(data.grade || d.id);
-                    if (gKey && Array.isArray(data.rows)) {
-                        classTimetables[gKey] = data.rows;
-                    }
-                });
+                clsSnap.forEach((d) => storeClassTimetableDoc(d.id, d.data() || {}));
                 localStorage.setItem("school_class_timetables", JSON.stringify(classTimetables));
             }
         } catch (err) {}
@@ -705,11 +796,7 @@
 
         onSnapshot(collection(db, "class_timetables"), async (snap) => {
             if (!snap.empty) {
-                snap.forEach((d) => {
-                    const data = d.data() || {};
-                    const gKey = cleanGrade(data.grade || d.id);
-                    if (gKey && Array.isArray(data.rows)) classTimetables[gKey] = data.rows;
-                });
+                snap.forEach((d) => storeClassTimetableDoc(d.id, d.data() || {}));
                 localStorage.setItem("school_class_timetables", JSON.stringify(classTimetables));
                 await syncRoomSelectOptions();
                 renderClassTimetable();
