@@ -2,60 +2,221 @@
 <html lang="lo">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ເຂົ້າສູ່ລະບົບ - School Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Phetsarath OT', Arial, sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        .error-msg { color: #dc3545; text-align: center; margin-top: 10px; font-size: 14px; }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            font-family: 'Noto Sans Lao', 'Phetsarath OT', Arial, sans-serif;
+            background: #f4f7f6;
+            margin: 0;
+            padding: 14px;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+            max-width: 100%;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-text-size-adjust: 100%;
+        }
+        .login-card {
+            background: #ffffff;
+            padding: 24px 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 400px;
+            min-width: 0;
+        }
+        h2 {
+            text-align: center;
+            color: #1e293b;
+            margin: 0 0 18px;
+            font-size: clamp(18px, 5vw, 22px);
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+        .form-group {
+            margin-bottom: 14px;
+            min-width: 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #334155;
+            font-size: 13.5px;
+        }
+        input {
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #0f172a;
+            background: #ffffff;
+        }
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        button {
+            width: 100%;
+            max-width: 100%;
+            padding: 11px 14px;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+        }
+        button:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+        button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+        .error-msg {
+            color: #dc2626;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 13px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+        .quota-note {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 12px;
+            line-height: 1.4;
+            margin-bottom: 14px;
+            display: none;
+            overflow-wrap: anywhere;
+        }
+        .quota-note.show {
+            display: block;
+        }
+
+        @media (max-width: 420px) {
+            html, body {
+                padding: 10px;
+            }
+            .login-card {
+                padding: 18px 14px;
+                border-radius: 10px;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="login-card">
         <h2>🔐 ເຂົ້າສູ່ລະບົບໂຮງຮຽນ</h2>
+
+        <div class="quota-note" id="quotaNote">
+            ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບຈະກວດສອບຈາກບັນຊີທີ່ເກັບໃນເຄື່ອງ (`localStorage`) ຖ້າມີ.
+        </div>
+
         <form id="login-form">
             <div class="form-group">
-                <label>ອີເມວ (Email):</label>
-                <input type="email" id="login-email" required placeholder="example@school.com">
+                <label for="login-email">ອີເມວ (Email):</label>
+                <input type="email" id="login-email" required autocomplete="email" placeholder="example@school.com">
             </div>
             <div class="form-group">
-                <label>ລະຫັດຜ່ານ (Password):</label>
-                <input type="password" id="login-password" required placeholder="********">
+                <label for="login-password">ລະຫັດຜ່ານ (Password):</label>
+                <input type="password" id="login-password" required autocomplete="current-password" placeholder="********">
             </div>
-            <button type="submit">ເຂົ້າສູ່ລະບົບ</button>
+            <button type="submit" id="loginSubmitBtn">ເຂົ້າສູ່ລະບົບ</button>
             <div id="login-error" class="error-msg"></div>
         </form>
     </div>
 
-<!-- ໂຄດເຊື່ອມຕໍ່ Firebase Firestore ເພື່ອກວດສອບ User (ຮອງຮັບ users, students ແລະ teachers) -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
             authDomain: "my-school-c1104.firebaseapp.com",
             projectId: "my-school-c1104",
-            storageBucket: "my-school-c1104.appspot.com",
+            storageBucket: "my-school-c1104.firebasestorage.app",
             messagingSenderId: "339930418459",
             appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
             measurementId: "G-NPNFSW2C72"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        let db = null;
+        try {
+            const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+            db = getFirestore(app);
+        } catch (e) {}
+
+        const QUOTA_BLOCK_UNTIL_KEY = "school_firestore_quota_blocked_until";
+        const KNOWN_ACCOUNTS_KEY = "school_known_login_accounts";
+        const LOGIN_COOLDOWN_MS = 2000;
+        const QUOTA_COOLDOWN_MS = 1800000;
 
         function stripQuotes(val) {
             return String(val || "")
                 .trim()
                 .replace(/^["']+|["']+$/g, "");
+        }
+
+        function isQuotaError(err) {
+            const code = String(err?.code || "").toLowerCase();
+            const msg = String(err?.message || "").toLowerCase();
+            return (
+                code.includes("resource-exhausted") ||
+                msg.includes("quota") ||
+                msg.includes("resource exhausted") ||
+                msg.includes("daily usage")
+            );
+        }
+
+        function setQuotaNote(active) {
+            const el = document.getElementById("quotaNote");
+            if (!el) return;
+            if (active) el.classList.add("show");
+            else el.classList.remove("show");
+        }
+
+        function loadKnownAccounts() {
+            try {
+                const list = JSON.parse(localStorage.getItem(KNOWN_ACCOUNTS_KEY) || "[]");
+                return Array.isArray(list) ? list : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveKnownAccount(account) {
+            try {
+                const list = loadKnownAccounts();
+                const idx = list.findIndex((a) => String(a.email || "").toLowerCase() === String(account.email || "").toLowerCase());
+                if (idx >= 0) {
+                    list[idx] = { ...list[idx], ...account };
+                } else {
+                    list.push(account);
+                }
+                localStorage.setItem(KNOWN_ACCOUNTS_KEY, JSON.stringify(list.slice(-30)));
+            } catch (e) {}
         }
 
         function matchUserDoc(data, emailLower, password, defaultRole) {
@@ -76,71 +237,116 @@
             return null;
         }
 
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
+        function finishLogin(userData, fallbackEmail) {
+            const roleValue = userData.role || "user";
+            const gradeValue = userData.grade || "ມ.5";
+            const nameValue = userData.name || "User";
+            const emailValue = userData.email || fallbackEmail;
+
+            saveKnownAccount({
+                email: emailValue,
+                password: userData.password || "",
+                role: roleValue,
+                grade: gradeValue,
+                name: nameValue
+            });
+
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("userEmail", emailValue);
+            localStorage.setItem("userRole", roleValue);
+            localStorage.setItem("role", roleValue);
+            localStorage.setItem("userGrade", gradeValue);
+            localStorage.setItem("userName", nameValue);
+
+            alert(`✅ ເຂົ້າສູ່ລະບົບສຳເລັດ! ຍິນດີຕ້ອນຮັບ (${roleValue.toUpperCase()})`);
+            window.location.href = "index.html";
+        }
+
+        if (Date.now() < Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0")) {
+            setQuotaNote(true);
+        }
+
+        let lastSubmitTs = 0;
+
+        document.getElementById("login-form").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value.trim();
+
+            const now = Date.now();
+            if (now - lastSubmitTs < LOGIN_COOLDOWN_MS) return;
+            lastSubmitTs = now;
+
+            const email = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-password").value.trim();
             const emailLower = email.toLowerCase();
-            const errorDiv = document.getElementById('login-error');
+            const errorDiv = document.getElementById("login-error");
+            const submitBtn = document.getElementById("loginSubmitBtn");
+
             errorDiv.innerText = "ກຳລັງກວດສອບຂໍ້ມູນ...";
+            if (submitBtn) submitBtn.disabled = true;
 
             try {
                 let userData = null;
+                const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
 
-                // 1. ຄົ້ນຫາໃນ Collection `users` (ສຳລັບ Admin / ຜູ້ບໍລິຫານ / ຜູ້ໃຊ້ທົ່ວໄປ)
-                const snapshotUsers = await getDocs(collection(db, "users"));
-                snapshotUsers.forEach((doc) => {
-                    if (!userData) {
-                        const matched = matchUserDoc(doc.data(), emailLower, password, "student");
-                        if (matched) userData = matched;
+                if (db && Date.now() >= blockedUntil) {
+                    const collectionsToCheck = [
+                        { name: "users", defaultRole: "student" },
+                        { name: "teachers", defaultRole: "teacher" },
+                        { name: "students", defaultRole: "student" }
+                    ];
+
+                    for (const colInfo of collectionsToCheck) {
+                        if (userData) break;
+                        const snap = await getDocs(collection(db, colInfo.name));
+                        snap.forEach((doc) => {
+                            if (!userData) {
+                                const matched = matchUserDoc(doc.data(), emailLower, password, colInfo.defaultRole);
+                                if (matched) userData = matched;
+                            }
+                        });
                     }
-                });
 
-                // 2. ຖ້າບໍ່ພົບ, ຄົ້ນຫາໃນ Collection `teachers` (ສຳລັບຄູອາຈານ)
-                if (!userData) {
-                    const snapshotTeachers = await getDocs(collection(db, "teachers"));
-                    snapshotTeachers.forEach((doc) => {
-                        if (!userData) {
-                            const matched = matchUserDoc(doc.data(), emailLower, password, "teacher");
-                            if (matched) userData = matched;
-                        }
-                    });
+                    if (userData) {
+                        localStorage.removeItem(QUOTA_BLOCK_UNTIL_KEY);
+                        setQuotaNote(false);
+                    }
+                } else {
+                    setQuotaNote(true);
                 }
 
-                // 3. ຖ້າຍັງບໍ່ພົບອີກ, ຄົ້ນຫາໃນ Collection `students` (ສຳລັບນັກຮຽນ)
                 if (!userData) {
-                    const snapshotStudents = await getDocs(collection(db, "students"));
-                    snapshotStudents.forEach((doc) => {
-                        if (!userData) {
-                            const matched = matchUserDoc(doc.data(), emailLower, password, "student");
-                            if (matched) userData = matched;
-                        }
-                    });
+                    const localMatch = loadKnownAccounts().find((acc) => matchUserDoc(acc, emailLower, password, acc.role || "student"));
+                    if (localMatch) {
+                        userData = localMatch;
+                    }
                 }
 
-                // ຖ້າຫາບໍ່ພົບທັງ 3 ບ່ອນ
                 if (!userData) {
                     errorDiv.innerText = "❌ ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ!";
                     return;
                 }
 
-                const roleValue = userData.role || 'user';
-                const gradeValue = userData.grade || 'ມ.5';
-
-                // ບັນທຶກສະຖານະ Login, Role ແລະ ຫ້ອງ ລົງ LocalStorage
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', userData.email || email);
-                localStorage.setItem('userRole', roleValue);
-                localStorage.setItem('role', roleValue);
-                localStorage.setItem('userGrade', gradeValue);
-                localStorage.setItem('userName', userData.name || 'User');
-
-                alert(`✅ ເຂົ້າສູ່ລະບົບສຳເລັດ! ຍິນດີຕ້ອນຮັບ (${roleValue.toUpperCase()})`);
-                window.location.href = 'index.html';
-
+                finishLogin(userData, email);
             } catch (error) {
-                console.error("Login error: ", error);
-                errorDiv.innerText = "❌ ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່: " + error.message;
+                if (isQuotaError(error)) {
+                    localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                    setQuotaNote(true);
+                    const localMatch = loadKnownAccounts().find((acc) => matchUserDoc(acc, emailLower, password, acc.role || "student"));
+                    if (localMatch) {
+                        finishLogin(localMatch, email);
+                        return;
+                    }
+                    errorDiv.innerText = "⚠️ ໂຄຕ້າ Firebase ປະຈຳມື້ເຕັມ ແລະ ບໍ່ພົບບັນຊີໃນເຄື່ອງ.";
+                } else {
+                    const localMatch = loadKnownAccounts().find((acc) => matchUserDoc(acc, emailLower, password, acc.role || "student"));
+                    if (localMatch) {
+                        finishLogin(localMatch, email);
+                        return;
+                    }
+                    errorDiv.innerText = "❌ ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່: " + error.message;
+                }
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
             }
         });
     </script>
