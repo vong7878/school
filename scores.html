@@ -2,53 +2,73 @@
 <html lang="lo">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>📝 6. ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        * { box-sizing: border-box; }
-        body {
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
             margin: 0;
+            padding: 0;
             font-family: 'Noto Sans Lao', sans-serif;
             background: #0f172a;
             color: #e2e8f0;
-            padding: 16px;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+        body {
+            padding: 12px;
         }
         .container {
             max-width: 1240px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
+            width: 100%;
+            min-width: 0;
         }
         .topbar {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            padding: 14px 18px;
+            padding: 12px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
+            min-width: 0;
+            width: 100%;
         }
         .topbar-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             flex-wrap: wrap;
+            min-width: 0;
+            flex: 1 1 auto;
         }
         .back-btn, a.nav-link {
             background: #334155;
             color: #f8fafc;
             text-decoration: none;
-            padding: 8px 14px;
+            padding: 7px 11px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 12.5px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+            white-space: nowrap;
+            max-width: 100%;
         }
         .back-btn:hover, a.nav-link:hover { background: #475569; }
         a.nav-checkin { background: #0f766e; color: #ccfbf1; }
@@ -59,53 +79,86 @@
             text-decoration: none;
             padding: 7px 12px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
+            max-width: 100%;
         }
         a.btn-add-link:hover { background: #15803d; }
         .page-title {
             margin: 0;
-            font-size: 18px;
+            font-size: clamp(14.5px, 4.2vw, 18px);
             font-weight: 700;
             color: #f8fafc;
+            line-height: 1.3;
+            min-width: 0;
+            overflow-wrap: anywhere;
         }
         .user-meta {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 13px;
+            gap: 6px;
+            font-size: 12px;
             flex-wrap: wrap;
+            min-width: 0;
+            max-width: 100%;
+        }
+        #currentUserName {
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .badge {
-            padding: 4px 10px;
+            padding: 4px 9px;
             border-radius: 999px;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11.5px;
+            white-space: nowrap;
         }
         .badge-role { background: #2563eb; color: #fff; }
         .badge-grade { background: #0f766e; color: #ccfbf1; }
         .badge-fb { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
 
+        .quota-banner {
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: #fde68a;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 12px;
+            line-height: 1.4;
+            display: none;
+            overflow-wrap: anywhere;
+        }
+        .quota-banner.show {
+            display: block;
+        }
+
         .main-groups-nav {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 10px;
+            width: 100%;
+            min-width: 0;
         }
         .main-group-btn {
             background: #1e293b;
             color: #e2e8f0;
             border: 2px solid #334155;
             border-radius: 14px;
-            padding: 14px 16px;
+            padding: 13px 15px;
             font-family: inherit;
-            font-size: 15px;
+            font-size: clamp(13.5px, 3.8vw, 15px);
             font-weight: 700;
             cursor: pointer;
             text-align: left;
             transition: all 0.2s;
+            min-width: 0;
+            overflow-wrap: anywhere;
         }
         .main-group-btn:hover {
             border-color: #3b82f6;
@@ -118,32 +171,38 @@
         }
         .main-group-sub {
             display: block;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 400;
             color: #cbd5e1;
             margin-top: 4px;
+            line-height: 1.35;
         }
 
         .subrooms-nav {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 7px;
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            padding: 10px;
+            padding: 9px;
+            width: 100%;
+            min-width: 0;
         }
         .subroom-btn {
             background: #0f172a;
             color: #cbd5e1;
             border: 1px solid #334155;
             border-radius: 10px;
-            padding: 8px 13px;
+            padding: 8px 10px;
             font-family: inherit;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            text-align: center;
+            overflow-wrap: anywhere;
+            line-height: 1.3;
         }
         .subroom-btn:hover {
             background: #24334d;
@@ -159,8 +218,10 @@
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            padding: 18px;
+            padding: 14px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            min-width: 0;
+            width: 100%;
         }
         .card-header {
             display: flex;
@@ -168,81 +229,125 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 10px;
-            padding-bottom: 12px;
-            margin-bottom: 14px;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
             border-bottom: 1px solid #334155;
+            min-width: 0;
         }
         .card-header h2 {
             margin: 0;
-            font-size: 16px;
+            font-size: clamp(14px, 3.9vw, 16px);
             font-weight: 700;
             color: #f8fafc;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+        .filter-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            min-width: 0;
+        }
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 8px;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+        }
+        .subject-field {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+        }
+        .subject-field label {
+            font-size: 12.5px;
+            color: #cbd5e1;
+            white-space: nowrap;
         }
         .controls {
             display: flex;
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
+            min-width: 0;
         }
         input, select {
             background: #0f172a;
             color: #f8fafc;
             border: 1px solid #475569;
             border-radius: 8px;
-            padding: 7px 11px;
+            padding: 8px 10px;
             font-family: inherit;
             font-size: 13px;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #38bdf8;
         }
         button {
             font-family: inherit;
             border: none;
             border-radius: 8px;
-            padding: 7px 12px;
-            font-size: 13px;
+            padding: 8px 12px;
+            font-size: 12.5px;
             font-weight: 600;
             cursor: pointer;
+            max-width: 100%;
         }
         button:hover { opacity: 0.92; }
-        .btn-edit { background: #eab308; color: #0f172a; padding: 5px 9px; font-size: 12px; }
-        .btn-del { background: #dc2626; color: #fff; padding: 5px 9px; font-size: 12px; }
-        .btn-sync { background: #0284c7; color: #fff; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-edit { background: #eab308; color: #0f172a; padding: 5px 9px; font-size: 11.5px; white-space: nowrap; }
+        .btn-del { background: #dc2626; color: #fff; padding: 5px 9px; font-size: 11.5px; white-space: nowrap; }
+        .btn-sync { background: #0284c7; color: #fff; white-space: nowrap; }
 
         .table-wrap {
             width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 720px;
+            min-width: 680px;
         }
         th, td {
             border: 1px solid #334155;
-            padding: 10px 12px;
+            padding: 9px 11px;
             text-align: left;
             font-size: 13px;
+            line-height: 1.35;
         }
         th {
             background: #0f172a;
             color: #93c5fd;
             font-weight: 700;
+            white-space: nowrap;
         }
         td {
             background: #162032;
             color: #e2e8f0;
+            overflow-wrap: anywhere;
         }
         tr:hover td { background: #24334d; }
         .center { text-align: center; }
         .actions { display: flex; gap: 6px; flex-wrap: wrap; }
         .pill {
             display: inline-block;
-            padding: 3px 10px;
+            padding: 3px 9px;
             border-radius: 999px;
             font-weight: 700;
-            font-size: 12px;
+            font-size: 11.5px;
             background: rgba(56, 189, 248, 0.18);
             color: #7dd3fc;
             border: 1px solid #38bdf8;
+            overflow-wrap: anywhere;
         }
         .pill-good {
             background: rgba(34, 197, 94, 0.2);
@@ -259,7 +364,174 @@
             color: #fca5a5;
             border-color: #ef4444;
         }
-        .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+        .note-text {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 8px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        /* Mobile Card List */
+        .mobile-cards {
+            display: none;
+            flex-direction: column;
+            gap: 9px;
+            width: 100%;
+            min-width: 0;
+        }
+        .score-card {
+            background: #162032;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 10px 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            width: 100%;
+            min-width: 0;
+        }
+        .score-card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid #26354d;
+            min-width: 0;
+        }
+        .score-card-head > div:first-child {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .score-card-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #f8fafc;
+            overflow-wrap: anywhere;
+            line-height: 1.35;
+        }
+        .score-card-sub {
+            font-size: 11.5px;
+            color: #94a3b8;
+            margin-top: 2px;
+            overflow-wrap: anywhere;
+        }
+        .score-card-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 12px;
+            min-width: 0;
+        }
+        .score-card-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            min-width: 0;
+        }
+        .score-card-label {
+            color: #94a3b8;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .score-card-val {
+            text-align: right;
+            color: #e2e8f0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .score-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #26354d;
+            flex-wrap: wrap;
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 14px;
+            left: 50%;
+            transform: translate(-50%, 12px);
+            background: #1e293b;
+            border: 1px solid #38bdf8;
+            color: #f8fafc;
+            padding: 9px 13px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+            z-index: 1200;
+            opacity: 0;
+            transition: 0.2s;
+            pointer-events: none;
+            max-width: calc(100% - 20px);
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+        .toast-msg.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 10px;
+                gap: 8px;
+            }
+            .topbar-left, .user-meta {
+                width: 100%;
+            }
+            .user-meta {
+                justify-content: space-between;
+            }
+            #currentUserName {
+                max-width: 150px;
+            }
+            .main-groups-nav {
+                grid-template-columns: 1fr;
+            }
+            .subrooms-nav {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .card {
+                padding: 10px;
+                border-radius: 12px;
+            }
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+            .btn-sync, a.btn-add-link {
+                width: 100%;
+                text-align: center;
+            }
+            .table-wrap { display: none; }
+            .mobile-cards { display: flex; }
+        }
+
+        @media (max-width: 380px) {
+            body { padding: 6px; }
+            .back-btn, a.nav-link {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+            .subrooms-nav {
+                grid-template-columns: 1fr;
+            }
+            #currentUserName { max-width: 110px; }
+            .score-card { padding: 9px; }
+            .score-card-head { flex-direction: column; align-items: stretch; gap: 5px; }
+        }
+
         a[href*="update.html"][href*="tab=students"],
         a[href*="update"][href*="students"],
         button[onclick*="addStudent"],
@@ -293,6 +565,10 @@
         </div>
     </div>
 
+    <div class="quota-banner" id="quotaBanner">
+        ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບກຳລັງໃຊ້ຂໍ້ມູນທີ່ເກັບໃນເຄື່ອງ (`localStorage`) ແລະ ຫຼຸດການເອີ້ນຖານຂໍ້ມູນອັດຕະໂນມັດ.
+    </div>
+
     <div class="main-groups-nav" role="tablist" aria-label="2 ຄະແນນໃຫຍ່">
         <button type="button" class="main-group-btn active" id="group-btn-subject" onclick="switchMainGroup('subject')">
             1. ຄະແນນລາຍວິຊາ
@@ -304,15 +580,17 @@
         </button>
     </div>
 
-    <div class="card" style="padding: 12px 16px;">
-        <div class="controls" style="justify-content: space-between;">
-            <div class="controls">
-                <label for="subjectSelect" style="font-size:13px; color:#cbd5e1;">ວິຊາ:</label>
-                <select id="subjectSelect" onchange="renderAll()"></select>
+    <div class="card" style="padding: 12px 14px;">
+        <div class="filter-bar">
+            <div class="filter-row">
+                <div class="subject-field">
+                    <label for="subjectSelect">ວິຊາ:</label>
+                    <select id="subjectSelect" onchange="renderAll()"></select>
+                </div>
                 <input type="text" id="studentSearchInput" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAll()" />
             </div>
-            <div class="controls">
-                <button type="button" class="btn-sync" onclick="loadFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
+            <div class="filter-row">
+                <button type="button" class="btn-sync" id="syncBtn" onclick="loadFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
                 <a href="update.html?tab=students" class="btn-add-link admin-action" id="linkAddStudentUpdate">➕ ເພີ່ມນັກຮຽນ (ຫ້ອງອັບເດດ 3)</a>
             </div>
         </div>
@@ -328,7 +606,7 @@
             <button type="button" class="subroom-btn" data-sub="grade" onclick="switchSub('subject', 'grade')">6. ຈັດເກຣດ</button>
         </nav>
 
-        <section class="card sub-panel-subject" id="sub-attendance" style="margin-top:12px;">
+        <section class="card sub-panel-subject" id="sub-attendance" style="margin-top:10px;">
             <div class="card-header"><h2 id="title-attendance">📌 1. ຄະແນນການມາຮຽນ (ເຊື່ອມຈາກໜ້າກວດຄົນຂາດ)</h2></div>
             <div class="table-wrap">
                 <table>
@@ -346,10 +624,11 @@
                     <tbody id="tbody-attendance"></tbody>
                 </table>
             </div>
-            <div class="note-text">* ຄະແນນການມາຮຽນດຶງອັດຕະໂນມັດຈາກລະບົບກວດຄົນຂາດ (ຄິດຕາມຈຳນວນຄາບຂອງເທີມ ແລະ ປັບເປັນສະເກນ 10 = (ຄະແນນ ÷ ຄະແນນເຕັມ) × 10) ພ້ອມຊິ້ງ Real-time ຜ່ານ Firebase.</div>
+            <div class="mobile-cards" id="cards-attendance"></div>
+            <div class="note-text">* ຄະແນນການມາຮຽນດຶງຈາກຂໍ້ມູນທີ່ເກັບໄວ້ໃນເຄື່ອງ ແລະ ປັບເປັນສະເກນ 10 = (ຄະແນນ ÷ ຄະແນນເຕັມ) × 10.</div>
         </section>
 
-        <section class="card sub-panel-subject" id="sub-participation" style="display:none; margin-top:12px;">
+        <section class="card sub-panel-subject" id="sub-participation" style="display:none; margin-top:10px;">
             <div class="card-header"><h2 id="title-participation">🙋 2. ຄະແນນການມີສ່ວນຮ່ວມ</h2></div>
             <div class="table-wrap">
                 <table>
@@ -366,9 +645,10 @@
                     <tbody id="tbody-participation"></tbody>
                 </table>
             </div>
+            <div class="mobile-cards" id="cards-participation"></div>
         </section>
 
-        <section class="card sub-panel-subject" id="sub-homework" style="display:none; margin-top:12px;">
+        <section class="card sub-panel-subject" id="sub-homework" style="display:none; margin-top:10px;">
             <div class="card-header"><h2 id="title-homework">📘 3. ຄະແນນບົດເຝິກຫັດ</h2></div>
             <div class="table-wrap">
                 <table>
@@ -385,9 +665,10 @@
                     <tbody id="tbody-homework"></tbody>
                 </table>
             </div>
+            <div class="mobile-cards" id="cards-homework"></div>
         </section>
 
-        <section class="card sub-panel-subject" id="sub-midterm" style="display:none; margin-top:12px;">
+        <section class="card sub-panel-subject" id="sub-midterm" style="display:none; margin-top:10px;">
             <div class="card-header"><h2 id="title-midterm">📄 4. ຄະແນນສອບເສັງກາງພາກ</h2></div>
             <div class="table-wrap">
                 <table>
@@ -404,9 +685,10 @@
                     <tbody id="tbody-midterm"></tbody>
                 </table>
             </div>
+            <div class="mobile-cards" id="cards-midterm"></div>
         </section>
 
-        <section class="card sub-panel-subject" id="sub-final" style="display:none; margin-top:12px;">
+        <section class="card sub-panel-subject" id="sub-final" style="display:none; margin-top:10px;">
             <div class="card-header"><h2 id="title-final">📕 5. ຄະແນນສອບເສັງທ້າຍພາກ</h2></div>
             <div class="table-wrap">
                 <table>
@@ -423,9 +705,10 @@
                     <tbody id="tbody-final"></tbody>
                 </table>
             </div>
+            <div class="mobile-cards" id="cards-final"></div>
         </section>
 
-        <section class="card sub-panel-subject" id="sub-grade" style="display:none; margin-top:12px;">
+        <section class="card sub-panel-subject" id="sub-grade" style="display:none; margin-top:10px;">
             <div class="card-header"><h2 id="title-grade">🏅 6. ຈັດເກຣດລາຍວິຊາ</h2></div>
             <div class="table-wrap">
                 <table>
@@ -442,6 +725,7 @@
                     <tbody id="tbody-grade"></tbody>
                 </table>
             </div>
+            <div class="mobile-cards" id="cards-grade"></div>
             <div class="note-text">* ຄະແນນລວມວິຊາ = ມາຮຽນ (10) + ມີສ່ວນຮ່ວມ (10) + ບົດເຝິກຫັດ (20) + ກາງພາກ (25) + ທ້າຍພາກ (35) = 100.</div>
         </section>
     </div>
@@ -453,7 +737,7 @@
             <button type="button" class="subroom-btn" data-sub="credits" onclick="switchSub('annual', 'credits')">3. ໜ່ວຍກິດສະສົມ</button>
         </nav>
 
-        <section class="card sub-panel-annual" id="sub-quarter" style="margin-top:12px;">
+        <section class="card sub-panel-annual" id="sub-quarter" style="margin-top:10px;">
             <div class="card-header"><h2 id="title-quarter">📊 1. ຄະແນນ 1 ໃນ 4 (ສະເລ່ຍໝົດປີ)</h2></div>
             <div class="table-wrap">
                 <table>
@@ -470,10 +754,11 @@
                     <tbody id="tbody-quarter"></tbody>
                 </table>
             </div>
+            <div class="mobile-cards" id="cards-quarter"></div>
             <div class="note-text">* ຄະແນນ 1 ໃນ 4 = ຄະແນນສະເລ່ຍໝົດປີ ÷ 4 (ເຕັມ 25).</div>
         </section>
 
-        <section class="card sub-panel-annual" id="sub-category" style="display:none; margin-top:12px;">
+        <section class="card sub-panel-annual" id="sub-category" style="display:none; margin-top:10px;">
             <div class="card-header"><h2 id="title-category">🏆 2. ຈັດປະເພດຜົນການຮຽນ</h2></div>
             <div class="table-wrap">
                 <table>
@@ -489,9 +774,10 @@
                     <tbody id="tbody-category"></tbody>
                 </table>
             </div>
+            <div class="mobile-cards" id="cards-category"></div>
         </section>
 
-        <section class="card sub-panel-annual" id="sub-credits" style="display:none; margin-top:12px;">
+        <section class="card sub-panel-annual" id="sub-credits" style="display:none; margin-top:10px;">
             <div class="card-header"><h2 id="title-credits">🎓 3. ໜ່ວຍກິດສະສົມ</h2></div>
             <div class="table-wrap">
                 <table>
@@ -508,14 +794,17 @@
                     <tbody id="tbody-credits"></tbody>
                 </table>
             </div>
+            <div class="mobile-cards" id="cards-credits"></div>
         </section>
     </div>
 </div>
 
+<div class="toast-msg" id="toastMsg"></div>
+
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, onSnapshot, setDoc, deleteDoc, doc
+        getFirestore, collection, getDocs, setDoc, deleteDoc, doc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -537,11 +826,48 @@
     const ABSENT_RECORDS_COLLECTION = "absent_records";
     const TERM_PERIODS_COLLECTION = "term_periods";
 
+    const LAST_FETCH_TS_KEY = "school_scores_last_fetch_ts";
+    const QUOTA_BLOCK_UNTIL_KEY = "school_firestore_quota_blocked_until";
+    const FETCH_COOLDOWN_MS = 60000;
+    const QUOTA_COOLDOWN_MS = 1800000;
+
     const DEFAULT_SUBJECTS = ["ຄະນິດສາດ", "ຟີຊິກສາດ", "ເຄມີສາດ", "ຊີວະສາດ", "ພາສາລາວ", "ພາສາອັງກິດ", "ໄອທີ / ຄອມ"];
     let subjectsList = [...DEFAULT_SUBJECTS];
     let attendanceScoresMap = new Map();
     let liveAbsentRecords = JSON.parse(localStorage.getItem("school_absent_records") || "[]");
     let liveTermPeriods = JSON.parse(localStorage.getItem("school_term_periods") || "[]");
+
+    function showToast(message) {
+        const el = document.getElementById("toastMsg");
+        if (!el) return;
+        el.textContent = message;
+        el.classList.add("show");
+        clearTimeout(showToast._timer);
+        showToast._timer = setTimeout(() => {
+            el.classList.remove("show");
+        }, 3200);
+    }
+
+    function isQuotaError(err) {
+        const code = String(err?.code || "").toLowerCase();
+        const msg = String(err?.message || "").toLowerCase();
+        return (
+            code.includes("resource-exhausted") ||
+            msg.includes("quota") ||
+            msg.includes("resource exhausted") ||
+            msg.includes("daily usage")
+        );
+    }
+
+    function setQuotaNotice(active) {
+        const banner = document.getElementById("quotaBanner");
+        if (!banner) return;
+        if (active) {
+            banner.classList.add("show");
+        } else {
+            banner.classList.remove("show");
+        }
+    }
 
     function cleanText(v) {
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
@@ -828,7 +1154,7 @@
     }
 
     window.editCourseworkField = async function (studentId, field, maxVal, label) {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂໄດ້!");
+        if (!isAdmin) return showToast("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂໄດ້!");
         const subj = document.getElementById("subjectSelect").value;
         const s = students.find((x) => x.id === studentId);
         if (!s) return;
@@ -843,6 +1169,15 @@
         const quarterScore = Number((annualAvg / 4).toFixed(2));
         s.annualAvg = annualAvg;
         s.quarterScore = quarterScore;
+        saveLocal();
+        renderAll();
+
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (Date.now() < blockedUntil) {
+            setQuotaNotice(true);
+            showToast("ບັນທຶກໃນເຄື່ອງແລ້ວ (ໂຄຕ້າ Firebase ເຕັມ)");
+            return;
+        }
 
         const docId = s.firestoreId || s.id;
         try {
@@ -853,15 +1188,18 @@
                 annualAvg,
                 quarterScore
             }, { merge: true });
+            showToast("ບັນທຶກຄະແນນສຳເລັດແລ້ວ");
         } catch (err) {
-            console.error(err);
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
+            showToast("ບັນທຶກໃນເຄື່ອງແລ້ວ (Firebase ບໍ່ສາມາດຂຽນໄດ້ຊົ່ວຄາວ)");
         }
-        saveLocal();
-        renderAll();
     };
 
     window.editCredits = async function (studentId) {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂໄດ້!");
+        if (!isAdmin) return showToast("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂໄດ້!");
         const s = students.find((x) => x.id === studentId);
         if (!s) return;
 
@@ -872,6 +1210,15 @@
 
         s.totalCredits = boundNum(totalIn, 0, 200, 24);
         s.earnedCredits = boundNum(earnedIn, 0, s.totalCredits, 24);
+        saveLocal();
+        renderAll();
+
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (Date.now() < blockedUntil) {
+            setQuotaNotice(true);
+            showToast("ບັນທຶກໜ່ວຍກິດໃນເຄື່ອງແລ້ວ");
+            return;
+        }
 
         const docId = s.firestoreId || s.id;
         try {
@@ -881,36 +1228,71 @@
                 totalCredits: s.totalCredits,
                 earnedCredits: s.earnedCredits
             }, { merge: true });
+            showToast("ບັນທຶກໜ່ວຍກິດສຳເລັດແລ້ວ");
         } catch (err) {
-            console.error(err);
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
+            showToast("ບັນທຶກໜ່ວຍກິດໃນເຄື່ອງແລ້ວ");
         }
-        saveLocal();
-        renderAll();
     };
 
     window.deleteStudentRecord = async function (studentId) {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບໄດ້!");
+        if (!isAdmin) return showToast("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບໄດ້!");
         const s = students.find((x) => x.id === studentId);
         if (!s || !confirm(`ຢືນຢັນລົບ "${s.name}"?`)) return;
 
-        try {
-            await deleteDoc(doc(db, COLLECTION_NAME, s.firestoreId || s.id));
-        } catch (err) {
-            console.error(err);
-        }
         students = students.filter((x) => x.id !== studentId);
         saveLocal();
         renderAll();
+
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (Date.now() < blockedUntil) {
+            setQuotaNotice(true);
+            showToast("ລົບຂໍ້ມູນໃນເຄື່ອງແລ້ວ");
+            return;
+        }
+
+        try {
+            await deleteDoc(doc(db, COLLECTION_NAME, s.firestoreId || s.id));
+            showToast("ລົບຂໍ້ມູນສຳເລັດແລ້ວ");
+        } catch (err) {
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
+            showToast("ລົບໃນເຄື່ອງແລ້ວ");
+        }
     };
+
+    function renderMobileCard(idx, s, subLabel, rowsHtml, actionsHtml = "") {
+        return `
+            <div class="score-card">
+                <div class="score-card-head">
+                    <div>
+                        <div class="score-card-name">#${idx + 1} • ${esc(s.name)}</div>
+                        <div class="score-card-sub">${esc(subLabel)}</div>
+                    </div>
+                    <span class="pill">${esc(s.grade)}</span>
+                </div>
+                <div class="score-card-rows">${rowsHtml}</div>
+                ${actionsHtml ? `<div class="score-card-footer">${actionsHtml}</div>` : ""}
+            </div>
+        `;
+    }
 
     window.renderAll = function () {
         const list = getVisibleStudents();
         const subj = document.getElementById("subjectSelect").value || subjectsList[0] || "";
         const emptyRow = (cols) => `<tr><td colspan="${cols}" class="center">ບໍ່ພົບຂໍ້ມູນ</td></tr>`;
+        const emptyCard = `<div class="score-card" style="text-align:center;color:#94a3b8;">ບໍ່ພົບຂໍ້ມູນ</div>`;
 
         const tbAtt = document.getElementById("tbody-attendance");
+        const cdAtt = document.getElementById("cards-attendance");
         if (!list.length) {
             tbAtt.innerHTML = emptyRow(isAdmin ? 7 : 6);
+            cdAtt.innerHTML = emptyCard;
         } else {
             tbAtt.innerHTML = list.map((s, idx) => {
                 const cw = getCoursework(s, subj);
@@ -937,12 +1319,30 @@
                     </tr>
                 `;
             }).join("");
+
+            cdAtt.innerHTML = list.map((s, idx) => {
+                const cw = getCoursework(s, subj);
+                const linked = getLiveAttendanceForStudent(s);
+                const sourceBadge = linked
+                    ? `<span class="pill ${linked.absentCount > 0 ? "pill-warn" : "pill-good"}">${linked.rawScore}/${linked.maxScore} (ຂາດ ${linked.absentCount}/${linked.totalPeriods})</span>`
+                    : `<span class="pill">ບໍ່ມີຂໍ້ມູນ</span>`;
+                const rows = `
+                    <div class="score-card-row"><span class="score-card-label">ຄະແນນ (10):</span><span class="score-card-val"><strong>${cw.attendance}</strong> / 10</span></div>
+                    <div class="score-card-row"><span class="score-card-label">ກວດຂາດ:</span><span class="score-card-val">${sourceBadge}</span></div>
+                `;
+                const acts = isAdmin
+                    ? `<button type="button" class="btn-edit" onclick="editCourseworkField('${esc(s.id)}','attendance',10,'ຄະແນນການມາຮຽນ')">ແກ້ໄຂ</button><button type="button" class="btn-del" onclick="deleteStudentRecord('${esc(s.id)}')">ລົບ</button>`
+                    : "";
+                return renderMobileCard(idx, s, `ວິຊາ: ${subj}`, rows, acts);
+            }).join("");
         }
 
-        const renderScoreSubTable = (tbodyId, field, maxVal, label) => {
+        const renderScoreSubTable = (tbodyId, cardId, field, maxVal, label) => {
             const tb = document.getElementById(tbodyId);
+            const cd = document.getElementById(cardId);
             if (!list.length) {
                 tb.innerHTML = emptyRow(isAdmin ? 6 : 5);
+                cd.innerHTML = emptyCard;
                 return;
             }
             tb.innerHTML = list.map((s, idx) => {
@@ -965,77 +1365,166 @@
                     </tr>
                 `;
             }).join("");
+
+            cd.innerHTML = list.map((s, idx) => {
+                const cw = getCoursework(s, subj);
+                const rows = `<div class="score-card-row"><span class="score-card-label">${esc(label)}:</span><span class="score-card-val"><strong>${cw[field]}</strong> / ${maxVal}</span></div>`;
+                const acts = isAdmin
+                    ? `<button type="button" class="btn-edit" onclick="editCourseworkField('${esc(s.id)}','${field}',${maxVal},'${label}')">ແກ້ໄຂ</button><button type="button" class="btn-del" onclick="deleteStudentRecord('${esc(s.id)}')">ລົບ</button>`
+                    : "";
+                return renderMobileCard(idx, s, `ວິຊາ: ${subj}`, rows, acts);
+            }).join("");
         };
 
-        renderScoreSubTable("tbody-participation", "participation", 10, "ຄະແນນການມີສ່ວນຮ່ວມ");
-        renderScoreSubTable("tbody-homework", "homework", 20, "ຄະແນນບົດເຝິກຫັດ");
-        renderScoreSubTable("tbody-midterm", "midterm", 25, "ຄະແນນສອບເສັງກາງພາກ");
-        renderScoreSubTable("tbody-final", "final", 35, "ຄະແນນສອບເສັງທ້າຍພາກ");
+        renderScoreSubTable("tbody-participation", "cards-participation", "participation", 10, "ຄະແນນການມີສ່ວນຮ່ວມ");
+        renderScoreSubTable("tbody-homework", "cards-homework", "homework", 20, "ຄະແນນບົດເຝິກຫັດ");
+        renderScoreSubTable("tbody-midterm", "cards-midterm", "midterm", 25, "ຄະແນນສອບເສັງກາງພາກ");
+        renderScoreSubTable("tbody-final", "cards-final", "final", 35, "ຄະແນນສອບເສັງທ້າຍພາກ");
 
         const tbGrade = document.getElementById("tbody-grade");
-        tbGrade.innerHTML = !list.length ? emptyRow(6) : list.map((s, idx) => {
-            const tot = calcSubjectTotal(s, subj);
-            const g = getGradeLetter(tot);
-            return `
-                <tr>
-                    <td>${idx + 1}</td>
-                    <td>${esc(s.name)}</td>
-                    <td>${esc(s.grade)}</td>
-                    <td>${esc(subj)}</td>
-                    <td><strong>${tot}</strong> / 100</td>
-                    <td><span class="pill ${g.cls}">${g.g}</span></td>
-                </tr>
-            `;
-        }).join("");
+        const cdGrade = document.getElementById("cards-grade");
+        if (!list.length) {
+            tbGrade.innerHTML = emptyRow(6);
+            cdGrade.innerHTML = emptyCard;
+        } else {
+            tbGrade.innerHTML = list.map((s, idx) => {
+                const tot = calcSubjectTotal(s, subj);
+                const g = getGradeLetter(tot);
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${esc(s.name)}</td>
+                        <td>${esc(s.grade)}</td>
+                        <td>${esc(subj)}</td>
+                        <td><strong>${tot}</strong> / 100</td>
+                        <td><span class="pill ${g.cls}">${g.g}</span></td>
+                    </tr>
+                `;
+            }).join("");
+            cdGrade.innerHTML = list.map((s, idx) => {
+                const tot = calcSubjectTotal(s, subj);
+                const g = getGradeLetter(tot);
+                const rows = `
+                    <div class="score-card-row"><span class="score-card-label">ຄະແນນລວມ:</span><span class="score-card-val"><strong>${tot}</strong> / 100</span></div>
+                    <div class="score-card-row"><span class="score-card-label">ເກຣດ:</span><span class="score-card-val"><span class="pill ${g.cls}">${g.g}</span></span></div>
+                `;
+                return renderMobileCard(idx, s, `ວິຊາ: ${subj}`, rows);
+            }).join("");
+        }
 
         const tbQuarter = document.getElementById("tbody-quarter");
-        tbQuarter.innerHTML = !list.length ? emptyRow(6) : list.map((s, idx) => {
-            const avg = calcAnnualAvg(s);
-            const qScore = Number((avg / 4).toFixed(2));
-            const gpa = Number(((avg / 100) * 4).toFixed(2));
-            return `
-                <tr>
-                    <td>${idx + 1}</td>
-                    <td>${esc(s.name)}</td>
-                    <td>${esc(s.grade)}</td>
-                    <td><strong>${avg}</strong> / 100</td>
-                    <td><strong>${qScore}</strong> / 25</td>
-                    <td>${gpa.toFixed(2)}</td>
-                </tr>
-            `;
-        }).join("");
+        const cdQuarter = document.getElementById("cards-quarter");
+        if (!list.length) {
+            tbQuarter.innerHTML = emptyRow(6);
+            cdQuarter.innerHTML = emptyCard;
+        } else {
+            tbQuarter.innerHTML = list.map((s, idx) => {
+                const avg = calcAnnualAvg(s);
+                const qScore = Number((avg / 4).toFixed(2));
+                const gpa = Number(((avg / 100) * 4).toFixed(2));
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${esc(s.name)}</td>
+                        <td>${esc(s.grade)}</td>
+                        <td><strong>${avg}</strong> / 100</td>
+                        <td><strong>${qScore}</strong> / 25</td>
+                        <td>${gpa.toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join("");
+            cdQuarter.innerHTML = list.map((s, idx) => {
+                const avg = calcAnnualAvg(s);
+                const qScore = Number((avg / 4).toFixed(2));
+                const gpa = Number(((avg / 100) * 4).toFixed(2));
+                const rows = `
+                    <div class="score-card-row"><span class="score-card-label">ສະເລ່ຍໝົດປີ:</span><span class="score-card-val"><strong>${avg}</strong> / 100</span></div>
+                    <div class="score-card-row"><span class="score-card-label">1 ໃນ 4:</span><span class="score-card-val"><strong>${qScore}</strong> / 25</span></div>
+                    <div class="score-card-row"><span class="score-card-label">GPA:</span><span class="score-card-val">${gpa.toFixed(2)}</span></div>
+                `;
+                return renderMobileCard(idx, s, "ຄະແນນສະເລ່ຍໝົດປີ", rows);
+            }).join("");
+        }
 
         const tbCategory = document.getElementById("tbody-category");
-        tbCategory.innerHTML = !list.length ? emptyRow(5) : list.map((s, idx) => {
-            const avg = calcAnnualAvg(s);
-            const cat = getCategoryInfo(avg);
-            return `
+        const cdCategory = document.getElementById("cards-category");
+        if (!list.length) {
+            tbCategory.innerHTML = emptyRow(5);
+            cdCategory.innerHTML = emptyCard;
+        } else {
+            tbCategory.innerHTML = list.map((s, idx) => {
+                const avg = calcAnnualAvg(s);
+                const cat = getCategoryInfo(avg);
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${esc(s.name)}</td>
+                        <td>${esc(s.grade)}</td>
+                        <td><strong>${avg}</strong> / 100</td>
+                        <td><span class="pill ${cat.cls}">${esc(cat.label)}</span></td>
+                    </tr>
+                `;
+            }).join("");
+            cdCategory.innerHTML = list.map((s, idx) => {
+                const avg = calcAnnualAvg(s);
+                const cat = getCategoryInfo(avg);
+                const rows = `
+                    <div class="score-card-row"><span class="score-card-label">ສະເລ່ຍໝົດປີ:</span><span class="score-card-val"><strong>${avg}</strong> / 100</span></div>
+                    <div class="score-card-row"><span class="score-card-label">ປະເພດ:</span><span class="score-card-val"><span class="pill ${cat.cls}">${esc(cat.label)}</span></span></div>
+                `;
+                return renderMobileCard(idx, s, "ຈັດປະເພດຜົນການຮຽນ", rows);
+            }).join("");
+        }
+
+        const tbCredits = document.getElementById("tbody-credits");
+        const cdCredits = document.getElementById("cards-credits");
+        if (!list.length) {
+            tbCredits.innerHTML = emptyRow(isAdmin ? 6 : 5);
+            cdCredits.innerHTML = emptyCard;
+        } else {
+            tbCredits.innerHTML = list.map((s, idx) => `
                 <tr>
                     <td>${idx + 1}</td>
                     <td>${esc(s.name)}</td>
                     <td>${esc(s.grade)}</td>
-                    <td><strong>${avg}</strong> / 100</td>
-                    <td><span class="pill ${cat.cls}">${esc(cat.label)}</span></td>
+                    <td>${boundNum(s.totalCredits, 0, 200, 24)}</td>
+                    <td><strong>${boundNum(s.earnedCredits, 0, 200, 24)}</strong></td>
+                    ${isAdmin ? `<td><button type="button" class="btn-edit" onclick="editCredits('${esc(s.id)}')">ແກ້ໄຂ</button></td>` : ""}
                 </tr>
-            `;
-        }).join("");
-
-        const tbCredits = document.getElementById("tbody-credits");
-        tbCredits.innerHTML = !list.length ? emptyRow(isAdmin ? 6 : 5) : list.map((s, idx) => `
-            <tr>
-                <td>${idx + 1}</td>
-                <td>${esc(s.name)}</td>
-                <td>${esc(s.grade)}</td>
-                <td>${boundNum(s.totalCredits, 0, 200, 24)}</td>
-                <td><strong>${boundNum(s.earnedCredits, 0, 200, 24)}</strong></td>
-                ${isAdmin ? `<td><button type="button" class="btn-edit" onclick="editCredits('${esc(s.id)}')">ແກ້ໄຂ</button></td>` : ""}
-            </tr>
-        `).join("");
+            `).join("");
+            cdCredits.innerHTML = list.map((s, idx) => {
+                const rows = `
+                    <div class="score-card-row"><span class="score-card-label">ໜ່ວຍກິດທັງໝົດ:</span><span class="score-card-val">${boundNum(s.totalCredits, 0, 200, 24)}</span></div>
+                    <div class="score-card-row"><span class="score-card-label">ໜ່ວຍກິດສະສົມ:</span><span class="score-card-val"><strong>${boundNum(s.earnedCredits, 0, 200, 24)}</strong></span></div>
+                `;
+                const acts = isAdmin ? `<button type="button" class="btn-edit" onclick="editCredits('${esc(s.id)}')">ແກ້ໄຂ</button>` : "";
+                return renderMobileCard(idx, s, "ໜ່ວຍກິດສະສົມ", rows, acts);
+            }).join("");
+        }
 
         applyAdminUI();
     };
 
     window.loadFromFirestore = async function (showAlert = false) {
+        const now = Date.now();
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        const lastFetchTs = Number(localStorage.getItem(LAST_FETCH_TS_KEY) || "0");
+
+        if (now < blockedUntil) {
+            setQuotaNotice(true);
+            renderAll();
+            if (showAlert) showToast("ໂຄຕ້າ Firebase ເຕັມ ກຳລັງໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+            return;
+        }
+
+        if (!showAlert && now - lastFetchTs < FETCH_COOLDOWN_MS) {
+            renderAll();
+            return;
+        }
+
+        const syncBtn = document.getElementById("syncBtn");
+        if (syncBtn) syncBtn.disabled = true;
+
         try {
             const subjSnap = await getDocs(collection(db, SUBJECTS_COLLECTION));
             if (!subjSnap.empty) {
@@ -1076,79 +1565,42 @@
                 mergeAttendanceStudentsIntoScores(cachedAttendance);
             }
 
+            localStorage.setItem(LAST_FETCH_TS_KEY, String(Date.now()));
+            localStorage.removeItem(QUOTA_BLOCK_UNTIL_KEY);
+            setQuotaNotice(false);
             renderAll();
-            if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນສຳເລັດ!");
+            if (showAlert) showToast("✅ ໂຫຼດຂໍ້ມູນສຳເລັດ!");
         } catch (err) {
-            console.warn(err);
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+                if (showAlert) showToast("⚠️ ໂຄຕ້າ Firebase ປະຈຳມື້ເຕັມ ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+            } else if (showAlert) {
+                showToast("⚠️ ເຊື່ອມຕໍ່ຊ້າ ໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໃນເຄື່ອງ");
+            }
             renderAll();
+        } finally {
+            if (syncBtn) syncBtn.disabled = false;
         }
     };
-
-    onSnapshot(collection(db, COLLECTION_NAME), (snap) => {
-        if (!snap.empty) {
-            students = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
-            const latestAtt = JSON.parse(localStorage.getItem("school_attendance_scores_20") || "[]");
-            if (Array.isArray(latestAtt) && latestAtt.length) {
-                mergeAttendanceStudentsIntoScores(latestAtt);
-            }
-            saveLocal();
-            renderAll();
-        }
-    }, () => {});
-
-    onSnapshot(collection(db, ATTENDANCE_SCORES_COLLECTION), (snap) => {
-        const attItems = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-        applyAttendanceScoresList(attItems);
-        renderAll();
-    }, () => {});
-
-    onSnapshot(collection(db, ABSENT_RECORDS_COLLECTION), (snap) => {
-        liveAbsentRecords = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-        try {
-            localStorage.setItem("school_absent_records", JSON.stringify(liveAbsentRecords));
-        } catch (e) {}
-        renderAll();
-    }, () => {});
-
-    onSnapshot(collection(db, TERM_PERIODS_COLLECTION), (snap) => {
-        if (!snap.empty) {
-            liveTermPeriods = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-            try {
-                localStorage.setItem("school_term_periods", JSON.stringify(liveTermPeriods));
-            } catch (e) {}
-            renderAll();
-        }
-    }, () => {});
-
-    onSnapshot(collection(db, SUBJECTS_COLLECTION), (snap) => {
-        if (!snap.empty) {
-            const dbSubjects = snap.docs
-                .map((d) => cleanText(d.data().name || d.data().subjectName || d.data().subject))
-                .filter(Boolean);
-            if (dbSubjects.length) {
-                subjectsList = Array.from(new Set([...DEFAULT_SUBJECTS, ...dbSubjects]));
-                populateSubjectDropdown();
-                renderAll();
-            }
-        }
-    }, () => {});
 
     window.addEventListener("storage", (e) => {
         if (
             e.key === "schoolSystemDataUpdated" ||
             e.key === "school_attendance_scores_20" ||
             e.key === "school_absent_records" ||
-            e.key === "school_term_periods"
+            e.key === "school_term_periods" ||
+            e.key === "school_student_scores"
         ) {
+            students = JSON.parse(localStorage.getItem("school_student_scores") || "null") || students;
             liveAbsentRecords = JSON.parse(localStorage.getItem("school_absent_records") || "[]");
             liveTermPeriods = JSON.parse(localStorage.getItem("school_term_periods") || "[]");
-            loadFromFirestore(false);
+            const latestAtt = JSON.parse(localStorage.getItem("school_attendance_scores_20") || "[]");
+            if (Array.isArray(latestAtt) && latestAtt.length) {
+                applyAttendanceScoresList(latestAtt);
+            }
+            renderAll();
         }
-    });
-    window.addEventListener("school-data-updated", () => {
-        liveAbsentRecords = JSON.parse(localStorage.getItem("school_absent_records") || "[]");
-        liveTermPeriods = JSON.parse(localStorage.getItem("school_term_periods") || "[]");
-        loadFromFirestore(false);
     });
 
     populateSubjectDropdown();
