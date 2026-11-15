@@ -8,15 +8,18 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
         body { background: #f4f6f9; color: #333; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-        .container { background: white; width: 100%; max-width: 900px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-top: 20px; }
+        .container { background: white; width: 100%; max-width: 960px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-top: 20px; }
         h2 { color: #007bff; margin-bottom: 8px; text-align: center; }
         .subtitle { text-align: center; color: #666; margin-bottom: 20px; font-size: 14px; }
 
         .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: #f8f9fa; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; }
+        .top-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
         .badge-info { background: #e7f5ff; color: #007bff; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; }
 
-        .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; text-decoration: none; display: inline-block; }
         .btn-add:hover { background: #218838; }
+        .btn-link-upd { background: #007bff; color: white; border: none; padding: 8px 14px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; text-decoration: none; display: inline-block; }
+        .btn-link-upd:hover { background: #0069d9; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
         th, td { border: 1px solid #dee2e6; padding: 11px; text-align: left; font-size: 14px; }
@@ -24,6 +27,7 @@
         td.center, th.center { text-align: center; }
 
         .highlight-row { background: #e8f5e9; font-weight: bold; }
+        .source-tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 10px; background: #eef2ff; color: #3730a3; margin-left: 6px; font-weight: 600; }
 
         .action-btn { padding: 5px 9px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 4px; font-weight: bold; }
         .btn-edit { background: #ffc107; color: #000; }
@@ -49,15 +53,18 @@
 
         <div class="top-bar">
             <span class="badge-info" id="room-total-count">ຈຳນວນຫ້ອງ: 0 ຫ້ອງ</span>
-            <!-- ປຸ່ມເພີ່ມ: ສະແດງສະເພາະ Admin ເທົ່ານັ້ນ -->
-            <button class="btn-add" id="btn-add-room" onclick="addHomeroomTeacher()" style="display: none;">➕ ເພີ່ມຄູປະຈຳຫ້ອງ</button>
+            <div class="top-actions">
+                <a href="update.html?tab=rooms" class="btn-link-upd" id="btn-upd-rooms" style="display: none;">🛠️ ຫ້ອງອັບເດດ (ເມນູ 1)</a>
+                <a href="update.html?tab=teachers" class="btn-link-upd" id="btn-upd-teachers" style="display: none;">🛠️ ຫ້ອງອັບເດດ (ເມນູ 2)</a>
+                <button type="button" class="btn-add" id="btn-add-room" onclick="addHomeroomTeacher()" style="display: none;">➕ ເພີ່ມຄູປະຈຳຫ້ອງ</button>
+            </div>
         </div>
 
         <table>
             <thead>
                 <tr>
                     <th class="center" style="width: 70px;">ລຳດັບ</th>
-                    <th class="center" style="width: 160px;">ຊັ້ນ / ຫ້ອງຮຽນ</th>
+                    <th class="center" style="width: 170px;">ຊັ້ນ / ຫ້ອງຮຽນ</th>
                     <th>ຊື່-ນາມສະກຸນ ຄູປະຈຳຫ້ອງ</th>
                     <th class="center" style="width: 150px;">ເບີໂທລະສັບ</th>
                     <th class="center" style="width: 140px;" id="th-action">ຈັດການ</th>
@@ -72,11 +79,13 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {
+            getFirestore, collection, getDocs, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAZvZSKb9JQAwu6fbzbYxApudX3MwxRYss",
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
             authDomain: "my-school-c1104.firebaseapp.com",
             projectId: "my-school-c1104",
             storageBucket: "my-school-c1104.appspot.com",
@@ -84,46 +93,209 @@
             appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be"
         };
 
-        const app = initializeApp(firebaseConfig);
+        const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
+        window.FIREBASE_CONFIG = firebaseConfig;
+
+        const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // ກວດສອບສິດ: ສະເພາະ admin ເທົ່ານັ້ນທີ່ເພີ່ມ, ແກ້ໄຂ, ລົບໄດ້
-        const userRole = (localStorage.getItem('userRole') || 'student').toLowerCase();
-        const userName = localStorage.getItem('userName') || 'User';
-        const isAdmin = (userRole === 'admin');
+        const HOMEROOM_COLLECTION = "homeroom_teachers";
+        const ROOMS_COLLECTION = "rooms";
+        const TEACHERS_COLLECTION = "teachers";
+        const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
+        const SYNC_EVENT_NAME = "school-data-updated";
 
-        // ຂໍ້ມູນເລີ່ມຕົ້ນ ຖ້າຍັງບໍ່ມີໃນ Firestore
+        function cleanVal(v) {
+            return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
+        }
+
+        function cleanGrade(v) {
+            return cleanVal(v).replace(/\s+/g, "");
+        }
+
+        function getNormalizedRole() {
+            const raw = cleanVal(
+                localStorage.getItem("userRole") || localStorage.getItem("role") || "student"
+            ).toLowerCase();
+            if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
+            if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
+            return "student";
+        }
+
+        const userRole = getNormalizedRole();
+        const userName = cleanVal(localStorage.getItem("userName")) || "User";
+        const userGrade = cleanGrade(localStorage.getItem("userGrade") || "ມ.5") || "ມ.5";
+        const isAdmin = userRole === "admin";
+
+        function broadcastSystemDataUpdated(tabKey = "rooms") {
+            const payload = {
+                tab: tabKey,
+                updatedBy: userName,
+                timestamp: Date.now()
+            };
+            try {
+                localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(payload));
+            } catch (e) {}
+            window.dispatchEvent(new CustomEvent(SYNC_EVENT_NAME, { detail: payload }));
+        }
+
         const defaultRooms = [
-            { grade: "ມ.1", teacherName: "ອ. ບຸນມີ ສຸວັນນະລາດ", phone: "020 5511xxxx", order: 1 },
-            { grade: "ມ.2", teacherName: "ອ. ວຽງສະຫວັນ ພົມມະວົງ", phone: "020 5522xxxx", order: 2 },
-            { grade: "ມ.3", teacherName: "ອ. ຄຳສຸກ ວົງສາ", phone: "020 5533xxxx", order: 3 },
-            { grade: "ມ.4", teacherName: "ອ. ມາລີ ຈັນທະວົງ", phone: "020 5544xxxx", order: 4 },
-            { grade: "ມ.5", teacherName: "ອ. ຜູ້ຮັບຜິດຊອບຫ້ອງ ມ.5", phone: "0943782971", order: 5 },
-            { grade: "ມ.6", teacherName: "ອ. ອາທິດ ໄຊຍະວົງ", phone: "020 5566xxxx", order: 6 }
+            { grade: "ມ.1", room: "ມ.1", teacherName: "ອ. ບຸນມີ ສຸວັນນະລາດ", phone: "020 5511xxxx", order: 1 },
+            { grade: "ມ.2", room: "ມ.2", teacherName: "ອ. ວຽງສະຫວັນ ພົມມະວົງ", phone: "020 5522xxxx", order: 2 },
+            { grade: "ມ.3", room: "ມ.3", teacherName: "ອ. ຄຳສຸກ ວົງສາ", phone: "020 5533xxxx", order: 3 },
+            { grade: "ມ.4", room: "ມ.4", teacherName: "ອ. ມາລີ ຈັນທະວົງ", phone: "020 5544xxxx", order: 4 },
+            { grade: "ມ.5", room: "ມ.5", teacherName: "ອ. ຜູ້ຮັບຜິດຊອບຫ້ອງ ມ.5", phone: "0943782971", order: 5 },
+            { grade: "ມ.6", room: "ມ.6", teacherName: "ອ. ອາທິດ ໄຊຍະວົງ", phone: "020 5566xxxx", order: 6 }
         ];
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('user-role-subtitle').innerText = `ຜູ້ໃຊ້ງານ: ${userName} (${userRole.toUpperCase()})`;
+        function mapHomeroomDoc(docSnap) {
+            const d = docSnap.data() || {};
+            const gradeVal = cleanGrade(d.grade || d.room || d.name || "");
+            const teacherVal = cleanVal(d.teacherName || d.advisor || d.name || "");
+            const phoneVal = cleanVal(d.phone || d.email || "-");
+            const orderVal = Number(d.order) || 99;
+            return {
+                docId: docSnap.id,
+                _col: HOMEROOM_COLLECTION,
+                canManage: true,
+                sourceLabel: "",
+                grade: gradeVal,
+                room: gradeVal,
+                teacherName: teacherVal,
+                phone: phoneVal || "-",
+                order: orderVal
+            };
+        }
 
-            if (isAdmin) {
-                document.getElementById('btn-add-room').style.display = 'inline-block';
-            } else {
-                document.getElementById('th-action').style.display = 'none';
+        function mapRoomDoc(docSnap) {
+            const d = docSnap.data() || {};
+            const gradeVal = cleanGrade(d.name || d.roomName || d.room || d.grade || "");
+            const teacherVal = cleanVal(d.advisor || d.homeroomTeacher || d.teacherName || "ຍັງບໍ່ໄດ້ລະບຸຄູປະຈຳຫ້ອງ");
+            const phoneVal = cleanVal(d.phone || d.capacity || "-");
+            return {
+                docId: docSnap.id,
+                _col: ROOMS_COLLECTION,
+                canManage: false,
+                sourceLabel: "ຫ້ອງ",
+                grade: gradeVal,
+                room: gradeVal,
+                teacherName: teacherVal,
+                phone: phoneVal || "-",
+                order: 99
+            };
+        }
+
+        function mapTeacherDoc(docSnap) {
+            const d = docSnap.data() || {};
+            const gradeVal = cleanGrade(d.room || d.grade || "");
+            const teacherVal = cleanVal(d.name || d.teacherName || "");
+            const subjVal = cleanVal(d.subject || d.major || "");
+            const phoneVal = cleanVal(d.phone || d.email || "-");
+            return {
+                docId: docSnap.id,
+                _col: TEACHERS_COLLECTION,
+                canManage: false,
+                sourceLabel: subjVal ? `ຄູ • ${subjVal}` : "ຄູ",
+                grade: gradeVal || "-",
+                room: gradeVal || "-",
+                teacherName: teacherVal,
+                phone: phoneVal || "-",
+                order: 99
+            };
+        }
+
+        function mergeRecords(homeroomList, roomList, teacherList) {
+            const merged = [...homeroomList];
+            const existingGrades = new Set(homeroomList.map((r) => cleanGrade(r.grade)).filter(Boolean));
+            const existingTeachers = new Set(homeroomList.map((r) => cleanVal(r.teacherName).toLowerCase()).filter(Boolean));
+
+            for (const rm of roomList) {
+                if (!rm.grade) continue;
+                if (!existingGrades.has(rm.grade)) {
+                    merged.push(rm);
+                    existingGrades.add(rm.grade);
+                } else if (rm.teacherName && rm.teacherName !== "ຍັງບໍ່ໄດ້ລະບຸຄູປະຈຳຫ້ອງ") {
+                    const target = merged.find((x) => cleanGrade(x.grade) === rm.grade);
+                    if (target && (!target.teacherName || target.teacherName === "-")) {
+                        target.teacherName = rm.teacherName;
+                    }
+                }
             }
 
-            await loadHomeroomTeachers();
-        });
+            for (const tc of teacherList) {
+                if (!tc.teacherName) continue;
+                const tKey = tc.teacherName.toLowerCase();
+                if (tc.grade && tc.grade !== "-" && existingGrades.has(tc.grade)) {
+                    const target = merged.find((x) => cleanGrade(x.grade) === tc.grade);
+                    if (target && (!target.teacherName || target.teacherName === "-")) {
+                        target.teacherName = tc.teacherName;
+                        if (tc.phone && tc.phone !== "-") target.phone = tc.phone;
+                    }
+                } else if (!existingTeachers.has(tKey)) {
+                    merged.push(tc);
+                    existingTeachers.add(tKey);
+                }
+            }
 
-        window.loadHomeroomTeachers = async function() {
-            const tbody = document.getElementById('homeroom-table-body');
-            const totalBadge = document.getElementById('room-total-count');
+            return merged;
+        }
+
+        let latestHomeroom = [];
+        let latestRooms = [];
+        let latestTeachers = [];
+
+        function renderCombinedView() {
+            const list = mergeRecords(latestHomeroom, latestRooms, latestTeachers);
+            const tbody = document.getElementById("homeroom-table-body");
+            const totalBadge = document.getElementById("room-total-count");
+
+            list.sort((a, b) => (a.order || 99) - (b.order || 99) || String(a.grade).localeCompare(String(b.grade)));
+            totalBadge.innerText = `ຈຳນວນລາຍການ: ${list.length} ລາຍການ`;
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຄູປະຈຳຫ້ອງ</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            list.forEach((item, idx) => {
+                const isTargetGrade = item.grade === userGrade || String(item.grade || "").includes("ມ.5");
+                const rowClass = isTargetGrade ? 'class="highlight-row"' : '';
+                const gradeLabel = isTargetGrade ? `⭐ ${esc(item.grade)} (ຫ້ອງປະຈຳ)` : `<strong>${esc(item.grade || '-')}</strong>`;
+                const nameStyle = isTargetGrade ? 'style="color: #2e7d32;"' : '';
+                const tagHtml = item.sourceLabel ? `<span class="source-tag">${esc(item.sourceLabel)}</span>` : "";
+
+                const actionCell = isAdmin
+                    ? `<td class="center">
+                           ${item.canManage ? `
+                               <button type="button" class="action-btn btn-edit" onclick="editHomeroomTeacher('${escAttr(item.docId)}', '${escAttr(item.grade)}', '${escAttr(item.teacherName)}', '${escAttr(item.phone)}', ${Number(item.order) || idx + 1})">✏️ ແກ້ໄຂ</button>
+                               <button type="button" class="action-btn btn-del" onclick="deleteHomeroomTeacher('${escAttr(item.docId)}', '${escAttr(item.grade)}')">🗑️ ລົບ</button>
+                           ` : `<a href="update.html?tab=${item._col === TEACHERS_COLLECTION ? 'teachers' : 'rooms'}" class="action-btn btn-edit" style="text-decoration:none;">⚙️ ອັບເດດ</a>`}
+                       </td>`
+                    : '';
+
+                html += `
+                    <tr ${rowClass}>
+                        <td class="center">${idx + 1}</td>
+                        <td class="center">${gradeLabel}</td>
+                        <td ${nameStyle}>${esc(item.teacherName || '-')}${tagHtml}</td>
+                        <td class="center">${esc(item.phone || '-')}</td>
+                        ${actionCell}
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        window.loadHomeroomTeachers = async function () {
+            const tbody = document.getElementById("homeroom-table-body");
             tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
 
             try {
-                const colRef = collection(db, "homeroom_teachers");
+                const colRef = collection(db, HOMEROOM_COLLECTION);
                 let snapshot = await getDocs(colRef);
 
-                // ຖ້າຍັງບໍ່ມີຂໍ້ມູນໃນ Firestore ເລີຍ ໃຫ້ສ້າງຂໍ້ມູນຕົ້ນຕໍ ມ.1 - ມ.6 ອັດຕະໂນມັດ
                 if (snapshot.empty) {
                     for (const item of defaultRooms) {
                         await addDoc(colRef, { ...item, createdAt: serverTimestamp() });
@@ -131,122 +303,156 @@
                     snapshot = await getDocs(colRef);
                 }
 
-                let list = [];
-                snapshot.forEach(docSnap => {
-                    list.push({ docId: docSnap.id, ...docSnap.data() });
-                });
+                latestHomeroom = snapshot.docs.map((docSnap) => mapHomeroomDoc(docSnap));
 
-                list.sort((a, b) => (a.order || 99) - (b.order || 99) || String(a.grade).localeCompare(String(b.grade)));
-
-                totalBadge.innerText = `ຈຳນວນຫ້ອງ: ${list.length} ຫ້ອງ`;
-
-                if (list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຄູປະຈຳຫ້ອງ</td></tr>`;
-                    return;
+                try {
+                    const roomSnap = await getDocs(collection(db, ROOMS_COLLECTION));
+                    latestRooms = roomSnap.docs.map((docSnap) => mapRoomDoc(docSnap));
+                } catch (e) {
+                    latestRooms = [];
                 }
 
-                let html = '';
-                list.forEach((item, idx) => {
-                    const isM5 = String(item.grade || '').includes('ມ.5');
-                    const rowClass = isM5 ? 'class="highlight-row"' : '';
-                    const gradeLabel = isM5 ? `⭐ ${item.grade} (ຫ້ອງປະຈຳ)` : `<strong>${item.grade || '-'}</strong>`;
-                    const nameStyle = isM5 ? 'style="color: #2e7d32;"' : '';
+                try {
+                    const teacherSnap = await getDocs(collection(db, TEACHERS_COLLECTION));
+                    latestTeachers = teacherSnap.docs.map((docSnap) => mapTeacherDoc(docSnap));
+                } catch (e) {
+                    latestTeachers = [];
+                }
 
-                    const actionCell = isAdmin
-                        ? `<td class="center">
-                               <button class="action-btn btn-edit" onclick="editHomeroomTeacher('${item.docId}', '${escapeAttr(item.grade)}', '${escapeAttr(item.teacherName)}', '${escapeAttr(item.phone)}', ${item.order || idx + 1})">✏️ ແກ້ໄຂ</button>
-                               <button class="action-btn btn-del" onclick="deleteHomeroomTeacher('${item.docId}', '${escapeAttr(item.grade)}')">🗑️ ລົບ</button>
-                           </td>`
-                        : '';
-
-                    html += `
-                        <tr ${rowClass}>
-                            <td class="center">${idx + 1}</td>
-                            <td class="center">${gradeLabel}</td>
-                            <td ${nameStyle}>${item.teacherName || '-'}</td>
-                            <td class="center">${item.phone || '-'}</td>
-                            ${actionCell}
-                        </tr>
-                    `;
-                });
-
-                tbody.innerHTML = html;
+                renderCombinedView();
             } catch (err) {
                 console.error(err);
-                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ: ${err.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ: ${esc(err.message)}</td></tr>`;
             }
         };
 
-        // ເພີ່ມຄູປະຈຳຫ້ອງ (ສະເພາະ Admin)
-        window.addHomeroomTeacher = async function() {
+        window.addHomeroomTeacher = async function () {
             if (!isAdmin) return alert('❌ ສະເພາະແອັດມິນ (Admin) ເທົ່ານັ້ນທີ່ເພີ່ມຂໍ້ມູນໄດ້!');
 
-            const grade = prompt("ປ້ອນຊັ້ນ / ຫ້ອງຮຽນ (ເຊັ່ນ: ມ.5 ຫຼື ມ.5/1):");
-            if (!grade) return;
-            const teacherName = prompt("ປ້ອນຊື່-ນາມສະກຸນ ຄູປະຈຳຫ້ອງ:");
-            if (!teacherName) return;
-            const phone = prompt("ປ້ອນເບີໂທລະສັບ:") || "-";
-            const order = Number(prompt("ປ້ອນລຳດັບການສະແດງຜົນ (ຕົວເລກ):", "7")) || 99;
+            const gradeInput = prompt("ປ້ອນຊັ້ນ / ຫ້ອງຮຽນ (ເຊັ່ນ: ມ.5 ຫຼື ມ.5/1):");
+            if (!gradeInput || !cleanGrade(gradeInput)) return;
+            const teacherInput = prompt("ປ້ອນຊື່-ນາມສະກຸນ ຄູປະຈຳຫ້ອງ:");
+            if (!teacherInput || !cleanVal(teacherInput)) return;
+            const phoneInput = prompt("ປ້ອນເບີໂທລະສັບ:") || "-";
+            const orderInput = Number(prompt("ປ້ອນລຳດັບການສະແດງຜົນ (ຕົວເລກ):", "7")) || 99;
+
+            const gradeVal = cleanGrade(gradeInput);
+            const teacherVal = cleanVal(teacherInput);
+            const phoneVal = cleanVal(phoneInput) || "-";
 
             try {
-                await addDoc(collection(db, "homeroom_teachers"), {
-                    grade: grade.trim(),
-                    teacherName: teacherName.trim(),
-                    phone: phone.trim(),
-                    order,
+                await addDoc(collection(db, HOMEROOM_COLLECTION), {
+                    grade: gradeVal,
+                    room: gradeVal,
+                    teacherName: teacherVal,
+                    phone: phoneVal,
+                    order: orderInput,
                     createdAt: serverTimestamp()
                 });
+                broadcastSystemDataUpdated("rooms");
                 alert('✅ ເພີ່ມຂໍ້ມູນຄູປະຈຳຫ້ອງສຳເລັດ!');
-                loadHomeroomTeachers();
+                await loadHomeroomTeachers();
             } catch (err) {
                 alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + err.message);
             }
         };
 
-        // ແກ້ໄຂຄູປະຈຳຫ້ອງ (ສະເພາະ Admin)
-        window.editHomeroomTeacher = async function(docId, oldGrade, oldName, oldPhone, oldOrder) {
+        window.editHomeroomTeacher = async function (docId, oldGrade, oldName, oldPhone, oldOrder) {
             if (!isAdmin) return alert('❌ ສະເພາະແອັດມິນ (Admin) ເທົ່ານັ້ນທີ່ແກ້ໄຂຂໍ້ມູນໄດ້!');
 
-            const grade = prompt("ແກ້ໄຂຊັ້ນ / ຫ້ອງຮຽນ:", oldGrade);
-            if (!grade) return;
-            const teacherName = prompt("ແກ້ໄຂຊື່-ນາມສະກຸນ ຄູປະຈຳຫ້ອງ:", oldName);
-            if (!teacherName) return;
-            const phone = prompt("ແກ້ໄຂເບີໂທລະສັບ:", oldPhone) || "-";
-            const order = Number(prompt("ແກ້ໄຂລຳດັບການສະແດງຜົນ:", oldOrder)) || oldOrder || 99;
+            const gradeInput = prompt("ແກ້ໄຂຊັ້ນ / ຫ້ອງຮຽນ:", oldGrade);
+            if (!gradeInput || !cleanGrade(gradeInput)) return;
+            const teacherInput = prompt("ແກ້ໄຂຊື່-ນາມສະກຸນ ຄູປະຈຳຫ້ອງ:", oldName);
+            if (!teacherInput || !cleanVal(teacherInput)) return;
+            const phoneInput = prompt("ແກ້ໄຂເບີໂທລະສັບ:", oldPhone) || "-";
+            const orderInput = Number(prompt("ແກ້ໄຂລຳດັບການສະແດງຜົນ:", oldOrder)) || oldOrder || 99;
+
+            const gradeVal = cleanGrade(gradeInput);
+            const teacherVal = cleanVal(teacherInput);
+            const phoneVal = cleanVal(phoneInput) || "-";
 
             try {
-                await updateDoc(doc(db, "homeroom_teachers", docId), {
-                    grade: grade.trim(),
-                    teacherName: teacherName.trim(),
-                    phone: phone.trim(),
-                    order,
+                await updateDoc(doc(db, HOMEROOM_COLLECTION, docId), {
+                    grade: gradeVal,
+                    room: gradeVal,
+                    teacherName: teacherVal,
+                    phone: phoneVal,
+                    order: orderInput,
                     updatedAt: serverTimestamp()
                 });
+                broadcastSystemDataUpdated("rooms");
                 alert('✅ ແກ້ໄຂຂໍ້ມູນສຳເລັດ!');
-                loadHomeroomTeachers();
+                await loadHomeroomTeachers();
             } catch (err) {
                 alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + err.message);
             }
         };
 
-        // ລົບຄູປະຈຳຫ້ອງ (ສະເພາະ Admin)
-        window.deleteHomeroomTeacher = async function(docId, grade) {
+        window.deleteHomeroomTeacher = async function (docId, grade) {
             if (!isAdmin) return alert('❌ ສະເພາະແອັດມິນ (Admin) ເທົ່ານັ້ນທີ່ລົບຂໍ້ມູນໄດ້!');
 
             if (confirm(`⚠️ ທ່ານຕ້ອງການລົບຂໍ້ມູນຄູປະຈຳຫ້ອງ "${grade}" ແທ້ບໍ?`)) {
                 try {
-                    await deleteDoc(doc(db, "homeroom_teachers", docId));
+                    await deleteDoc(doc(db, HOMEROOM_COLLECTION, docId));
+                    broadcastSystemDataUpdated("rooms");
                     alert('✅ ລົບຂໍ້ມູນສຳເລັດ!');
-                    loadHomeroomTeachers();
+                    await loadHomeroomTeachers();
                 } catch (err) {
                     alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + err.message);
                 }
             }
         };
 
-        function escapeAttr(str) {
-            return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        function esc(str) {
+            return String(str ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
         }
+
+        function escAttr(str) {
+            return String(str ?? "")
+                .replace(/\\/g, "\\\\")
+                .replace(/'/g, "\\'")
+                .replace(/"/g, "&quot;");
+        }
+
+        onSnapshot(collection(db, HOMEROOM_COLLECTION), (snap) => {
+            if (!snap.empty) {
+                latestHomeroom = snap.docs.map((docSnap) => mapHomeroomDoc(docSnap));
+                renderCombinedView();
+            }
+        }, () => {});
+
+        onSnapshot(collection(db, ROOMS_COLLECTION), (snap) => {
+            latestRooms = snap.docs.map((docSnap) => mapRoomDoc(docSnap));
+            renderCombinedView();
+        }, () => {});
+
+        onSnapshot(collection(db, TEACHERS_COLLECTION), (snap) => {
+            latestTeachers = snap.docs.map((docSnap) => mapTeacherDoc(docSnap));
+            renderCombinedView();
+        }, () => {});
+
+        window.addEventListener("storage", (e) => {
+            if (e.key === SYNC_STORAGE_KEY) loadHomeroomTeachers();
+        });
+        window.addEventListener(SYNC_EVENT_NAME, () => loadHomeroomTeachers());
+
+        window.addEventListener("DOMContentLoaded", async () => {
+            document.getElementById("user-role-subtitle").innerText = `ຜູ້ໃຊ້ງານ: ${userName} (${userRole.toUpperCase()}) • ຫ້ອງ: ${userGrade}`;
+
+            if (isAdmin) {
+                document.getElementById("btn-add-room").style.display = "inline-block";
+                document.getElementById("btn-upd-rooms").style.display = "inline-block";
+                document.getElementById("btn-upd-teachers").style.display = "inline-block";
+            } else {
+                document.getElementById("th-action").style.display = "none";
+            }
+
+            await loadHomeroomTeachers();
+        });
     </script>
 </body>
 </html>
