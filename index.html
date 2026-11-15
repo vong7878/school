@@ -6,7 +6,7 @@
     <title>ລະບົບຄຸ້ມຄອງໂຮງຮຽນ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    
+
     <!-- ກວດສອບ Login ກ່ອນໂຫຼດໜ້າເວັບ -->
     <script>
         if (localStorage.getItem('isLoggedIn') !== 'true') {
@@ -65,19 +65,19 @@
         <a href="ຫ້ອງຮຽນ.html" id="menu-classrooms" class="nav-item" style="display:flex;align-items:center;gap:10px;color:#e2e8f0;text-decoration:none;padding:10px 14px;border-radius:10px;">
             <span>🏫</span>
             <span>10. ຫ້ອງຮຽນ</span>
-            <li id="menu-calendar">
-    <a href="ປະຕິທິນ.html" onclick="if(typeof closeMenuBar==='function') closeMenuBar();">📅 11. ຫ້ອງປະຕິທິນ</a>
-</li>
         </a>
+        <li id="menu-calendar">
+            <a href="ປະຕິທິນ.html" onclick="if(typeof closeMenuBar==='function') closeMenuBar();">📅 11. ຫ້ອງປະຕິທິນ</a>
+        </li>
         <li id="menu-update-12">
-    <a href="update.html" onclick="if(typeof closeMenuBar==='function') closeMenuBar();">🛠️ 12. ຫ້ອງອັບເດດ</a>
-</li>
+            <a href="update.html" onclick="if(typeof closeMenuBar==='function') closeMenuBar();">🛠️ 12. ຫ້ອງອັບເດດ</a>
+        </li>
     </ul>
 </aside>
 
-<!-- 🖥️ Main Content Area (ສະແດງເນື້ອຫາຕາມໂມດູນທີ່ເລືອກ) -->
+<!-- 🖥️ Main Content Area -->
 <div style="flex: 1; padding: 30px; overflow-y: auto; background: #f4f6f9;">
-    
+
     <!-- 1. Dashboard Section -->
     <div id="section-dashboard" class="content-section">
         <h2>📊 Dashboard - ພາບລວມລະບົບ</h2>
@@ -92,11 +92,11 @@
             </div>
             <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                 <h4>ຫ້ອງຮຽນທັງໝົດ</h4>
-                <p style="font-size: 24px; font-weight: bold; color: #ffc107;">12 ຫ້ອງ</p>
+                <p id="dash-total-rooms" style="font-size: 24px; font-weight: bold; color: #ffc107;">0 ຫ້ອງ</p>
             </div>
             <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                 <h4>ສະຖິຕິມາຮຽນ</h4>
-                <p style="font-size: 24px; font-weight: bold; color: #17a2b8;">95%</p>
+                <p id="dash-attendance-rate" style="font-size: 24px; font-weight: bold; color: #17a2b8;">0%</p>
             </div>
         </div>
     </div>
@@ -227,10 +227,10 @@
             </table>
         </div>
     </div>
-    
+
     <!-- 4. Classes & Timetable Management Section -->
     <div id="section-classes" class="content-section" style="display: none;">
-        <h2>📅 ຈັດການຕາຕະລາງຮຽນ & ຫ້ອງຮຽນ</h2>
+        <h2>📅 ຈັດການຕາຕະລາງຮຽນ &amp; ຫ້ອງຮຽນ</h2>
         <p>ເບິ່ງ, ເພີ່ມ, ແກ້ໄຂ ແລະ ລົບຕາຕະລາງຮຽນ (ສຳລັບຄູອາຈານ ແລະ ແອັດມິນ).</p>
 
         <div id="class-form-container" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: none;">
@@ -249,11 +249,13 @@
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ມື້ຮຽນ:</label>
                     <select id="timetable-day" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                         <option value="">-- ເລືອກມື້ --</option>
-                        <option value="ວັນຈັນ">ວັນຈັນ</option>
-                        <option value="ວັນອັງຄານ">ວັນອັງຄານ</option>
-                        <option value="ວັນພຸດ">ວັນພຸດ</option>
-                        <option value="ວັນພະຫັດ">ວັນພະຫັດ</option>
-                        <option value="ວັນສຸກ">ວັນສຸກ</option>
+                        <option value="ຈັນ">ຈັນ</option>
+                        <option value="ອັງຄານ">ອັງຄານ</option>
+                        <option value="ພຸດ">ພຸດ</option>
+                        <option value="ພະຫັດ">ພະຫັດ</option>
+                        <option value="ສຸກ">ສຸກ</option>
+                        <option value="ເສົາ">ເສົາ</option>
+                        <option value="ອາທິດ">ອາທິດ</option>
                     </select>
                 </div>
                 <div>
@@ -302,7 +304,7 @@
         <div style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
             <a href="check-in.html" style="padding: 12px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">⭐ ເປີດລະບົບເຊັກຊື່ (ລວມ ມ.5)</a>
             <a href="attendance-report.html" style="padding: 12px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">📊 ເບິ່ງປະຫວັດການເຊັກຊື່</a>
-            <a href="attendance-summary.html" style="padding: 12px 20px; background: #17a2b8; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">📈 ສະຫຼຸບວັນຂາດ & ຫັກຄະແນນ</a>
+            <a href="attendance-summary.html" style="padding: 12px 20px; background: #17a2b8; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">📈 ສະຫຼຸບວັນຂາດ &amp; ຫັກຄະແນນ</a>
         </div>
     </div>
 
@@ -376,7 +378,7 @@
 
     <!-- 7. Finance Management Section -->
     <div id="section-finance" class="content-section" style="display: none;">
-        <h2>💰 ລະບົບການເງິນ & ຄ່າຮຽນ</h2>
+        <h2>💰 ລະບົບການເງິນ &amp; ຄ່າຮຽນ</h2>
         <p>ຕິດຕາມການຊຳລະຄ່າຮຽນ, ບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ ແລະ ສະຖານະການເງິນຂອງໂຮງຮຽນ.</p>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
             <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
@@ -455,7 +457,7 @@
 
     <!-- 8. News Management Section -->
     <div id="section-news" class="content-section" style="display: none;">
-        <h2>📢 ຂ່າວສານ & ແຈ້ງເຕືອນ</h2>
+        <h2>📢 ຂ່າວສານ &amp; ແຈ້ງເຕືອນ</h2>
         <p>ປະກາດຂ່າວສານ, ກິດຈະກຳ ແລະ ສົ່ງການແຈ້ງເຕືອນສຳຄັນພາຍໃນໂຮງຮຽນ.</p>
         <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
             <h3 id="news-form-title">➕ ສ້າງປະກາດຂ່າວສານໃໝ່</h3>
@@ -467,7 +469,7 @@
                 </div>
                 <div>
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">ເນື້ອໃນລະອຽດ:</label>
-                    <textarea id="news-content" required rows="4" placeholder="ຂຽນรายละเอียดເນື້ອໃນປະກາດ..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+                    <textarea id="news-content" required rows="4" placeholder="ຂຽນລາຍລະອຽດເນື້ອໃນປະກາດ..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
                 </div>
                 <div style="display: flex; gap: 10px;">
                     <button type="submit" id="save-news-btn" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">ເຜີຍແຜ່ປະກາດ</button>
@@ -514,8 +516,8 @@
             </table>
         </div>
     </section>
-</main>
-    <!-- 📅 ສຳລັບນັກຮຽນ: ສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງຕົນເອງ (ລັອກຫ້ອງ + ເຊື່ອງປຸ່ມ ເພີ່ມ/ແກ້ໄຂ/ລົບ) -->
+
+    <!-- 📅 ສຳລັບນັກຮຽນ: ສະແດງຕາຕະລາງຮຽນສະເພາະຫ້ອງຕົນເອງ -->
     <section class="panel-card" id="student-room-timetable-panel" style="display: none;">
         <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
@@ -541,7 +543,10 @@
                 <tbody id="student-timetable-body"></tbody>
             </table>
         </div>
-    </section><script type="module">
+    </section>
+</main>
+
+<script type="module">
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -558,55 +563,144 @@ const firebaseConfig = {
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let weeklyDocs = [];
-let timetableDocs = [];
+const DAYS_ORDER = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"];
+
+const colBuffers = {
+    weekly_schedules: [],
+    timetables: [],
+    schedules: [],
+    teaching_schedules: [],
+    class_timetables: []
+};
 
 function cleanRoomKey(v) {
-    return String(v ?? "").trim().replace(/^["']+|["']+$/g, "").replace(/\s+/g, "");
+    return String(v ?? "")
+        .trim()
+        .replace(/^["']+|["']+$/g, "")
+        .replace(/^ຫ້ອງ\s*/i, "")
+        .replace(/\s+/g, "");
 }
 
 function cleanDayKey(v) {
-    return String(v ?? "").trim().replace(/^["']+|["']+$/g, "").replace(/^ວັນ/, "");
+    const base = String(v ?? "")
+        .trim()
+        .replace(/^["']+|["']+$/g, "")
+        .replace(/^ວັນ/i, "")
+        .replace(/^ມື້/i, "")
+        .trim();
+    const lower = base.toLowerCase();
+
+    if (["ຈັນ", "mon", "monday"].includes(lower)) return "ຈັນ";
+    if (["ອັງຄານ", "ຄານ", "ຄາມ", "tue", "tuesday"].includes(lower)) return "ອັງຄານ";
+    if (["ພຸດ", "wed", "wednesday"].includes(lower)) return "ພຸດ";
+    if (["ພະຫັດ", "ພຶຫັດ", "thu", "thursday"].includes(lower)) return "ພະຫັດ";
+    if (["ສຸກ", "fri", "friday"].includes(lower)) return "ສຸກ";
+    if (["ເສົາ", "sat", "saturday"].includes(lower)) return "ເສົາ";
+    if (["ອາທິດ", "sun", "sunday"].includes(lower)) return "ອາທິດ";
+    return base;
+}
+
+function parsePeriodIndex(v) {
+    const m = String(v ?? "").match(/[1-4]/);
+    return m ? Math.max(1, Math.min(4, parseInt(m[0], 10))) : null;
+}
+
+function ensureEmptyRoomGrid() {
+    return DAYS_ORDER.map((d) => ({
+        day: d,
+        slots: [
+            { subject: "-", teacher: "" },
+            { subject: "-", teacher: "" },
+            { subject: "-", teacher: "" },
+            { subject: "-", teacher: "" }
+        ]
+    }));
 }
 
 function syncFirestoreSchedulesToIndex() {
-    if (typeof roomTimetablesWithTeacher === "undefined") return;
+    const mergedMap = {};
+    const collectedTeaching = [];
 
-    const mergedMap = JSON.parse(JSON.stringify(roomTimetablesWithTeacher));
-    const daysOrder = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ"];
-    const allDocs = [...weeklyDocs, ...timetableDocs];
-
-    allDocs.forEach((raw) => {
-        const room = cleanRoomKey(raw.room || raw.grade || raw.classRoom);
-        const day = cleanDayKey(raw.day);
-        const periodNum = Math.max(1, Math.min(4, parseInt(raw.period || "1", 10) || 1));
-        const subject = String(raw.subject || "").trim();
-        const teacher = String(raw.teacher || raw.teacherName || "").trim();
-
-        if (!room || !day || !subject) return;
-
-        if (!mergedMap[room]) {
-            mergedMap[room] = daysOrder.map((d) => ({
-                day: d,
+    const ensureRoomRow = (roomKey, dayName) => {
+        if (!mergedMap[roomKey]) {
+            mergedMap[roomKey] = ensureEmptyRoomGrid();
+        }
+        let dayRow = mergedMap[roomKey].find((r) => cleanDayKey(r.day) === dayName);
+        if (!dayRow) {
+            dayRow = {
+                day: dayName,
                 slots: [
                     { subject: "-", teacher: "" },
                     { subject: "-", teacher: "" },
                     { subject: "-", teacher: "" },
                     { subject: "-", teacher: "" }
                 ]
-            }));
+            };
+            mergedMap[roomKey].push(dayRow);
         }
+        mergedMap[roomKey].sort((a, b) => {
+            const ia = DAYS_ORDER.indexOf(cleanDayKey(a.day));
+            const ib = DAYS_ORDER.indexOf(cleanDayKey(b.day));
+            return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+        });
+        return dayRow;
+    };
 
-        const dayRow = mergedMap[room].find((r) => cleanDayKey(r.day) === day);
-        if (dayRow) {
-            if (!Array.isArray(dayRow.slots)) dayRow.slots = [];
-            while (dayRow.slots.length < 4) dayRow.slots.push({ subject: "-", teacher: "" });
-            dayRow.slots[periodNum - 1] = { subject, teacher };
-        }
+    Object.entries(colBuffers).forEach(([colName, docs]) => {
+        docs.forEach((raw) => {
+            if (colName === "class_timetables" && Array.isArray(raw.rows)) {
+                const roomKey = cleanRoomKey(raw.grade || raw.room || raw.classRoom);
+                if (!roomKey) return;
+                raw.rows.forEach((r) => {
+                    const dayName = cleanDayKey(r.day);
+                    if (!dayName) return;
+                    const dayRow = ensureRoomRow(roomKey, dayName);
+                    [
+                        [r.p1, r.t1],
+                        [r.p2, r.t2],
+                        [r.p3, r.t3],
+                        [r.p4, r.t4]
+                    ].forEach(([subj, tch], idx) => {
+                        if (subj || tch) {
+                            dayRow.slots[idx] = {
+                                subject: String(subj || "-").trim() || "-",
+                                teacher: String(tch || "").trim()
+                            };
+                        }
+                    });
+                });
+                return;
+            }
+
+            const roomKey = cleanRoomKey(raw.room || raw.grade || raw.classRoom || raw.className);
+            const dayName = cleanDayKey(raw.day || raw.weekday || raw.dayName);
+            const periodNum = parsePeriodIndex(raw.period ?? raw.hour ?? raw.slot ?? 1);
+            const subject = String(raw.subject || raw.subjectName || raw.course || "").trim();
+            const teacher = String(raw.teacher || raw.teacherName || raw.instructor || "").trim();
+            const scheduleText = String(raw.schedule || raw.scheduleText || "").trim();
+
+            if (teacher || subject || scheduleText) {
+                collectedTeaching.push({
+                    teacher,
+                    subject,
+                    grade: roomKey || "-",
+                    schedule: scheduleText || [dayName ? `ວັນ${dayName}` : "", periodNum ? `ຊົ່ວໂມງທີ ${periodNum}` : "", String(raw.time || "").trim()].filter(Boolean).join(" • ") || "-"
+                });
+            }
+
+            if (roomKey && dayName && periodNum && subject) {
+                const dayRow = ensureRoomRow(roomKey, dayName);
+                dayRow.slots[periodNum - 1] = { subject, teacher };
+            }
+        });
     });
 
     window.__syncedRoomTimetables = mergedMap;
+    window.__syncedTeachingSchedules = collectedTeaching;
 
+    if (typeof window.applyIndexRoleRules === "function") {
+        window.applyIndexRoleRules();
+    }
     if (typeof window.renderStudentTimetableWithTeachers === "function") {
         window.renderStudentTimetableWithTeachers();
     }
@@ -615,24 +709,23 @@ function syncFirestoreSchedulesToIndex() {
     }
 }
 
-onSnapshot(collection(db, "weekly_schedules"), (snap) => {
-    weeklyDocs = snap.docs.map((d) => d.data());
-    syncFirestoreSchedulesToIndex();
-});
-
-onSnapshot(collection(db, "timetables"), (snap) => {
-    timetableDocs = snap.docs.map((d) => d.data());
-    syncFirestoreSchedulesToIndex();
+Object.keys(colBuffers).forEach((colName) => {
+    onSnapshot(collection(db, colName), (snap) => {
+        colBuffers[colName] = snap.docs.map((d) => d.data());
+        syncFirestoreSchedulesToIndex();
+    }, () => {});
 });
 
 window.addEventListener("storage", (e) => {
-    if (e.key === "schoolSystemDataUpdated" || e.key === "userGrade") {
+    if (e.key === "schoolSystemDataUpdated" || e.key === "userGrade" || e.key === "userName" || e.key === "userRole") {
         syncFirestoreSchedulesToIndex();
     }
 });
 </script>
 
 <script>
+const DAYS_ORDER = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"];
+
 function cleanStorageValue(val) {
     return String(val || "")
         .trim()
@@ -640,11 +733,28 @@ function cleanStorageValue(val) {
         .trim();
 }
 
-const defaultTeachingData = [
-    { teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ", subject: "ຄະນິດສາດ", grade: "ມ.5", schedule: "ຈັນ, ພຸດ, ສຸກ (08:00 - 08:45)" },
-    { teacher: "ອ. ສຸກສາຄອນ ແສງດາວ", subject: "ຟີຊິກສາດ", grade: "ມ.5", schedule: "ຈັນ, ພະຫັດ (08:50 - 09:35)" },
-    { teacher: "Vongvilay SAISATHONE", subject: "ໄອທີ / ຄອມ", grade: "ມ.5", schedule: "ອັງຄານ (10:40 - 11:25)" }
-];
+function cleanRoomKey(v) {
+    return cleanStorageValue(v)
+        .replace(/^ຫ້ອງ\s*/i, "")
+        .replace(/\s+/g, "");
+}
+
+function cleanDayKey(v) {
+    const base = cleanStorageValue(v)
+        .replace(/^ວັນ/i, "")
+        .replace(/^ມື້/i, "")
+        .trim();
+    const lower = base.toLowerCase();
+
+    if (["ຈັນ", "mon", "monday"].includes(lower)) return "ຈັນ";
+    if (["ອັງຄານ", "ຄານ", "ຄາມ", "tue", "tuesday"].includes(lower)) return "ອັງຄານ";
+    if (["ພຸດ", "wed", "wednesday"].includes(lower)) return "ພຸດ";
+    if (["ພະຫັດ", "ພຶຫັດ", "thu", "thursday"].includes(lower)) return "ພະຫັດ";
+    if (["ສຸກ", "fri", "friday"].includes(lower)) return "ສຸກ";
+    if (["ເສົາ", "sat", "saturday"].includes(lower)) return "ເສົາ";
+    if (["ອາທິດ", "sun", "sunday"].includes(lower)) return "ອາທິດ";
+    return base;
+}
 
 function escapeHtmlText(str) {
     return String(str || "")
@@ -655,13 +765,16 @@ function escapeHtmlText(str) {
 }
 
 function getAllTeachingSchedules() {
+    if (Array.isArray(window.__syncedTeachingSchedules) && window.__syncedTeachingSchedules.length > 0) {
+        return window.__syncedTeachingSchedules;
+    }
     try {
         const saved = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null");
         if (Array.isArray(saved) && saved.length > 0) {
             return saved;
         }
     } catch (e) {}
-    return defaultTeachingData;
+    return [];
 }
 
 function normalizeText(str) {
@@ -679,7 +792,7 @@ function getCurrentGradeClean() {
         localStorage.getItem("studentGrade") ||
         localStorage.getItem("grade") ||
         "ມ.5";
-    const cleaned = cleanStorageValue(raw);
+    const cleaned = cleanRoomKey(raw);
     return cleaned || "ມ.5";
 }
 
@@ -693,7 +806,7 @@ function getActionWord() {
 }
 
 function getActiveRoomTimetablesMap() {
-    return window.__syncedRoomTimetables || roomTimetablesWithTeacher;
+    return window.__syncedRoomTimetables || {};
 }
 
 function renderOwnTeachingSchedule(currentUserName) {
@@ -725,7 +838,7 @@ function renderOwnTeachingSchedule(currentUserName) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" style="text-align: center; color: #94a3b8;">
-                    ຍັງບໍ່ມີຊົ່ວໂມງສອນທີ່ບັນທຶກໄວ້ສຳລັບ "${escapeHtmlText(currentUserName)}"
+                    ຍັງບໍ່ມີຊົ່ວໂມງສອນໃນ Firebase ສຳລັບ "${escapeHtmlText(currentUserName)}"
                 </td>
             </tr>
         `;
@@ -778,6 +891,8 @@ function applyIndexRoleRules() {
 
     ensureScheduleDetailUi();
 }
+
+window.applyIndexRoleRules = applyIndexRoleRules;
 
 if (localStorage.getItem('isLoggedIn') !== 'true') {
     window.location.href = 'login.html';
@@ -944,7 +1059,7 @@ function ensureMenuSixVisibleAndLinked() {
                 node.classList.remove("hidden", "hide", "d-none", "student-hide", "role-hidden");
                 node.style.setProperty("display", node.tagName === "LI" ? "list-item" : "block", "important");
                 node.style.setProperty("visibility", "visible", "important");
-                node.style.setProperty("opacity", "1", "important");
+                node.style.setProperty("opacity", "1", 'important');
                 node.style.setProperty("pointer-events", "auto", "important");
             });
 
@@ -966,155 +1081,11 @@ function ensureMenuSixVisibleAndLinked() {
     });
 }
 
-const roomTimetablesWithTeacher = {
-    "ມ.5": [
-        {
-            day: "ຈັນ",
-            slots: [
-                { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
-                { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
-                { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" },
-                { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" }
-            ]
-        },
-        {
-            day: "ອັງຄານ",
-            slots: [
-                { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
-                { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
-                { subject: "ປະຫວັດສາດ", teacher: "ອ. ແສງທອງ ສີບຸນເຮືອງ" },
-                { subject: "ໄອທີ / ຄອມ", teacher: "ອ. ສາຍສະຖອນ ວົງວິໄລ" }
-            ]
-        },
-        {
-            day: "ພຸດ",
-            slots: [
-                { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
-                { subject: "ພູມສາດ", teacher: "ອ. ທອງສຸກ ມະນີວົງ" },
-                { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" },
-                { subject: "ພະລະສຶກສາ", teacher: "ອ. ສົມພອນ ດວງມາລາ" }
-            ]
-        },
-        {
-            day: "ພະຫັດ",
-            slots: [
-                { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
-                { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
-                { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" },
-                { subject: "ສຶກສາພົນລະເມືອງ", teacher: "ອ. ຄຳດີ ສຸວັນນະວົງ" }
-            ]
-        },
-        {
-            day: "ສຸກ",
-            slots: [
-                { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
-                { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
-                { subject: "ກິດຈະກຳຫ້ອງ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.5" },
-                { subject: "ສະຫຼຸບປະຈຳອາທິດ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.5" }
-            ]
-        }
-    ],
-    "ມ.6": [
-        {
-            day: "ຈັນ",
-            slots: [
-                { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" },
-                { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
-                { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
-                { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" }
-            ]
-        },
-        {
-            day: "ອັງຄານ",
-            slots: [
-                { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
-                { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
-                { subject: "ພູມສາດ", teacher: "ອ. ທອງສຸກ ມະນີວົງ" },
-                { subject: "ປະຫວັດສາດ", teacher: "ອ. ແສງທອງ ສີບຸນເຮືອງ" }
-            ]
-        },
-        {
-            day: "ພຸດ",
-            slots: [
-                { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
-                { subject: "ໄອທີ / ຄອມ", teacher: "ອ. ສາຍສະຖອນ ວົງວິໄລ" },
-                { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" },
-                { subject: "ພະລະສຶກສາ", teacher: "ອ. ສົມພອນ ດວງມາລາ" }
-            ]
-        },
-        {
-            day: "ພະຫັດ",
-            slots: [
-                { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
-                { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
-                { subject: "ສຶກສາພົນລະເມືອງ", teacher: "ອ. ຄຳດີ ສຸວັນນະວົງ" },
-                { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" }
-            ]
-        },
-        {
-            day: "ສຸກ",
-            slots: [
-                { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
-                { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
-                { subject: "ກິດຈະກຳຫ້ອງ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.6" },
-                { subject: "ສະຫຼຸບປະຈຳອາທິດ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.6" }
-            ]
-        }
-    ],
-    "ມ.7": [
-        {
-            day: "ຈັນ",
-            slots: [
-                { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
-                { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" },
-                { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
-                { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" }
-            ]
-        },
-        {
-            day: "ອັງຄານ",
-            slots: [
-                { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" },
-                { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
-                { subject: "ປະຫວັດສາດ", teacher: "ອ. ແສງທອງ ສີບຸນເຮືອງ" },
-                { subject: "ໄອທີ / ຄອມ", teacher: "ອ. ສາຍສະຖອນ ວົງວິໄລ" }
-            ]
-        },
-        {
-            day: "ພຸດ",
-            slots: [
-                { subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
-                { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
-                { subject: "ພູມສາດ", teacher: "ອ. ທອງສຸກ ມະນີວົງ" },
-                { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" }
-            ]
-        },
-        {
-            day: "ພະຫັດ",
-            slots: [
-                { subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
-                { subject: "ສຶກສາພົນລະເມືອງ", teacher: "ອ. ຄຳດີ ສຸວັນນະວົງ" },
-                { subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
-                { subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" }
-            ]
-        },
-        {
-            day: "ສຸກ",
-            slots: [
-                { subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
-                { subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" },
-                { subject: "ກິດຈະກຳຫ້ອງ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.7" },
-                { subject: "ສະຫຼຸບປະຈຳອາທິດ", teacher: "ອ. ປະຈຳຫ້ອງ ມ.7" }
-            ]
-        }
-    ]
-};
-
 function formatSlotWithTeacher(slot) {
     if (!slot) return "-";
-    if (typeof slot === "string") return slot;
-    const subj = slot.subject || "-";
-    const tch = slot.teacher ? `<br><small style="color:#93c5fd;">👩‍🏫 ${slot.teacher}</small>` : "";
+    if (typeof slot === "string") return escapeHtmlText(slot);
+    const subj = escapeHtmlText(slot.subject || "-");
+    const tch = slot.teacher ? `<br><small style="color:#93c5fd;">👩‍🏫 ${escapeHtmlText(slot.teacher)}</small>` : "";
     return `<div><strong>${subj}</strong>${tch}</div>`;
 }
 
@@ -1123,8 +1094,7 @@ function renderStudentTimetableWithTeachers() {
     if (role === "admin" || role === "teacher") return;
 
     const activeMap = getActiveRoomTimetablesMap();
-    const rawGrade = getCurrentGradeClean();
-    const cleanRoom = activeMap[rawGrade] ? rawGrade : (rawGrade || "ມ.5");
+    const cleanRoom = getCurrentGradeClean();
     localStorage.setItem("userGrade", cleanRoom);
 
     const titleEl = document.getElementById("student-timetable-title");
@@ -1135,11 +1105,29 @@ function renderStudentTimetableWithTeachers() {
     if (badgeEl) badgeEl.textContent = `ຫ້ອງ: ${cleanRoom}`;
     if (!tbody) return;
 
-    const rows = activeMap[cleanRoom] || activeMap["ມ.5"] || roomTimetablesWithTeacher["ມ.5"];
-    tbody.innerHTML = rows.map(r => `
+    const rows = activeMap[cleanRoom];
+    if (!Array.isArray(rows) || !rows.length) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align: center; color: #94a3b8;">
+                    ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງຮຽນໃນ Firebase ສຳລັບຫ້ອງ ${escapeHtmlText(cleanRoom)}
+                </td>
+            </tr>
+        `;
+        ensureScheduleDetailUi();
+        return;
+    }
+
+    const sortedRows = [...rows].sort((a, b) => {
+        const ia = DAYS_ORDER.indexOf(cleanDayKey(a.day));
+        const ib = DAYS_ORDER.indexOf(cleanDayKey(b.day));
+        return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+    });
+
+    tbody.innerHTML = sortedRows.map(r => `
         <tr>
-            <td><strong>${r.day}</strong></td>
-            ${r.slots.map(s => `<td>${formatSlotWithTeacher(s)}</td>`).join("")}
+            <td><strong>${escapeHtmlText(cleanDayKey(r.day))}</strong></td>
+            ${(r.slots || []).map(s => `<td>${formatSlotWithTeacher(s)}</td>`).join("")}
         </tr>
     `).join("");
 
@@ -1181,35 +1169,38 @@ function getAllDetailedHours() {
     if (staff) {
         Object.keys(activeMap).forEach(gradeKey => {
             (activeMap[gradeKey] || []).forEach(dayItem => {
+                const dShort = cleanDayKey(dayItem.day);
                 (dayItem.slots || []).forEach((slot, idx) => {
-                    const subj = typeof slot === "string" ? slot : (slot.subject || "-");
-                    const tch = typeof slot === "string" ? "" : (slot.teacher || "-");
+                    const subj = typeof slot === "string" ? slot : (slot.subject || "");
+                    const tch = typeof slot === "string" ? "" : (slot.teacher || "");
+                    if (!subj || subj === "-") return;
                     const match = !userName || !normalizeText(tch) || normalizeText(tch).includes(userName) || userName.includes(normalizeText(tch));
                     if (match) {
                         rows.push({
-                            day: `ວັນ${dayItem.day}`,
-                            shortDay: dayItem.day,
+                            day: `ວັນ${dShort}`,
+                            shortDay: dShort,
                             period: SCHEDULE_PERIOD_LABELS[idx] || `ຊົ່ວໂມງທີ ${idx + 1}`,
                             subject: subj,
                             grade: gradeKey,
-                            teacher: tch
+                            teacher: tch || "-"
                         });
                     }
                 });
             });
         });
     } else {
-        const cleanRoom = activeMap[userGrade] ? userGrade : (userGrade || "ມ.5");
-        (activeMap[cleanRoom] || activeMap["ມ.5"] || []).forEach(dayItem => {
+        (activeMap[userGrade] || []).forEach(dayItem => {
+            const dShort = cleanDayKey(dayItem.day);
             (dayItem.slots || []).forEach((slot, idx) => {
-                const subj = typeof slot === "string" ? slot : (slot.subject || "-");
+                const subj = typeof slot === "string" ? slot : (slot.subject || "");
                 const tch = typeof slot === "string" ? "-" : (slot.teacher || "-");
+                if (!subj || subj === "-") return;
                 rows.push({
-                    day: `ວັນ${dayItem.day}`,
-                    shortDay: dayItem.day,
+                    day: `ວັນ${dShort}`,
+                    shortDay: dShort,
                     period: SCHEDULE_PERIOD_LABELS[idx] || `ຊົ່ວໂມງທີ ${idx + 1}`,
                     subject: subj,
-                    grade: cleanRoom,
+                    grade: userGrade,
                     teacher: tch
                 });
             });
@@ -1300,7 +1291,7 @@ function renderScheduleDetailModal() {
     if (!tbody) return;
 
     if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="6" style="border:1px solid #334155;padding:12px;background:#162032;text-align:center;color:#94a3b8;">ບໍ່ມີຊົ່ວໂມງ${escapeHtmlText(word)}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="border:1px solid #334155;padding:12px;background:#162032;text-align:center;color:#94a3b8;">ບໍ່ມີຊົ່ວໂມງ${escapeHtmlText(word)}ໃນ Firebase</td></tr>`;
         return;
     }
 
@@ -1403,6 +1394,7 @@ window.addEventListener('load', () => {
     initIndexView();
     ensureToggleButtonVisible();
 });
-</script><script type="module" src="script.js"></script>
+</script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
