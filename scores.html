@@ -638,14 +638,44 @@
             .find((v) => v.length > 0) || "";
     }
 
-    function getFilteredRoomStudents() {
-        const activeQuery = getActiveSearchQuery();
-        return scoresData.filter((s) => {
-            const sameGrade = cleanGrade(s.grade) === userGrade;
-            const matchName = !activeQuery || cleanText(s.name).toLowerCase().includes(activeQuery);
-            return sameGrade && matchName;
-        });
-    }
+    const currentUserId = cleanText(
+    localStorage.getItem("userId") ||
+    localStorage.getItem("studentId") ||
+    localStorage.getItem("username") ||
+    ""
+);
+
+function isOwnStudentRecord(s) {
+    const myName = cleanText(userName).toLowerCase();
+    const rowName = cleanText(s.name).toLowerCase();
+    const rowId = cleanText(s.id || s.studentId || s.userId || "").toLowerCase();
+    const myId = cleanText(currentUserId).toLowerCase();
+
+    const matchById = Boolean(myId && rowId && rowId === myId);
+    const matchByName = Boolean(
+        myName &&
+        rowName &&
+        (rowName === myName || rowName.includes(myName) || myName.includes(rowName))
+    );
+
+    return matchById || matchByName;
+}
+
+function getFilteredRoomStudents() {
+    const activeQuery = getActiveSearchQuery();
+    return scoresData.filter((s) => {
+        const sameGrade = cleanGrade(s.grade) === userGrade;
+        if (!sameGrade) return false;
+
+        // นักเรียนดูได้เฉพาะคะแนนของตัวเองเท่านั้น
+        if (role === "student") {
+            return isOwnStudentRecord(s);
+        }
+
+        const matchName = !activeQuery || cleanText(s.name).toLowerCase().includes(activeQuery);
+        return matchName;
+    });
+}
 
     function renderSubjectsSubroom(list) {
         const tbSubj = document.getElementById("tbody-subjects");
