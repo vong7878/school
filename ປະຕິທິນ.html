@@ -58,7 +58,6 @@
 
         .container { max-width: 1180px; margin: 24px auto; padding: 0 16px; }
 
-        /* ແຖບສະຫຼັບຫ້ອງນ້ອຍ (Sub-rooms: ໜ້ານັກຮຽນ / ໜ້າຄູອາຈານ) */
         .subroom-tabs {
             display: flex;
             gap: 10px;
@@ -158,12 +157,6 @@
             transition: 0.2s;
         }
         .btn:hover { background: #334155; }
-        .btn-primary {
-            background: #2563eb;
-            border-color: #3b82f6;
-            color: #fff;
-        }
-        .btn-primary:hover { background: #1d4ed8; }
         .btn-success {
             background: #16a34a;
             border-color: #22c55e;
@@ -228,7 +221,6 @@
         .slot-meta { font-size: 12px; color: #94a3b8; margin-top: 3px; }
         .empty-slot { color: #64748b; font-size: 13px; font-style: italic; }
 
-        /* ຟອມເພີ່ມ/ແກ້ໄຂຕາຕະລາງສຳລັບຄູ / ແອັດມິນ */
         .manage-box {
             margin-top: 18px;
             background: #0f172a;
@@ -267,7 +259,6 @@
 </header>
 
 <div class="container">
-    <!-- ປຸ່ມເລືອກຫ້ອງນ້ອຍ 2 ຫ້ອງ -->
     <div class="subroom-tabs">
         <button type="button" class="subroom-tab active" id="tab-student-cal" onclick="switchSubRoom('student')">
             🎓 ຫ້ອງນ້ອຍ 1: ໜ້ານັກຮຽນ (ຕາຕະລາງຮຽນປະຈຳອາທິດ)
@@ -277,9 +268,7 @@
         </button>
     </div>
 
-    <!-- ========================================== -->
-    <!-- ຫ້ອງນ້ອຍ 1: ໜ້ານັກຮຽນ (ຕາຕະລາງຮຽນປະຈຳອາທິດ) -->
-    <!-- ========================================== -->
+    <!-- ຫ້ອງນ້ອຍ 1: ໜ້ານັກຮຽນ -->
     <section class="panel" id="subroom-student">
         <div class="panel-header">
             <h2>🎓 ຕາຕະລາງຮຽນປະຈຳອາທິດ (ສຳລັບນັກຮຽນ)</h2>
@@ -292,7 +281,7 @@
 
         <div class="filter-bar">
             <div class="filter-group">
-                <label>📆 ເລືອກອາທິດ (ຫຼື ວັນທີໃນອາທິດນັ້ນ):</label>
+                <label>📆 ເລືອກອາທິດ:</label>
                 <input type="week" id="stu-week-picker" onchange="onStudentWeekPickerChange()">
             </div>
             <div class="filter-group">
@@ -330,9 +319,7 @@
         </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- ຫ້ອງນ້ອຍ 2: ໜ້າຄູອາຈານ (ຕາຕະລາງການສອນປະຈຳອາທິດ) -->
-    <!-- ========================================== -->
+    <!-- ຫ້ອງນ້ອຍ 2: ໜ້າຄູອາຈານ -->
     <section class="panel" id="subroom-teacher" style="display: none;">
         <div class="panel-header">
             <h2>👩‍🏫 ຕາຕະລາງການສອນປະຈຳອາທິດ (ສຳລັບຄູອາຈານ)</h2>
@@ -387,7 +374,6 @@
             </table>
         </div>
 
-        <!-- ຟອມເພີ່ມຊົ່ວໂມງສອນລົງ Firebase Firestore (ສະແດງສະເພາະ Teacher / Admin) -->
         <div class="manage-box" id="teacher-add-schedule-box" style="display: none;">
             <h3>➕ ເພີ່ມຊົ່ວໂມງສອນ / ຮຽນປະຈຳອາທິດ (ບັນທຶກລົງ Firebase)</h3>
             <form id="weekly-schedule-form" class="manage-grid">
@@ -452,7 +438,6 @@
             .replace(/"/g, "&quot;");
     }
 
-    // ຄຳນວນ ISO Week ປັດຈຸບັນ (ເຊັ່ນ "2026-W46")
     function getISOWeekString(dateObj = new Date()) {
         const d = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
         const dayNum = d.getUTCDay() || 7;
@@ -462,7 +447,6 @@
         return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
     }
 
-    // ແປງ ISO Week ("2026-W46") ເປັນວັນທີ ຈັນ - ສຸກ ຂອງອາທິດນັ້ນ
     function getDatesOfISOWeek(weekStr) {
         const match = /^(\d{4})-W(\d{2})$/.exec(weekStr || "");
         if (!match) return ["", "", "", "", ""];
@@ -500,22 +484,10 @@
     }
 
     const DAYS = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ"];
-
-    // ຂໍ້ມູນຕົວຢ່າງເລີ່ມຕົ້ນ (ຖ້າ Firestore ຍັງບໍ່ມີຂໍ້ມູນ)
-    const fallbackEntries = [
-        { week: "", day: "ຈັນ", period: "1", room: "ມ.6/1", subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" },
-        { week: "", day: "ຈັນ", period: "2", room: "ມ.6/1", subject: "ຟີຊິກສາດ", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ" },
-        { week: "", day: "ອັງຄານ", period: "1", room: "ມ.6/1", subject: "ເຄມີສາດ", teacher: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
-        { week: "", day: "ພຸດ", period: "3", room: "ມ.6/1", subject: "ພາສາອັງກິດ", teacher: "ອ. ວັນນາ ໄຊຍະວົງ" },
-        { week: "", day: "ພະຫັດ", period: "2", room: "ມ.6/2", subject: "ຊີວະສາດ", teacher: "ອ. ຈັນທາ ວົງສະຫວັດ" },
-        { week: "", day: "ສຸກ", period: "1", room: "ມ.6/2", subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" },
-        { week: "", day: "ຈັນ", period: "1", room: "ມ.6", subject: "ພາສາລາວ", teacher: "ອ. ບົວໄລ ພົມມະຈັນ" },
-        { week: "", day: "ຈັນ", period: "2", room: "ມ.6", subject: "ຄະນິດສາດ", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ" }
-    ];
-
-    let allWeeklyEntries = [...fallbackEntries];
+    let allWeeklyEntries = [];
     let currentStudentWeek = getISOWeekString(new Date());
     let currentTeacherWeek = getISOWeekString(new Date());
+    let activeRole = "student";
 
     async function loadWeeklySchedulesFromFirestore() {
         try {
@@ -533,7 +505,6 @@
                 });
             });
 
-            // ດຶງຈາກ collection timetables ມາຮ່ວມນຳ (ຖ້າມີ)
             const ttSnap = await getDocs(collection(db, "timetables"));
             ttSnap.forEach((docSnap) => {
                 const d = docSnap.data();
@@ -548,11 +519,9 @@
                 });
             });
 
-            if (loaded.length > 0) {
-                allWeeklyEntries = [...loaded, ...fallbackEntries];
-            }
+            allWeeklyEntries = loaded;
         } catch (err) {
-            console.warn("ໃຊ້ຂໍ້ມູນຕາຕະລາງເລີ່ມຕົ້ນ:", err);
+            console.warn("ບໍ່ສາມາດໂຫຼດຂໍ້ມູນຈາກ Firestore:", err);
         }
 
         renderStudentWeeklyTable();
@@ -564,30 +533,38 @@
         return `${weekStr} (${dates[0]} - ${dates[4]})`;
     }
 
+    function canAccessSubRoom(mode) {
+        if (activeRole === "admin") return true;
+        if (activeRole === "student") return mode === "student";
+        if (activeRole === "teacher") return mode === "teacher";
+        return mode === "student";
+    }
+
     window.switchSubRoom = function (mode) {
+        if (!canAccessSubRoom(mode)) {
+            mode = activeRole === "teacher" ? "teacher" : "student";
+        }
+
         const stuSec = document.getElementById("subroom-student");
         const tchSec = document.getElementById("subroom-teacher");
         const tabStu = document.getElementById("tab-student-cal");
         const tabTch = document.getElementById("tab-teacher-cal");
 
         if (mode === "teacher") {
-            stuSec.style.display = "none";
-            tchSec.style.display = "block";
-            tabStu.classList.remove("active");
-            tabTch.classList.add("active");
+            if (stuSec) stuSec.style.display = "none";
+            if (tchSec) tchSec.style.display = "block";
+            if (tabStu) tabStu.classList.remove("active");
+            if (tabTch) tabTch.classList.add("active");
             renderTeacherWeeklyTable();
         } else {
-            stuSec.style.display = "block";
-            tchSec.style.display = "none";
-            tabStu.classList.add("active");
-            tabTch.classList.remove("active");
+            if (stuSec) stuSec.style.display = "block";
+            if (tchSec) tchSec.style.display = "none";
+            if (tabStu) tabStu.classList.add("active");
+            if (tabTch) tabTch.classList.remove("active");
             renderStudentWeeklyTable();
         }
     };
 
-    // ==========================================
-    // ຫ້ອງນ້ອຍ 1: ໜ້ານັກຮຽນ
-    // ==========================================
     window.changeStudentWeek = function (delta) {
         currentStudentWeek = shiftISOWeek(currentStudentWeek, delta);
         document.getElementById("stu-week-picker").value = currentStudentWeek;
@@ -645,9 +622,6 @@
         }).join("");
     };
 
-    // ==========================================
-    // ຫ້ອງນ້ອຍ 2: ໜ້າຄູອາຈານ
-    // ==========================================
     window.changeTeacherWeek = function (delta) {
         currentTeacherWeek = shiftISOWeek(currentTeacherWeek, delta);
         document.getElementById("tch-week-picker").value = currentTeacherWeek;
@@ -704,7 +678,6 @@
         }).join("");
     };
 
-    // ບັນທຶກຊົ່ວໂມງສອນ/ຮຽນໃໝ່ລົງ Firestore
     document.getElementById("weekly-schedule-form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const entry = {
@@ -730,7 +703,6 @@
         }
     });
 
-    // ເລີ່ມຕົ້ນໜ້າເວັບຕາມ Role ແລະ ຫ້ອງຂອງຜູ້ລັອກອິນ
     function initCalendarPage() {
         const userName = cleanVal(localStorage.getItem("userName")) || "ຜູ້ໃຊ້ງານ";
         const userRole = cleanVal(localStorage.getItem("userRole") || localStorage.getItem("role") || "student").toLowerCase();
@@ -748,14 +720,26 @@
             roomSelect.value = userGrade;
         }
 
-        if (userRole === "teacher" || userRole === "admin") {
+        activeRole = userRole;
+        const tabStu = document.getElementById("tab-student-cal");
+        const tabTch = document.getElementById("tab-teacher-cal");
+
+        if (userRole === "student") {
+            if (tabStu) tabStu.style.display = "inline-flex";
+            if (tabTch) tabTch.style.display = "none";
+            document.getElementById("teacher-add-schedule-box").style.display = "none";
+            switchSubRoom("student");
+        } else if (userRole === "teacher") {
+            if (tabStu) tabStu.style.display = "none";
+            if (tabTch) tabTch.style.display = "inline-flex";
             document.getElementById("teacher-add-schedule-box").style.display = "block";
             document.getElementById("form-teacher").value = userName;
-            if (userRole === "teacher") {
-                document.getElementById("tch-name-search").value = userName;
-            }
+            document.getElementById("tch-name-search").value = userName;
             switchSubRoom("teacher");
         } else {
+            if (tabStu) tabStu.style.display = "inline-flex";
+            if (tabTch) tabTch.style.display = "inline-flex";
+            document.getElementById("teacher-add-schedule-box").style.display = "block";
             switchSubRoom("student");
         }
 
