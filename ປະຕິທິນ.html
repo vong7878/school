@@ -411,7 +411,7 @@
 
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
@@ -485,47 +485,59 @@
 
     const DAYS = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ"];
     let allWeeklyEntries = [];
+    let weeklyDocsCache = [];
+    let timetableDocsCache = [];
     let currentStudentWeek = getISOWeekString(new Date());
     let currentTeacherWeek = getISOWeekString(new Date());
     let activeRole = "student";
+    let isListeningFirestore = false;
 
-    async function loadWeeklySchedulesFromFirestore() {
+    function rebuildScheduleCacheAndRender() {
+        const fromWeekly = weeklyDocsCache.map((d) => ({
+            week: cleanVal(d.week),
+            day: cleanVal(d.day).replace(/^ວັນ/, ""),
+            period: cleanVal(d.period || "1"),
+            room: cleanVal(d.room || d.grade),
+            subject: cleanVal(d.subject),
+            teacher: cleanVal(d.teacher)
+        }));
+
+        const fromTimetables = timetableDocsCache.map((d) => ({
+            week: cleanVal(d.week),
+            day: cleanVal(d.day).replace(/^ວັນ/, "") || "ຈັນ",
+            period: cleanVal(d.period || "1"),
+            room: cleanVal(d.room || d.grade),
+            subject: cleanVal(d.subject),
+            teacher: cleanVal(d.teacher)
+        }));
+
+        allWeeklyEntries = [...fromWeekly, ...fromTimetables];
+        renderStudentWeeklyTable();
+        renderTeacherWeeklyTable();
+    }
+
+    // ຟັງການປ່ຽນແປງຈາກ Firestore ແບບ Real-time: ເມື່ອຄູບັນທຶກຕາຕະລາງສອນ ຈະຊິ້ງໄປສ້າງຕາຕະລາງຮຽນໃຫ້ນັກຮຽນທັນທີ
+    function listenWeeklySchedulesFromFirestore() {
+        if (isListeningFirestore) return;
+        isListeningFirestore = true;
+
         try {
-            const snap = await getDocs(collection(db, "weekly_schedules"));
-            const loaded = [];
-            snap.forEach((docSnap) => {
-                const d = docSnap.data();
-                loaded.push({
-                    week: cleanVal(d.week),
-                    day: cleanVal(d.day),
-                    period: cleanVal(d.period),
-                    room: cleanVal(d.room || d.grade),
-                    subject: cleanVal(d.subject),
-                    teacher: cleanVal(d.teacher)
-                });
+            onSnapshot(collection(db, "weekly_schedules"), (snap) => {
+                weeklyDocsCache = snap.docs.map((docSnap) => docSnap.data());
+                rebuildScheduleCacheAndRender();
+            }, (err) => {
+                console.warn("ບໍ່ສາມາດຟັງ weekly_schedules ຈາກ Firestore:", err);
             });
 
-            const ttSnap = await getDocs(collection(db, "timetables"));
-            ttSnap.forEach((docSnap) => {
-                const d = docSnap.data();
-                const rawDay = cleanVal(d.day).replace(/^ວັນ/, "");
-                loaded.push({
-                    week: cleanVal(d.week),
-                    day: rawDay || "ຈັນ",
-                    period: cleanVal(d.period || "1"),
-                    room: cleanVal(d.room || d.grade),
-                    subject: cleanVal(d.subject),
-                    teacher: cleanVal(d.teacher)
-                });
+            onSnapshot(collection(db, "timetables"), (ttSnap) => {
+                timetableDocsCache = ttSnap.docs.map((docSnap) => docSnap.data());
+                rebuildScheduleCacheAndRender();
+            }, (err) => {
+                console.warn("ບໍ່ສາມາດຟັງ timetables ຈາກ Firestore:", err);
             });
-
-            allWeeklyEntries = loaded;
         } catch (err) {
             console.warn("ບໍ່ສາມາດໂຫຼດຂໍ້ມູນຈາກ Firestore:", err);
         }
-
-        renderStudentWeeklyTable();
-        renderTeacherWeeklyTable();
     }
 
     function formatWeekLabel(weekStr) {
@@ -581,6 +593,8 @@
 
     window.renderStudentWeeklyTable = function () {
         const tbody = document.getElementById("stu-weekly-tbody");
+        if (!tbody) return;
+
         const room = cleanVal(document.getElementById("stu-room-select").value);
         const keyword = cleanVal(document.getElementById("stu-search-input").value).toLowerCase();
         const dates = getDatesOfISOWeek(currentStudentWeek);
@@ -638,6 +652,8 @@
 
     window.renderTeacherWeeklyTable = function () {
         const tbody = document.getElementById("tch-weekly-tbody");
+        if (!tbody) return;
+
         const teacherKw = cleanVal(document.getElementById("tch-name-search").value).toLowerCase();
         const roomFilter = cleanVal(document.getElementById("tch-room-filter").value);
         const subjKw = cleanVal(document.getElementById("tch-subject-search").value).toLowerCase();
@@ -682,7 +698,7 @@
         e.preventDefault();
         const entry = {
             week: cleanVal(document.getElementById("form-week").value),
-            day: cleanVal(document.getElementById("form-day").value),
+            day: cleanVal(document.getElementById("form-day").value).replace(/^ວັນ/, ""),
             period: cleanVal(document.getElementById("form-period").value),
             room: cleanVal(document.getElementById("form-room").value),
             subject: cleanVal(document.getElementById("form-subject").value),
@@ -692,12 +708,23 @@
 
         try {
             await addDoc(collection(db, "weekly_schedules"), entry);
-            allWeeklyEntries.unshift(entry);
-            currentStudentWeek = entry.week || currentStudentWeek;
-            currentTeacherWeek = entry.week || currentTeacherWeek;
-            renderStudentWeeklyTable();
-            renderTeacherWeeklyTable();
-            alert("✅ ບັນທຶກຕາຕະລາງປະຈຳອາທິດສຳເລັດ!");
+            if (entry.week) {
+                currentStudentWeek = entry.week;
+                currentTeacherWeek = entry.week;
+                document.getElementById("stu-week-picker").value = currentStudentWeek;
+                document.getElementById("tch-week-picker").value = currentTeacherWeek;
+            }
+            const stuRoomSelect = document.getElementById("stu-room-select");
+            if (stuRoomSelect && entry.room && Array.from(stuRoomSelect.options).some((o) => o.value === entry.room)) {
+                stuRoomSelect.value = entry.room;
+            }
+            localStorage.setItem("schoolSystemDataUpdated", JSON.stringify({
+                tab: "schedules",
+                room: entry.room,
+                week: entry.week,
+                timestamp: Date.now()
+            }));
+            alert("✅ ບັນທຶກຕາຕະລາງສອນສຳເລັດ ແລະ ຊິ້ງໄປໜ້ານັກຮຽນແລ້ວ!");
         } catch (err) {
             alert("❌ ບັນທຶກບໍ່ສຳເລັດ: " + err.message);
         }
@@ -743,7 +770,16 @@
             switchSubRoom("student");
         }
 
-        loadWeeklySchedulesFromFirestore();
+        window.addEventListener("storage", (e) => {
+            if (e.key === "schoolSystemDataUpdated") {
+                rebuildScheduleCacheAndRender();
+            }
+        });
+        window.addEventListener("school-data-updated", () => {
+            rebuildScheduleCacheAndRender();
+        });
+
+        listenWeeklySchedulesFromFirestore();
     }
 
     initCalendarPage();
