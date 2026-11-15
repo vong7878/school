@@ -150,7 +150,7 @@
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
             <a href="update.html?tab=students" class="btn-link btn-upd" id="btnUpdStudents" style="display: none;">🛠️ 12. ອັບເດດລະບົບ (ນັກຮຽນ)</a>
-            <a href="update.html?tab=schedule" class="btn-link btn-upd" id="btnUpdSchedule" style="display: none;">🛠️ 12. ອັບເດດລະບົບ (ຕາຕະລາງ)</a>
+            <a href="update.html?tab=schedules" class="btn-link btn-upd" id="btnUpdSchedule" style="display: none;">🛠️ 12. ອັບເດດລະບົບ (ຕາຕະລາງສອນ)</a>
             <h1 class="page-title">🏫 ຈັດການຫ້ອງຮຽນ, ລາຍຊື່ &amp; ຕາຕະລາງ</h1>
         </div>
         <div class="user-meta">
@@ -228,16 +228,7 @@
         <div class="card-header">
             <h2>👩‍🏫 3. ຕາຕະລາງສອນ</h2>
             <div class="controls">
-                <select id="teachingGradeFilter" onchange="renderTeachingTimetable()">
-                    <option value="ALL">ທຸກຫ້ອງ</option>
-                    <option value="ມ.1">ມ.1</option>
-                    <option value="ມ.2">ມ.2</option>
-                    <option value="ມ.3">ມ.3</option>
-                    <option value="ມ.4">ມ.4</option>
-                    <option value="ມ.5">ມ.5</option>
-                    <option value="ມ.6">ມ.6</option>
-                    <option value="ມ.7">ມ.7</option>
-                </select>
+                <input type="text" id="teachingSearch" placeholder="🔍 ຄົ້ນຫາຄູ / ວິຊາ / ຫ້ອງ..." oninput="renderTeachingTimetable()" />
             </div>
         </div>
         <div class="table-wrap">
@@ -255,22 +246,22 @@
             </table>
         </div>
         <div class="note-text">
-            * ສ່ວນທີ 3 (ຕາຕະລາງສອນ) ຖືກຊ່ອນຈາກນັກຮຽນ; ການເພີ່ມ/ແກ້ໄຂ/ລົບຂໍ້ມູນໃຫ້ຈັດການທີ່ ໜ້າ 12. ອັບເດດລະບົບ.
+            * ສ່ວນທີ 3 (ຕາຕະລາງສອນ) ຖືກຊ່ອນຈາກນັກຮຽນ; ການເພີ່ມ/ແກ້ໄຂ/ລົບຂໍ້ມູນໃຫ້ຈັດການທີ່ ໜ້າ 12. ອັບເດດລະບົບ (ເມນູ 4. ຕາຕະລາງສອນ).
         </div>
     </section>
 </div>
 
 <script type="module">
-    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
         getFirestore, collection, getDocs, onSnapshot
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const DEFAULT_FIREBASE_CONFIG = {
         apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
         authDomain: "my-school-c1104.firebaseapp.com",
         projectId: "my-school-c1104",
-        storageBucket: "my-school-c1104.firebasestorage.app",
+        storageBucket: "my-school-c1104.appspot.com",
         messagingSenderId: "339930418459",
         appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
         measurementId: "G-NPNFSW2C72"
@@ -287,7 +278,7 @@
 
     const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
     const SYNC_EVENT_NAME = "school-data-updated";
-    const TEACHING_COLS = ["teaching_schedules", "teaching_timetable", "schedules", "timetable", "lessons"];
+    const TEACHING_COLS = ["weekly_schedules", "timetables", "teaching_schedules", "schedules"];
 
     function cleanVal(v) {
         if (Array.isArray(v)) return v.map(cleanVal).filter(Boolean).join(", ");
@@ -350,17 +341,17 @@
             raw.subject || raw.subjectName || raw.course || raw.lesson || ""
         );
         const grade = cleanGrade(
-            raw.grade || raw.room || raw.roomName || raw.className || ""
+            raw.room || raw.grade || raw.roomName || raw.className || ""
         );
 
-        const dayPart = cleanVal(raw.day || raw.days || raw.weekday || "");
-        const periodPart = cleanVal(raw.period || raw.periods || raw.slot || "");
-        const timePart = cleanVal(raw.time || raw.timeRange || raw.hours || "");
-        const combinedSchedule = [dayPart, periodPart, timePart].filter(Boolean).join(" • ");
+        const weekPart = cleanVal(raw.week || "");
+        const dayPart = cleanVal(raw.day || raw.days || "").replace(/^ວັນ/, "");
+        const periodRaw = cleanVal(raw.period || raw.periods || "");
+        const periodPart = periodRaw ? (periodRaw.includes("ຊົ່ວໂມງ") ? periodRaw : `ຊົ່ວໂມງທີ ${periodRaw}`) : "";
+        const timePart = cleanVal(raw.time || raw.timeRange || "");
 
-        const schedule = cleanVal(
-            raw.schedule || raw.scheduleText || combinedSchedule || "-"
-        );
+        const schedule = cleanVal(raw.schedule || raw.scheduleText) ||
+            [dayPart, periodPart, timePart, weekPart ? `(${weekPart})` : ""].filter(Boolean).join(" • ") || "-";
 
         return {
             id: cleanVal(raw.id) || docId,
@@ -436,20 +427,6 @@
             { id: "C5-3", day: "ພຸດ", p1: "ຄະນິດສາດ", t1: "ອ. ຄຳຜາຍ ສີສະຫວັດ", p2: "ພູມສາດ", t2: "ອ. ທອງສຸກ ມະນີວົງ", p3: "ພາສາອັງກິດ", t3: "ອ. ວັນນາ ໄຊຍະວົງ", p4: "ພະລະສຶກສາ", t4: "ອ. ສົມພອນ ດວງມາລາ" },
             { id: "C5-4", day: "ພະຫັດ", p1: "ຟີຊິກສາດ", t1: "ອ. ສຸກສາຄອນ ແສງດາວ", p2: "ເຄມີສາດ", t2: "ອ. ພອນໄຊ ແກ້ວປະເສີດ", p3: "ພາສາລາວ", t3: "ອ. ບົວໄລ ພົມມະຈັນ", p4: "ສຶກສາພົນລະເມືອງ", t4: "ອ. ຄຳດີ ສຸວັນນະວົງ" },
             { id: "C5-5", day: "ສຸກ", p1: "ຄະນິດສາດ", t1: "ອ. ຄຳຜາຍ ສີສະຫວັດ", p2: "ຊີວະສາດ", t2: "ອ. ຈັນທາ ວົງສະຫວັດ", p3: "ກິດຈະກຳຫ້ອງ", t3: "ອ. ປະຈຳຫ້ອງ ມ.5", p4: "ສະຫຼຸບປະຈຳອາທິດ", t4: "ອ. ປະຈຳຫ້ອງ ມ.5" }
-        ],
-        "ມ.6": [
-            { id: "C6-1", day: "ຈັນ", p1: "ພາສາລາວ", t1: "ອ. ບົວໄລ ພົມມະຈັນ", p2: "ຄະນິດສາດ", t2: "ອ. ຄຳຜາຍ ສີສະຫວັດ", p3: "ຟີຊິກສາດ", t3: "ອ. ສຸກສາຄອນ ແສງດາວ", p4: "ພາສາອັງກິດ", t4: "ອ. ວັນນາ ໄຊຍະວົງ" },
-            { id: "C6-2", day: "ອັງຄານ", p1: "ຊີວະສາດ", t1: "ອ. ຈັນທາ ວົງສະຫວັດ", p2: "ເຄມີສາດ", t2: "ອ. ພອນໄຊ ແກ້ວປະເສີດ", p3: "ພູມສາດ", t3: "ອ. ທອງສຸກ ມະນີວົງ", p4: "ປະຫວັດສາດ", t4: "ອ. ແສງທອງ ສີບຸນເຮືອງ" },
-            { id: "C6-3", day: "ພຸດ", p1: "ຄະນິດສາດ", t1: "ອ. ຄຳຜາຍ ສີສະຫວັດ", p2: "ໄອທີ / ຄອມ", t2: "ອ. ສາຍສະຖອນ ວົງວິໄລ", p3: "ພາສາອັງກິດ", t3: "ອ. ວັນນາ ໄຊຍະວົງ", p4: "ພະລະສຶກສາ", t4: "ອ. ສົມພອນ ດວງມາລາ" },
-            { id: "C6-4", day: "ພະຫັດ", p1: "ເຄມີສາດ", t1: "ອ. ພອນໄຊ ແກ້ວປະເສີດ", p2: "ຟີຊິກສາດ", t2: "ອ. ສຸກສາຄອນ ແສງດາວ", p3: "ສຶກສາພົນລະເມືອງ", t3: "ອ. ຄຳດີ ສຸວັນນະວົງ", p4: "ພາສາລາວ", t4: "ອ. ບົວໄລ ພົມມະຈັນ" },
-            { id: "C6-5", day: "ສຸກ", p1: "ຊີວະສາດ", t1: "ອ. ຈັນທາ ວົງສະຫວັດ", p2: "ຄະນິດສາດ", t2: "ອ. ຄຳຜາຍ ສີສະຫວັດ", p3: "ກິດຈະກຳຫ້ອງ", t3: "ອ. ປະຈຳຫ້ອງ ມ.6", p4: "ສະຫຼຸບປະຈຳອາທິດ", t4: "ອ. ປະຈຳຫ້ອງ ມ.6" }
-        ],
-        "ມ.7": [
-            { id: "C7-1", day: "ຈັນ", p1: "ຄະນິດສາດ", t1: "ອ. ຄຳຜາຍ ສີສະຫວັດ", p2: "ພາສາອັງກິດ", t2: "ອ. ວັນນາ ໄຊຍະວົງ", p3: "ຟີຊິກສາດ", t3: "ອ. ສຸກສາຄອນ ແສງດາວ", p4: "ເຄມີສາດ", t4: "ອ. ພອນໄຊ ແກ້ວປະເສີດ" },
-            { id: "C7-2", day: "ອັງຄານ", p1: "ພາສາລາວ", t1: "ອ. ບົວໄລ ພົມມະຈັນ", p2: "ຊີວະສາດ", t2: "ອ. ຈັນທາ ວົງສະຫວັດ", p3: "ປະຫວັດສາດ", t3: "ອ. ແສງທອງ ສີບຸນເຮືອງ", p4: "ໄອທີ / ຄອມ", t4: "ອ. ສາຍສະຖອນ ວົງວິໄລ" },
-            { id: "C7-3", day: "ພຸດ", p1: "ຟີຊິກສາດ", t1: "ອ. ສຸກສາຄອນ ແສງດາວ", p2: "ຄະນິດສາດ", t2: "ອ. ຄຳຜາຍ ສີສະຫວັດ", p3: "ພູມສາດ", t3: "ອ. ທອງສຸກ ມະນີວົງ", p4: "ພາສາອັງກິດ", t4: "ອ. ວັນນາ ໄຊຍະວົງ" },
-            { id: "C7-4", day: "ພະຫັດ", p1: "ເຄມີສາດ", t1: "ອ. ພອນໄຊ ແກ້ວປະເສີດ", p2: "ສຶກສາພົນລະເມືອງ", t2: "ອ. ຄຳດີ ສຸວັນນະວົງ", p3: "ຊີວະສາດ", t3: "ອ. ຈັນທາ ວົງສະຫວັດ", p4: "ພາສາລາວ", t4: "ອ. ບົວໄລ ພົມມະຈັນ" },
-            { id: "C7-5", day: "ສຸກ", p1: "ຄະນິດສາດ", t1: "ອ. ຄຳຜາຍ ສີສະຫວັດ", p2: "ພາສາອັງກິດ", t2: "ອ. ວັນນາ ໄຊຍະວົງ", p3: "ກິດຈະກຳຫ້ອງ", t3: "ອ. ປະຈຳຫ້ອງ ມ.7", p4: "ສະຫຼຸບປະຈຳອາທິດ", t4: "ອ. ປະຈຳຫ້ອງ ມ.7" }
         ]
     };
 
@@ -490,10 +467,7 @@
     };
 
     // -------------------- 3. ຕາຕະລາງສອນ --------------------
-    let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [
-        { id: "T-1", teacher: "ອ. ຄຳຜາຍ ສີສະຫວັດ", subject: "ຄະນິດສາດ", grade: "ມ.5", schedule: "ຈັນ, ພຸດ, ສຸກ (08:00 - 08:45)" },
-        { id: "T-2", teacher: "ອ. ສຸກສາຄອນ ແສງດາວ", subject: "ຟີຊິກສາດ", grade: "ມ.5", schedule: "ຈັນ, ພະຫັດ (08:50 - 09:35)" }
-    ];
+    let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [];
 
     function saveTeachingSchedules() {
         localStorage.setItem("school_teaching_schedules", JSON.stringify(teachingSchedules));
@@ -502,15 +476,16 @@
     window.renderTeachingTimetable = function () {
         if (isStudent) return;
         const tbody = document.getElementById("teachingTimetableBody");
-        const filterEl = document.getElementById("teachingGradeFilter");
-        const selectedGrade = filterEl && filterEl.value !== "ALL" ? cleanGrade(filterEl.value) : "ALL";
+        const q = cleanVal(document.getElementById("teachingSearch")?.value || "").toLowerCase();
 
-        const list = selectedGrade === "ALL"
-            ? teachingSchedules
-            : teachingSchedules.filter((x) => cleanGrade(x.grade) === selectedGrade);
+        const list = q
+            ? teachingSchedules.filter((x) =>
+                [x.teacher, x.subject, x.grade, x.schedule].some((v) => cleanVal(v).toLowerCase().includes(q))
+            )
+            : teachingSchedules;
 
         if (!list.length) {
-            tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນ</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນ — ສ້າງໄດ້ທີ່ ໜ້າ 12. ອັບເດດລະບົບ (ເມນູ 4)</td></tr>`;
             return;
         }
 
@@ -542,16 +517,12 @@
                         collected.push(norm);
                     }
                 });
-            } catch (e) {
-                // ຂ້າມ collection ທີ່ຍັງບໍ່ມີ
-            }
+            } catch (e) {}
         }
 
-        if (collected.length) {
-            teachingSchedules = collected;
-            saveTeachingSchedules();
-            renderTeachingTimetable();
-        }
+        teachingSchedules = collected;
+        saveTeachingSchedules();
+        renderTeachingTimetable();
     }
 
     async function loadFromFirestoreIfAvailable() {
@@ -567,9 +538,7 @@
                 saveStudents();
                 renderStudents();
             }
-        } catch (err) {
-            console.warn("ບໍ່ໄດ້ໂຫຼດ students ຈາກ Firestore:", err.message);
-        }
+        } catch (err) {}
 
         try {
             const clsSnap = await getDocs(collection(db, "class_timetables"));
@@ -584,9 +553,7 @@
                 localStorage.setItem("school_class_timetables", JSON.stringify(classTimetables));
                 renderClassTimetable();
             }
-        } catch (err) {
-            console.warn("ບໍ່ໄດ້ໂຫຼດ class_timetables ຈາກ Firestore:", err.message);
-        }
+        } catch (err) {}
 
         await syncTeachingFromAllCollections();
     }
