@@ -143,13 +143,13 @@
         .hidden-section { display: none !important; }
         .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
         /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
-#fbSyncBadge,
-.badge-fb,
-[data-hide-firebase="true"],
-[class*="firebase" i],
-[id*="firebase" i] {
-  display: none !important;
-}
+        #fbSyncBadge,
+        .badge-fb,
+        [data-hide-firebase="true"],
+        [class*="firebase" i],
+        [id*="firebase" i] {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -288,6 +288,7 @@
     const SYNC_EVENT_NAME = "school-data-updated";
     const TEACHING_COLS = ["weekly_schedules", "timetables", "teaching_schedules", "schedules"];
     const DAYS_ORDER = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"];
+    const DEFAULT_GRADES = ["ມ.1", "ມ.2", "ມ.3", "ມ.4", "ມ.5", "ມ.6", "ມ.7"];
 
     function cleanVal(v) {
         if (Array.isArray(v)) return v.map(cleanVal).filter(Boolean).join(", ");
@@ -395,6 +396,84 @@
         localStorage.setItem("school_students_list", JSON.stringify(studentsData));
     }
 
+    let rawScheduleEntries = [];
+    let classTimetables = JSON.parse(localStorage.getItem("school_class_timetables") || "null") || {};
+    let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [];
+
+    async function syncRoomSelectOptions(extraRooms = []) {
+        const roomMap = new Map();
+        const addRoom = (rawName) => {
+            const cleaned = cleanVal(rawName).replace(/^ຫ້ອງ\s*/i, "");
+            if (!cleaned) return;
+            const key = cleaned.replace(/\s+/g, "").toLowerCase();
+            if (!roomMap.has(key)) {
+                roomMap.set(key, cleaned);
+            }
+        };
+
+        const studentRooms = studentsData.map((s) => s.grade || s.room);
+        const scheduleRooms = [
+            ...rawScheduleEntries.map((e) => e.grade),
+            ...teachingSchedules.map((e) => e.grade),
+            ...Object.keys(classTimetables || {})
+        ];
+
+        [...DEFAULT_GRADES, userGrade, ...studentRooms, ...scheduleRooms, ...extraRooms].forEach(addRoom);
+
+        if (db) {
+            for (const colName of ["classrooms", "rooms"]) {
+                try {
+                    const snap = await getDocs(collection(db, colName));
+                    snap.forEach((d) => {
+                        const data = d.data() || {};
+                        addRoom(data.name || data.roomName || data.room || data.grade);
+                    });
+                } catch (err) {}
+            }
+        }
+
+        const roomList = Array.from(roomMap.values());
+
+        const filterSelect = document.getElementById("studentGradeFilter");
+        if (filterSelect) {
+            const prevFilter = filterSelect.value;
+            filterSelect.innerHTML =
+                `<option value="ALL">ທຸກຫ້ອງ</option>` +
+                roomList.map((r) => `<option value="${esc(r)}">${esc(r)}</option>`).join("");
+            if (prevFilter === "ALL") {
+                filterSelect.value = "ALL";
+            } else {
+                const matchedFilter = roomList.find((r) => cleanGrade(r).toLowerCase() === cleanGrade(prevFilter).toLowerCase());
+                if (matchedFilter) filterSelect.value = matchedFilter;
+            }
+            if (isStudent) {
+                const matchedUser = roomList.find((r) => cleanGrade(r).toLowerCase() === cleanGrade(userGrade).toLowerCase());
+                filterSelect.value = matchedUser || userGrade;
+                filterSelect.disabled = true;
+            }
+        }
+
+        const ttSelect = document.getElementById("classTimetableGrade");
+        if (ttSelect) {
+            const prevTT = cleanGrade(ttSelect.value);
+            ttSelect.innerHTML = roomList
+                .map((r) => `<option value="${esc(r)}">ຫ້ອງ ${esc(r)}</option>`)
+                .join("");
+            const matchedTT = roomList.find((r) => cleanGrade(r).toLowerCase() === prevTT.toLowerCase());
+            if (matchedTT) {
+                ttSelect.value = matchedTT;
+            } else {
+                const fallbackUser = roomList.find((r) => cleanGrade(r).toLowerCase() === cleanGrade(userGrade).toLowerCase()) || roomList[0];
+                if (fallbackUser) ttSelect.value = fallbackUser;
+            }
+            if (isStudent) {
+                const matchedUser = roomList.find((r) => cleanGrade(r).toLowerCase() === cleanGrade(userGrade).toLowerCase());
+                ttSelect.value = matchedUser || userGrade;
+                ttSelect.disabled = true;
+            }
+        }
+    }
+
     window.renderStudents = function () {
         const gradeFilterEl = document.getElementById("studentGradeFilter");
         const searchVal = (document.getElementById("studentSearch").value || "").trim().toLowerCase();
@@ -410,7 +489,7 @@
         }
 
         const filtered = studentsData.filter((s) => {
-            const matchGrade = selectedGrade === "ALL" || cleanGrade(s.grade || s.room) === selectedGrade;
+            const matchGrade = selectedGrade === "ALL" || cleanGrade(s.grade || s.room).toLowerCase() === selectedGrade.toLowerCase();
             const codeVal = cleanVal(s.code || s.studentCode || s.id || "");
             const nameVal = cleanVal(s.name || s.studentName || "");
             const matchName = !searchVal ||
@@ -441,14 +520,14 @@
     };
 
     // -------------------- 2. ຕາຕະລາງຮຽນ (ປະກອບຈາກ weekly_schedules + class_timetables) --------------------
-    let rawScheduleEntries = [];
-    let classTimetables = JSON.parse(localStorage.getItem("school_class_timetables") || "null") || {};
-
     function buildRowsForGrade(gradeKey) {
-        const g = cleanGrade(gradeKey);
+        const g = cleanGrade(gradeKey).toLowerCase();
         const dayMap = new Map();
 
-        const baseRows = Array.isArray(classTimetables[g]) ? classTimetables[g] : [];
+        const baseRows = Array.isArray(classTimetables[gradeKey])
+            ? classTimetables[gradeKey]
+            : (Object.entries(classTimetables || {}).find(([k]) => cleanGrade(k).toLowerCase() === g)?.[1] || []);
+
         baseRows.forEach((r) => {
             const dName = cleanDay(r.day);
             if (!dName) return;
@@ -461,9 +540,8 @@
             });
         });
 
-        // ທັບດ້ວຍຂໍ້ມູນລ່າສຸດຈາກຕາຕະລາງສອນ (weekly_schedules) ຂອງຫ້ອງນັ້ນ
         rawScheduleEntries
-            .filter((entry) => cleanGrade(entry.grade) === g && entry.day && entry.periodNum)
+            .filter((entry) => cleanGrade(entry.grade).toLowerCase() === g && entry.day && entry.periodNum)
             .forEach((entry) => {
                 if (!dayMap.has(entry.day)) {
                     dayMap.set(entry.day, {
@@ -523,8 +601,6 @@
     };
 
     // -------------------- 3. ຕາຕະລາງສອນ --------------------
-    let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [];
-
     function saveTeachingSchedules() {
         localStorage.setItem("school_teaching_schedules", JSON.stringify(teachingSchedules));
     }
@@ -579,6 +655,7 @@
         rawScheduleEntries = collected;
         teachingSchedules = collected;
         saveTeachingSchedules();
+        await syncRoomSelectOptions();
         renderTeachingTimetable();
         renderClassTimetable();
     }
@@ -594,6 +671,7 @@
                     ...d.data()
                 }));
                 saveStudents();
+                await syncRoomSelectOptions();
                 renderStudents();
             }
         } catch (err) {}
@@ -616,15 +694,16 @@
     }
 
     if (db) {
-        onSnapshot(collection(db, "students"), (snap) => {
+        onSnapshot(collection(db, "students"), async (snap) => {
             if (!snap.empty) {
                 studentsData = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
                 saveStudents();
+                await syncRoomSelectOptions();
                 renderStudents();
             }
         }, () => {});
 
-        onSnapshot(collection(db, "class_timetables"), (snap) => {
+        onSnapshot(collection(db, "class_timetables"), async (snap) => {
             if (!snap.empty) {
                 snap.forEach((d) => {
                     const data = d.data() || {};
@@ -632,6 +711,7 @@
                     if (gKey && Array.isArray(data.rows)) classTimetables[gKey] = data.rows;
                 });
                 localStorage.setItem("school_class_timetables", JSON.stringify(classTimetables));
+                await syncRoomSelectOptions();
                 renderClassTimetable();
             }
         }, () => {});
@@ -641,6 +721,14 @@
                 syncSchedulesFromAllCollections();
             }, () => {});
         }
+
+        ["classrooms", "rooms"].forEach((colName) => {
+            onSnapshot(collection(db, colName), async () => {
+                await syncRoomSelectOptions();
+                renderStudents();
+                renderClassTimetable();
+            }, () => {});
+        });
     }
 
     window.addEventListener("storage", (e) => {
@@ -648,44 +736,11 @@
     });
     window.addEventListener(SYNC_EVENT_NAME, () => loadFromFirestoreIfAvailable());
 
-    if (isStudent && ["ມ.1", "ມ.2", "ມ.3", "ມ.4", "ມ.5", "ມ.6", "ມ.7"].includes(userGrade)) {
-        document.getElementById("classTimetableGrade").value = userGrade;
-    }
-
+    await syncRoomSelectOptions();
     renderStudents();
     renderClassTimetable();
     renderTeachingTimetable();
-    loadFromFirestoreIfAvailable(); 
-    async function syncRoomFilterOptions(db, extraRooms = []) {
-    const selectEl =
-        document.getElementById("filterRoomSelect") ||
-        document.getElementById("roomFilter") ||
-        document.querySelector("select[id*='room' i], select[id*='grade' i]");
-    if (!selectEl) return;
-
-    const prevValue = selectEl.value;
-    const roomSet = new Set(["ມ.5", "ມ.6", "ມ.7", ...extraRooms.filter(Boolean)]);
-
-    for (const colName of ["classrooms", "rooms"]) {
-        try {
-            const snap = await getDocs(collection(db, colName));
-            snap.forEach((d) => {
-                const data = d.data() || {};
-                const rName = String(data.name || data.roomName || data.room || data.grade || "").trim();
-                if (rName) roomSet.add(rName);
-            });
-        } catch (err) {}
-    }
-
-    const sortedRooms = Array.from(roomSet);
-    selectEl.innerHTML =
-        `<option value="">ທຸກຫ້ອງ</option>` +
-        sortedRooms.map((r) => `<option value="${r.replace(/"/g, "&quot;")}">ຫ້ອງ ${r}</option>`).join("");
-
-    if (prevValue && Array.from(selectEl.options).some((o) => o.value === prevValue)) {
-        selectEl.value = prevValue;
-    }
-}
+    loadFromFirestoreIfAvailable();
 </script>
 </body>
 </html>
