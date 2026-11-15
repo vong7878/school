@@ -1,28 +1,43 @@
 <!DOCTYPE html>
 <html lang="lo">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12. ຫ້ອງອັບເດດຂໍ້ມູນລະບົບໂຮງຮຽນ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💰 ຈັດການການເງິນ &amp; ຄ່າຮຽນ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
-        body { background: #0f172a; color: #f8fafc; min-height: 100vh; }
-
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Noto Sans Lao', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
+        }
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
         .topbar {
             background: #1e293b;
-            border-bottom: 1px solid #334155;
-            padding: 14px 20px;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 14px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
-        .topbar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
         .back-btn {
             background: #334155;
             color: #f8fafc;
@@ -33,172 +48,174 @@
             font-weight: 600;
         }
         .back-btn:hover { background: #475569; }
-        .page-title { font-size: 18px; font-weight: 700; color: #38bdf8; }
-
-        .user-pill {
-            background: #0f172a;
-            border: 1px solid #334155;
-            padding: 6px 14px;
-            border-radius: 999px;
-            font-size: 13px;
-            color: #cbd5e1;
+        .page-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .user-meta {
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-        .role-tag {
-            background: #16a34a;
-            color: #fff;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .container { max-width: 1280px; margin: 24px auto; padding: 0 16px; }
-
-        .submenus {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .submenu-btn {
-            background: #1e293b;
-            color: #cbd5e1;
-            border: 1px solid #334155;
-            padding: 11px 14px;
-            border-radius: 12px;
             font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            text-align: left;
-            transition: 0.2s;
-        }
-        .submenu-btn:hover { border-color: #38bdf8; color: #fff; }
-        .submenu-btn.active {
-            background: linear-gradient(135deg, #0284c7, #2563eb);
-            color: #fff;
-            border-color: #7dd3fc;
-            box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
-        }
-
-        .score-sub-bar {
-            display: flex;
-            gap: 8px;
             flex-wrap: wrap;
-            margin-bottom: 14px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #1e293b;
         }
-        .score-sub-btn {
-            background: #1e293b;
-            color: #cbd5e1;
-            border: 1px solid #334155;
-            padding: 7px 13px;
-            border-radius: 8px;
-            font-size: 13px;
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
             font-weight: 600;
-            cursor: pointer;
+            font-size: 12px;
         }
-        .score-sub-btn.active {
-            background: #0284c7;
-            border-color: #38bdf8;
-            color: #fff;
-        }
+        .badge-role { background: #2563eb; color: #fff; }
+        .badge-grade { background: #0f766e; color: #ccfbf1; }
 
-        .panel {
+        .card {
             background: #1e293b;
             border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 10px 28px rgba(0,0,0,0.3);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
         }
-
-        .panel-top {
+        .card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 10px;
-            padding-bottom: 14px;
-            margin-bottom: 16px;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
             border-bottom: 1px solid #334155;
         }
-        .panel-top h2 { font-size: 18px; color: #f8fafc; }
-        .sync-note {
-            font-size: 12px;
-            color: #86efac;
-            background: rgba(22, 163, 74, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.35);
-            padding: 5px 10px;
-            border-radius: 8px;
+        .card-header h2 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f8fafc;
         }
 
-        .form-card {
+        .paid-banner {
+            background: rgba(22, 163, 74, 0.16);
+            border: 1px solid #22c55e;
+            color: #bbf7d0;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .admin-contact-box {
+            background: #0f172a;
+            border: 1px dashed #60a5fa;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 13px;
+        }
+        .phone-highlight {
+            color: #93c5fd;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .qr-fee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            align-items: start;
+        }
+        .qr-box {
             background: #0f172a;
             border: 1px solid #334155;
             border-radius: 12px;
             padding: 16px;
-            margin-bottom: 18px;
+            text-align: center;
         }
-        .form-card h3 { font-size: 15px; color: #7dd3fc; margin-bottom: 12px; }
+        .qr-box img {
+            width: 175px;
+            height: 175px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #fff;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        .qr-admin-controls {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #334155;
+            text-align: left;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+        }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
         }
-        .form-group label {
+        label {
             display: block;
             font-size: 12px;
             color: #94a3b8;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
-        .form-group input,
-        .form-group select {
+        input, select {
             width: 100%;
-            padding: 9px 10px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #1e293b;
+            background: #0f172a;
             color: #f8fafc;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 8px 11px;
+            font-family: inherit;
             font-size: 13px;
         }
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #38bdf8;
-        }
-
-        .form-actions {
-            margin-top: 12px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 8px 14px;
+        button, a.btn-link {
+            font-family: inherit;
+            border: none;
             border-radius: 8px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: #e2e8f0;
+            padding: 8px 14px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
+            text-decoration: none;
         }
-        .btn:hover { background: #334155; }
-        .btn-save { background: #16a34a; border-color: #22c55e; color: #fff; }
-        .btn-save:hover { background: #15803d; }
-        .btn-edit { background: #eab308; border-color: #facc15; color: #0f172a; padding: 5px 10px; font-size: 12px; }
-        .btn-del { background: #dc2626; border-color: #ef4444; color: #fff; padding: 5px 10px; font-size: 12px; }
+        button:hover, a.btn-link:hover { opacity: 0.92; }
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-add { background: #16a34a; color: #fff; padding: 6px 12px; font-size: 12px; }
+        .btn-approve { background: #16a34a; color: #fff; padding: 5px 10px; font-size: 12px; }
+        .btn-copy { background: #334155; color: #f8fafc; padding: 6px 11px; font-size: 12px; }
 
-        .table-wrap { width: 100%; overflow-x: auto; }
+        /* ເຊື່ອງປຸ່ມເພີ່ມ, ແກ້ໄຂ, ລົບ ທັງໝົດ */
+        .btn-add-hide,
+        .btn-edit,
+        .btn-del,
+        .admin-crud-col {
+            display: none !important;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 760px;
+            min-width: 660px;
         }
         th, td {
             border: 1px solid #334155;
@@ -206,22 +223,79 @@
             text-align: left;
             font-size: 13px;
         }
-        th { background: #0f172a; color: #93c5fd; font-weight: 700; }
-        td { background: #162032; }
-        .empty-row { text-align: center; color: #94a3b8; padding: 16px; }
-
-        .denied-box {
-            max-width: 560px;
-            margin: 60px auto;
-            background: #1e293b;
-            border: 1px solid #ef4444;
-            border-radius: 16px;
-            padding: 28px;
-            text-align: center;
+        th {
+            background: #0f172a;
+            color: #93c5fd;
+            font-weight: 700;
         }
-        .denied-box h2 { color: #f87171; margin-bottom: 10px; }
-        .denied-box p { color: #cbd5e1; margin-bottom: 18px; }
-        /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
+        td {
+            background: #162032;
+            color: #e2e8f0;
+        }
+        tr:hover td { background: #24334d; }
+
+        tr.row-summary-total td {
+            background: #172554;
+            color: #bfdbfe;
+            font-weight: 700;
+        }
+        tr.row-summary-avg td {
+            background: #134e4a;
+            color: #ccfbf1;
+            font-weight: 700;
+        }
+        tr.row-summary-status td {
+            background: #1e293b;
+            color: #f8fafc;
+            font-weight: 700;
+        }
+
+        .center { text-align: center; }
+        .right { text-align: right; }
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .slip-thumb {
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            cursor: pointer;
+        }
+        .status-pending {
+            background: rgba(234, 179, 8, 0.2);
+            color: #fde047;
+            border: 1px solid #eab308;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-approved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+            border: 1px solid #22c55e;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid #ef4444;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .admin-only-hide { display: none !important; }
+        .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+        body[data-role="admin"] #upload-slip-subroom {
+            display: none !important;
+        }
         #fbSyncBadge,
         .badge-fb,
         [data-hide-firebase="true"],
@@ -229,1116 +303,869 @@
         [id*="firebase" i] {
             display: none !important;
         }
+        a[href*="update.html"][href*="tab=tuition"],
+        a[href*="update"][href*="tuition"],
+        a[href*="tab=tuition"],
+        button[onclick*="addTuition"],
+        button[onclick*="openAddTuition"],
+        .btn-add-tuition,
+        #btnAddTuition,
+        #addTuitionBtn,
+        button[id*="tuition" i][id*="add" i],
+        button[class*="tuition" i][class*="add" i],
+        button[onclick*="tuition" i],
+        button[onclick*="Tuition" i] {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
-
-<header class="topbar">
-    <div class="topbar-left">
-        <a href="index.html" class="back-btn">← ກັບໜ້າຫຼັກ</a>
-        <div class="page-title">🛠️ 12. ຫ້ອງອັບເດດຂໍ້ມູນລະບົບ</div>
-    </div>
-    <div class="user-pill">
-        <span>👤 <strong id="upd-user-name">ຜູ້ໃຊ້ງານ</strong></span>
-        <span class="role-tag" id="upd-user-role">ADMIN</span>
-    </div>
-</header>
-
-<div id="access-denied" class="denied-box" style="display:none;">
-    <h2>⛔ ບໍ່ມີສິດເຂົ້າໃຊ້ຫ້ອງອັບເດດ</h2>
-    <p>ເມນູເລກ 12 (ຫ້ອງອັບເດດ) ຖືກເຊື່ອງ ແລະ ຈຳກັດສິດສຳລັບນັກຮຽນ (STUDENT). ກະລຸນາເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີຄູອາຈານ ຫຼື ຜູ້ບໍລິຫານ (ADMIN).</p>
-    <a href="index.html" class="btn btn-save" style="text-decoration:none;display:inline-block;">ກັບໄປໜ້າຫຼັກ</a>
-</div>
-
-<div class="container" id="update-main-container">
-    <div class="submenus">
-        <button type="button" class="submenu-btn active" data-tab="rooms" onclick="switchUpdateTab('rooms')">🏫 1. ລາຍຊື່ຫ້ອງ</button>
-        <button type="button" class="submenu-btn" data-tab="teachers" onclick="switchUpdateTab('teachers')">👩‍🏫 2. ລາຍຊື່ຄູ</button>
-        <button type="button" class="submenu-btn" data-tab="students" onclick="switchUpdateTab('students')">🎓 3. ລາຍຊື່ນັກຮຽນ</button>
-        <button type="button" class="submenu-btn" data-tab="schedules" onclick="switchUpdateTab('schedules')">📅 4. ຕາຕະລາງສອນ (ວັນ-ອາທິດ)</button>
-        <button type="button" class="submenu-btn" data-tab="scores" onclick="switchUpdateTab('scores')">📊 5. ຄະແນນນັກຮຽນ</button>
-        <button type="button" class="submenu-btn" data-tab="tuition" onclick="switchUpdateTab('tuition')">💰 6. ລາຍການຄ່າຮຽນ</button>
-        <button type="button" class="submenu-btn" data-tab="subjects" onclick="switchUpdateTab('subjects')">📚 7. ວິຊາຮຽນ</button>
-        <button type="button" class="submenu-btn admin-only-tab" id="btn-tab-terms" data-tab="terms" onclick="switchUpdateTab('terms')">🗓️ 8. ຈັດການເທີມຮຽນ</button>
-    </div>
-
-    <section class="panel">
-        <div class="panel-top">
-            <h2 id="active-tab-title">🏫 ເພີ່ມ / ແກ້ໄຂ / ລົບ ລາຍຊື່ຫ້ອງ</h2>
-            <span class="sync-note">⚡ ກັ່ນຕອງໂຕບໍ່ຊ້ຳກັນ &amp; ຊິ້ງໄປທຸກໜ້າໃນລະບົບ</span>
+<div class="container">
+    <div class="topbar">
+        <div class="topbar-left">
+            <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
+            <h1 class="page-title">💰 ຈັດການການເງິນ ແລະ ຄ່າຮຽນ</h1>
         </div>
-
-        <div class="form-card">
-            <div id="score-sub-bar" class="score-sub-bar" style="display:none;">
-                <button type="button" class="score-sub-btn active" id="score-sub-btn-subject" onclick="switchScoreSubMode('subject')">
-                    1. ຄະແນນລາຍວິຊາ
-                </button>
-                <button type="button" class="score-sub-btn" id="score-sub-btn-annual" onclick="switchScoreSubMode('annual')">
-                    2. ຄະແນນສະເລ່ຍໝົດປີ
-                </button>
-            </div>
-
-            <h3 id="form-heading">➕ ເພີ່ມຂໍ້ມູນໃໝ່</h3>
-            <form id="dynamic-crud-form">
-                <div class="form-grid" id="dynamic-fields"></div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-save" id="btn-submit-record">💾 ບັນທຶກ</button>
-                    <button type="button" class="btn" id="btn-cancel-edit" style="display:none;" onclick="resetEditMode()">↩ ຍົກເລີກການແກ້ໄຂ</button>
-                </div>
-            </form>
+        <div class="user-meta">
+            <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
+            <span id="currentUserRole" class="badge badge-role">ROLE</span>
+            <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
         </div>
+    </div>
 
+    <div class="paid-banner" id="paidTermBanner"></div>
+
+    <!-- ຫ້ອງ/ຕາຕະລາງຄ່າຮຽນຕາມໜ່ວຍກິດ (10 ແຖວ - ດຶງຂໍ້ມູນຈາກຟອມອັບເດດ) -->
+    <section class="card" id="subject-credit-section">
+        <div class="card-header">
+            <h2>📚 ຕາຕະລາງຄ່າຮຽນຕາມໜ່ວຍກິດ (1–7 ວິຊາ)</h2>
+        </div>
         <div class="table-wrap">
             <table>
-                <thead id="dynamic-thead"></thead>
-                <tbody id="dynamic-tbody"></tbody>
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">ແຖວ</th>
+                        <th>ຊື່ວິຊາ (1–7)</th>
+                        <th style="width: 150px;" class="right">ຈຳນວນໜ່ວຍກິດ</th>
+                        <th style="width: 190px;" class="right">ລາຄາຕໍ່ໜ່ວຍກິດ (ກີບ)</th>
+                        <th style="width: 190px;" class="right">ຄ່າຮຽນວິຊາ (ກີບ)</th>
+                    </tr>
+                </thead>
+                <tbody id="subjectTableBody"></tbody>
             </table>
         </div>
     </section>
+
+    <section class="card" id="qr-and-fee-section">
+        <div class="card-header">
+            <h2>🏦 QR Code ຊຳລະຄ່າຮຽນ &amp; ຕາຕະລາງຄ່າຮຽນ</h2>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <select id="termSelect" style="width: auto;" onchange="refreshFinanceView()">
+                    <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
+                    <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="qr-fee-grid">
+            <div class="qr-box">
+                <img
+                    id="schoolQrImage"
+                    src="https://quickchart.io/qr?text=SCHOOL-TUITION-PAYMENT&size=200"
+                    alt="QR Code ຊຳລະຄ່າຮຽນ"
+                    onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22180%22><rect width=%22180%22 height=%22180%22 fill=%22%23f1f5f9%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%230f172a%22 font-size=%2214%22>QR Code</text></svg>';"
+                />
+                <div><strong>ສະແກນ QR Code ເພື່ອໂອນຄ່າຮຽນ</strong></div>
+                <div class="note-text" id="qrCaptionText">ບັນຊີໂຮງຮຽນ • ແນບສະຫຼິບດ້ານລຸ່ມຫຼັງໂອນສຳເລັດ</div>
+
+                <div class="qr-admin-controls" id="qr-admin-box">
+                    <label for="qrFileInput">🔄 1. ອັບໂຫຼດຮູບ QR Code ໃໝ່</label>
+                    <input type="file" id="qrFileInput" accept="image/*" onchange="changeQrFromFile(event)" />
+
+                    <label for="qrUrlInput">🔗 2. ຫຼື ວາງລິ້ງຮູບ QR Code</label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="qrUrlInput" placeholder="https://..." />
+                        <button type="button" class="btn-primary" onclick="changeQrFromUrl()">ບັນທຶກ</button>
+                    </div>
+
+                    <label for="qrTextInput">✏️ 3. ຫຼື ສ້າງ QR ຈາກເລກບັນຊີ / ຂໍ້ຄວາມ</label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="qrTextInput" placeholder="ເຊັ່ນ BCEL 010-12-00-xxxxx" />
+                        <button type="button" class="btn-add" onclick="generateQrFromText()">ສ້າງ QR</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ລາຍການຄ່າຮຽນ</th>
+                            <th>ຫ້ອງ</th>
+                            <th>ເທີມ</th>
+                            <th>ຈຳນວນເງິນ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feeTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="card" id="upload-slip-subroom">
+        <div class="card-header">
+            <h2>📤 ຫ້ອງຍ່ອຍ: ອັບໂຫຼດສະຫຼິບການໂອນ</h2>
+        </div>
+
+        <form id="slipUploadForm" onsubmit="submitSlipUpload(event)">
+            <div class="form-grid">
+                <div>
+                    <label for="slipTerm">ເທີມທີ່ຊຳລະ</label>
+                    <select id="slipTerm">
+                        <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
+                        <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="slipAmount">ຈຳນວນເງິນທີ່ໂອນ (ກີບ)</label>
+                    <input type="number" id="slipAmount" value="1500000" min="1000" required />
+                </div>
+                <div>
+                    <label for="slipFile">ເລືອກຮູບສະຫຼິບການໂອນ</label>
+                    <input type="file" id="slipFile" accept="image/*" required />
+                </div>
+            </div>
+
+            <div id="slipSubmitBtnWrap" style="margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <button type="submit" id="btnSubmitSlip" class="btn-primary">
+                    📤 ສົ່ງສະຫຼິບໃຫ້ Admin ອະນຸມັດ
+                </button>
+            </div>
+        </form>
+
+        <div class="admin-contact-box" id="adminDelayContactBox">
+            <div>
+                ⏳ <strong>ຖ້າ Admin ອະນຸມັດຊ້າ:</strong> ສາມາດຕິດຕໍ່ສອບຖາມ Admin ໄດ້ໂດຍກົງທີ່ເບີໂທ:
+                <span class="phone-highlight" id="adminPhoneText">020-5555-8899</span>
+            </div>
+            <button type="button" class="btn-copy" onclick="copyAdminPhone()">📋 ຄັດລອກເບີໂທ</button>
+        </div>
+    </section>
+
+    <section class="card" id="pending-slips-section">
+        <div class="card-header">
+            <h2>🕵️‍♂️ ລາຍການສະຫຼິບການໂອນທີ່ລາຍງານເຂົ້າມາ</h2>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ສະຫຼິບ</th>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ເທີມ</th>
+                        <th>ຈຳນວນເງິນ</th>
+                        <th>ສະຖານະ</th>
+                        <th class="admin-action" style="width: 130px;">ອະນຸມັດ</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingSlipsBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card" id="paid-history-section">
+        <div class="card-header">
+            <h2 id="paidHistoryTitle">✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ</h2>
+            <div id="teacherStudentPickerWrap" style="display: none;">
+                <select id="teacherStudentSelect" onchange="renderPaidHistory()">
+                    <option value="">-- ເລືອກນັກຮຽນເພື່ອເບິ່ງປະຫວັດການຊຳລະ --</option>
+                </select>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ລ/ດ</th>
+                        <th>ຊື່ນັກຮຽນ</th>
+                        <th>ຫ້ອງ</th>
+                        <th>ເທີມ</th>
+                        <th>ຈຳນວນເງິນ</th>
+                        <th>ວັນທີອະນຸມັດ</th>
+                        <th>ສະຖານະ</th>
+                    </tr>
+                </thead>
+                <tbody id="paidHistoryBody"></tbody>
+            </table>
+        </div>
+        <div class="note-text" id="paidHistoryScopeNote"></div>
+    </section>
 </div>
 
-<script>
-(function () {
-    const STYLE_ID = "js-responsive-update-style";
-
-    function buildUpdateResponsiveCss(width) {
-        const isSmallMobile = width <= 480;
-        const isMobile = width <= 768;
-        const isTablet = width <= 1024;
-        const isWide = width >= 1440;
-
-        const containerMaxWidth = isWide ? "1400px" : "1280px";
-        const containerPadding = isSmallMobile ? "0 10px 24px" : isMobile ? "0 12px 28px" : "0 16px 32px";
-        const containerMargin = isMobile ? "14px auto" : "24px auto";
-        const panelPadding = isSmallMobile ? "12px" : isTablet ? "16px" : "20px";
-        const formCardPadding = isSmallMobile ? "12px" : "16px";
-        const titleSize = isSmallMobile ? "15px" : isTablet ? "16.5px" : "18px";
-        const submenuCols = isSmallMobile
-            ? "repeat(2, minmax(0, 1fr))"
-            : isMobile
-            ? "repeat(2, minmax(0, 1fr))"
-            : isTablet
-            ? "repeat(3, minmax(0, 1fr))"
-            : "repeat(auto-fit, minmax(175px, 1fr))";
-        const formCols = isMobile ? "1fr" : isTablet ? "repeat(2, minmax(0, 1fr))" : "repeat(auto-fit, minmax(190px, 1fr))";
-        const minTableWidth = isSmallMobile ? "560px" : isMobile ? "660px" : "760px";
-
-        return `
-            html, body {
-                max-width: 100% !important;
-                overflow-x: hidden !important;
-            }
-            .container, .panel, .form-card, .table-wrap, .submenus, .form-grid {
-                min-width: 0 !important;
-            }
-            .topbar {
-                padding: ${isSmallMobile ? "10px 12px" : "14px 20px"} !important;
-            }
-            .page-title {
-                font-size: ${titleSize} !important;
-            }
-            .container {
-                max-width: ${containerMaxWidth} !important;
-                margin: ${containerMargin} !important;
-                padding: ${containerPadding} !important;
-            }
-            .submenus {
-                display: grid !important;
-                grid-template-columns: ${submenuCols} !important;
-                gap: ${isSmallMobile ? "8px" : "10px"} !important;
-                margin-bottom: ${isMobile ? "14px" : "20px"} !important;
-            }
-            .submenu-btn {
-                padding: ${isSmallMobile ? "9px 10px" : "11px 14px"} !important;
-                font-size: ${isSmallMobile ? "12px" : "13px"} !important;
-            }
-            .panel {
-                padding: ${panelPadding} !important;
-                border-radius: ${isSmallMobile ? "12px" : "16px"} !important;
-            }
-            .panel-top h2 {
-                font-size: ${titleSize} !important;
-            }
-            .form-card {
-                padding: ${formCardPadding} !important;
-            }
-            .form-grid {
-                display: grid !important;
-                grid-template-columns: ${formCols} !important;
-                gap: ${isSmallMobile ? "8px" : "10px"} !important;
-            }
-            .table-wrap {
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch !important;
-                width: 100% !important;
-            }
-            table {
-                min-width: ${minTableWidth} !important;
-            }
-            ${isSmallMobile ? `
-                .topbar {
-                    flex-direction: column !important;
-                    align-items: stretch !important;
-                }
-                .topbar-left, .user-pill {
-                    justify-content: space-between !important;
-                    width: 100% !important;
-                }
-                .form-actions .btn {
-                    flex: 1 1 auto !important;
-                    text-align: center !important;
-                }
-                th, td {
-                    padding: 8px 9px !important;
-                    font-size: 12px !important;
-                }
-            ` : ""}
-        `;
-    }
-
-    function applyUpdateResponsiveLayout() {
-        const width = window.innerWidth || document.documentElement.clientWidth || 1024;
-        document.documentElement.dataset.screenMode =
-            width <= 480 ? "mobile-xs" :
-            width <= 768 ? "mobile" :
-            width <= 1024 ? "tablet" :
-            width >= 1440 ? "desktop-xl" : "desktop";
-
-        let styleEl = document.getElementById(STYLE_ID);
-        if (!styleEl) {
-            styleEl = document.createElement("style");
-            styleEl.id = STYLE_ID;
-            document.head.appendChild(styleEl);
-        }
-        styleEl.textContent = buildUpdateResponsiveCss(width);
-    }
-
-    let resizeTimer = null;
-    window.addEventListener("resize", () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(applyUpdateResponsiveLayout, 80);
-    });
-    window.addEventListener("orientationchange", () => {
-        setTimeout(applyUpdateResponsiveLayout, 120);
-    });
-    document.addEventListener("DOMContentLoaded", applyUpdateResponsiveLayout);
-    applyUpdateResponsiveLayout();
-})();
-</script>
-
 <script type="module">
-    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, addDoc, setDoc, deleteDoc, doc, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, doc, setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
+    const DEFAULT_FIREBASE_CONFIG = {
         apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
         authDomain: "my-school-c1104.firebaseapp.com",
         projectId: "my-school-c1104",
-        storageBucket: "my-school-c1104.appspot.com",
+        storageBucket: "my-school-c1104.firebasestorage.app",
         messagingSenderId: "339930418459",
         appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
         measurementId: "G-NPNFSW2C72"
     };
 
+    const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
+    window.FIREBASE_CONFIG = firebaseConfig;
+
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const TUITION_COLLECTION = "tuition";
+    const LEGACY_FEE_COLLECTION = "fee_items";
+    const SUBJECTS_COLLECTION = "subjects";
 
-    const DEFAULT_SUBJECTS = ["ຄະນິດສາດ", "ຟີຊິກສາດ", "ເຄມີສາດ", "ຊີວະສາດ", "ພາສາລາວ", "ພາສາອັງກິດ", "ໄອທີ / ຄອມ"];
-    let availableSubjects = [...DEFAULT_SUBJECTS];
-
-    function cleanVal(v) {
-        return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
-    }
-    function cleanGrade(v) {
-        return cleanVal(v).replace(/\s+/g, "");
-    }
-    function boundNum(v, min, max, fallback = 0) {
-        const n = Number(v);
-        if (!Number.isFinite(n)) return fallback;
-        return Math.max(min, Math.min(max, n));
-    }
-    function escapeHtml(str) {
-        return String(str ?? "")
-            .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    function getNormalizedRole() {
+        const raw = (
+            localStorage.getItem("userRole") ||
+            localStorage.getItem("role") ||
+            localStorage.getItem("user_role") ||
+            "student"
+        ).trim().toLowerCase();
+        if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
+        if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
+        return "student";
     }
 
-    function computeAnnualAverage(data) {
-        const map = data.courseworkBySubject || {};
-        const totals = availableSubjects.map((subj) => {
-            const cw = map[subj] || data.coursework || {};
-            return boundNum(cw.attendance, 0, 10, 8)
-                + boundNum(cw.participation, 0, 10, 8)
-                + boundNum(cw.homework, 0, 20, 15)
-                + boundNum(cw.midterm, 0, 25, 18)
-                + boundNum(cw.final, 0, 35, 25);
-        });
-        const avg = totals.reduce((a, b) => a + b, 0) / totals.length;
-        return Number(avg.toFixed(1));
-    }
+    const ADMIN_PHONE = localStorage.getItem("adminContactPhone") || "020-5555-8899";
+    document.getElementById("adminPhoneText").textContent = ADMIN_PHONE;
 
-    function getDedupKey(tabKey, item) {
-        if (tabKey === "students") {
-            const code = cleanVal(item.studentCode).toLowerCase();
-            const nameGrade = `${cleanVal(item.name).replace(/\s+/g, " ").toLowerCase()}__${cleanGrade(item.grade).toLowerCase()}`;
-            return code ? `code:${code}` : `ng:${nameGrade}`;
-        }
-        if (tabKey === "scores") {
-            return `score:${cleanVal(item.studentName).replace(/\s+/g, " ").toLowerCase()}__${cleanGrade(item.room).toLowerCase()}`;
-        }
-        if (tabKey === "rooms") {
-            return `room:${cleanGrade(item.name).toLowerCase()}`;
-        }
-        if (tabKey === "teachers") {
-            const code = cleanVal(item.code).toLowerCase();
-            const name = cleanVal(item.name).replace(/\s+/g, " ").toLowerCase();
-            return code ? `code:${code}` : `teacher:${name}`;
-        }
-        if (tabKey === "subjects") {
-            return `subj:${cleanVal(item.name).toLowerCase()}__${cleanGrade(item.grade).toLowerCase()}`;
-        }
-        if (tabKey === "schedules") {
-            return `sched:${cleanVal(item.week).toLowerCase()}__${cleanVal(item.day).toLowerCase()}__${cleanVal(item.period)}__${cleanGrade(item.room).toLowerCase()}`;
-        }
-        if (tabKey === "tuition") {
-            return `tuition:${cleanVal(item.item).toLowerCase()}__${cleanGrade(item.room).toLowerCase()}__${cleanVal(item.term).toLowerCase()}`;
-        }
-        if (tabKey === "terms") {
-            const g = (!cleanVal(item.grade) || cleanVal(item.grade).toUpperCase() === "ALL") ? "all" : cleanGrade(item.grade).toLowerCase();
-            return `term:${cleanVal(item.academicYear).toLowerCase()}__${cleanVal(item.term).toLowerCase()}__${g}`;
-        }
-        return `id:${item._col}__${item.id}`;
-    }
+    const role = getNormalizedRole();
+    const userGrade = localStorage.getItem("userGrade") || "ມ.5";
+    const userName = localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
+    const isAdmin = role === "admin";
+    const isTeacher = role === "teacher";
+    const isStudent = role === "student";
 
-    function completenessScore(item) {
-        return Object.values(item).filter((v) => v && typeof v !== "object" && cleanVal(v) !== "").length;
-    }
+    document.body.setAttribute("data-role", role);
+    document.getElementById("currentUserName").textContent = userName;
+    document.getElementById("currentUserRole").textContent = role.toUpperCase();
+    document.getElementById("currentUserGrade").textContent = userGrade;
 
-    function dedupeRecords(tabKey, list = []) {
-        const map = new Map();
-        list.forEach((item) => {
-            const key = getDedupKey(tabKey, item);
-            const prev = map.get(key);
-            if (!prev) {
-                map.set(key, item);
-            } else {
-                const prevScore = completenessScore(prev);
-                const nextScore = completenessScore(item);
-                const prevTime = prev._raw?.updatedAt?.seconds || prev._raw?.createdAt?.seconds || 0;
-                const nextTime = item._raw?.updatedAt?.seconds || item._raw?.createdAt?.seconds || 0;
-                if (nextScore > prevScore || (nextScore === prevScore && nextTime >= prevTime)) {
-                    map.set(key, { ...prev, ...item });
-                } else {
-                    map.set(key, { ...item, ...prev });
-                }
-            }
-        });
-        return Array.from(map.values());
-    }
-
-    const userName = cleanVal(localStorage.getItem("userName")) || "ຜູ້ໃຊ້ງານ";
-    const userRole = cleanVal(localStorage.getItem("userRole") || localStorage.getItem("role") || "student").toLowerCase();
-    const isAdmin = ["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(userRole);
-
-    document.getElementById("upd-user-name").textContent = userName;
-    document.getElementById("upd-user-role").textContent = userRole.toUpperCase();
-
-    if (!isAdmin) {
-        const termsBtn = document.getElementById("btn-tab-terms");
-        if (termsBtn) termsBtn.style.display = "none";
-    }
-
-    if (userRole === "student") {
-        document.getElementById("update-main-container").style.display = "none";
-        document.getElementById("access-denied").style.display = "block";
-    }
-
-    function getSubjectScoreFields() {
-        return [
-            { name: "studentName", label: "ຊື່ນັກຮຽນ", type: "text", required: true, placeholder: "ສົມໃຈ ໃຈດີ" },
-            { name: "room", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.5" },
-            { name: "subject", label: "ວິຊາ", type: "select", required: true, options: availableSubjects },
-            { name: "attendance", label: "ຄະແນນການມາຮຽນ (0-10)", type: "number", required: true, placeholder: "10", min: 0, max: 10, step: "0.5" },
-            { name: "participation", label: "ຄະແນນການມີສ່ວນຮ່ວມ (0-10)", type: "number", required: true, placeholder: "10", min: 0, max: 10, step: "0.5" },
-            { name: "homework", label: "ຄະແນນບົດເຝິກຫັດ (0-20)", type: "number", required: true, placeholder: "18", min: 0, max: 20, step: "0.5" },
-            { name: "midterm", label: "ຄະແນນສອບເສັງກາງພາກ (0-25)", type: "number", required: true, placeholder: "20", min: 0, max: 25, step: "0.5" },
-            { name: "final", label: "ຄະແນນສອບເສັງທ້າຍພາກ (0-35)", type: "number", required: true, placeholder: "28", min: 0, max: 35, step: "0.5" }
-        ];
-    }
-
-    const ANNUAL_SCORE_FIELDS = [
-        { name: "studentName", label: "ຊື່ນັກຮຽນ", type: "text", required: true, placeholder: "ສົມໃຈ ໃຈດີ" },
-        { name: "room", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.5" },
-        { name: "totalCredits", label: "ໜ່ວຍກິດທັງໝົດ", type: "number", required: true, placeholder: "24", min: 0, max: 200, step: "1" },
-        { name: "earnedCredits", label: "ໜ່ວຍກິດສະສົມ (ຜ່ານ)", type: "number", required: true, placeholder: "24", min: 0, max: 200, step: "1" }
+    const DEFAULT_SUBJECT_FALLBACKS = [
+        { subject: "ວິຊາທີ 1: ຄະນິດສາດ", credits: 3, pricePerCredit: 200000 },
+        { subject: "ວິຊາທີ 2: ຟີຊິກສາດ", credits: 3, pricePerCredit: 200000 },
+        { subject: "ວິຊາທີ 3: ເຄມີສາດ", credits: 2, pricePerCredit: 200000 },
+        { subject: "ວິຊາທີ 4: ພາສາລາວ", credits: 2, pricePerCredit: 150000 },
+        { subject: "ວິຊາທີ 5: ພາສາອັງກິດ", credits: 3, pricePerCredit: 180000 },
+        { subject: "ວິຊາທີ 6: ໄອທີ / ຄອມພິວເຕີ", credits: 2, pricePerCredit: 220000 },
+        { subject: "ວິຊາທີ 7: ພະລະສຶກສາ", credits: 1, pricePerCredit: 150000 }
     ];
 
-    const TAB_CONFIGS = {
-        rooms: {
-            title: "🏫 ເພີ່ມ / ແກ້ໄຂ / ລົບ ລາຍຊື່ຫ້ອງ",
-            collections: ["rooms", "classes"],
-            primaryCol: "rooms",
-            fields: [
-                { name: "name", label: "ຊື່ຫ້ອງ (ເຊັ່ນ: ມ.6/1)", type: "text", required: true, placeholder: "ມ.6/1" },
-                { name: "level", label: "ຊັ້ນຮຽນ", type: "text", required: false, placeholder: "ມ.6" },
-                { name: "advisor", label: "ຄູປະຈຳຫ້ອງ", type: "text", required: false, placeholder: "ອ. ..." },
-                { name: "capacity", label: "ຈຳນວນນັກຮຽນ", type: "number", required: false, placeholder: "35" }
-            ],
-            columns: [
-                { key: "name", label: "ຊື່ຫ້ອງ" },
-                { key: "level", label: "ຊັ້ນ" },
-                { key: "advisor", label: "ຄູປະຈຳຫ້ອງ" },
-                { key: "capacity", label: "ຈຳນວນ" }
-            ],
-            mapDoc: (d, id) => ({
-                id,
-                name: cleanVal(d.name || d.roomName || d.grade),
-                level: cleanVal(d.level || d.grade || ""),
-                advisor: cleanVal(d.advisor || d.homeroomTeacher || ""),
-                capacity: cleanVal(d.capacity || d.studentCount || ""),
-                _raw: d
-            })
-        },
-        teachers: {
-            title: "👩‍🏫 ເພີ່ມ / ແກ້ໄຂ / ລົບ ລາຍຊື່ຄູ",
-            collections: ["teachers"],
-            primaryCol: "teachers",
-            fields: [
-                { name: "code", label: "ລະຫັດຄູ", type: "text", required: true, placeholder: "ເຊັ່ນ: TCH-004" },
-                { name: "name", label: "ຊື່ ແລະ ນາມສະກຸນຄູ", type: "text", required: true, placeholder: "ເຊັ່ນ: ອ. ວິໄລວັນ ພົມມະຈັນ" },
-                { name: "subject", label: "ວິຊາສອນ", type: "text", required: true, placeholder: "ເຊັ່ນ: ຄະນິດສາດ" },
-                { name: "duty", label: "ໜ້າທີ່ຮັບຜິດຊອບ", type: "text", required: false, placeholder: "ເຊັ່ນ: ປະຈຳຫ້ອງ ມ.5, ດູແລກິດຈະກຳ" },
-                { name: "department", label: "ພາກວິຊາ / ກອງ", type: "select", required: false, options: ["ວິທະຍາສາດ ແລະ ຄະນິດສາດ", "ພາສາ ແລະ ສັງຄົມສາດ", "ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ"] },
-                { name: "joinYear", label: "ປີເຂົ້າເຮັດວຽກ", type: "text", required: false, placeholder: "ເຊັ່ນ: 2021" },
-                { name: "education", label: "ວຸດທິການສຶກສາ", type: "text", required: false, placeholder: "ເຊັ່ນ: ປະລິນຍາຕີ ຄູຄະນິດສາດ" },
-                { name: "phone", label: "ເບີໂທຕິດຕໍ່", type: "text", required: false, placeholder: "ເຊັ່ນ: 020 5555 1234" },
-                { name: "history", label: "ປະຫວັດການສອນ / ຜົນງານ / ບັນທຶກປະຫວັດ", type: "text", required: false, placeholder: "ບັນທຶກປະຫວັດການສອນ, ຜົນງານ ຫຼື ໝາຍເຫດ" }
-            ],
-            columns: [
-                { key: "code", label: "ລະຫັດຄູ" },
-                { key: "name", label: "ຊື່ ແລະ ນາມສະກຸນຄູ" },
-                { key: "subject", label: "ວິຊາສອນ" },
-                { key: "duty", label: "ໜ້າທີ່ຮັບຜິດຊອບ" },
-                { key: "department", label: "ພາກວິຊາ/ກອງ" },
-                { key: "joinYear", label: "ປີເຂົ້າເຮັດວຽກ" },
-                { key: "education", label: "ວຸດທິການສຶກສາ" },
-                { key: "phone", label: "ເບີໂທຕິດຕໍ່" },
-                { key: "history", label: "ປະຫວັດການສອນ/ຜົນງານ/ບັນທຶກປະຫວັດ" }
-            ],
-            mapDoc: (d, id) => {
-                const dutyVal = cleanVal(d.duty || d.responsibility || d.rooms || d.room || d.grade || "");
-                return {
-                    id,
-                    code: cleanVal(d.code || d.teacherCode || d.id || id),
-                    name: cleanVal(d.name || d.teacherName || ""),
-                    subject: cleanVal(d.subject || d.major || ""),
-                    duty: dutyVal,
-                    rooms: dutyVal,
-                    room: dutyVal,
-                    department: cleanVal(d.department || ""),
-                    joinYear: cleanVal(d.joinYear || ""),
-                    education: cleanVal(d.education || ""),
-                    phone: cleanVal(d.phone || d.tel || d.email || ""),
-                    history: cleanVal(d.history || d.record || d.achievements || d.note || ""),
-                    _raw: d
-                };
-            }
-        },
-        students: {
-            title: "🎓 ເພີ່ມ / ແກ້ໄຂ / ລົບ ລາຍຊື່ນັກຮຽນ",
-            collections: ["students"],
-            primaryCol: "students",
-            fields: [
-                { name: "studentCode", label: "ລະຫັດນັກຮຽນ", type: "text", required: true, placeholder: "ເຊັ່ນ: STD-006" },
-                { name: "name", label: "ຊື່ ແລະ ນາມສະກຸນນັກຮຽນ", type: "text", required: true, placeholder: "ເຊັ່ນ: ທ. ສົມປອງ ຈັນທະລາ" },
-                { name: "grade", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.5" },
-                { name: "gender", label: "ເພດ", type: "select", required: true, options: ["ຊາຍ", "ຍິງ", "ອື່ນໆ"] },
-                { name: "birthDate", label: "ວັນເດືອນປີເກີດ", type: "date", required: false, placeholder: "" },
-                { name: "guardianName", label: "ຊື່ຜູ້ປົກຄອງ", type: "text", required: false, placeholder: "ເຊັ່ນ: ທ. ບຸນມີ ຈັນທະລາ" },
-                { name: "phone", label: "ເບີໂທຕິດຕໍ່", type: "text", required: false, placeholder: "ເຊັ່ນ: 020 5544 3322" },
-                { name: "address", label: "ບ້ານ / ເມືອງ / ແຂວງ", type: "text", required: false, placeholder: "ເຊັ່ນ: ບ້ານໂພນໄຊ, ນະຄອນຫຼວງວຽງຈັນ" },
-                { name: "history", label: "ປະຫວັດການຮຽນ / ຜົນງານ / ບັນທຶກປະຫວັດ", type: "text", required: false, placeholder: "ບັນທຶກປະຫວັດການເຂົ້າຮຽນ, ຜົນງານ, ກິດຈະກຳ ຫຼື ໝາຍເຫດ" },
-                { name: "status", label: "ສະຖານະ", type: "text", required: false, placeholder: "ກຳລັງຮຽນ" }
-            ],
-            columns: [
-                { key: "studentCode", label: "ລະຫັດ" },
-                { key: "name", label: "ຊື່ ແລະ ນາມສະກຸນ" },
-                { key: "grade", label: "ຫ້ອງ" },
-                { key: "gender", label: "ເພດ" },
-                { key: "birthDate", label: "ວັນເດືອນປີເກີດ" },
-                { key: "guardianName", label: "ຊື່ຜູ້ປົກຄອງ" },
-                { key: "phone", label: "ເບີໂທຕິດຕໍ່" },
-                { key: "address", label: "ບ້ານ/ເມືອງ/ແຂວງ" },
-                { key: "history", label: "ປະຫວັດການຮຽນ/ຜົນງານ/ບັນທຶກປະຫວັດ" },
-                { key: "status", label: "ສະຖານະ" }
-            ],
-            mapDoc: (d, id) => ({
-                id,
-                studentCode: cleanVal(d.studentCode || d.studentId || d.code || id),
-                name: cleanVal(d.name || d.studentName),
-                grade: cleanVal(d.grade || d.room || d.classRoom),
-                gender: cleanVal(d.gender || d.sex || ""),
-                birthDate: cleanVal(d.birthDate || d.dob || d.birthday || ""),
-                guardianName: cleanVal(d.guardianName || d.parentName || d.guardian || ""),
-                phone: cleanVal(d.phone || d.tel || d.contact || ""),
-                address: cleanVal(d.address || d.location || d.village || ""),
-                history: cleanVal(d.history || d.record || d.achievements || d.note || ""),
-                status: cleanVal(d.status || "ກຳລັງຮຽນ"),
-                _raw: d
-            })
-        },
-        schedules: {
-            title: "📅 ເພີ່ມ / ແກ້ໄຂ / ລົບ ຕາຕະລາງສອນປະຈຳວັນ - ປະຈຳອາທິດ",
-            collections: ["weekly_schedules", "timetables"],
-            primaryCol: "weekly_schedules",
-            fields: [
-                { name: "week", label: "ອາທິດ (ເຊັ່ນ 2026-W46 ຫຼື ວ່າງ=ທຸກອາທິດ)", type: "text", required: false, placeholder: "2026-W46" },
-                { name: "day", label: "ມື້ (ຈັນ-ສຸກ)", type: "text", required: true, placeholder: "ຈັນ" },
-                { name: "period", label: "ຊົ່ວໂມງທີ (1-4)", type: "text", required: true, placeholder: "1" },
-                { name: "room", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.6/1" },
-                { name: "subject", label: "ວິຊາ", type: "text", required: true, placeholder: "ຄະນິດສາດ" },
-                { name: "teacher", label: "ຄູຜູ້ສອນ", type: "text", required: true, placeholder: "ອ. ..." }
-            ],
-            columns: [
-                { key: "week", label: "ອາທິດ" },
-                { key: "day", label: "ມື້" },
-                { key: "period", label: "ຊົ່ວໂມງ" },
-                { key: "room", label: "ຫ້ອງ" },
-                { key: "subject", label: "ວິຊາ" },
-                { key: "teacher", label: "ຄູສອນ" }
-            ],
-            mapDoc: (d, id) => ({
-                id,
-                week: cleanVal(d.week || ""),
-                day: cleanVal(d.day || "").replace(/^ວັນ/, ""),
-                period: cleanVal(d.period || "1"),
-                room: cleanVal(d.room || d.grade || ""),
-                subject: cleanVal(d.subject || ""),
-                teacher: cleanVal(d.teacher || ""),
-                _raw: d
-            })
-        },
-        scores: {
-            title: "📊 5. ຄະແນນນັກຮຽນ (ລາຍວິຊາ & ສະເລ່ຍໝົດປີ)",
-            collections: ["student_scores"],
-            primaryCol: "student_scores",
-            getFields: (subMode) => subMode === "annual" ? ANNUAL_SCORE_FIELDS : getSubjectScoreFields(),
-            columns: [
-                { key: "studentName", label: "ຊື່ນັກຮຽນ" },
-                { key: "room", label: "ຫ້ອງ" },
-                { key: "subjectsSummary", label: "ຄະແນນລາຍວິຊາ (100)" },
-                { key: "annualAvg", label: "ສະເລ່ຍໝົດປີ" },
-                { key: "quarterScore", label: "1 ໃນ 4" },
-                { key: "creditsSummary", label: "ໜ່ວຍກິດສະສົມ" }
-            ],
-            mapDoc: (d, id) => {
-                const avg = d.annualAvg !== undefined ? boundNum(d.annualAvg, 0, 100, computeAnnualAverage(d)) : computeAnnualAverage(d);
-                const qScore = d.quarterScore !== undefined ? boundNum(d.quarterScore, 0, 25, Number((avg / 4).toFixed(2))) : Number((avg / 4).toFixed(2));
-                const cwMap = d.courseworkBySubject || {};
-                const subjList = Object.keys(cwMap).map((subj) => {
-                    const cw = cwMap[subj] || {};
-                    const tot = boundNum(cw.attendance, 0, 10, 8)
-                        + boundNum(cw.participation, 0, 10, 8)
-                        + boundNum(cw.homework, 0, 20, 15)
-                        + boundNum(cw.midterm, 0, 25, 18)
-                        + boundNum(cw.final, 0, 35, 25);
-                    return `${subj}: ${tot}`;
-                });
-                const totalCred = boundNum(d.totalCredits, 0, 200, 24);
-                const earnedCred = boundNum(d.earnedCredits, 0, totalCred, 24);
-                return {
-                    id,
-                    studentName: cleanVal(d.name || d.studentName),
-                    room: cleanGrade(d.grade || d.room),
-                    subjectsSummary: subjList.length ? subjList.join(" | ") : "ຄ່າເລີ່ມຕົ້ນ",
-                    annualAvg: String(avg),
-                    quarterScore: String(qScore),
-                    creditsSummary: `${earnedCred} / ${totalCred}`,
-                    _raw: d
-                };
-            }
-        },
-        tuition: {
-            title: "💰 6. ເພີ່ມ / ແກ້ໄຂ / ລົບ ລາຍການຄ່າຮຽນ",
-            collections: ["tuition", "fee_items", "finance", "payments"],
-            primaryCol: "tuition",
-            fields: [
-                { name: "item", label: "ລາຍການຄ່າຮຽນ / ຊື່ນັກຮຽນ", type: "text", required: true, placeholder: "ຄ່າຮຽນປະຈຳເທີມ" },
-                { name: "room", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.5" },
-                { name: "term", label: "ເທີມ", type: "text", required: false, placeholder: "ເທີມ 1 / 2026-2027" },
-                { name: "amount", label: "ຈຳນວນເງິນ (ກີບ)", type: "text", required: true, placeholder: "1,500,000 ກີບ" },
-                { name: "status", label: "ສະຖານະ", type: "text", required: true, placeholder: "ຄ້າງຈ່າຍ / ຈ່າຍແລ້ວ" }
-            ],
-            columns: [
-                { key: "item", label: "ລາຍການ / ຊື່" },
-                { key: "room", label: "ຫ້ອງ" },
-                { key: "term", label: "ເທີມ" },
-                { key: "amount", label: "ຈຳນວນເງິນ" },
-                { key: "status", label: "ສະຖານະ" }
-            ],
-            mapDoc: (d, id) => ({
-                id,
-                item: cleanVal(d.item || d.studentName || d.name),
-                room: cleanGrade(d.room || d.grade),
-                term: cleanVal(d.term || "ເທີມ 1 / 2026-2027"),
-                amount: cleanVal(d.amount || d.fee || ""),
-                status: cleanVal(d.status || "ຄ້າງຈ່າຍ"),
-                _raw: d
-            })
-        },
-        subjects: {
-            title: "📚 7. ເພີ່ມ / ແກ້ໄຂ / ລົບ ວິຊາຮຽນ",
-            collections: ["subjects"],
-            primaryCol: "subjects",
-            fields: [
-                { name: "code", label: "ລະຫັດວິຊາ", type: "text", required: false, placeholder: "SUB01" },
-                { name: "name", label: "ຊື່ວິຊາຮຽນ", type: "text", required: true, placeholder: "ຄະນິດສາດ" },
-                { name: "grade", label: "ຊັ້ນ / ຫ້ອງຮຽນ", type: "text", required: false, placeholder: "ມ.5" },
-                { name: "credits", label: "ໜ່ວຍກິດ", type: "number", required: false, placeholder: "3", min: 0, max: 20, step: "0.5" },
-                { name: "teacher", label: "ຄູຜູ້ສອນ", type: "text", required: false, placeholder: "ອ. ..." }
-            ],
-            columns: [
-                { key: "code", label: "ລະຫັດ" },
-                { key: "name", label: "ຊື່ວິຊາ" },
-                { key: "grade", label: "ຫ້ອງ" },
-                { key: "credits", label: "ໜ່ວຍກິດ" },
-                { key: "teacher", label: "ຄູຜູ້ສອນ" }
-            ],
-            mapDoc: (d, id) => ({
-                id,
-                code: cleanVal(d.code || d.subjectCode || ""),
-                name: cleanVal(d.name || d.subjectName || d.subject || ""),
-                grade: cleanGrade(d.grade || d.room || ""),
-                credits: cleanVal(d.credits ?? d.credit ?? ""),
-                teacher: cleanVal(d.teacher || d.teacherName || ""),
-                _raw: d
-            })
-        },
-        terms: {
-            title: "🗓️ 8. ເພີ່ມ / ແກ້ໄຂ / ລົບ ເທີມຮຽນ & ຈຳນວນຄາບ (ສຳລັບ Admin)",
-            collections: ["term_periods"],
-            primaryCol: "term_periods",
-            adminOnly: true,
-            fields: [
-                { name: "term", label: "ຊື່ເທີມຮຽນ", type: "text", required: true, placeholder: "ເທີມ 1 / 2026-2027" },
-                { name: "academicYear", label: "ສົກຮຽນ", type: "text", required: true, placeholder: "2026-2027" },
-                { name: "grade", label: "ຫ້ອງ (ALL = ທຸກຫ້ອງ ຫຼື ມ.5)", type: "text", required: true, placeholder: "ALL" },
-                { name: "totalPeriods", label: "ຈຳນວນຄາບທັງໝົດ", type: "number", required: true, placeholder: "40", min: 1, max: 500, step: "1" },
-                { name: "maxScore", label: "ຄະແນນເຕັມ", type: "number", required: true, placeholder: "20", min: 1, max: 100, step: "1" }
-            ],
-            columns: [
-                { key: "term", label: "ຊື່ເທີມຮຽນ" },
-                { key: "academicYear", label: "ສົກຮຽນ" },
-                { key: "gradeDisplay", label: "ຫ້ອງ" },
-                { key: "periodsDisplay", label: "ຈຳນວນຄາບ" },
-                { key: "maxScore", label: "ຄະແນນເຕັມ" }
-            ],
-            mapDoc: (d, id) => {
-                const rawGrade = cleanVal(d.grade || "ALL");
-                const grade = (!rawGrade || rawGrade.toUpperCase() === "ALL") ? "ALL" : cleanGrade(rawGrade);
-                const totalPeriods = Math.max(1, Number(d.totalPeriods) || 40);
-                const maxScore = Math.max(1, Number(d.maxScore) || 20);
-                return {
-                    id,
-                    term: cleanVal(d.term || ""),
-                    academicYear: cleanVal(d.academicYear || "2026-2027"),
-                    grade,
-                    gradeDisplay: grade === "ALL" ? "ທຸກຫ້ອງ" : grade,
-                    totalPeriods,
-                    periodsDisplay: `${totalPeriods} ຄາບ`,
-                    maxScore,
-                    _raw: d
-                };
-            }
-        }
-    };
+    let subjectFormRows = [];
+    let feeItems = JSON.parse(localStorage.getItem("school_fee_items") || "null") || [
+        { id: "FEE-1", _col: TUITION_COLLECTION, item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.5", term: "ເທີມ 1 / 2026-2027", amount: "1,500,000 ກີບ", status: "ຄ້າງຈ່າຍ" },
+        { id: "FEE-2", _col: TUITION_COLLECTION, item: "ຄ່າບຳລຸງຫ້ອງຮຽນ & ອຸປະກອນ", grade: "ມ.5", term: "ເທີມ 1 / 2026-2027", amount: "200,000 ກີບ", status: "ຄ້າງຈ່າຍ" },
+        { id: "FEE-3", _col: TUITION_COLLECTION, item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.6", term: "ເທີມ 1 / 2026-2027", amount: "1,600,000 ກີບ", status: "ຄ້າງຈ່າຍ" }
+    ];
+    let paymentRecords = JSON.parse(localStorage.getItem("school_payment_records") || "null") || [];
 
-    const urlTab = cleanVal(new URLSearchParams(window.location.search).get("tab")).toLowerCase();
-    let currentTab = (TAB_CONFIGS[urlTab] && (!TAB_CONFIGS[urlTab].adminOnly || isAdmin)) ? urlTab : "rooms";
-    let currentScoreSubMode = "subject";
-    let currentRecords = [];
-    let editingRecordId = null;
-    let editingCollectionName = null;
+    function parseNumberFromAmount(val) {
+        const cleaned = String(val || "").replace(/[^\d.-]/g, "");
+        const num = Number(cleaned);
+        return Number.isFinite(num) && num >= 0 ? num : 0;
+    }
 
-    async function refreshSubjectsFromFirestore() {
-        try {
-            const snap = await getDocs(collection(db, "subjects"));
-            if (!snap.empty) {
-                const dbSubjs = snap.docs
-                    .map((d) => cleanVal(d.data().name || d.data().subjectName || d.data().subject))
-                    .filter(Boolean);
-                if (dbSubjs.length) {
-                    availableSubjects = Array.from(new Set([...DEFAULT_SUBJECTS, ...dbSubjs]));
+    function buildSubjectCreditRowsFromFormData(dbSubjects = [], dbFees = []) {
+        const selectedTerm = document.getElementById("termSelect")?.value || "ເທີມ 1 / 2026-2027";
+        const matchedFees = dbFees.filter((f) =>
+            (!f.grade || f.grade === userGrade || !isStudent) &&
+            (!f.term || f.term === selectedTerm)
+        );
+        const fallbackFees = matchedFees.length ? matchedFees : dbFees;
+
+        const rows = [];
+        for (let i = 0; i < 7; i++) {
+            const subjDoc = dbSubjects[i] || null;
+            const feeDoc = fallbackFees[i] || null;
+            const defaultRow = DEFAULT_SUBJECT_FALLBACKS[i];
+
+            const subjectName = String(
+                subjDoc?.name || subjDoc?.subjectName || subjDoc?.subject || defaultRow.subject
+            ).trim();
+
+            const rawCredits = subjDoc?.credits ?? subjDoc?.credit;
+            const credits = rawCredits !== undefined && rawCredits !== "" && Number.isFinite(Number(rawCredits))
+                ? Math.max(0, Number(rawCredits))
+                : defaultRow.credits;
+
+            let pricePerCredit = defaultRow.pricePerCredit;
+            if (feeDoc) {
+                const parsedAmount = parseNumberFromAmount(feeDoc.amount);
+                if (parsedAmount > 0) {
+                    pricePerCredit = credits > 0 ? Math.round(parsedAmount / credits) : parsedAmount;
                 }
             }
-        } catch (err) {
-            console.warn(err);
+
+            rows.push({
+                subject: subjectName,
+                credits,
+                pricePerCredit
+            });
         }
+        return rows;
     }
 
-    function syncTermsCache(list) {
-        try {
-            const normalized = list.map((item) => ({
-                id: item.id,
-                firestoreId: item.id,
-                term: item.term,
-                academicYear: item.academicYear,
-                grade: item.grade,
-                totalPeriods: Number(item.totalPeriods) || 40,
-                maxScore: Number(item.maxScore) || 20
-            }));
-            localStorage.setItem("school_term_periods", JSON.stringify(normalized));
-        } catch (e) {}
-    }
-
-    function getActiveFields() {
-        const cfg = TAB_CONFIGS[currentTab];
-        if (currentTab === "scores" && typeof cfg.getFields === "function") {
-            return cfg.getFields(currentScoreSubMode);
+    function getPaymentStatusInfo() {
+        const selectedTerm = document.getElementById("termSelect")?.value || "ເທີມ 1 / 2026-2027";
+        const matched = paymentRecords.filter(
+            (r) => r.studentName === userName && r.term === selectedTerm
+        );
+        if (matched.some((r) => r.status === "approved")) {
+            return { label: `ຊຳລະແລ້ວ (${selectedTerm})`, cssClass: "status-approved" };
         }
-        return cfg.fields || [];
+        if (matched.some((r) => r.status === "pending")) {
+            return { label: `ລໍຖ້າອະນຸມັດ (${selectedTerm})`, cssClass: "status-pending" };
+        }
+        if (matched.some((r) => r.status === "rejected")) {
+            return { label: `ປະຕິເສດ (${selectedTerm})`, cssClass: "status-rejected" };
+        }
+        return { label: `ຍັງບໍ່ທັນຊຳລະ (${selectedTerm})`, cssClass: "status-pending" };
     }
 
-    function broadcastSystemDataUpdated(tabKey) {
-        const payload = JSON.stringify({
-            tab: tabKey,
-            updatedBy: userName,
-            timestamp: Date.now()
-        });
-        localStorage.setItem("schoolSystemDataUpdated", payload);
-        window.dispatchEvent(new CustomEvent("school-data-updated", { detail: JSON.parse(payload) }));
-    }
+    function renderSubjectTable() {
+        const tbody = document.getElementById("subjectTableBody");
+        if (!tbody) return;
 
-    function renderFormFields() {
-        const fields = getActiveFields();
-        const container = document.getElementById("dynamic-fields");
-        container.innerHTML = fields.map((f) => {
-            if (f.type === "select") {
-                const opts = (f.options || []).map((opt) =>
-                    `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`
-                ).join("");
-                return `
-                    <div class="form-group">
-                        <label>${escapeHtml(f.label)}</label>
-                        <select name="${escapeHtml(f.name)}" id="fld-${escapeHtml(f.name)}" ${f.required ? "required" : ""}>
-                            ${opts}
-                        </select>
-                    </div>
-                `;
-            }
-            const extraAttrs = [
-                f.min !== undefined ? `min="${f.min}"` : "",
-                f.max !== undefined ? `max="${f.max}"` : "",
-                f.step !== undefined ? `step="${f.step}"` : ""
-            ].filter(Boolean).join(" ");
+        const activeRows = subjectFormRows.length === 7
+            ? subjectFormRows
+            : buildSubjectCreditRowsFromFormData([], feeItems);
+
+        let totalCredits = 0;
+        let totalTuition = 0;
+
+        // ແຖວ 1 - 7: ຊື່ວິຊາຢູ່ທາງໜ້າ (ສະແດງຢ່າງດຽວ)
+        const rowHtmlList = activeRows.slice(0, 7).map((r, idx) => {
+            const rowNum = idx + 1;
+            const credits = Number(r.credits) || 0;
+            const price = Number(r.pricePerCredit) || 0;
+            const subTotal = credits * price;
+            totalCredits += credits;
+            totalTuition += subTotal;
 
             return `
-                <div class="form-group">
-                    <label>${escapeHtml(f.label)}</label>
-                    <input
-                        type="${f.type}"
-                        name="${escapeHtml(f.name)}"
-                        id="fld-${escapeHtml(f.name)}"
-                        placeholder="${escapeHtml(f.placeholder || "")}"
-                        ${extraAttrs}
-                        ${f.required ? "required" : ""}
-                    >
-                </div>
+                <tr data-row="${rowNum}">
+                    <td class="center"><strong>${rowNum}</strong></td>
+                    <td>${esc(r.subject)}</td>
+                    <td class="right">${credits.toLocaleString()}</td>
+                    <td class="right">${price.toLocaleString()} ກີບ</td>
+                    <td class="right"><strong>${subTotal.toLocaleString()} ກີບ</strong></td>
+                </tr>
             `;
-        }).join("");
+        });
 
-        if (currentTab === "terms") {
-            const yrEl = document.getElementById("fld-academicYear");
-            const grEl = document.getElementById("fld-grade");
-            const tpEl = document.getElementById("fld-totalPeriods");
-            const msEl = document.getElementById("fld-maxScore");
-            if (yrEl && !yrEl.value) yrEl.value = "2026-2027";
-            if (grEl && !grEl.value) grEl.value = "ALL";
-            if (tpEl && !tpEl.value) tpEl.value = "40";
-            if (msEl && !msEl.value) msEl.value = "20";
-        }
-    }
+        const avgCreditFee = totalCredits > 0 ? Math.round(totalTuition / totalCredits) : 0;
+        const payStatus = getPaymentStatusInfo();
 
-    function renderTableHeader() {
-        const cfg = TAB_CONFIGS[currentTab];
-        const thead = document.getElementById("dynamic-thead");
-        thead.innerHTML = `
-            <tr>
-                <th>ລ/ດ</th>
-                ${cfg.columns.map((c) => `<th>${escapeHtml(c.label)}</th>`).join("")}
-                <th>ຈັດການ</th>
+        // ແຖວທີ 8: ລວມແຕ່ເທິງລົງລຸ່ມ
+        const row8Html = `
+            <tr data-row="8" class="row-summary-total">
+                <td class="center">8</td>
+                <td>ລວມແຕ່ເທິງລົງລຸ່ມ (ແຖວ 1–7)</td>
+                <td class="right">${totalCredits.toLocaleString()} ໜ່ວຍກິດ</td>
+                <td class="center">-</td>
+                <td class="right">${totalTuition.toLocaleString()} ກີບ</td>
             </tr>
         `;
+
+        // ແຖວທີ 9: ໄລ່ສະເລ່ຍຄ່າໜ່ວຍກິດຮຽນ
+        const row9Html = `
+            <tr data-row="9" class="row-summary-avg">
+                <td class="center">9</td>
+                <td>ສະເລ່ຍຄ່າໜ່ວຍກິດຮຽນ</td>
+                <td class="center">-</td>
+                <td class="right">${avgCreditFee.toLocaleString()} ກີບ / ໜ່ວຍກິດ</td>
+                <td class="right">${avgCreditFee.toLocaleString()} ກີບ</td>
+            </tr>
+        `;
+
+        // ແຖວທີ 10: ສະຖານະການຈ່າຍ
+        const row10Html = `
+            <tr data-row="10" class="row-summary-status">
+                <td class="center">10</td>
+                <td>ສະຖານະການຈ່າຍ</td>
+                <td colspan="3">
+                    <span class="${payStatus.cssClass}">${esc(payStatus.label)}</span>
+                </td>
+            </tr>
+        `;
+
+        tbody.innerHTML = rowHtmlList.join("") + row8Html + row9Html + row10Html;
     }
 
-    function renderTableBody() {
-        const cfg = TAB_CONFIGS[currentTab];
-        const tbody = document.getElementById("dynamic-tbody");
+    const DEFAULT_QR = "https://quickchart.io/qr?text=SCHOOL-TUITION-PAYMENT&size=200";
+    let schoolQrUrl = localStorage.getItem("school_qr_code_url") || DEFAULT_QR;
+    const savedCaption = localStorage.getItem("school_qr_caption");
+    const qrImgEl = document.getElementById("schoolQrImage");
+    const qrCapEl = document.getElementById("qrCaptionText");
+    if (qrImgEl) qrImgEl.src = schoolQrUrl;
+    if (qrCapEl && savedCaption) qrCapEl.textContent = savedCaption;
 
-        if (!currentRecords.length) {
-            tbody.innerHTML = `<tr><td colspan="${cfg.columns.length + 2}" class="empty-row">ຍັງບໍ່ມີຂໍ້ມູນໃນໝວດນີ້ — ເພີ່ມຂໍ້ມູນໃໝ່ດ້ານເທິງໄດ້ເລີຍ</td></tr>`;
+    function compressImageFileToDataUrl(file, maxSize = 400) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    const scale = Math.min(1, maxSize / Math.max(img.width || 1, img.height || 1));
+                    const canvas = document.createElement("canvas");
+                    canvas.width = Math.max(1, Math.round((img.width || 200) * scale));
+                    canvas.height = Math.max(1, Math.round((img.height || 200) * scale));
+                    const ctx = canvas.getContext("2d");
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL("image/jpeg", 0.82));
+                };
+                img.onerror = reject;
+                img.src = ev.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function saveQrCodeUrl(newUrl, captionText = "") {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
+        schoolQrUrl = newUrl;
+        try {
+            localStorage.setItem("school_qr_code_url", schoolQrUrl);
+            if (captionText) localStorage.setItem("school_qr_caption", captionText);
+        } catch (e) {
+            console.warn("localStorage quota warning:", e);
+        }
+        const img = document.getElementById("schoolQrImage");
+        if (img) img.src = schoolQrUrl;
+
+        const cap = document.getElementById("qrCaptionText");
+        if (cap && captionText) cap.textContent = captionText;
+
+        if (db) {
+            try {
+                await setDoc(doc(db, "finance_settings", "qr_code"), {
+                    url: schoolQrUrl,
+                    caption: captionText || (cap ? cap.textContent : "")
+                }, { merge: true });
+            } catch (err) {
+                console.warn("Firestore QR save note:", err.message);
+            }
+        }
+        alert("✅ ປ່ຽນ QR Code ສຳເລັດແລ້ວ!");
+    }
+
+    window.changeQrFromFile = async function (e) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+            const compressedUrl = await compressImageFileToDataUrl(file, 400);
+            await saveQrCodeUrl(compressedUrl, "ບັນຊີໂຮງຮຽນ (ອັບໂຫຼດຮູບໃໝ່)");
+        } catch (err) {
+            alert("❌ ບໍ່ສາມາດໂຫຼດຮູບນີ້ໄດ້, ລອງເລືອກຮູບໃໝ່.");
+        }
+        e.target.value = "";
+    };
+
+    window.changeQrFromUrl = async function () {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
+        const val = (document.getElementById("qrUrlInput").value || "").trim();
+        if (!val) return alert("ກະລຸນາປ້ອນລິ້ງຮູບ QR Code ກ່ອນ!");
+        await saveQrCodeUrl(val, "ບັນຊີໂຮງຮຽນ");
+        document.getElementById("qrUrlInput").value = "";
+    };
+
+    window.generateQrFromText = async function () {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ປ່ຽນ QR Code ໄດ້!");
+        const txt = (document.getElementById("qrTextInput").value || "").trim();
+        if (!txt) return alert("ກະລຸນາປ້ອນເລກບັນຊີ ຫຼື ຂໍ້ຄວາມກ່ອນ!");
+        const qrUrl = "https://quickchart.io/qr?text=" + encodeURIComponent(txt) + "&size=220";
+        await saveQrCodeUrl(qrUrl, "ຂໍ້ມູນ QR: " + txt);
+        document.getElementById("qrTextInput").value = "";
+    };
+
+    function saveFeeItemsLocal() {
+        localStorage.setItem("school_fee_items", JSON.stringify(feeItems));
+    }
+
+    function mapTuitionDoc(d, id, colName) {
+        const data = d || {};
+        const label = String(data.item || data.studentName || data.name || "ຄ່າຮຽນ").trim();
+        const gradeVal = String(data.grade || data.room || userGrade).trim();
+        return {
+            id: data.id || id,
+            firestoreId: id,
+            _col: colName,
+            item: label,
+            studentName: label,
+            name: label,
+            grade: gradeVal,
+            room: gradeVal,
+            term: String(data.term || document.getElementById("termSelect").value || "ເທີມ 1 / 2026-2027").trim(),
+            amount: String(data.amount || data.fee || "0 ກີບ").trim(),
+            status: String(data.status || "ຄ້າງຈ່າຍ").trim()
+        };
+    }
+
+    function savePaymentsLocal() {
+        localStorage.setItem("school_payment_records", JSON.stringify(paymentRecords));
+    }
+
+    window.copyAdminPhone = function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(ADMIN_PHONE).catch(() => {});
+        }
+        alert(`📞 ເບີໂທ Admin: ${ADMIN_PHONE}`);
+    };
+
+    window.submitSlipUpload = async function (e) {
+        e.preventDefault();
+        if (!isStudent && !isAdmin) {
+            return alert("ສະເພາະນັກຮຽນສາມາດອັບໂຫຼດສະຫຼິບຊຳລະຄ່າຮຽນໄດ້!");
+        }
+
+        const termVal = document.getElementById("slipTerm").value;
+        const amountVal = Number(document.getElementById("slipAmount").value) || 0;
+        const fileInput = document.getElementById("slipFile");
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return alert("ກະລຸນາເລືອກຮູບສະຫຼິບການໂອນກ່ອນ!");
+
+        const slipDataUrl = await compressImageFileToDataUrl(file, 500);
+        const newRecord = {
+            id: "PAY-" + Date.now(),
+            studentName: userName,
+            grade: userGrade,
+            term: termVal,
+            amount: amountVal,
+            slipUrl: slipDataUrl,
+            status: "pending",
+            submittedAt: new Date().toLocaleDateString("lo-LA"),
+            approvedAt: ""
+        };
+
+        if (db) {
+            try {
+                const ref = await addDoc(collection(db, "payment_records"), newRecord);
+                newRecord.firestoreId = ref.id;
+            } catch (err) {
+                console.error("Firestore slip upload error:", err);
+            }
+        }
+
+        paymentRecords.unshift(newRecord);
+        savePaymentsLocal();
+        fileInput.value = "";
+        alert("✅ ສົ່ງສະຫຼິບການໂອນສຳເລັດ! ກຳລັງລໍຖ້າ Admin ກວດສອບ ແລະ ອະນຸມັດ.");
+        refreshFinanceView();
+    };
+
+    window.approveSlip = async function (recId) {
+        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ອະນຸມັດໄດ້!");
+        const target = paymentRecords.find((r) => r.id === recId);
+        if (!target) return;
+
+        target.status = "approved";
+        target.approvedAt = new Date().toLocaleDateString("lo-LA");
+
+        if (db && target.firestoreId) {
+            try {
+                await updateDoc(doc(db, "payment_records", target.firestoreId), {
+                    status: "approved",
+                    approvedAt: target.approvedAt
+                });
+            } catch (err) {
+                console.error("Firestore approve error:", err);
+            }
+        }
+
+        savePaymentsLocal();
+        alert(`✅ ອະນຸມັດຄ່າຮຽນຂອງ "${target.studentName}" (${target.term}) ສຳເລັດ!`);
+        refreshFinanceView();
+    };
+
+    function applyAdminVisibility() {
+        const qrAdminBox = document.getElementById("qr-admin-box");
+        if (qrAdminBox) {
+            qrAdminBox.style.setProperty("display", isAdmin ? "flex" : "none", "important");
+        }
+
+        document.querySelectorAll(".admin-action").forEach((el) => {
+            if (isAdmin) {
+                el.classList.remove("admin-only-hide");
+                if (el.id !== "qr-admin-box") {
+                    el.style.removeProperty("display");
+                }
+            } else {
+                el.classList.add("admin-only-hide");
+                el.style.setProperty("display", "none", "important");
+            }
+        });
+    }
+
+    function isTermApprovedForStudent(studentName, term) {
+        return paymentRecords.some(
+            (r) => r.studentName === studentName && r.term === term && r.status === "approved"
+        );
+    }
+
+    function renderFeeTable() {
+        const tbody = document.getElementById("feeTableBody");
+        const selectedTerm = document.getElementById("termSelect").value;
+        const filtered = feeItems.filter((f) => f.grade === userGrade || !isStudent);
+
+        if (!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="4" class="center">ຍັງບໍ່ມີລາຍການຄ່າຮຽນ</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = currentRecords.map((rec, idx) => `
+        tbody.innerHTML = filtered.map((f) => `
             <tr>
-                <td>${idx + 1}</td>
-                ${cfg.columns.map((c) => `<td>${escapeHtml(rec[c.key] || "-")}</td>`).join("")}
-                <td>
-                    <button type="button" class="btn btn-edit" onclick="startEditRecord('${escapeHtml(rec.id)}', '${escapeHtml(rec._col)}')">✏️ ແກ້ໄຂ</button>
-                    <button type="button" class="btn btn-del" onclick="deleteRecordItem('${escapeHtml(rec.id)}', '${escapeHtml(rec._col)}')">🗑️ ລົບ</button>
-                </td>
+                <td>${esc(f.item)}</td>
+                <td>${esc(f.grade)}</td>
+                <td>${esc(f.term || selectedTerm)}</td>
+                <td><strong>${esc(f.amount)}</strong></td>
             </tr>
         `).join("");
     }
 
-    window.switchScoreSubMode = function (mode) {
-        currentScoreSubMode = mode === "annual" ? "annual" : "subject";
-        document.getElementById("score-sub-btn-subject")?.classList.toggle("active", currentScoreSubMode === "subject");
-        document.getElementById("score-sub-btn-annual")?.classList.toggle("active", currentScoreSubMode === "annual");
-        renderFormFields();
-        if (editingRecordId) {
-            const target = currentRecords.find((r) => r.id === editingRecordId);
-            if (target) populateScoreFormFromRecord(target);
+    function renderPendingSlips() {
+        const tbody = document.getElementById("pendingSlipsBody");
+        const visibleRows = isAdmin
+            ? paymentRecords
+            : paymentRecords.filter((r) => r.studentName === userName);
+
+        const cols = isAdmin ? 8 : 7;
+        if (!visibleRows.length) {
+            tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ຍັງບໍ່ມີລາຍການສະຫຼິບການໂອນ</td></tr>`;
+            applyAdminVisibility();
+            return;
         }
-    };
 
-    function populateScoreFormFromRecord(target) {
-        const raw = target._raw || {};
-        const subjSelect = document.getElementById("fld-subject");
-        const activeSubj = cleanVal(subjSelect?.value) || availableSubjects[0];
-        const cw = (raw.courseworkBySubject && raw.courseworkBySubject[activeSubj]) || raw.coursework || {};
+        tbody.innerHTML = visibleRows.map((r, idx) => {
+            let statusHtml = `<span class="status-pending">ລໍຖ້າອະນຸມັດ</span>`;
+            if (r.status === "approved") statusHtml = `<span class="status-approved">ອະນຸມັດແລ້ວ</span>`;
+            if (r.status === "rejected") statusHtml = `<span class="status-rejected">ປະຕິເສດ</span>`;
 
-        const setVal = (name, val) => {
-            const el = document.getElementById("fld-" + name);
-            if (el) el.value = val ?? "";
-        };
+            return `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>
+                        ${r.slipUrl ? `<img src="${r.slipUrl}" alt="ສະຫຼິບ" class="slip-thumb" onclick="window.open('${r.slipUrl}', '_blank')" />` : "-"}
+                    </td>
+                    <td>${esc(r.studentName)}</td>
+                    <td>${esc(r.grade)}</td>
+                    <td>${esc(r.term)}</td>
+                    <td>${Number(r.amount || 0).toLocaleString()} ກີບ</td>
+                    <td>${statusHtml}</td>
+                    ${isAdmin ? `
+                        <td>
+                            <div class="actions">
+                                <button type="button" class="btn-approve" onclick="approveSlip('${esc(r.id)}')">ອະນຸມັດ</button>
+                            </div>
+                        </td>
+                    ` : ""}
+                </tr>
+            `;
+        }).join("");
+        applyAdminVisibility();
+    }
 
-        setVal("studentName", target.studentName);
-        setVal("room", target.room);
+    function populateTeacherStudentDropdown() {
+        if (!isTeacher) return;
+        const wrap = document.getElementById("teacherStudentPickerWrap");
+        const select = document.getElementById("teacherStudentSelect");
+        wrap.style.display = "block";
 
-        if (currentScoreSubMode === "subject") {
-            setVal("subject", activeSubj);
-            setVal("attendance", cw.attendance ?? 10);
-            setVal("participation", cw.participation ?? 10);
-            setVal("homework", cw.homework ?? 18);
-            setVal("midterm", cw.midterm ?? 20);
-            setVal("final", cw.final ?? 28);
-        } else {
-            setVal("totalCredits", raw.totalCredits ?? 24);
-            setVal("earnedCredits", raw.earnedCredits ?? 24);
+        const approvedNames = Array.from(
+            new Set(
+                paymentRecords
+                    .filter((r) => r.status === "approved")
+                    .map((r) => r.studentName)
+            )
+        );
+
+        const currentVal = select.value;
+        select.innerHTML = `<option value="">-- ເລືອກນັກຮຽນເພື່ອເບິ່ງປະຫວັດການຊຳລະ --</option>` +
+            approvedNames.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join("");
+        if (approvedNames.includes(currentVal)) {
+            select.value = currentVal;
         }
     }
 
-    async function loadTabData() {
-        await refreshSubjectsFromFirestore();
-        const cfg = TAB_CONFIGS[currentTab];
-        document.querySelectorAll(".submenu-btn").forEach((btn) => {
-            btn.classList.toggle("active", btn.dataset.tab === currentTab);
-        });
-        document.getElementById("active-tab-title").textContent = cfg.title;
-        document.getElementById("score-sub-bar").style.display = currentTab === "scores" ? "flex" : "none";
+    window.renderPaidHistory = function () {
+        const tbody = document.getElementById("paidHistoryBody");
+        const noteEl = document.getElementById("paidHistoryScopeNote");
+        const titleEl = document.getElementById("paidHistoryTitle");
 
-        renderFormFields();
-        renderTableHeader();
-        resetEditMode();
+        populateTeacherStudentDropdown();
 
-        const tbody = document.getElementById("dynamic-tbody");
-        tbody.innerHTML = `<tr><td colspan="${cfg.columns.length + 2}" class="empty-row">ກຳລັງດຶງຂໍ້ມູນຈາກ Firebase...</td></tr>`;
-
-        const merged = [];
-        for (const colName of cfg.collections) {
-            try {
-                const snap = await getDocs(collection(db, colName));
-                snap.forEach((docSnap) => {
-                    const mapped = cfg.mapDoc(docSnap.data(), docSnap.id);
-                    merged.push({ ...mapped, _col: colName });
-                });
-            } catch (err) {
-                console.warn("ບໍ່ສາມາດອ່ານ collection " + colName, err);
-            }
-        }
-
-        currentRecords = dedupeRecords(currentTab, merged);
-        if (currentTab === "terms") {
-            syncTermsCache(currentRecords);
-        }
-        renderTableBody();
-    }
-
-    window.switchUpdateTab = function (tabKey) {
-        if (!TAB_CONFIGS[tabKey]) return;
-        if (TAB_CONFIGS[tabKey].adminOnly && !isAdmin) {
-            return alert("❌ ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເຂົ້າໃຊ້ເມນູຈັດການເທີມຮຽນໄດ້!");
-        }
-        currentTab = tabKey;
-        loadTabData();
-    };
-
-    window.startEditRecord = function (recordId, colName) {
-        if (TAB_CONFIGS[currentTab]?.adminOnly && !isAdmin) {
-            return alert("❌ ສະເພາະ Admin ເທົ່ານັ້ນ!");
-        }
-        const cfg = TAB_CONFIGS[currentTab];
-        const target = currentRecords.find((r) => r.id === recordId && r._col === colName);
-        if (!target) return;
-
-        editingRecordId = recordId;
-        editingCollectionName = colName || cfg.primaryCol;
-
-        if (currentTab === "scores") {
-            populateScoreFormFromRecord(target);
+        let approvedList = [];
+        if (isStudent) {
+            titleEl.textContent = `✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ (${userName})`;
+            approvedList = paymentRecords.filter(
+                (r) => r.status === "approved" && r.studentName === userName
+            );
+            noteEl.textContent = "* ເຫັນສະເພາະປະຫວັດຄ່າຮຽນທີ່ໄດ້ຮັບການອະນຸມັດແລ້ວຂອງຕົນເອງເທົ່ານັ້ນ.";
+        } else if (isTeacher) {
+            const pickedStudent = document.getElementById("teacherStudentSelect").value;
+            titleEl.textContent = pickedStudent
+                ? `✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ (${pickedStudent})`
+                : "✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ";
+            approvedList = pickedStudent
+                ? paymentRecords.filter((r) => r.status === "approved" && r.studentName === pickedStudent)
+                : [];
+            noteEl.textContent = "* ສຳລັບຄູອາຈານ: ເລືອກນັກຮຽນເພື່ອເບິ່ງສະເພາະຂໍ້ມູນການຊຳລະທີ່ອະນຸມັດແລ້ວຂອງນັກຮຽນຄົນນັ້ນໆ.";
         } else {
-            getActiveFields().forEach((f) => {
-                const el = document.getElementById("fld-" + f.name);
-                if (el) el.value = target[f.name] || (f.type === "select" ? (f.options?.[0] || "") : "");
-            });
+            titleEl.textContent = "✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ (ທັງໝົດທີ່ອະນຸມັດແລ້ວ)";
+            approvedList = paymentRecords.filter((r) => r.status === "approved");
+            noteEl.textContent = "* ລາຍການຄ່າຮຽນທີ່ Admin ອະນຸມັດແລ້ວ.";
         }
 
-        document.getElementById("form-heading").textContent = "✏️ ກຳລັງແກ້ໄຂຂໍ້ມູນ";
-        document.getElementById("btn-submit-record").textContent = "💾 ບັນທຶກການແກ້ໄຂ";
-        document.getElementById("btn-cancel-edit").style.display = "inline-block";
+        if (!approvedList.length) {
+            tbody.innerHTML = `<tr><td colspan="7" class="center">ຍັງບໍ່ມີລາຍການຄ່າຮຽນທີ່ໄດ້ຊຳລະ ແລະ ອະນຸມັດແລ້ວ</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = approvedList.map((r, idx) => `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${esc(r.studentName)}</td>
+                <td>${esc(r.grade)}</td>
+                <td>${esc(r.term)}</td>
+                <td><strong>${Number(r.amount || 0).toLocaleString()} ກີບ</strong></td>
+                <td>${esc(r.approvedAt || r.submittedAt || "-")}</td>
+                <td><span class="status-approved">ຊຳລະສຳເລັດແລ້ວ</span></td>
+            </tr>
+        `).join("");
     };
 
-    window.resetEditMode = function () {
-        editingRecordId = null;
-        editingCollectionName = null;
-        document.getElementById("dynamic-crud-form").reset();
-        if (currentTab === "terms") {
-            const yrEl = document.getElementById("fld-academicYear");
-            const grEl = document.getElementById("fld-grade");
-            const tpEl = document.getElementById("fld-totalPeriods");
-            const msEl = document.getElementById("fld-maxScore");
-            if (yrEl) yrEl.value = "2026-2027";
-            if (grEl) grEl.value = "ALL";
-            if (tpEl) tpEl.value = "40";
-            if (msEl) msEl.value = "20";
-        }
-        document.getElementById("form-heading").textContent = "➕ ເພີ່ມຂໍ້ມູນໃໝ່";
-        document.getElementById("btn-submit-record").textContent = "💾 ບັນທຶກ";
-        document.getElementById("btn-cancel-edit").style.display = "none";
-    };
+    window.refreshFinanceView = function () {
+        const selectedTerm = document.getElementById("termSelect").value;
+        const qrFeeSection = document.getElementById("qr-and-fee-section");
+        const uploadSubroom = document.getElementById("upload-slip-subroom");
+        const paidBanner = document.getElementById("paidTermBanner");
+        const btnSubmitSlip = document.getElementById("btnSubmitSlip");
 
-    window.deleteRecordItem = async function (recordId, colName) {
-        if (TAB_CONFIGS[currentTab]?.adminOnly && !isAdmin) {
-            return alert("❌ ສະເພາະ Admin ເທົ່ານັ້ນ!");
-        }
-        if (!confirm("ຕ້ອງການລົບຂໍ້ມູນລາຍການນີ້ແທ້ບໍ່?")) return;
-        const cfg = TAB_CONFIGS[currentTab];
-        const targetCol = colName || cfg.primaryCol;
+        renderSubjectTable();
+        renderFeeTable();
+        renderPendingSlips();
+        renderPaidHistory();
 
-        try {
-            await deleteDoc(doc(db, targetCol, recordId));
-            if (currentTab === "subjects") await refreshSubjectsFromFirestore();
-            broadcastSystemDataUpdated(currentTab);
-            await loadTabData();
-            alert("🗑️ ລົບຂໍ້ມູນສຳເລັດ!");
-        } catch (err) {
-            alert("❌ ລົບຂໍ້ມູນບໍ່ສຳເລັດ: " + err.message);
-        }
-    };
+        if (isStudent) {
+            document.getElementById("slipTerm").value = selectedTerm;
+            const alreadyPaidTerm = isTermApprovedForStudent(userName, selectedTerm);
 
-    document.getElementById("dynamic-crud-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        if (TAB_CONFIGS[currentTab]?.adminOnly && !isAdmin) {
-            return alert("❌ ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມ, ແກ້ໄຂ ຫຼື ລົບເທີມຮຽນໄດ້!");
-        }
-
-        const cfg = TAB_CONFIGS[currentTab];
-        const fields = getActiveFields();
-        const formValues = {};
-
-        fields.forEach((f) => {
-            const el = document.getElementById("fld-" + f.name);
-            formValues[f.name] = cleanVal(el ? el.value : "");
-        });
-
-        try {
-            if (currentTab === "scores") {
-                const studentName = formValues.studentName;
-                const grade = cleanGrade(formValues.room) || "ມ.5";
-                const existingRec = editingRecordId
-                    ? currentRecords.find((r) => r.id === editingRecordId)
-                    : currentRecords.find((r) =>
-                        cleanVal(r.studentName).toLowerCase() === studentName.toLowerCase() &&
-                        cleanGrade(r.room) === grade
-                    );
-
-                const prevRaw = existingRec?._raw || {};
-                const docId = editingRecordId || existingRec?.id || ("STD-" + Date.now());
-                const updatedCourseworkBySubject = { ...(prevRaw.courseworkBySubject || {}) };
-                let totalCredits = prevRaw.totalCredits ?? 24;
-                let earnedCredits = prevRaw.earnedCredits ?? 24;
-
-                if (currentScoreSubMode === "subject") {
-                    const subj = cleanVal(formValues.subject) || availableSubjects[0];
-                    updatedCourseworkBySubject[subj] = {
-                        attendance: boundNum(formValues.attendance, 0, 10, 0),
-                        participation: boundNum(formValues.participation, 0, 10, 0),
-                        homework: boundNum(formValues.homework, 0, 20, 0),
-                        midterm: boundNum(formValues.midterm, 0, 25, 0),
-                        final: boundNum(formValues.final, 0, 35, 0)
-                    };
-                } else {
-                    totalCredits = boundNum(formValues.totalCredits, 0, 200, 24);
-                    earnedCredits = boundNum(formValues.earnedCredits, 0, totalCredits, 24);
+            if (alreadyPaidTerm) {
+                if (qrFeeSection) qrFeeSection.style.setProperty("display", "none", "important");
+                if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
+                if (paidBanner) {
+                    paidBanner.style.setProperty("display", "block", "important");
+                    paidBanner.textContent = `✅ ໄດ້ຈ່າຍຄ່າຮຽນສຳລັບເທີມນີ້ (${selectedTerm}) ໄປແລ້ວ — ລະບົບໄດ້ປິດໜ້າ QR Code ແລະ ຕາຕະລາງຄ່າຮຽນສຳລັບເທີມນີ້ແລ້ວ.`;
                 }
-
-                const merged = {
-                    ...prevRaw,
-                    id: prevRaw.id || docId,
-                    firestoreId: docId,
-                    name: studentName,
-                    grade,
-                    totalCredits,
-                    earnedCredits,
-                    courseworkBySubject: updatedCourseworkBySubject
-                };
-                const annualAvg = computeAnnualAverage(merged);
-                const quarterScore = Number((annualAvg / 4).toFixed(2));
-
-                await setDoc(doc(db, cfg.primaryCol, docId), {
-                    ...merged,
-                    annualAvg,
-                    quarterScore,
-                    updatedAt: serverTimestamp()
-                }, { merge: true });
-
-                alert("✅ ບັນທຶກຄະແນນນັກຮຽນສຳເລັດແລ້ວ!");
-            } else if (currentTab === "terms") {
-                const term = formValues.term;
-                const academicYear = formValues.academicYear || "2026-2027";
-                const rawGrade = formValues.grade;
-                const grade = (!rawGrade || rawGrade.toUpperCase() === "ALL") ? "ALL" : cleanGrade(rawGrade);
-                const totalPeriods = Math.max(1, Number(formValues.totalPeriods) || 40);
-                const maxScore = Math.max(1, Number(formValues.maxScore) || 20);
-
-                const safeKey = `${academicYear}_${term}_${grade}`.replace(/[\/\\?#%]/g, "_").replace(/\s+/g, "_");
-                const docId = editingRecordId || `TERM_${safeKey}`;
-
-                const termPayload = {
-                    id: docId,
-                    firestoreId: docId,
-                    term,
-                    academicYear,
-                    grade,
-                    totalPeriods,
-                    maxScore,
-                    updatedAt: serverTimestamp()
-                };
-
-                await setDoc(doc(db, cfg.primaryCol, docId), termPayload, { merge: true });
-                alert(`✅ ບັນທຶກເທີມ "${term}" (${totalPeriods} ຄາບ) ສຳເລັດແລ້ວ!`);
             } else {
-                const payload = { ...formValues };
-
-                if (currentTab === "rooms") {
-                    payload.room = payload.name;
-                    payload.grade = payload.name;
-                } else if (currentTab === "teachers") {
-                    payload.teacherName = payload.name;
-                    payload.responsibility = payload.duty;
-                    payload.rooms = payload.duty;
-                    payload.room = payload.duty;
-                } else if (currentTab === "students") {
-                    payload.studentId = payload.studentCode;
-                    payload.room = payload.grade;
-                    payload.studentName = payload.name;
-                    if (!payload.status) payload.status = "ກຳລັງຮຽນ";
-                } else if (currentTab === "schedules") {
-                    payload.grade = payload.room;
-                } else if (currentTab === "tuition") {
-                    payload.studentName = payload.item;
-                    payload.name = payload.item;
-                    payload.grade = payload.room;
-                    if (!payload.term) payload.term = "ເທີມ 1 / 2026-2027";
-                } else if (currentTab === "subjects") {
-                    payload.subjectName = payload.name;
-                    payload.subject = payload.name;
-                    payload.subjectCode = payload.code;
-                }
-
-                const candidateKey = getDedupKey(currentTab, { ...payload, _col: cfg.primaryCol, id: "" });
-                const matchedExisting = !editingRecordId
-                    ? currentRecords.find((r) => getDedupKey(currentTab, r) === candidateKey)
-                    : null;
-
-                if (editingRecordId || matchedExisting) {
-                    const targetId = editingRecordId || matchedExisting.id;
-                    const targetCol = editingCollectionName || matchedExisting?._col || cfg.primaryCol;
-                    const prevRaw = matchedExisting?._raw || {};
-                    await setDoc(doc(db, targetCol, targetId), {
-                        ...prevRaw,
-                        ...payload,
-                        updatedAt: serverTimestamp()
-                    }, { merge: true });
-
-                    if (currentTab === "rooms") {
-                        const mirrorId = "ROOM-" + cleanGrade(payload.name).replace(/[^\p{L}\p{N}_-]+/gu, "-") || targetId;
-                        await setDoc(doc(db, "classrooms", mirrorId), {
-                            id: mirrorId,
-                            firestoreId: mirrorId,
-                            name: payload.name,
-                            advisor: payload.advisor,
-                            building: payload.level,
-                            studentCount: Number(payload.capacity || 0),
-                            note: payload.note || "",
-                            updatedAt: serverTimestamp()
-                        }, { merge: true });
-                    }
-                    alert("✅ ອັບເດດຂໍ້ມູນ ສຳເລັດແລ້ວ!");
-                } else {
-                    const docRef = await addDoc(collection(db, cfg.primaryCol), {
-                        ...payload,
-                        createdAt: serverTimestamp()
-                    });
-
-                    if (currentTab === "rooms") {
-                        const mirrorId = "ROOM-" + cleanGrade(payload.name).replace(/[^\p{L}\p{N}_-]+/gu, "-") || docRef.id;
-                        await setDoc(doc(db, "classrooms", mirrorId), {
-                            id: mirrorId,
-                            firestoreId: mirrorId,
-                            name: payload.name,
-                            advisor: payload.advisor,
-                            building: payload.level,
-                            studentCount: Number(payload.capacity || 0),
-                            note: payload.note || "",
-                            updatedAt: serverTimestamp()
-                        }, { merge: true });
-                    }
-
-                    if (currentTab === "students") {
-                        const stdDocId = "STD-" + Date.now();
-                        await setDoc(doc(db, "student_scores", stdDocId), {
-                            id: payload.studentCode || stdDocId,
-                            firestoreId: stdDocId,
-                            name: payload.name,
-                            grade: cleanGrade(payload.grade),
-                            totalCredits: 24,
-                            earnedCredits: 24,
-                            coursework: { attendance: 10, participation: 10, homework: 18, midterm: 20, final: 28 },
-                            annualAvg: 86,
-                            quarterScore: 21.5,
-                            updatedAt: serverTimestamp()
-                        }, { merge: true });
-                    }
-
-                    alert("✅ ເພີ່ມຂໍ້ມູນໃໝ່ສຳເລັດ ແລະ ອັບເດດໄປທຸກໜ້າແລ້ວ!");
+                if (qrFeeSection) qrFeeSection.style.setProperty("display", "block", "important");
+                if (uploadSubroom) uploadSubroom.style.setProperty("display", "block", "important");
+                if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
+                if (btnSubmitSlip) {
+                    btnSubmitSlip.style.setProperty("display", "inline-flex", "important");
+                    btnSubmitSlip.style.setProperty("visibility", "visible", "important");
+                    btnSubmitSlip.style.setProperty("opacity", "1", "important");
                 }
             }
-
-            broadcastSystemDataUpdated(currentTab);
-            await loadTabData();
-        } catch (err) {
-            alert("❌ ບັນທຶກບໍ່ສຳເລັດ: " + err.message);
+        } else if (isAdmin) {
+            if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
+            if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
+            if (qrFeeSection) qrFeeSection.style.setProperty("display", "block", "important");
+        } else {
+            if (paidBanner) paidBanner.style.setProperty("display", "none", "important");
+            if (uploadSubroom) uploadSubroom.style.setProperty("display", "none", "important");
         }
-    });
 
-    if (userRole !== "student") {
-        loadTabData();
+        applyAdminVisibility();
+    };
+
+    async function loadFinanceFromFirestore() {
+        if (!db) return;
+        try {
+            const qrSnap = await getDoc(doc(db, "finance_settings", "qr_code"));
+            if (qrSnap.exists() && qrSnap.data().url) {
+                schoolQrUrl = qrSnap.data().url;
+                localStorage.setItem("school_qr_code_url", schoolQrUrl);
+                const img = document.getElementById("schoolQrImage");
+                if (img) img.src = schoolQrUrl;
+                const cap = document.getElementById("qrCaptionText");
+                if (cap && qrSnap.data().caption) {
+                    cap.textContent = qrSnap.data().caption;
+                    localStorage.setItem("school_qr_caption", qrSnap.data().caption);
+                }
+            }
+        } catch (err) {}
+
+        let loadedSubjects = [];
+        try {
+            const subjSnap = await getDocs(collection(db, SUBJECTS_COLLECTION));
+            if (!subjSnap.empty) {
+                loadedSubjects = subjSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+            }
+        } catch (err) {}
+
+        try {
+            const mergedFees = [];
+            for (const colName of [TUITION_COLLECTION, LEGACY_FEE_COLLECTION]) {
+                const snap = await getDocs(collection(db, colName));
+                snap.forEach((d) => {
+                    mergedFees.push(mapTuitionDoc(d.data(), d.id, colName));
+                });
+            }
+            if (mergedFees.length) {
+                feeItems = mergedFees;
+                saveFeeItemsLocal();
+            }
+        } catch (err) {}
+
+        subjectFormRows = buildSubjectCreditRowsFromFormData(loadedSubjects, feeItems);
+
+        try {
+            const paySnap = await getDocs(collection(db, "payment_records"));
+            if (!paySnap.empty) {
+                paymentRecords = paySnap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
+                savePaymentsLocal();
+            }
+        } catch (err) {}
+
+        refreshFinanceView();
     }
+
+    function esc(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    window.addEventListener("storage", (e) => {
+        if (e.key === "schoolSystemDataUpdated") loadFinanceFromFirestore();
+    });
+    window.addEventListener("school-data-updated", () => loadFinanceFromFirestore());
+
+    applyAdminVisibility();
+    subjectFormRows = buildSubjectCreditRowsFromFormData([], feeItems);
+    refreshFinanceView();
+    loadFinanceFromFirestore();
 </script>
 </body>
 </html>
