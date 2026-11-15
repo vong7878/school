@@ -1148,5 +1148,158 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener("load", () => {
+    (function () {
+    const STYLE_ID = "js-responsive-screen-style";
+
+    function buildResponsiveCss(width) {
+        const isSmallMobile = width <= 480;
+        const isMobileOrTabletPortrait = width <= 768;
+        const isTabletLandscape = width <= 1024;
+        const isWideDesktop = width >= 1440;
+
+        const cardCols = isTabletLandscape ? 2 : 4;
+        const mainPadding = isSmallMobile
+            ? "10px 10px 26px"
+            : isMobileOrTabletPortrait
+            ? "12px 12px 28px"
+            : isTabletLandscape
+            ? "14px 16px 28px"
+            : "18px 22px 36px";
+        const boxPadding = isSmallMobile ? "12px" : isTabletLandscape ? "14px" : "18px";
+        const cardTitleSize = isSmallMobile ? "12px" : isTabletLandscape ? "13px" : "14px";
+        const cardNumSize = isSmallMobile ? "20px" : isTabletLandscape ? "24px" : "30px";
+        const formCols = isMobileOrTabletPortrait ? "1fr" : "repeat(auto-fit, minmax(190px, 1fr))";
+        const maxWidth = isWideDesktop ? "1400px" : "1280px";
+        const sidebarWidth = isMobileOrTabletPortrait ? "100%" : "260px";
+        const containerDirection = isMobileOrTabletPortrait ? "column" : "row";
+
+        return `
+            html, body {
+                max-width: 100% !important;
+                overflow-x: hidden !important;
+            }
+            img, svg, video, canvas {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+            .container, .main-content, .section, .panel-card,
+            .form-container, .table-container, .table-responsive,
+            .schedule-table-wrap, .card {
+                min-width: 0 !important;
+            }
+            .container {
+                flex-direction: ${containerDirection} !important;
+            }
+            .sidebar {
+                width: ${sidebarWidth} !important;
+                ${isMobileOrTabletPortrait ? "border-right: none !important; padding: 14px 0 !important;" : ""}
+            }
+            .main-content {
+                padding: ${mainPadding} !important;
+                max-width: ${maxWidth} !important;
+                gap: ${isMobileOrTabletPortrait ? "12px" : "16px"} !important;
+            }
+            .user-profile-badge {
+                max-width: ${maxWidth} !important;
+                ${isMobileOrTabletPortrait ? "width: calc(100% - 24px) !important; margin: 10px auto 2px !important; padding: 10px 12px !important;" : ""}
+            }
+            .cards {
+                display: grid !important;
+                grid-template-columns: repeat(${cardCols}, minmax(0, 1fr)) !important;
+                gap: ${isSmallMobile ? "10px" : "14px"} !important;
+                width: 100% !important;
+            }
+            .card {
+                padding: ${boxPadding} !important;
+            }
+            .card h3 {
+                font-size: ${cardTitleSize} !important;
+            }
+            .card p {
+                font-size: ${cardNumSize} !important;
+            }
+            .panel-card, .table-container, .table-responsive, .form-container {
+                padding: ${boxPadding} !important;
+            }
+            form, .filter-box {
+                display: grid !important;
+                grid-template-columns: ${formCols} !important;
+                gap: 12px !important;
+                width: 100% !important;
+            }
+            .table-container, .table-responsive, .schedule-table-wrap {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                width: 100% !important;
+            }
+            table, .dark-table, .schedule-detail-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                min-width: ${isMobileOrTabletPortrait ? "540px" : "600px"} !important;
+            }
+            ${isMobileOrTabletPortrait ? `
+                #search-student {
+                    max-width: 100% !important;
+                }
+                .panel-header {
+                    flex-direction: column !important;
+                    align-items: flex-start !important;
+                }
+                .panel-header .btn-primary-sm,
+                .panel-header .detail-mini-btn {
+                    width: 100% !important;
+                    justify-content: center !important;
+                }
+                th, td {
+                    padding: 8px 10px !important;
+                    font-size: 12.5px !important;
+                }
+            ` : ""}
+            ${isSmallMobile ? `
+                .topbar, .top-navbar, .app-header {
+                    padding: 10px 12px !important;
+                }
+                .hamburger-btn, .menu-toggle-btn {
+                    width: 36px !important;
+                    height: 36px !important;
+                    font-size: 18px !important;
+                }
+                .logout-btn {
+                    width: 100% !important;
+                    text-align: center !important;
+                }
+            ` : ""}
+        `;
+    }
+
+    function applyResponsiveLayout() {
+        const width = window.innerWidth || document.documentElement.clientWidth || 1024;
+        document.documentElement.dataset.screenMode =
+            width <= 480 ? "mobile-xs" :
+            width <= 768 ? "mobile" :
+            width <= 1024 ? "tablet" :
+            width >= 1440 ? "desktop-xl" : "desktop";
+
+        let styleEl = document.getElementById(STYLE_ID);
+        if (!styleEl) {
+            styleEl = document.createElement("style");
+            styleEl.id = STYLE_ID;
+            document.head.appendChild(styleEl);
+        }
+        styleEl.textContent = buildResponsiveCss(width);
+    }
+
+    let resizeTimer = null;
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(applyResponsiveLayout, 80);
+    });
+    window.addEventListener("orientationchange", () => {
+        setTimeout(applyResponsiveLayout, 120);
+    });
+    document.addEventListener("DOMContentLoaded", applyResponsiveLayout);
+
+    applyResponsiveLayout();
+})();
     window.syncStudentTimetableGrade();
 });
