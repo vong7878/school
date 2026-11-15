@@ -53,6 +53,69 @@ window.logout = function() {
     alert('🚪 ອອກຈາກລະບົບສຳເລັດ!');
     window.location.href = 'login.html';
 };
+import { onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+let allTimetableData = [];
+
+function normalizeScheduleItem(raw = {}) {
+    return {
+        week: cleanScriptStorageValue(raw.week),
+        day: cleanScriptStorageValue(raw.day).replace(/^ວັນ/, ""),
+        period: cleanScriptStorageValue(raw.period || "1"),
+        room: cleanScriptStorageValue(raw.room || raw.grade || raw.classRoom),
+        subject: cleanScriptStorageValue(raw.subject),
+        teacher: cleanScriptStorageValue(raw.teacher || raw.teacherName)
+    };
+}
+
+/**
+ * ຊິ້ງຕາຕະລາງສອນທີ່ຄູບັນທຶກໄວ້ ແລ້ວສ້າງເປັນຕາຕະລາງຮຽນຂອງນັກຮຽນແບບ Real-time
+ * @param {Object} options - { room, week, onUpdate }
+ */
+window.syncTeacherScheduleToStudent = function ({ room = "", week = "", onUpdate } = {}) {
+    const targetRoom = cleanScriptStorageValue(room);
+    const targetWeek = cleanScriptStorageValue(week);
+
+    let weeklyDocs = [];
+    let timetableDocs = [];
+
+    function applySync() {
+        const merged = [...weeklyDocs, ...timetableDocs]
+            .map(normalizeScheduleItem)
+            .filter((item) => {
+                const matchRoom = !targetRoom || item.room === targetRoom;
+                const matchWeek = !targetWeek || !item.week || item.week === targetWeek;
+                return matchRoom && matchWeek && item.subject;
+            });
+
+        allTimetableData = merged;
+        if (typeof onUpdate === "function") {
+            onUpdate(merged);
+        }
+    }
+
+    const unsubWeekly = onSnapshot(collection(db, "weekly_schedules"), (snap) => {
+        weeklyDocs = snap.docs.map((d) => d.data());
+        applySync();
+    }, (err) => console.warn("weekly_schedules sync error:", err));
+
+    const unsubTimetables = onSnapshot(collection(db, "timetables"), (snap) => {
+        timetableDocs = snap.docs.map((d) => d.data());
+        applySync();
+    }, (err) => console.warn("timetables sync error:", err));
+
+    return () => {
+        unsubWeekly();
+        unsubTimetables();
+    };
+};
+
+// ຮັບສັນຍານເມື່ອມີການແກ້ໄຂຂໍ້ມູນຈາກ "ອັບເດດ.html" (ເມນູເລກ 12)
+window.addEventListener("storage", (e) => {
+    if (e.key === "schoolSystemDataUpdated" && e.newValue) {
+        window.dispatchEvent(new CustomEvent("school-data-updated", { detail: JSON.parse(e.newValue) }));
+    }
+});
 
 // ==========================================
 // 5. ໂມດູນຈັດການນັກຮຽນ (Students Management)
