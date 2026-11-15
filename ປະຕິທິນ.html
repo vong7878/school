@@ -7,45 +7,73 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
-        body { background: #0f172a; color: #f8fafc; min-height: 100vh; }
+        html, body {
+            background: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
 
         .topbar {
             background: #1e293b;
             border-bottom: 1px solid #334155;
-            padding: 14px 20px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             position: sticky;
             top: 0;
             z-index: 100;
         }
-        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
         .back-btn {
             background: #334155;
             color: #f8fafc;
             text-decoration: none;
-            padding: 8px 14px;
+            padding: 8px 13px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
             transition: 0.2s;
         }
         .back-btn:hover { background: #475569; }
-        .page-title { font-size: 18px; font-weight: 700; color: #38bdf8; }
+        .page-title {
+            font-size: clamp(15px, 2.2vw, 18px);
+            font-weight: 700;
+            color: #38bdf8;
+            line-height: 1.35;
+        }
 
         .user-pill {
             background: #0f172a;
             border: 1px solid #334155;
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 999px;
-            font-size: 13px;
+            font-size: 12.5px;
             color: #cbd5e1;
             display: flex;
             align-items: center;
             gap: 8px;
+            max-width: 100%;
+            flex-shrink: 0;
+        }
+        .user-pill > span:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 220px;
         }
         .role-tag {
             background: #2563eb;
@@ -54,28 +82,37 @@
             border-radius: 6px;
             font-size: 11px;
             font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
-        .container { max-width: 1180px; margin: 24px auto; padding: 0 16px; }
+        .container {
+            width: 100%;
+            max-width: 1240px;
+            margin: 18px auto 28px;
+            padding: 0 14px;
+            min-width: 0;
+        }
 
         .term-info-banner {
-            background: linear-gradient(135deg, rgba(30, 58, 138, 0.55), rgba(15, 23, 42, 0.9));
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.55), rgba(15, 23, 42, 0.92));
             border: 1px solid #3b82f6;
             border-radius: 14px;
-            padding: 14px 18px;
-            margin-bottom: 18px;
+            padding: 13px 16px;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
         .term-info-main {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
-            font-size: 14px;
+            font-size: 13.5px;
+            min-width: 0;
         }
         .term-highlight {
             color: #7dd3fc;
@@ -83,7 +120,7 @@
         }
         .term-pills {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
         .term-pill {
@@ -94,27 +131,32 @@
             border-radius: 999px;
             font-size: 12px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .subroom-tabs {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         .subroom-tab {
             background: #1e293b;
             color: #cbd5e1;
             border: 1px solid #334155;
-            padding: 12px 18px;
+            padding: 11px 15px;
             border-radius: 12px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
+            text-align: center;
             gap: 8px;
+            line-height: 1.35;
             transition: 0.2s;
+            width: 100%;
         }
         .subroom-tab:hover { border-color: #38bdf8; color: #fff; }
         .subroom-tab.active {
@@ -128,8 +170,9 @@
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 16px;
-            padding: 20px;
+            padding: 16px;
             box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+            min-width: 0;
         }
 
         .panel-header {
@@ -137,39 +180,45 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
-            padding-bottom: 14px;
-            margin-bottom: 16px;
+            gap: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
             border-bottom: 1px solid #334155;
         }
-        .panel-header h2 { font-size: 18px; color: #f8fafc; }
+        .panel-header h2 {
+            font-size: clamp(15px, 2vw, 18px);
+            color: #f8fafc;
+            line-height: 1.35;
+        }
 
         .filter-bar {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+            gap: 10px;
             background: #0f172a;
-            padding: 14px;
+            padding: 12px;
             border-radius: 12px;
             border: 1px solid #334155;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
+        .filter-group { min-width: 0; }
         .filter-group label {
             display: block;
             font-size: 12px;
             color: #94a3b8;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-weight: 600;
         }
         .filter-group select,
         .filter-group input {
             width: 100%;
-            padding: 9px 11px;
+            min-width: 0;
+            padding: 8px 10px;
             border-radius: 8px;
             border: 1px solid #334155;
             background: #1e293b;
             color: #f8fafc;
-            font-size: 14px;
+            font-size: 13px;
         }
         .filter-group select:focus,
         .filter-group input:focus {
@@ -180,18 +229,19 @@
         .week-nav {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
         .btn {
-            padding: 8px 13px;
+            padding: 8px 12px;
             border-radius: 8px;
             border: 1px solid #334155;
             background: #0f172a;
             color: #e2e8f0;
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 600;
             cursor: pointer;
+            white-space: nowrap;
             transition: 0.2s;
         }
         .btn:hover { background: #334155; }
@@ -206,67 +256,98 @@
             background: rgba(56, 189, 248, 0.14);
             color: #7dd3fc;
             border: 1px solid rgba(56, 189, 248, 0.35);
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
-        .table-wrap { width: 100%; overflow-x: auto; }
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 10px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 720px;
+            min-width: 680px;
         }
         th, td {
             border: 1px solid #334155;
-            padding: 11px 12px;
+            padding: 9px 10px;
             text-align: left;
             vertical-align: top;
         }
         th {
             background: #0f172a;
             color: #93c5fd;
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 700;
+            white-space: nowrap;
+        }
+        th small {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            color: #94a3b8;
+            margin-top: 2px;
         }
         td {
             background: #162032;
-            font-size: 14px;
+            font-size: 13px;
         }
         .day-cell {
-            width: 145px;
+            width: 125px;
+            min-width: 108px;
             background: #0f172a;
             font-weight: 700;
             color: #f8fafc;
+            font-size: 13px;
         }
         .day-date {
             display: block;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 400;
             color: #94a3b8;
-            margin-top: 3px;
+            margin-top: 2px;
         }
         .slot-card {
             background: #1e293b;
             border: 1px solid #334155;
             border-left: 3px solid #38bdf8;
             border-radius: 8px;
-            padding: 8px 10px;
+            padding: 7px 9px;
         }
         .slot-card.teaching { border-left-color: #22c55e; }
-        .slot-subject { font-weight: 700; color: #f8fafc; font-size: 14px; }
-        .slot-meta { font-size: 12px; color: #94a3b8; margin-top: 3px; }
-        .empty-slot { color: #64748b; font-size: 13px; font-style: italic; }
+        .slot-subject {
+            font-weight: 700;
+            color: #f8fafc;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+        .slot-meta {
+            font-size: 11.5px;
+            color: #94a3b8;
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+        .empty-slot {
+            color: #64748b;
+            font-size: 12px;
+            font-style: italic;
+            white-space: nowrap;
+        }
 
         .manage-box {
-            margin-top: 18px;
+            margin-top: 16px;
             background: #0f172a;
             border: 1px solid #334155;
             border-radius: 12px;
-            padding: 16px;
+            padding: 14px;
         }
-        .manage-box h3 { font-size: 15px; color: #7dd3fc; margin-bottom: 12px; }
+        .manage-box h3 { font-size: 14.5px; color: #7dd3fc; margin-bottom: 10px; }
         .manage-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -274,6 +355,7 @@
         }
         .manage-grid input, .manage-grid select {
             width: 100%;
+            min-width: 0;
             padding: 8px 10px;
             border-radius: 8px;
             border: 1px solid #334155;
@@ -281,6 +363,94 @@
             color: #f8fafc;
             font-size: 13px;
         }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 12px auto 22px;
+                padding: 0 10px;
+            }
+            .panel {
+                padding: 12px;
+                border-radius: 12px;
+            }
+            .subroom-tabs {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .subroom-tab {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+            .filter-bar {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                padding: 10px;
+            }
+            .week-nav {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .week-badge {
+                order: -1;
+                width: 100%;
+                text-align: center;
+            }
+            table {
+                min-width: 560px;
+            }
+            th, td {
+                padding: 7px 8px;
+            }
+            .day-cell {
+                width: 96px;
+                min-width: 92px;
+                font-size: 12px;
+            }
+            .day-date {
+                font-size: 10.5px;
+            }
+            .slot-subject {
+                font-size: 12px;
+            }
+            .slot-meta {
+                font-size: 11px;
+            }
+            .user-pill > span:first-child {
+                max-width: 145px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .topbar {
+                padding: 10px 12px;
+            }
+            .back-btn {
+                padding: 7px 10px;
+                font-size: 12px;
+            }
+            .btn {
+                padding: 7px 10px;
+                font-size: 12px;
+            }
+            .user-pill {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .user-pill > span:first-child {
+                max-width: 190px;
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .container {
+                max-width: 1380px;
+                padding: 0 24px;
+            }
+            .panel {
+                padding: 24px;
+            }
+        }
+
         /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
         #fbSyncBadge,
         .badge-fb,
@@ -369,10 +539,10 @@
                 <thead>
                     <tr>
                         <th>ມື້ / ວັນທີ</th>
-                        <th>ຊົ່ວໂມງທີ 1<br><small>08:00 - 08:45</small></th>
-                        <th>ຊົ່ວໂມງທີ 2<br><small>08:50 - 09:35</small></th>
-                        <th>ຊົ່ວໂມງທີ 3<br><small>09:50 - 10:35</small></th>
-                        <th>ຊົ່ວໂມງທີ 4<br><small>10:40 - 11:25</small></th>
+                        <th>ຊົ່ວໂມງທີ 1<small>08:00 - 08:45</small></th>
+                        <th>ຊົ່ວໂມງທີ 2<small>08:50 - 09:35</small></th>
+                        <th>ຊົ່ວໂມງທີ 3<small>09:50 - 10:35</small></th>
+                        <th>ຊົ່ວໂມງທີ 4<small>10:40 - 11:25</small></th>
                     </tr>
                 </thead>
                 <tbody id="stu-weekly-tbody"></tbody>
@@ -431,10 +601,10 @@
                 <thead>
                     <tr>
                         <th>ມື້ / ວັນທີ</th>
-                        <th>ຊົ່ວໂມງທີ 1<br><small>08:00 - 08:45</small></th>
-                        <th>ຊົ່ວໂມງທີ 2<br><small>08:50 - 09:35</small></th>
-                        <th>ຊົ່ວໂມງທີ 3<br><small>09:50 - 10:35</small></th>
-                        <th>ຊົ່ວໂມງທີ 4<br><small>10:40 - 11:25</small></th>
+                        <th>ຊົ່ວໂມງທີ 1<small>08:00 - 08:45</small></th>
+                        <th>ຊົ່ວໂມງທີ 2<small>08:50 - 09:35</small></th>
+                        <th>ຊົ່ວໂມງທີ 3<small>09:50 - 10:35</small></th>
+                        <th>ຊົ່ວໂມງທີ 4<small>10:40 - 11:25</small></th>
                     </tr>
                 </thead>
                 <tbody id="tch-weekly-tbody"></tbody>
