@@ -1088,6 +1088,42 @@ function getFilteredRoomStudents() {
     applyAdminPermissions();
     renderAllRooms();
     loadScoresFromFirestore(false);
+    let extraSubjectRows = [];
+
+function mergeExtraSubjectScoresIntoStudents() {
+    if (!Array.isArray(extraSubjectRows) || !extraSubjectRows.length) return;
+
+    extraSubjectRows.forEach((row) => {
+        const rName = cleanText(row.studentName || row.name || "").toLowerCase();
+        const rGrade = cleanGrade(row.grade || row.room || "");
+        const rSubject = cleanText(row.subject || row.subjectName || "");
+        const rScore = row.score ?? row.value ?? row.points;
+
+        if (!rName || !rSubject || rScore === undefined || rScore === null || rScore === "") return;
+
+        const targetStudent = scoresData.find((s) => {
+            const sName = cleanText(s.name).toLowerCase();
+            const sameName = sName === rName || sName.includes(rName) || rName.includes(sName);
+            const sameGrade = !rGrade || !s.grade || cleanGrade(s.grade) === rGrade;
+            return sameName && sameGrade;
+        });
+
+        if (targetStudent) {
+            targetStudent.subjects = {
+                ...(targetStudent.subjects || {}),
+                [rSubject]: parseBoundedNumber(rScore, 0, 100, 0)
+            };
+        }
+    });
+
+    saveScoresLocal();
+}
+
+onSnapshot(collection(db, "subject_scores"), (snap) => {
+    extraSubjectRows = snap.docs.map((d) => d.data());
+    mergeExtraSubjectScoresIntoStudents();
+    renderAllRooms();
+}, () => {});
 </script>
 </body>
 </html>
