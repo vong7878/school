@@ -261,22 +261,22 @@
         }
         .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
         /* ເຊື່ອງປຸ່ມ "ເພີ່ມນັກຮຽນ (ຫ້ອງອັບເດດ 3)" */
-a[href*="update.html"][href*="tab=students"],
-a[href*="update"][href*="students"],
-button[onclick*="addStudent"],
-button[onclick*="openAddStudent"],
-.btn-add-student,
-#btnAddStudent {
-  display: none !important;
-}
+        a[href*="update.html"][href*="tab=students"],
+        a[href*="update"][href*="students"],
+        button[onclick*="addStudent"],
+        button[onclick*="openAddStudent"],
+        .btn-add-student,
+        #btnAddStudent {
+            display: none !important;
+        }
         /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
-#fbSyncBadge,
-.badge-fb,
-[data-hide-firebase="true"],
-[class*="firebase" i],
-[id*="firebase" i] {
-  display: none !important;
-}
+        #fbSyncBadge,
+        .badge-fb,
+        [data-hide-firebase="true"],
+        [class*="firebase" i],
+        [id*="firebase" i] {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -341,14 +341,14 @@ button[onclick*="openAddStudent"],
                             <th>ຫ້ອງ</th>
                             <th>ວິຊາ</th>
                             <th>ຄະແນນການມາຮຽນ (ເຕັມ 10)</th>
-                            <th>ຈາກການກວດຂາດ (ເຕັມ 20)</th>
+                            <th>ຈາກການກວດຂາດ (ຕາມເທີມ)</th>
                             <th class="admin-action" style="width:150px;">ຈັດການ</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-attendance"></tbody>
                 </table>
             </div>
-            <div class="note-text">* ຄະແນນການມາຮຽນດຶງອັດຕະໂນມັດຈາກລະບົບກວດຄົນຂາດ (ຄະແນນເຕັມ 20 ປັບເປັນສະເກນ 10 = ຄະແນນ ÷ 2) ແລະ ຊິ້ງ Real-time ຜ່ານ Firebase[cite: 6].</div>
+            <div class="note-text">* ຄະແນນການມາຮຽນດຶງອັດຕະໂນມັດຈາກລະບົບກວດຄົນຂາດ (ຄິດຕາມຈຳນວນຄາບຂອງເທີມ ແລະ ປັບເປັນສະເກນ 10 = (ຄະແນນ ÷ ຄະແນນເຕັມ) × 10) ພ້ອມຊິ້ງ Real-time ຜ່ານ Firebase.</div>
         </section>
 
         <section class="card sub-panel-subject" id="sub-participation" style="display:none; margin-top:12px;">
@@ -610,9 +610,16 @@ button[onclick*="openAddStudent"],
         attendanceScoresMap.clear();
         list.forEach((item) => {
             const keys = makeAttendanceKey(item.studentId || item.id, item.studentName || item.name, item.grade || item.room);
+            const maxScore = Math.max(1, boundNum(item.maxScore, 1, 100, 20));
+            const rawScore = boundNum(item.attendanceScore, 0, maxScore, maxScore);
+            const totalPeriods = Math.max(1, boundNum(item.totalPeriods, 1, 500, 40));
+            const absentCount = boundNum(item.absentCount, 0, totalPeriods, 0);
+
             const entry = {
-                score20: boundNum(item.attendanceScore, 0, 20, 20),
-                absentCount: boundNum(item.absentCount, 0, 999, 0)
+                rawScore: Number(rawScore.toFixed(2)),
+                maxScore,
+                totalPeriods,
+                absentCount
             };
             if (keys.byId) attendanceScoresMap.set(keys.byId, entry);
             if (keys.byName) attendanceScoresMap.set(keys.byName, entry);
@@ -630,10 +637,13 @@ button[onclick*="openAddStudent"],
         const found = (keys.byId && attendanceScoresMap.get(keys.byId)) ||
             (keys.byName && attendanceScoresMap.get(keys.byName));
         if (!found) return null;
-        const score10 = Number((found.score20 / 2).toFixed(1));
+        const ratio = found.rawScore / Math.max(1, found.maxScore);
+        const score10 = Number((ratio * 10).toFixed(1));
         return {
             score10: boundNum(score10, 0, 10, 0),
-            score20: found.score20,
+            rawScore: found.rawScore,
+            maxScore: found.maxScore,
+            totalPeriods: found.totalPeriods,
             absentCount: found.absentCount
         };
     }
@@ -849,7 +859,7 @@ button[onclick*="openAddStudent"],
                 const cw = getCoursework(s, subj);
                 const linked = getLinkedAttendance(s);
                 const sourceText = linked
-                    ? `<span class="pill ${linked.absentCount > 0 ? "pill-warn" : "pill-good"}">${linked.score20} / 20 (ຂາດ ${linked.absentCount} ຄັ້ງ)</span>`
+                    ? `<span class="pill ${linked.absentCount > 0 ? "pill-warn" : "pill-good"}">${linked.rawScore} / ${linked.maxScore} (ຂາດ ${linked.absentCount} / ${linked.totalPeriods} ຄາບ)</span>`
                     : `<span class="pill">ຍັງບໍ່ມີຂໍ້ມູນກວດຂາດ</span>`;
                 return `
                     <tr>
