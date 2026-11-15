@@ -38,7 +38,7 @@
             gap: 12px;
             flex-wrap: wrap;
         }
-        .back-btn {
+        .back-btn, a.nav-link {
             background: #334155;
             color: #f8fafc;
             text-decoration: none;
@@ -46,8 +46,13 @@
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        .back-btn:hover { background: #475569; }
+        .back-btn:hover, a.nav-link:hover { background: #475569; }
+        a.nav-checkin { background: #0f766e; color: #ccfbf1; }
+        a.nav-checkin:hover { background: #0d9488; }
         .page-title {
             margin: 0;
             font-size: 18px;
@@ -250,6 +255,7 @@
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
+            <a href="check-in.html" class="nav-link nav-checkin">📋 ກວດການມາຮຽນ</a>
             <h1 class="page-title">📝 6. ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</h1>
         </div>
         <div class="user-meta">
@@ -296,7 +302,7 @@
         </nav>
 
         <section class="card sub-panel-subject" id="sub-attendance" style="margin-top:12px;">
-            <div class="card-header"><h2 id="title-attendance">📌 1. ຄະແນນການມາຮຽນ</h2></div>
+            <div class="card-header"><h2 id="title-attendance">📌 1. ຄະແນນການມາຮຽນ (ເຊື່ອມຈາກໜ້າກວດຄົນຂາດ)</h2></div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -306,12 +312,14 @@
                             <th>ຫ້ອງ</th>
                             <th>ວິຊາ</th>
                             <th>ຄະແນນການມາຮຽນ (ເຕັມ 10)</th>
+                            <th>ຈາກການກວດຂາດ (ເຕັມ 20)</th>
                             <th class="admin-action" style="width:150px;">ຈັດການ</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-attendance"></tbody>
                 </table>
             </div>
+            <div class="note-text">* ຄະແນນການມາຮຽນດຶງອັດຕະໂນມັດຈາກລະບົບກວດຄົນຂາດ (ຄະແນນເຕັມ 20 ປັບເປັນສະເກນ 10 = ຄະແນນ ÷ 2) ແລະ ຊິ້ງ Real-time ຜ່ານ Firebase.</div>
         </section>
 
         <section class="card sub-panel-subject" id="sub-participation" style="display:none; margin-top:12px;">
@@ -498,15 +506,17 @@
     const db = getFirestore(app);
     const COLLECTION_NAME = "student_scores";
     const SUBJECTS_COLLECTION = "subjects";
+    const ATTENDANCE_SCORES_COLLECTION = "attendance_scores";
 
     const DEFAULT_SUBJECTS = ["ຄະນິດສາດ", "ຟີຊິກສາດ", "ເຄມີສາດ", "ຊີວະສາດ", "ພາສາລາວ", "ພາສາອັງກິດ", "ໄອທີ / ຄອມ"];
     let subjectsList = [...DEFAULT_SUBJECTS];
+    let attendanceScoresMap = new Map();
 
     function cleanText(v) {
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
     }
     function cleanGrade(v) {
-        return cleanText(v).replace(/\s+/g, "");
+        return cleanText(v).replace(/^ຫ້ອງ\s*/i, "").replace(/\s+/g, "");
     }
     function boundNum(v, min, max, fallback = 0) {
         const n = Number(v);
@@ -517,6 +527,42 @@
         return String(str ?? "")
             .replace(/&/g, "&amp;").replace(/</g, "&lt;")
             .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function makeAttendanceKey(id, name, grade) {
+        const g = cleanGrade(grade).toLowerCase();
+        const n = cleanText(name).replace(/\s+/g, " ").toLowerCase();
+        const i = cleanText(id).toLowerCase();
+        return { byId: i && g ? `id:${i}__${g}` : "", byName: n && g ? `name:${n}__${g}` : "" };
+    }
+
+    function applyAttendanceScoresList(list = []) {
+        attendanceScoresMap.clear();
+        list.forEach((item) => {
+            const keys = makeAttendanceKey(item.studentId || item.id, item.studentName || item.name, item.grade || item.room);
+            const entry = {
+                score20: boundNum(item.attendanceScore, 0, 20, 20),
+                absentCount: boundNum(item.absentCount, 0, 999, 0)
+            };
+            if (keys.byId) attendanceScoresMap.set(keys.byId, entry);
+            if (keys.byName) attendanceScoresMap.set(keys.byName, entry);
+        });
+        try {
+            localStorage.setItem("school_attendance_scores_20", JSON.stringify(list));
+        } catch (e) {}
+    }
+
+    function getLinkedAttendance(s) {
+        const keys = makeAttendanceKey(s.id, s.name, s.grade);
+        const found = (keys.byId && attendanceScoresMap.get(keys.byId)) ||
+            (keys.byName && attendanceScoresMap.get(keys.byName));
+        if (!found) return null;
+        const score10 = Number((found.score20 / 2).toFixed(1));
+        return {
+            score10: boundNum(score10, 0, 10, 0),
+            score20: found.score20,
+            absentCount: found.absentCount
+        };
     }
 
     function getRole() {
@@ -562,14 +608,20 @@
         }
     ];
 
+    const cachedAttendance = JSON.parse(localStorage.getItem("school_attendance_scores_20") || "[]");
+    if (Array.isArray(cachedAttendance) && cachedAttendance.length) {
+        applyAttendanceScoresList(cachedAttendance);
+    }
+
     function saveLocal() {
         localStorage.setItem("school_student_scores", JSON.stringify(students));
     }
 
     function getCoursework(s, subj) {
         const bySubj = s.courseworkBySubject?.[subj] || s.coursework || {};
+        const linkedAtt = getLinkedAttendance(s);
         return {
-            attendance: boundNum(bySubj.attendance, 0, 10, 8),
+            attendance: linkedAtt ? linkedAtt.score10 : boundNum(bySubj.attendance, 0, 10, 8),
             participation: boundNum(bySubj.participation, 0, 10, 8),
             homework: boundNum(bySubj.homework, 0, 20, 15),
             midterm: boundNum(bySubj.midterm, 0, 25, 18),
@@ -750,6 +802,37 @@
         const subj = document.getElementById("subjectSelect").value || subjectsList[0] || "";
         const emptyRow = (cols) => `<tr><td colspan="${cols}" class="center">ບໍ່ພົບຂໍ້ມູນ</td></tr>`;
 
+        const tbAtt = document.getElementById("tbody-attendance");
+        if (!list.length) {
+            tbAtt.innerHTML = emptyRow(isAdmin ? 7 : 6);
+        } else {
+            tbAtt.innerHTML = list.map((s, idx) => {
+                const cw = getCoursework(s, subj);
+                const linked = getLinkedAttendance(s);
+                const sourceText = linked
+                    ? `<span class="pill ${linked.absentCount > 0 ? "pill-warn" : "pill-good"}">${linked.score20} / 20 (ຂາດ ${linked.absentCount} ຄັ້ງ)</span>`
+                    : `<span class="pill">ຍັງບໍ່ມີຂໍ້ມູນກວດຂາດ</span>`;
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${esc(s.name)}</td>
+                        <td>${esc(s.grade)}</td>
+                        <td>${esc(subj)}</td>
+                        <td><strong>${cw.attendance}</strong> / 10</td>
+                        <td>${sourceText}</td>
+                        ${isAdmin ? `
+                            <td>
+                                <div class="actions">
+                                    <button type="button" class="btn-edit" onclick="editCourseworkField('${esc(s.id)}','attendance',10,'ຄະແນນການມາຮຽນ')">ແກ້ໄຂ</button>
+                                    <button type="button" class="btn-del" onclick="deleteStudentRecord('${esc(s.id)}')">ລົບ</button>
+                                </div>
+                            </td>
+                        ` : ""}
+                    </tr>
+                `;
+            }).join("");
+        }
+
         const renderScoreSubTable = (tbodyId, field, maxVal, label) => {
             const tb = document.getElementById(tbodyId);
             if (!list.length) {
@@ -778,7 +861,6 @@
             }).join("");
         };
 
-        renderScoreSubTable("tbody-attendance", "attendance", 10, "ຄະແນນການມາຮຽນ");
         renderScoreSubTable("tbody-participation", "participation", 10, "ຄະແນນການມີສ່ວນຮ່ວມ");
         renderScoreSubTable("tbody-homework", "homework", 20, "ຄະແນນບົດເຝິກຫັດ");
         renderScoreSubTable("tbody-midterm", "midterm", 25, "ຄະແນນສອບເສັງກາງພາກ");
@@ -860,6 +942,12 @@
                 }
             }
 
+            const attSnap = await getDocs(collection(db, ATTENDANCE_SCORES_COLLECTION));
+            if (!attSnap.empty) {
+                const attItems = attSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                applyAttendanceScoresList(attItems);
+            }
+
             const snap = await getDocs(collection(db, COLLECTION_NAME));
             if (!snap.empty) {
                 students = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
@@ -881,6 +969,12 @@
         }
     }, () => {});
 
+    onSnapshot(collection(db, ATTENDANCE_SCORES_COLLECTION), (snap) => {
+        const attItems = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        applyAttendanceScoresList(attItems);
+        renderAll();
+    }, () => {});
+
     onSnapshot(collection(db, SUBJECTS_COLLECTION), (snap) => {
         if (!snap.empty) {
             const dbSubjects = snap.docs
@@ -895,7 +989,9 @@
     }, () => {});
 
     window.addEventListener("storage", (e) => {
-        if (e.key === "schoolSystemDataUpdated") loadFromFirestore(false);
+        if (e.key === "schoolSystemDataUpdated" || e.key === "school_attendance_scores_20") {
+            loadFromFirestore(false);
+        }
     });
     window.addEventListener("school-data-updated", () => loadFromFirestore(false));
 
