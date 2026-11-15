@@ -352,10 +352,10 @@
 
     <div class="paid-banner" id="paidTermBanner"></div>
 
-    <!-- ຕາຕະລາງສະແດງຄ່າຮຽນຕາມໜ່ວຍກິດ + ຄະແນນ + ຊິ້ງຂໍ້ມູນ -->
+    <!-- ຕາຕະລາງສະແດງຄ່າຮຽນຕາມໜ່ວຍກິດ + ຄະແນນ + ຊິ້ງຂໍ້ມູນ (ສະເພາະຕົນເອງ) -->
     <section class="card" id="subject-credit-section">
         <div class="card-header">
-            <h2 id="subjectCreditTitle">📚 ຕາຕະລາງຄ່າຮຽນຕາມໜ່ວຍກິດ &amp; ຄະແນນ (1–7 ວິຊາ)</h2>
+            <h2 id="subjectCreditTitle">📚 ຕາຕະລາງຄ່າຮຽນຕາມໜ່ວຍກິດ &amp; ຄະແນນ (ສະເພາະຕົນເອງ)</h2>
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                 <select id="termSelect" style="width: auto;" onchange="refreshFinanceView()">
                     <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
@@ -379,7 +379,7 @@
             </table>
         </div>
         <div class="note-text" id="subjectSyncNote">
-            🔄 ຊິ້ງຄະແນນຈາກ <code>student_scores</code> ແລະ ລາຍການຄ່າຮຽນຈາກ <code>tuition</code> (ຫ້ອງອັບເດດລະບົບ ເມນູ 6) ແບບອັດຕະໂນມັດ.
+            🔒 ສະແດງສະເພາະຂໍ້ມູນຄະແນນ ແລະ ຄ່າຮຽນຂອງຕົນເອງເທົ່ານັ້ນ (ບໍ່ສາມາດເບິ່ງຂອງໝູ່ໄດ້).
         </div>
     </section>
 
@@ -536,7 +536,6 @@
     const LEGACY_FEE_COLLECTION = "fee_items";
     const SUBJECT_STORAGE_KEY = "school_subject_credit_rows_10";
 
-    // ຕົວແປກາງສຳລັບລິ້ງ ແລະ ຊິ້ງກັນລະຫວ່າງຄະແນນ, ຄ່າຮຽນ, ການຊຳລະ ແລະ ຫ້ອງອັບເດດ
     const financeSyncState = {
         userName: "",
         userGrade: "",
@@ -610,6 +609,10 @@
         return Number.isFinite(n) ? n : 0;
     }
 
+    function normalizeName(v) {
+        return String(v ?? "").trim().toLowerCase();
+    }
+
     function extractSubjectScoreMap(rawDoc) {
         const map = {};
         if (!rawDoc || typeof rawDoc !== "object") return map;
@@ -639,6 +642,8 @@
     }
 
     function findScoreForRow(row, rowIdx) {
+        if (!financeSyncState.studentScoreDoc) return null;
+
         const candidates = [
             row.key,
             row.subject,
@@ -665,19 +670,30 @@
     }
 
     function getExtraFeesForRow(row, rowIdx, selectedTerm) {
+        const me = normalizeName(userName);
+
         const matches = feeItems.filter((f) => {
             const sameTerm = !f.term || !selectedTerm || String(f.term).trim() === String(selectedTerm).trim();
-            const sameGrade = !f.grade || !userGrade || String(f.grade).replace(/\s+/g, "").toLowerCase() === String(userGrade).replace(/\s+/g, "").toLowerCase();
-            if (!sameTerm || !sameGrade) return false;
+            if (!sameTerm) return false;
 
-            const label = String(f.item || f.studentName || f.name || "").toLowerCase();
+            const owner = normalizeName(f.studentName || f.name || "");
+            const label = String(f.item || f.studentName || f.name || "");
+            const labelLower = label.toLowerCase();
+
+            // ສຳລັບນັກຮຽນ: ອະນຸຍາດສະເພາະລາຍການທີ່ເປັນຂອງຕົນເອງ ຫຼື ລາຍການທົ່ວໄປທີ່ບໍ່ລະບຸຊື່ຄົນອື່ນ
+            if (isStudent) {
+                const isMineByOwner = owner && me && owner === me;
+                const isMineByLabel = me && labelLower.includes(me);
+                const hasOtherOwner = (owner && me && owner !== me) || /\(.*\)/.test(label);
+                if (!isMineByOwner && !isMineByLabel && hasOtherOwner) return false;
+            }
+
             const subjKey = String(row.key || "").toLowerCase();
             const subjFull = String(row.subject || "").toLowerCase();
-            const isExplicitSubj = (subjKey && label.includes(subjKey)) || (subjFull && label.includes(subjFull));
+            const isExplicitSubj = (subjKey && labelLower.includes(subjKey)) || (subjFull && labelLower.includes(subjFull));
 
-            // ຖ້າເປັນລາຍການຄ່າຮຽນທົ່ວໄປທີ່ບໍ່ລະບຸຊື່ວິຊາສະເພາະ ໃຫ້ຜູກກັບແຖວທີ 1 ເພື່ອບໍ່ໃຫ້ຊ້ຳ
             const isGeneralTuition = !isExplicitSubj && rowIdx === 0 && (
-                label.includes("ຄ່າຮຽນ") || label.includes("ບຳລຸງ") || label.includes("ອຸປະກອນ") || !label.includes("ວິຊາ")
+                labelLower.includes("ຄ່າຮຽນ") || labelLower.includes("ບຳລຸງ") || labelLower.includes("ອຸປະກອນ") || !labelLower.includes("ວິຊາ")
             );
             return isExplicitSubj || isGeneralTuition;
         });
@@ -689,7 +705,7 @@
     function getPaymentStatusInfo() {
         const selectedTerm = document.getElementById("termSelect")?.value || "ເທີມ 1 / 2026-2027";
         const matched = paymentRecords.filter(
-            (r) => r.studentName === userName && r.term === selectedTerm
+            (r) => normalizeName(r.studentName) === normalizeName(userName) && r.term === selectedTerm
         );
         if (matched.some((r) => r.status === "approved")) {
             return { label: `ຊຳລະແລ້ວ (${selectedTerm})`, cssClass: "status-approved" };
@@ -714,7 +730,6 @@
         let totalTuition = 0;
         let totalExtraFee = 0;
 
-        // ແຖວ 1 - 7: ຊື່ວິຊາ + ຄະແນນ + ໜ່ວຍກິດ + ລາຄາ/ໜ່ວຍກິດ + ຄ່າຮຽນລວມ (ຊິ້ງຄະແນນ & ລາຍການຄ່າຮຽນ)
         const rowHtmlList = subjectRows.slice(0, 7).map((r, idx) => {
             const rowNum = idx + 1;
             const credits = Number(r.credits) || 0;
@@ -757,7 +772,6 @@
         financeSyncState.avgCreditFee = avgCreditFee;
         financeSyncState.paymentStatus = payStatus;
 
-        // ແຖວທີ 8: ລວມແຕ່ເທິງລົງລຸ່ມ
         const row8Html = `
             <tr data-row="8" class="row-summary-total">
                 <td class="center">8</td>
@@ -769,7 +783,6 @@
             </tr>
         `;
 
-        // ແຖວທີ 9: ໄລ່ສະເລ່ຍຄ່າໜ່ວຍກິດຮຽນ
         const row9Html = `
             <tr data-row="9" class="row-summary-avg">
                 <td class="center">9</td>
@@ -781,7 +794,6 @@
             </tr>
         `;
 
-        // ແຖວທີ 10: ສະຖານະການຈ່າຍ
         const row10Html = `
             <tr data-row="10" class="row-summary-status">
                 <td class="center">10</td>
@@ -797,9 +809,9 @@
         const noteEl = document.getElementById("subjectSyncNote");
         if (noteEl) {
             const scoreLabel = financeSyncState.annualAvgScore !== null
-                ? `ຄະແນນສະເລ່ຍ: ${financeSyncState.annualAvgScore}`
-                : "ລໍຖ້າຄະແນນ";
-            noteEl.textContent = `🔄 ຊິ້ງແລ້ວ (${userName} • ${userGrade} • ${selectedTerm}) — ${scoreLabel} | ລາຍການຄ່າຮຽນທີ່ລິ້ງ: ${feeItems.length} ລາຍການ | ລວມທັງໝົດ: ${totalTuition.toLocaleString()} ກີບ.`;
+                ? `ຄະແນນສະເລ່ຍຂອງຕົນເອງ: ${financeSyncState.annualAvgScore}`
+                : "ຍັງບໍ່ມີຂໍ້ມູນຄະແນນຂອງຕົນເອງ";
+            noteEl.textContent = `🔒 ສະເພາະຕົນເອງ (${userName} • ${userGrade} • ${selectedTerm}) — ${scoreLabel} | ລວມທັງໝົດ: ${totalTuition.toLocaleString()} ກີບ.`;
         }
     }
 
@@ -907,7 +919,7 @@
             firestoreId: id,
             _col: colName,
             item: label,
-            studentName: label,
+            studentName: String(data.studentName || data.name || "").trim() || label,
             name: label,
             grade: gradeVal,
             room: gradeVal,
@@ -1015,7 +1027,7 @@
 
     function isTermApprovedForStudent(studentName, term) {
         return paymentRecords.some(
-            (r) => r.studentName === studentName && r.term === term && r.status === "approved"
+            (r) => normalizeName(r.studentName) === normalizeName(studentName) && r.term === term && r.status === "approved"
         );
     }
 
@@ -1023,11 +1035,11 @@
         const tbody = document.getElementById("pendingSlipsBody");
         const visibleRows = isAdmin
             ? paymentRecords
-            : paymentRecords.filter((r) => r.studentName === userName);
+            : paymentRecords.filter((r) => normalizeName(r.studentName) === normalizeName(userName));
 
         const cols = isAdmin ? 8 : 7;
         if (!visibleRows.length) {
-            tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ຍັງບໍ່ມີລາຍການສະຫຼິບການໂອນ</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ຍັງບໍ່ມີລາຍການສະຫຼິບການໂອນຂອງຕົນເອງ</td></tr>`;
             applyAdminVisibility();
             return;
         }
@@ -1094,9 +1106,9 @@
         if (isStudent) {
             titleEl.textContent = `✅ ຫ້ອງຄ່າຮຽນທີ່ໄດ້ຊຳລະຜ່ານມາ (${userName})`;
             approvedList = paymentRecords.filter(
-                (r) => r.status === "approved" && r.studentName === userName
+                (r) => r.status === "approved" && normalizeName(r.studentName) === normalizeName(userName)
             );
-            noteEl.textContent = "* ເຫັນສະເພາະປະຫວັດຄ່າຮຽນທີ່ໄດ້ຮັບການອະນຸມັດແລ້ວຂອງຕົນເອງເທົ່ານັ້ນ.";
+            noteEl.textContent = "* ສະແດງສະເພາະປະຫວັດຄ່າຮຽນທີ່ໄດ້ຮັບການອະນຸມັດແລ້ວຂອງຕົນເອງເທົ່ານັ້ນ (ບໍ່ສາມາດເບິ່ງຂອງໝູ່ໄດ້).";
         } else if (isTeacher) {
             const pickedStudent = document.getElementById("teacherStudentSelect").value;
             titleEl.textContent = pickedStudent
@@ -1178,16 +1190,22 @@
         if (!db) return;
         try {
             const snap = await getDocs(collection(db, "student_scores"));
+            financeSyncState.studentScoreDoc = null;
+            financeSyncState.subjectScoresMap = {};
+            financeSyncState.annualAvgScore = null;
+
             if (snap.empty) return;
 
+            const me = normalizeName(userName);
             const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-            const matchedDoc = docs.find((d) => {
-                const n = String(d.name || d.studentName || "").trim().toLowerCase();
-                return n && n === userName.trim().toLowerCase();
-            }) || docs.find((d) => {
-                const g = String(d.grade || d.room || "").replace(/\s+/g, "").toLowerCase();
-                return g && g === userGrade.replace(/\s+/g, "").toLowerCase();
-            }) || docs[0];
+
+            // ຄົ້ນຫາສະເພາະຊື່ຂອງຕົນເອງເທົ່ານັ້ນ (ບໍ່ດຶງຂອງໝູ່)
+            const matchedDoc = isStudent
+                ? docs.find((d) => {
+                    const n = normalizeName(d.name || d.studentName || "");
+                    return Boolean(me && n && n === me);
+                })
+                : (docs.find((d) => normalizeName(d.name || d.studentName || "") === me) || docs[0]);
 
             if (matchedDoc) {
                 financeSyncState.studentScoreDoc = matchedDoc;
@@ -1244,7 +1262,6 @@
         refreshFinanceView();
     }
 
-    // ຊິ້ງ Real-time ກັບ Firestore ແລະ ຫ້ອງອັບເດດລະບົບ
     if (db) {
         onSnapshot(collection(db, "student_scores"), async () => {
             await syncScoresFromFirestore();
@@ -1291,3 +1308,4 @@
 </script>
 </body>
 </html>
+```[cite: 11]
