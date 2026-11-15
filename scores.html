@@ -255,7 +255,7 @@
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
-            <a href="check-in.html" class="nav-link nav-checkin">📋 ກວດການມາຮຽນ</a>
+            <a href="check-in%20(2).html" class="nav-link nav-checkin">📋 ກວດການມາຮຽນ</a>
             <h1 class="page-title">📝 6. ຈັດການຄະແນນ ແລະ ຜົນການຮຽນ</h1>
         </div>
         <div class="user-meta">
@@ -536,6 +536,47 @@
         return { byId: i && g ? `id:${i}__${g}` : "", byName: n && g ? `name:${n}__${g}` : "" };
     }
 
+    let students = JSON.parse(localStorage.getItem("school_student_scores") || "null") || [];
+
+    function saveLocal() {
+        localStorage.setItem("school_student_scores", JSON.stringify(students));
+    }
+
+    function mergeAttendanceStudentsIntoScores(attItems = []) {
+        if (!Array.isArray(attItems) || !attItems.length) return;
+
+        const existingKeys = new Set(
+            students.map((s) => `${cleanText(s.name).replace(/\s+/g, " ").toLowerCase()}__${cleanGrade(s.grade).toLowerCase()}`)
+        );
+
+        let added = false;
+        attItems.forEach((item) => {
+            const sName = cleanText(item.studentName || item.name).replace(/\s+/g, " ");
+            const sGrade = cleanGrade(item.grade || item.room) || userGrade;
+            if (!sName) return;
+
+            const key = `${sName.toLowerCase()}__${sGrade.toLowerCase()}`;
+            if (!existingKeys.has(key)) {
+                existingKeys.add(key);
+                const sid = cleanText(item.studentId || item.id) || `STD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+                students.push({
+                    id: sid,
+                    firestoreId: sid,
+                    name: sName,
+                    grade: sGrade,
+                    totalCredits: 24,
+                    earnedCredits: 24,
+                    coursework: { attendance: 10, participation: 10, homework: 18, midterm: 20, final: 28 }
+                });
+                added = true;
+            }
+        });
+
+        if (added) {
+            saveLocal();
+        }
+    }
+
     function applyAttendanceScoresList(list = []) {
         attendanceScoresMap.clear();
         list.forEach((item) => {
@@ -547,6 +588,9 @@
             if (keys.byId) attendanceScoresMap.set(keys.byId, entry);
             if (keys.byName) attendanceScoresMap.set(keys.byName, entry);
         });
+
+        mergeAttendanceStudentsIntoScores(list);
+
         try {
             localStorage.setItem("school_attendance_scores_20", JSON.stringify(list));
         } catch (e) {}
@@ -597,24 +641,9 @@
         }
     }
 
-    let students = JSON.parse(localStorage.getItem("school_student_scores") || "null") || [
-        {
-            id: "STD-001", name: "ສົມໃຈ ໃຈດີ", grade: "ມ.5", totalCredits: 24, earnedCredits: 24,
-            coursework: { attendance: 9, participation: 9, homework: 18, midterm: 22, final: 31 }
-        },
-        {
-            id: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", totalCredits: 24, earnedCredits: 21,
-            coursework: { attendance: 8, participation: 8, homework: 16, midterm: 19, final: 27 }
-        }
-    ];
-
     const cachedAttendance = JSON.parse(localStorage.getItem("school_attendance_scores_20") || "[]");
     if (Array.isArray(cachedAttendance) && cachedAttendance.length) {
         applyAttendanceScoresList(cachedAttendance);
-    }
-
-    function saveLocal() {
-        localStorage.setItem("school_student_scores", JSON.stringify(students));
     }
 
     function getCoursework(s, subj) {
@@ -684,10 +713,15 @@
 
     function getVisibleStudents() {
         const kw = cleanText(document.getElementById("studentSearchInput")?.value || "").toLowerCase();
+        const seen = new Set();
         return students.filter((s) => {
             if (cleanGrade(s.grade) !== userGrade) return false;
-            if (role === "student") return isOwnStudent(s);
-            return !kw || cleanText(s.name).toLowerCase().includes(kw);
+            if (role === "student" && !isOwnStudent(s)) return false;
+            if (kw && !cleanText(s.name).toLowerCase().includes(kw)) return false;
+            const dedupKey = `${cleanText(s.name).replace(/\s+/g, " ").toLowerCase()}__${cleanGrade(s.grade).toLowerCase()}`;
+            if (seen.has(dedupKey)) return false;
+            seen.add(dedupKey);
+            return true;
         });
     }
 
@@ -717,6 +751,8 @@
         const docId = s.firestoreId || s.id;
         try {
             await setDoc(doc(db, COLLECTION_NAME, docId), {
+                name: s.name,
+                grade: s.grade,
                 courseworkBySubject: s.courseworkBySubject,
                 annualAvg,
                 quarterScore
@@ -744,6 +780,8 @@
         const docId = s.firestoreId || s.id;
         try {
             await setDoc(doc(db, COLLECTION_NAME, docId), {
+                name: s.name,
+                grade: s.grade,
                 totalCredits: s.totalCredits,
                 earnedCredits: s.earnedCredits
             }, { merge: true });
@@ -759,11 +797,12 @@
         const name = prompt(`ປ້ອນຊື່ນັກຮຽນ (ຫ້ອງ ${userGrade}):`);
         if (!name || !cleanText(name)) return;
 
+        const cleanStudentName = cleanText(name).replace(/\s+/g, " ");
         const newId = "STD-" + Date.now();
         const item = {
             id: newId,
             firestoreId: newId,
-            name: cleanText(name),
+            name: cleanStudentName,
             grade: userGrade,
             totalCredits: 24,
             earnedCredits: 24,
@@ -942,17 +981,20 @@
                 }
             }
 
-            const attSnap = await getDocs(collection(db, ATTENDANCE_SCORES_COLLECTION));
-            if (!attSnap.empty) {
-                const attItems = attSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
-                applyAttendanceScoresList(attItems);
-            }
-
             const snap = await getDocs(collection(db, COLLECTION_NAME));
             if (!snap.empty) {
                 students = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
                 saveLocal();
             }
+
+            const attSnap = await getDocs(collection(db, ATTENDANCE_SCORES_COLLECTION));
+            if (!attSnap.empty) {
+                const attItems = attSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                applyAttendanceScoresList(attItems);
+            } else if (Array.isArray(cachedAttendance) && cachedAttendance.length) {
+                mergeAttendanceStudentsIntoScores(cachedAttendance);
+            }
+
             renderAll();
             if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນສຳເລັດ!");
         } catch (err) {
@@ -964,6 +1006,10 @@
     onSnapshot(collection(db, COLLECTION_NAME), (snap) => {
         if (!snap.empty) {
             students = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
+            const latestAtt = JSON.parse(localStorage.getItem("school_attendance_scores_20") || "[]");
+            if (Array.isArray(latestAtt) && latestAtt.length) {
+                mergeAttendanceStudentsIntoScores(latestAtt);
+            }
             saveLocal();
             renderAll();
         }
