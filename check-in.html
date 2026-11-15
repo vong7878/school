@@ -199,13 +199,13 @@
         }
         .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
         /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
-#fbSyncBadge,
-.badge-fb,
-[data-hide-firebase="true"],
-[class*="firebase" i],
-[id*="firebase" i] {
-  display: none !important;
-}
+        #fbSyncBadge,
+        .badge-fb,
+        [data-hide-firebase="true"],
+        [class*="firebase" i],
+        [id*="firebase" i] {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -434,6 +434,8 @@
     const DEDUCT_PER_ABSENT = 2;
     const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
     const SYNC_EVENT_NAME = "school-data-updated";
+    const DEFAULT_GRADES = ["ມ.1", "ມ.2", "ມ.3", "ມ.4", "ມ.5", "ມ.6", "ມ.7"];
+    const GRADE_SELECT_IDS = ["checkGrade", "weeklyGrade", "monthlyGrade", "historyGrade"];
 
     function cleanVal(v) {
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
@@ -579,22 +581,57 @@
         broadcastSystemDataUpdated("scores");
     }
 
-    function setupRolePermissions() {
-        const allowedGrades = ["ມ.1", "ມ.2", "ມ.3", "ມ.4", "ມ.5", "ມ.6", "ມ.7"];
-        const baseUserGrade = userGrade.split("/")[0];
-        const validGrade = allowedGrades.includes(userGrade)
-            ? userGrade
-            : (allowedGrades.includes(baseUserGrade) ? baseUserGrade : "ມ.5");
+    async function syncAllRoomSelects(extraRooms = []) {
+        const roomMap = new Map();
+        const addRoom = (rawName) => {
+            const cleaned = cleanVal(rawName).replace(/^ຫ້ອງ\s*/i, "");
+            if (!cleaned) return;
+            const key = cleaned.replace(/\s+/g, "").toLowerCase();
+            if (!roomMap.has(key)) {
+                roomMap.set(key, cleaned);
+            }
+        };
 
+        const studentRooms = studentsList.map((s) => s.grade);
+        const absentRooms = absentRecords.map((r) => r.grade);
+        [...DEFAULT_GRADES, userGrade, ...studentRooms, ...absentRooms, ...extraRooms].forEach(addRoom);
+
+        for (const colName of ["classrooms", "rooms"]) {
+            try {
+                const snap = await getDocs(collection(db, colName));
+                snap.forEach((d) => {
+                    const data = d.data() || {};
+                    addRoom(data.name || data.roomName || data.room || data.grade);
+                });
+            } catch (err) {}
+        }
+
+        const roomList = Array.from(roomMap.values());
+        GRADE_SELECT_IDS.forEach((id) => {
+            const selectEl = document.getElementById(id);
+            if (!selectEl) return;
+            const prevValue = cleanGrade(selectEl.value);
+            selectEl.innerHTML = roomList
+                .map((r) => `<option value="${esc(r)}">ຫ້ອງ ${esc(r)}</option>`)
+                .join("");
+
+            const targetMatch = roomList.find((r) => cleanGrade(r).toLowerCase() === prevValue.toLowerCase());
+            if (targetMatch) {
+                selectEl.value = targetMatch;
+            } else {
+                const fallbackMatch = roomList.find((r) => isSameGrade(r, userGrade)) || roomList[0];
+                if (fallbackMatch) selectEl.value = fallbackMatch;
+            }
+            selectEl.disabled = !PERMISSIONS.canSelectAnyGrade;
+        });
+    }
+
+    async function setupRolePermissions() {
         document.getElementById("checkDate").value = todayStr;
         document.getElementById("historyDate").value = todayStr;
         document.getElementById("monthlyPicker").value = currentMonthStr;
 
-        ["checkGrade", "weeklyGrade", "monthlyGrade", "historyGrade"].forEach((id) => {
-            const el = document.getElementById(id);
-            el.value = validGrade;
-            el.disabled = !PERMISSIONS.canSelectAnyGrade;
-        });
+        await syncAllRoomSelects();
 
         document.getElementById("btnSaveAbsent").style.display = PERMISSIONS.canMarkAttendance ? "inline-block" : "none";
         document.getElementById("historyActionCol").style.display = PERMISSIONS.canDeleteRecord ? "" : "none";
@@ -611,9 +648,9 @@
                 "* ສິດ TEACHER (ຄູ): ກວດເບິ່ງລາຍຊື່ຄົນຂາດຍ້ອນຫຼັງ ແລະ ຈັດການລາຍການຂອງຫ້ອງໄດ້.";
         } else {
             document.getElementById("checkAbsentPermissionNote").textContent =
-                `* ສິດ STUDENT (ນັກຮຽນ): ເບິ່ງໄດ້ສະເພາະຫ້ອງຂອງຕົນເອງ (${validGrade}) ເທົ່ານັ້ນ ແລະ ບໍ່ສາມາດບັນທຶກ ຫຼື ແກ້ໄຂໄດ້.`;
+                `* ສິດ STUDENT (ນັກຮຽນ): ເບິ່ງໄດ້ສະເພາະຫ້ອງຂອງຕົນເອງ (${userGrade}) ເທົ່ານັ້ນ ແລະ ບໍ່ສາມາດບັນທຶກ ຫຼື ແກ້ໄຂໄດ້.`;
             document.getElementById("historyScopeNote").textContent =
-                `* ສິດ STUDENT (ນັກຮຽນ): ເບິ່ງໄດ້ສະເພາະຫ້ອງຂອງຕົນເອງ (${validGrade}) ເທົ່ານັ້ນ (ກວດວັນທີ/ຊົ່ວໂມງຍ້ອນຫຼັງໄດ້).`;
+                `* ສິດ STUDENT (ນັກຮຽນ): ເບິ່ງໄດ້ສະເພາະຫ້ອງຂອງຕົນເອງ (${userGrade}) ເທົ່ານັ້ນ (ກວດວັນທີ/ຊົ່ວໂມງຍ້ອນຫຼັງໄດ້).`;
         }
     }
 
@@ -771,13 +808,11 @@
         saveLocalRecords();
         await syncTermAttendanceScoresToFirestore(termVal, gradeVal);
 
-        // ຕັ້ງຄ່າສ່ວນທີ 4 ໃຫ້ກົງກັບວັນທີ/ຫ້ອງ/ຊົ່ວໂມງທີ່ຫາກໍ່ບັນທຶກ
         document.getElementById("historyDate").value = dateVal;
         if (PERMISSIONS.canSelectAnyGrade) {
             const hGradeEl = document.getElementById("historyGrade");
-            if (Array.from(hGradeEl.options).some((o) => o.value === gradeVal)) {
-                hGradeEl.value = gradeVal;
-            }
+            const matched = Array.from(hGradeEl.options).find((o) => isSameGrade(o.value, gradeVal));
+            if (matched) hGradeEl.value = matched.value;
         }
         document.getElementById("historyPeriod").value = periodVal;
 
@@ -975,6 +1010,7 @@
                 ...d.data()
             }));
             saveLocalRecords();
+            await syncAllRoomSelects();
             const termVal = document.getElementById("checkTerm").value;
             const gradeVal = getActiveGrade("checkGrade");
             await syncTermAttendanceScoresToFirestore(termVal, gradeVal);
@@ -983,20 +1019,29 @@
             if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນການມາຮຽນສຳເລັດ!");
         } catch (err) {
             console.warn("ບໍ່ໄດ້ໂຫຼດ absent_records ຈາກ Firestore:", err.message);
+            await syncAllRoomSelects();
             updateSyncBadge("⚠️ Offline (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
             renderAll();
         }
     };
 
-    onSnapshot(collection(db, "absent_records"), (snap) => {
+    onSnapshot(collection(db, "absent_records"), async (snap) => {
         absentRecords = snap.docs.map((d) => ({
             id: d.data().id || d.id,
             firestoreId: d.id,
             ...d.data()
         }));
         saveLocalRecords();
+        await syncAllRoomSelects();
         renderAll();
     }, () => {});
+
+    ["classrooms", "rooms"].forEach((colName) => {
+        onSnapshot(collection(db, colName), async () => {
+            await syncAllRoomSelects();
+            renderAll();
+        }, () => {});
+    });
 
     window.addEventListener("storage", (e) => {
         if (e.key === SYNC_STORAGE_KEY) loadAbsentFromFirestore(false);
@@ -1011,39 +1056,9 @@
             .replace(/"/g, "&quot;");
     }
 
-    setupRolePermissions();
+    await setupRolePermissions();
     renderAll();
     loadAbsentFromFirestore(false);
-    async function syncRoomFilterOptions(db, extraRooms = []) {
-    const selectEl =
-        document.getElementById("filterRoomSelect") ||
-        document.getElementById("roomFilter") ||
-        document.querySelector("select[id*='room' i], select[id*='grade' i]");
-    if (!selectEl) return;
-
-    const prevValue = selectEl.value;
-    const roomSet = new Set(["ມ.5", "ມ.6", "ມ.7", ...extraRooms.filter(Boolean)]);
-
-    for (const colName of ["classrooms", "rooms"]) {
-        try {
-            const snap = await getDocs(collection(db, colName));
-            snap.forEach((d) => {
-                const data = d.data() || {};
-                const rName = String(data.name || data.roomName || data.room || data.grade || "").trim();
-                if (rName) roomSet.add(rName);
-            });
-        } catch (err) {}
-    }
-
-    const sortedRooms = Array.from(roomSet);
-    selectEl.innerHTML =
-        `<option value="">ທຸກຫ້ອງ</option>` +
-        sortedRooms.map((r) => `<option value="${r.replace(/"/g, "&quot;")}">ຫ້ອງ ${r}</option>`).join("");
-
-    if (prevValue && Array.from(selectEl.options).some((o) => o.value === prevValue)) {
-        selectEl.value = prevValue;
-    }
-}
 </script>
 </body>
 </html>
