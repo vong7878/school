@@ -71,7 +71,6 @@
         .badge-grade { background: #0f766e; color: #ccfbf1; }
         .badge-fb { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
 
-        /* 2 ຄະແນນໃຫຍ່ */
         .main-groups-nav {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -107,7 +106,6 @@
             margin-top: 4px;
         }
 
-        /* ຫ້ອງຍ່ອຍພາຍໃນແຕ່ລະຄະແນນໃຫຍ່ */
         .subrooms-nav {
             display: flex;
             gap: 8px;
@@ -244,13 +242,11 @@
             color: #fca5a5;
             border-color: #ef4444;
         }
-        .admin-only-hide { display: none !important; }
         .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- ແຖບດ້ານເທິງ -->
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
@@ -264,7 +260,6 @@
         </div>
     </div>
 
-    <!-- 2 ຄະແນນໃຫຍ່ -->
     <div class="main-groups-nav" role="tablist" aria-label="2 ຄະແນນໃຫຍ່">
         <button type="button" class="main-group-btn active" id="group-btn-subject" onclick="switchMainGroup('subject')">
             1. ຄະແນນລາຍວິຊາ
@@ -276,20 +271,11 @@
         </button>
     </div>
 
-    <!-- ແຖບຄວບຄຸມລວມ (ຕົວກອງວິຊາ + ຄົ້ນຫາ + ໂຫຼດຂໍ້ມູນ + ເພີ່ມນັກຮຽນ) -->
     <div class="card" style="padding: 12px 16px;">
         <div class="controls" style="justify-content: space-between;">
             <div class="controls">
                 <label for="subjectSelect" style="font-size:13px; color:#cbd5e1;">ວິຊາ:</label>
-                <select id="subjectSelect" onchange="renderAll()">
-                    <option value="ຄະນິດສາດ">ຄະນິດສາດ</option>
-                    <option value="ຟີຊິກສາດ">ຟີຊິກສາດ</option>
-                    <option value="ເຄມີສາດ">ເຄມີສາດ</option>
-                    <option value="ຊີວະສາດ">ຊີວະສາດ</option>
-                    <option value="ພາສາລາວ">ພາສາລາວ</option>
-                    <option value="ພາສາອັງກິດ">ພາສາອັງກິດ</option>
-                    <option value="ໄອທີ / ຄອມ">ໄອທີ / ຄອມ</option>
-                </select>
+                <select id="subjectSelect" onchange="renderAll()"></select>
                 <input type="text" id="studentSearchInput" placeholder="🔍 ຄົ້ນຫາຊື່ນັກຮຽນ..." oninput="renderAll()" />
             </div>
             <div class="controls">
@@ -299,7 +285,6 @@
         </div>
     </div>
 
-    <!-- ==================== ກຸ່ມໃຫຍ່ທີ 1: 1. ຄະແນນລາຍວິຊາ ==================== -->
     <div id="group-panel-subject">
         <nav class="subrooms-nav" aria-label="ຫ້ອງຍ່ອຍ ຄະແນນລາຍວິຊາ">
             <button type="button" class="subroom-btn active" data-sub="attendance" onclick="switchSub('subject', 'attendance')">1. ຄະແນນການມາຮຽນ</button>
@@ -310,11 +295,8 @@
             <button type="button" class="subroom-btn" data-sub="grade" onclick="switchSub('subject', 'grade')">6. ຈັດເກຣດ</button>
         </nav>
 
-        <!-- 1.1 ຄະແນນການມາຮຽນ -->
         <section class="card sub-panel-subject" id="sub-attendance" style="margin-top:12px;">
-            <div class="card-header">
-                <h2 id="title-attendance">📌 1. ຄະແນນການມາຮຽນ</h2>
-            </div>
+            <div class="card-header"><h2 id="title-attendance">📌 1. ຄະແນນການມາຮຽນ</h2></div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -332,11 +314,8 @@
             </div>
         </section>
 
-        <!-- 1.2 ຄະແນນການມີສ່ວນຮ່ວມ -->
         <section class="card sub-panel-subject" id="sub-participation" style="display:none; margin-top:12px;">
-            <div class="card-header">
-                <h2 id="title-participation">🙋 2. ຄະແນນການມີສ່ວນຮ່ວມ</h2>
-            </div>
+            <div class="card-header"><h2 id="title-participation">🙋 2. ຄະແນນການມີສ່ວນຮ່ວມ</h2></div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -354,11 +333,8 @@
             </div>
         </section>
 
-        <!-- 1.3 ຄະແນນບົດເຝິກຫັດ -->
         <section class="card sub-panel-subject" id="sub-homework" style="display:none; margin-top:12px;">
-            <div class="card-header">
-                <h2 id="title-homework">📘 3. ຄະແນນບົດເຝິກຫັດ</h2>
-            </div>
+            <div class="card-header"><h2 id="title-homework">📘 3. ຄະແນນບົດເຝິກຫັດ</h2></div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -376,11 +352,8 @@
             </div>
         </section>
 
-        <!-- 1.4 ຄະແນນສອບເສັງກາງພາກ -->
         <section class="card sub-panel-subject" id="sub-midterm" style="display:none; margin-top:12px;">
-            <div class="card-header">
-                <h2 id="title-midterm">📄 4. ຄະແນນສອບເສັງກາງພາກ</h2>
-            </div>
+            <div class="card-header"><h2 id="title-midterm">📄 4. ຄະແນນສອບເສັງກາງພາກ</h2></div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -398,11 +371,8 @@
             </div>
         </section>
 
-        <!-- 1.5 ຄະແນນສອບເສັງທ້າຍພາກ -->
         <section class="card sub-panel-subject" id="sub-final" style="display:none; margin-top:12px;">
-            <div class="card-header">
-                <h2 id="title-final">📕 5. ຄະແນນສອບເສັງທ້າຍພາກ</h2>
-            </div>
+            <div class="card-header"><h2 id="title-final">📕 5. ຄະແນນສອບເສັງທ້າຍພາກ</h2></div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -420,11 +390,8 @@
             </div>
         </section>
 
-        <!-- 1.6 ຈັດເກຣດ -->
         <section class="card sub-panel-subject" id="sub-grade" style="display:none; margin-top:12px;">
-            <div class="card-header">
-                <h2 id="title-grade">🏅 6. ຈັດເກຣດລາຍວິຊາ</h2>
-            </div>
+            <div class="card-header"><h2 id="title-grade">🏅 6. ຈັດເກຣດລາຍວິຊາ</h2></div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -444,7 +411,6 @@
         </section>
     </div>
 
-    <!-- ==================== ກຸ່ມໃຫຍ່ທີ 2: 2. ຄະແນນສະເລ່ຍໝົດປີ ==================== -->
     <div id="group-panel-annual" style="display:none;">
         <nav class="subrooms-nav" aria-label="ຫ້ອງຍ່ອຍ ຄະແນນສະເລ່ຍໝົດປີ">
             <button type="button" class="subroom-btn active" data-sub="quarter" onclick="switchSub('annual', 'quarter')">1. ຄະແນນ 1 ໃນ 4</button>
@@ -452,11 +418,8 @@
             <button type="button" class="subroom-btn" data-sub="credits" onclick="switchSub('annual', 'credits')">3. ໜ່ວຍກິດສະສົມ</button>
         </nav>
 
-        <!-- 2.1 ຄະແນນ 1 ໃນ 4 -->
         <section class="card sub-panel-annual" id="sub-quarter" style="margin-top:12px;">
-            <div class="card-header">
-                <h2 id="title-quarter">📊 1. ຄະແນນ 1 ໃນ 4 (ສະເລ່ຍໝົດປີ)</h2>
-            </div>
+            <div class="card-header"><h2 id="title-quarter">📊 1. ຄະແນນ 1 ໃນ 4 (ສະເລ່ຍໝົດປີ)</h2></div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -475,11 +438,8 @@
             <div class="note-text">* ຄະແນນ 1 ໃນ 4 = ຄະແນນສະເລ່ຍໝົດປີ ÷ 4 (ເຕັມ 25).</div>
         </section>
 
-        <!-- 2.2 ຈັດປະເພດ -->
         <section class="card sub-panel-annual" id="sub-category" style="display:none; margin-top:12px;">
-            <div class="card-header">
-                <h2 id="title-category">🏆 2. ຈັດປະເພດຜົນການຮຽນ</h2>
-            </div>
+            <div class="card-header"><h2 id="title-category">🏆 2. ຈັດປະເພດຜົນການຮຽນ</h2></div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -496,11 +456,8 @@
             </div>
         </section>
 
-        <!-- 2.3 ໜ່ວຍກິດສະສົມ -->
         <section class="card sub-panel-annual" id="sub-credits" style="display:none; margin-top:12px;">
-            <div class="card-header">
-                <h2 id="title-credits">🎓 3. ໜ່ວຍກິດສະສົມ</h2>
-            </div>
+            <div class="card-header"><h2 id="title-credits">🎓 3. ໜ່ວຍກິດສະສົມ</h2></div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -540,8 +497,10 @@
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const COLLECTION_NAME = "student_scores";
+    const SUBJECTS_COLLECTION = "subjects";
 
-    const SUBJECTS = ["ຄະນິດສາດ", "ຟີຊິກສາດ", "ເຄມີສາດ", "ຊີວະສາດ", "ພາສາລາວ", "ພາສາອັງກິດ", "ໄອທີ / ຄອມ"];
+    const DEFAULT_SUBJECTS = ["ຄະນິດສາດ", "ຟີຊິກສາດ", "ເຄມີສາດ", "ຊີວະສາດ", "ພາສາລາວ", "ພາສາອັງກິດ", "ໄອທີ / ຄອມ"];
+    let subjectsList = [...DEFAULT_SUBJECTS];
 
     function cleanText(v) {
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
@@ -580,18 +539,26 @@
     document.getElementById("currentUserGrade").textContent = userGrade;
     document.getElementById("fbSyncBadge").textContent = `🔥 Firebase: ${firebaseConfig.projectId}`;
 
+    function populateSubjectDropdown() {
+        const sel = document.getElementById("subjectSelect");
+        if (!sel) return;
+        const prev = sel.value;
+        sel.innerHTML = subjectsList.map((subj) =>
+            `<option value="${esc(subj)}">${esc(subj)}</option>`
+        ).join("");
+        if (prev && subjectsList.includes(prev)) {
+            sel.value = prev;
+        }
+    }
+
     let students = JSON.parse(localStorage.getItem("school_student_scores") || "null") || [
         {
             id: "STD-001", name: "ສົມໃຈ ໃຈດີ", grade: "ມ.5", totalCredits: 24, earnedCredits: 24,
-            coursework: {
-                attendance: 9, participation: 9, homework: 18, midterm: 22, final: 31
-            }
+            coursework: { attendance: 9, participation: 9, homework: 18, midterm: 22, final: 31 }
         },
         {
             id: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", totalCredits: 24, earnedCredits: 21,
-            coursework: {
-                attendance: 8, participation: 8, homework: 16, midterm: 19, final: 27
-            }
+            coursework: { attendance: 8, participation: 8, homework: 16, midterm: 19, final: 27 }
         }
     ];
 
@@ -616,7 +583,8 @@
     }
 
     function calcAnnualAvg(s) {
-        const list = SUBJECTS.map((subj) => calcSubjectTotal(s, subj));
+        const activeSubjects = subjectsList.length ? subjectsList : DEFAULT_SUBJECTS;
+        const list = activeSubjects.map((subj) => calcSubjectTotal(s, subj));
         const avg = list.reduce((a, b) => a + b, 0) / list.length;
         return Number(avg.toFixed(1));
     }
@@ -689,10 +657,18 @@
 
         const updatedCw = { ...cw, [field]: boundNum(input, 0, maxVal, cw[field]) };
         s.courseworkBySubject = { ...(s.courseworkBySubject || {}), [subj]: updatedCw };
+        const annualAvg = calcAnnualAvg(s);
+        const quarterScore = Number((annualAvg / 4).toFixed(2));
+        s.annualAvg = annualAvg;
+        s.quarterScore = quarterScore;
 
         const docId = s.firestoreId || s.id;
         try {
-            await setDoc(doc(db, COLLECTION_NAME, docId), { courseworkBySubject: s.courseworkBySubject }, { merge: true });
+            await setDoc(doc(db, COLLECTION_NAME, docId), {
+                courseworkBySubject: s.courseworkBySubject,
+                annualAvg,
+                quarterScore
+            }, { merge: true });
         } catch (err) {
             console.error(err);
         }
@@ -741,6 +717,8 @@
             earnedCredits: 24,
             coursework: { attendance: 10, participation: 10, homework: 18, midterm: 20, final: 28 }
         };
+        item.annualAvg = calcAnnualAvg(item);
+        item.quarterScore = Number((item.annualAvg / 4).toFixed(2));
 
         try {
             await setDoc(doc(db, COLLECTION_NAME, newId), item);
@@ -769,7 +747,7 @@
 
     window.renderAll = function () {
         const list = getVisibleStudents();
-        const subj = document.getElementById("subjectSelect").value;
+        const subj = document.getElementById("subjectSelect").value || subjectsList[0] || "";
         const emptyRow = (cols) => `<tr><td colspan="${cols}" class="center">ບໍ່ພົບຂໍ້ມູນ</td></tr>`;
 
         const renderScoreSubTable = (tbodyId, field, maxVal, label) => {
@@ -871,6 +849,17 @@
 
     window.loadFromFirestore = async function (showAlert = false) {
         try {
+            const subjSnap = await getDocs(collection(db, SUBJECTS_COLLECTION));
+            if (!subjSnap.empty) {
+                const dbSubjects = subjSnap.docs
+                    .map((d) => cleanText(d.data().name || d.data().subjectName || d.data().subject))
+                    .filter(Boolean);
+                if (dbSubjects.length) {
+                    subjectsList = Array.from(new Set([...DEFAULT_SUBJECTS, ...dbSubjects]));
+                    populateSubjectDropdown();
+                }
+            }
+
             const snap = await getDocs(collection(db, COLLECTION_NAME));
             if (!snap.empty) {
                 students = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
@@ -892,6 +881,25 @@
         }
     }, () => {});
 
+    onSnapshot(collection(db, SUBJECTS_COLLECTION), (snap) => {
+        if (!snap.empty) {
+            const dbSubjects = snap.docs
+                .map((d) => cleanText(d.data().name || d.data().subjectName || d.data().subject))
+                .filter(Boolean);
+            if (dbSubjects.length) {
+                subjectsList = Array.from(new Set([...DEFAULT_SUBJECTS, ...dbSubjects]));
+                populateSubjectDropdown();
+                renderAll();
+            }
+        }
+    }, () => {});
+
+    window.addEventListener("storage", (e) => {
+        if (e.key === "schoolSystemDataUpdated") loadFromFirestore(false);
+    });
+    window.addEventListener("school-data-updated", () => loadFromFirestore(false));
+
+    populateSubjectDropdown();
     renderAll();
     loadFromFirestore(false);
 </script>
