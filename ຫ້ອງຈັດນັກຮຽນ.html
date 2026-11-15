@@ -208,14 +208,15 @@
             margin-bottom: 3px;
         }
         .note-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+
         /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
-#fbSyncBadge,
-.badge-fb,
-[data-hide-firebase="true"],
-[class*="firebase" i],
-[id*="firebase" i] {
-  display: none !important;
-}
+        #fbSyncBadge,
+        .badge-fb,
+        [data-hide-firebase="true"],
+        [class*="firebase" i],
+        [id*="firebase" i] {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -280,7 +281,7 @@
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs
+        getFirestore, collection, getDocs, onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -324,10 +325,14 @@
     document.getElementById("currentUserName").textContent = userName;
     document.getElementById("currentUserGrade").textContent = userGrade;
 
+    function cleanRoomToken(val) {
+        return String(val ?? "").trim().replace(/^ຫ້ອງ\s*/i, "").replace(/\s+/g, "");
+    }
+
     function normalizeStudent(raw = {}, docId = "") {
         const code = String(raw.code || raw.studentCode || raw.studentId || raw.id || docId || "").trim();
         const name = String(raw.name || raw.studentName || "").trim();
-        const grade = String(raw.grade || raw.room || raw.classRoom || "ມ.5").replace(/\s+/g, "").trim();
+        const grade = cleanRoomToken(raw.grade || raw.room || raw.classRoom || "ມ.5") || "ມ.5";
         return {
             ...raw,
             id: docId || code || ("STD-" + Math.random().toString(36).slice(2, 7)),
@@ -346,7 +351,7 @@
 
     function studentKey(s) {
         const c = String(s.code || "").trim().toLowerCase();
-        const ng = `${String(s.name || "").replace(/\s+/g, " ").trim().toLowerCase()}__${String(s.grade || "").replace(/\s+/g, "").trim().toLowerCase()}`;
+        const ng = `${String(s.name || "").replace(/\s+/g, " ").trim().toLowerCase()}__${cleanRoomToken(s.grade).toLowerCase()}`;
         return c ? `code:${c}` : `ng:${ng}`;
     }
 
@@ -479,12 +484,12 @@
 
     window.renderStudentsTable = function () {
         const q = (document.getElementById("searchStudentInput").value || "").trim().toLowerCase();
-        const gradeFilter = document.getElementById("filterGradeSelect").value;
+        const gradeFilter = cleanRoomToken(document.getElementById("filterGradeSelect").value).toLowerCase();
         const tbody = document.getElementById("studentsTableBody");
 
         const uniqueList = dedupeStudents(studentsData);
         const filtered = uniqueList.filter((s) => {
-            const matchGrade = !gradeFilter || s.grade === gradeFilter;
+            const matchGrade = !gradeFilter || cleanRoomToken(s.grade).toLowerCase() === gradeFilter;
             const hay = `${s.code || ""} ${s.name || ""} ${s.grade || ""} ${s.phone || ""} ${s.parentName || ""}`.toLowerCase();
             const matchQuery = !q || hay.includes(q);
             return matchGrade && matchQuery;
@@ -513,6 +518,52 @@
         `).join("");
     };
 
+    async function syncRoomFilterOptions(extraRooms = []) {
+        const selectEl =
+            document.getElementById("filterGradeSelect") ||
+            document.getElementById("filterRoomSelect") ||
+            document.getElementById("roomFilter") ||
+            document.querySelector("select[id*='room' i], select[id*='grade' i]");
+        if (!selectEl) return;
+
+        const prevValue = cleanRoomToken(selectEl.value);
+        const uniqueMap = new Map();
+
+        const addRoom = (rawName) => {
+            const cleaned = String(rawName ?? "").trim().replace(/^ຫ້ອງ\s*/i, "");
+            if (!cleaned) return;
+            const key = cleaned.replace(/\s+/g, "").toLowerCase();
+            if (!uniqueMap.has(key)) {
+                uniqueMap.set(key, cleaned);
+            }
+        };
+
+        const studentRooms = studentsData.map((s) => s.grade);
+        ["ມ.5", "ມ.6", "ມ.7", ...studentRooms, ...extraRooms].forEach(addRoom);
+
+        for (const colName of ["classrooms", "rooms"]) {
+            try {
+                const snap = await getDocs(collection(db, colName));
+                snap.forEach((d) => {
+                    const data = d.data() || {};
+                    addRoom(data.name || data.roomName || data.room || data.grade);
+                });
+            } catch (err) {
+                console.warn("ບໍ່ສາມາດໂຫຼດຫ້ອງຈາກ " + colName, err);
+            }
+        }
+
+        const roomList = Array.from(uniqueMap.values());
+        selectEl.innerHTML =
+            `<option value="">ທຸກຫ້ອງ</option>` +
+            roomList.map((r) => `<option value="${esc(r)}">ຫ້ອງ ${esc(r)}</option>`).join("");
+
+        if (prevValue && Array.from(selectEl.options).some((o) => cleanRoomToken(o.value).toLowerCase() === prevValue.toLowerCase())) {
+            const matched = Array.from(selectEl.options).find((o) => cleanRoomToken(o.value).toLowerCase() === prevValue.toLowerCase());
+            if (matched) selectEl.value = matched.value;
+        }
+    }
+
     window.loadStudentsFromFirestore = async function (showAlert = false) {
         try {
             const snap = await getDocs(collection(db, COLLECTION_NAME));
@@ -521,10 +572,12 @@
                 studentsData = dedupeStudents(loaded);
                 saveStudentsLocal();
             }
+            await syncRoomFilterOptions();
             renderStudentsTable();
             if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນນັກຮຽນ (ໂຕບໍ່ຊ້ຳກັນ) ສຳເລັດ!");
         } catch (err) {
             console.warn("Firestore students load error:", err.message);
+            await syncRoomFilterOptions();
             renderStudentsTable();
         }
     };
@@ -537,38 +590,15 @@
             .replace(/"/g, "&quot;");
     }
 
+    syncRoomFilterOptions();
     renderStudentsTable();
     loadStudentsFromFirestore(false);
-    async function syncRoomFilterOptions(db, extraRooms = []) {
-    const selectEl =
-        document.getElementById("filterRoomSelect") ||
-        document.getElementById("roomFilter") ||
-        document.querySelector("select[id*='room' i], select[id*='grade' i]");
-    if (!selectEl) return;
 
-    const prevValue = selectEl.value;
-    const roomSet = new Set(["ມ.5", "ມ.6", "ມ.7", ...extraRooms.filter(Boolean)]);
-
-    for (const colName of ["classrooms", "rooms"]) {
-        try {
-            const snap = await getDocs(collection(db, colName));
-            snap.forEach((d) => {
-                const data = d.data() || {};
-                const rName = String(data.name || data.roomName || data.room || data.grade || "").trim();
-                if (rName) roomSet.add(rName);
-            });
-        } catch (err) {}
-    }
-
-    const sortedRooms = Array.from(roomSet);
-    selectEl.innerHTML =
-        `<option value="">ທຸກຫ້ອງ</option>` +
-        sortedRooms.map((r) => `<option value="${r.replace(/"/g, "&quot;")}">ຫ້ອງ ${r}</option>`).join("");
-
-    if (prevValue && Array.from(selectEl.options).some((o) => o.value === prevValue)) {
-        selectEl.value = prevValue;
-    }
-}
+    ["classrooms", "rooms"].forEach((colName) => {
+        onSnapshot(collection(db, colName), () => {
+            syncRoomFilterOptions();
+        }, () => {});
+    });
 </script>
 </body>
 </html>
