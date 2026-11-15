@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>📋 5. ຈັດການການມາຮຽນ (ເຕັມ 20)</title>
+    <title>📋 5. ຈັດການການມາຮຽນ (ຕາມຈຳນວນຄາບ)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
         * { box-sizing: border-box; }
@@ -215,7 +215,7 @@
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
             <a href="scores.html" class="btn-link">📊 ຫ້ອງຄະແນນ</a>
             <a href="update.html?tab=scores" class="btn-link btn-upd" id="btnUpdScores" style="display: none;">🛠️ ຫ້ອງອັບເດດຄະແນນ</a>
-            <h1 class="page-title">📋 5. ຈັດການການມາຮຽນ (ຄະແນນເຕັມ 20)</h1>
+            <h1 class="page-title">📋 5. ຈັດການການມາຮຽນ (ຕາມຈຳນວນຄາບ)</h1>
         </div>
         <div class="user-meta">
             <span id="fbSyncBadge" class="badge badge-fb">🔥 Firebase</span>
@@ -233,6 +233,8 @@
                 <select id="checkTerm" onchange="renderAll()">
                     <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
                     <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
+                    <option value="ເທີມ 1 / 2027-2028">ເທີມ 1 / 2027-2028</option>
+                    <option value="ເທີມ 2 / 2027-2028">ເທີມ 2 / 2027-2028</option>
                 </select>
                 <input type="date" id="checkDate" onchange="renderCheckAbsentList()" />
                 <select id="checkGrade" onchange="renderAll()">
@@ -271,12 +273,12 @@
         <div class="note-text" id="checkAbsentPermissionNote"></div>
     </section>
 
-    <!-- ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ (ຄະແນນເຕັມ 20) -->
+    <!-- ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ -->
     <section class="card" id="room-term-score-summary">
         <div class="card-header">
-            <h2 id="termScoreTitle">🎯 ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ (ຄະແນນເຕັມ 20)</h2>
+            <h2 id="termScoreTitle">🎯 ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ</h2>
             <div class="controls">
-                <span class="deduct-info">ຄະແນນເຕັມ: <strong>20 ຄະແນນ</strong> • ຕັດ <strong>-2 ຄະແນນ</strong> / ຄັ້ງທີ່ຂາດ</span>
+                <span class="deduct-info" id="termFormulaInfo">ຄະແນນເຕັມ: <strong>20</strong> • ຄາບທັງໝົດ: <strong>40 ຄາບ</strong> • ຄິດຕາມອັດຕາສ່ວນການມາຮຽນ</span>
                 <button type="button" class="btn-sync" onclick="loadAbsentFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
             </div>
         </div>
@@ -290,7 +292,7 @@
                         <th>ເທີມ</th>
                         <th>ຈຳນວນຄັ້ງຂາດ</th>
                         <th>ຄະແນນທີ່ຖືກຕັດ</th>
-                        <th>ຄະແນນມາຮຽນ (ເຕັມ 20)</th>
+                        <th id="termScoreColHeader">ຄະແນນມາຮຽນ</th>
                     </tr>
                 </thead>
                 <tbody id="termScoreSummaryBody"></tbody>
@@ -312,7 +314,7 @@
                     <option value="ມ.6">ຫ້ອງ ມ.6</option>
                     <option value="ມ.7">ຫ້ອງ ມ.7</option>
                 </select>
-                <span class="deduct-info">ຕັດຄະແນນ: <strong>-2 ຄະແນນ</strong> / ຄັ້ງທີ່ຂາດ</span>
+                <span class="deduct-info" id="weeklyFormulaInfo">ຄິດຕາມອັດຕາສ່ວນຈຳນວນຄາບຂອງເທີມ</span>
             </div>
         </div>
         <div class="table-wrap">
@@ -346,7 +348,7 @@
                     <option value="ມ.6">ຫ້ອງ ມ.6</option>
                     <option value="ມ.7">ຫ້ອງ ມ.7</option>
                 </select>
-                <span class="deduct-info">ຕັດຄະແນນ: <strong>-2 ຄະແນນ</strong> / ຄັ້ງທີ່ຂາດ</span>
+                <span class="deduct-info" id="monthlyFormulaInfo">ຄິດຕາມອັດຕາສ່ວນຈຳນວນຄາບຂອງເທີມ</span>
             </div>
         </div>
         <div class="table-wrap">
@@ -430,8 +432,8 @@
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const MAX_TERM_SCORE = 20;
-    const DEDUCT_PER_ABSENT = 2;
+    const DEFAULT_MAX_SCORE = 20;
+    const DEFAULT_TOTAL_PERIODS = 40;
     const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
     const SYNC_EVENT_NAME = "school-data-updated";
     const DEFAULT_GRADES = ["ມ.1", "ມ.2", "ມ.3", "ມ.4", "ມ.5", "ມ.6", "ມ.7"];
@@ -508,6 +510,34 @@
         if (el) el.textContent = text;
     }
 
+    let termPeriodsConfigs = JSON.parse(localStorage.getItem("school_term_periods") || "null") || [];
+
+    function getTermPeriodRule(term, grade) {
+        const tVal = cleanVal(term);
+        const gVal = cleanGrade(grade);
+
+        const exactRoom = termPeriodsConfigs.find(
+            (x) => cleanVal(x.term) === tVal && cleanGrade(x.grade) !== "ALL" && isSameGrade(x.grade, gVal)
+        );
+        const allRoom = termPeriodsConfigs.find(
+            (x) => cleanVal(x.term) === tVal && (cleanVal(x.grade) === "ALL" || !cleanVal(x.grade))
+        );
+        const matched = exactRoom || allRoom;
+
+        const totalPeriods = Math.max(1, Number(matched?.totalPeriods) || DEFAULT_TOTAL_PERIODS);
+        const maxScore = Math.max(1, Number(matched?.maxScore) || DEFAULT_MAX_SCORE);
+        return { totalPeriods, maxScore };
+    }
+
+    function calcScoreByPeriods(absentCount, term, grade) {
+        const { totalPeriods, maxScore } = getTermPeriodRule(term, grade);
+        const count = Math.max(0, Number(absentCount) || 0);
+        const attended = Math.max(0, totalPeriods - count);
+        const score = Number(((attended / totalPeriods) * maxScore).toFixed(2));
+        const deducted = Number(Math.max(0, maxScore - score).toFixed(2));
+        return { count, deducted, score, totalPeriods, maxScore };
+    }
+
     let studentsList = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
         { id: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5" },
         { id: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5" },
@@ -541,9 +571,7 @@
             return matchTerm && matchGrade && matchStudent;
         }).length;
 
-        const deducted = count * DEDUCT_PER_ABSENT;
-        const score = Math.max(0, Math.min(MAX_TERM_SCORE, MAX_TERM_SCORE - deducted));
-        return { count, deducted, score };
+        return calcScoreByPeriods(count, term, grade);
     }
 
     async function syncTermAttendanceScoresToFirestore(term, gradeVal) {
@@ -561,7 +589,8 @@
                 absentCount: info.count,
                 deducted: info.deducted,
                 attendanceScore: info.score,
-                maxScore: MAX_TERM_SCORE,
+                totalPeriods: info.totalPeriods,
+                maxScore: info.maxScore,
                 updatedAt: new Date().toISOString()
             };
         });
@@ -659,12 +688,12 @@
 
         if (isAdmin) {
             document.getElementById("checkAbsentPermissionNote").textContent =
-                "* ສິດ ADMIN: ເລືອກໄດ້ທຸກຫ້ອງ, ບັນທຶກການຂາດຮຽນ, ຄຳນວນຄະແນນເຕັມ 20 ແລະ ລົບລາຍການໄດ້.";
+                "* ສິດ ADMIN: ເລືອກໄດ້ທຸກຫ້ອງ, ບັນທຶກການຂາດຮຽນ, ຄຳນວນຄະແນນຕາມຈຳນວນຄາບຂອງເທີມ ແລະ ລົບລາຍການໄດ້.";
             document.getElementById("historyScopeNote").textContent =
                 "* ສິດ ADMIN: ກວດເບິ່ງຂໍ້ມູນຂາດຮຽນຍ້ອນຫຼັງໄດ້ທຸກຫ້ອງ ແລະ ລົບລາຍການໄດ້.";
         } else if (isTeacher) {
             document.getElementById("checkAbsentPermissionNote").textContent =
-                "* ສິດ TEACHER (ຄູ): ກວດ ແລະ ບັນທຶກການຂາດຮຽນໄດ້ຕາມຫ້ອງທີ່ສອນ, ຄິດໄລ່ຄະແນນເຕັມ 20 ແລະ ລົບລາຍການໄດ້.";
+                "* ສິດ TEACHER (ຄູ): ກວດ ແລະ ບັນທຶກການຂາດຮຽນໄດ້ຕາມຫ້ອງທີ່ສອນ, ຄິດໄລ່ຄະແນນຕາມຈຳນວນຄາບ ແລະ ລົບລາຍການໄດ້.";
             document.getElementById("historyScopeNote").textContent =
                 "* ສິດ TEACHER (ຄູ): ກວດເບິ່ງລາຍຊື່ຄົນຂາດຍ້ອນຫຼັງ ແລະ ຈັດການລາຍການຂອງຫ້ອງໄດ້.";
         } else {
@@ -722,8 +751,14 @@
     window.renderTermScoreSummary = function () {
         const termVal = document.getElementById("checkTerm").value;
         const gradeVal = getActiveGrade("checkGrade");
+        const rule = getTermPeriodRule(termVal, gradeVal);
+
         document.getElementById("termScoreTitle").textContent =
-            `🎯 ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ (${termVal} • ຫ້ອງ ${gradeVal}) — ຄະແນນເຕັມ ${MAX_TERM_SCORE}`;
+            `🎯 ສະຫຼຸບຄະແນນການມາຮຽນປະຈຳເທີມ (${termVal} • ຫ້ອງ ${gradeVal}) — ${rule.totalPeriods} ຄາບ (ເຕັມ ${rule.maxScore})`;
+        document.getElementById("termFormulaInfo").innerHTML =
+            `ຄະແນນເຕັມ: <strong>${rule.maxScore}</strong> • ຄາບທັງໝົດ: <strong>${rule.totalPeriods} ຄາບ</strong> • ຄິດຕາມອັດຕາສ່ວນການມາຮຽນ`;
+        document.getElementById("termScoreColHeader").textContent =
+            `ຄະແນນມາຮຽນ (ເຕັມ ${rule.maxScore})`;
 
         const tbody = document.getElementById("termScoreSummaryBody");
         const roomStudents = studentsList.filter((s) => isSameGrade(s.grade, gradeVal));
@@ -741,9 +776,9 @@
                     <td>${esc(s.name)}</td>
                     <td>${esc(s.grade)}</td>
                     <td>${esc(termVal)}</td>
-                    <td><span class="${info.count > 0 ? "status-absent" : "status-present"}">${info.count} ຄັ້ງ</span></td>
+                    <td><span class="${info.count > 0 ? "status-absent" : "status-present"}">${info.count} / ${info.totalPeriods} ຄາບ</span></td>
                     <td><strong class="deduct-val">-${info.deducted}</strong></td>
-                    <td><span class="score-pill">${info.score} / ${MAX_TERM_SCORE}</span></td>
+                    <td><span class="score-pill">${info.score} / ${info.maxScore}</span></td>
                 </tr>
             `;
         }).join("");
@@ -863,7 +898,12 @@
     }
 
     window.renderWeeklySummary = function () {
+        const termVal = document.getElementById("checkTerm").value;
         const gradeVal = getActiveGrade("weeklyGrade");
+        const rule = getTermPeriodRule(termVal, gradeVal);
+        document.getElementById("weeklyFormulaInfo").textContent =
+            `ຄິດຕາມອັດຕາສ່ວນ ${rule.totalPeriods} ຄາບ (ເຕັມ ${rule.maxScore})`;
+
         const tbody = document.getElementById("weeklySummaryBody");
         const { start, end } = getCurrentWeekRange();
 
@@ -884,22 +924,27 @@
                 return d >= start && d <= end;
             }).length;
 
-            const deducted = count * DEDUCT_PER_ABSENT;
+            const calc = calcScoreByPeriods(count, termVal, gradeVal);
             return `
                 <tr>
                     <td>${idx + 1}</td>
                     <td>${esc(s.name)}</td>
                     <td>${esc(s.grade)}</td>
                     <td><span class="${count > 0 ? "status-absent" : "status-present"}">${count} ຄັ້ງ</span></td>
-                    <td><strong class="deduct-val">-${deducted} ຄະແນນ</strong></td>
+                    <td><strong class="deduct-val">-${calc.deducted} ຄະແນນ</strong></td>
                 </tr>
             `;
         }).join("");
     };
 
     window.renderMonthlySummary = function () {
+        const termVal = document.getElementById("checkTerm").value;
         const monthVal = document.getElementById("monthlyPicker").value || currentMonthStr;
         const gradeVal = getActiveGrade("monthlyGrade");
+        const rule = getTermPeriodRule(termVal, gradeVal);
+        document.getElementById("monthlyFormulaInfo").textContent =
+            `ຄິດຕາມອັດຕາສ່ວນ ${rule.totalPeriods} ຄາບ (ເຕັມ ${rule.maxScore})`;
+
         const tbody = document.getElementById("monthlySummaryBody");
 
         const roomStudents = studentsList.filter((s) => isSameGrade(s.grade, gradeVal));
@@ -917,14 +962,14 @@
                 );
             }).length;
 
-            const deducted = count * DEDUCT_PER_ABSENT;
+            const calc = calcScoreByPeriods(count, termVal, gradeVal);
             return `
                 <tr>
                     <td>${idx + 1}</td>
                     <td>${esc(s.name)}</td>
                     <td>${esc(s.grade)}</td>
                     <td><span class="${count > 0 ? "status-absent" : "status-present"}">${count} ຄັ້ງ</span></td>
-                    <td><strong class="deduct-val">-${deducted} ຄະແນນ</strong></td>
+                    <td><strong class="deduct-val">-${calc.deducted} ຄະແນນ</strong></td>
                 </tr>
             `;
         }).join("");
@@ -996,6 +1041,20 @@
         renderPeriodAbsentHistory();
     };
 
+    async function loadTermPeriodsFromFirestore() {
+        try {
+            const tpSnap = await getDocs(collection(db, "term_periods"));
+            if (!tpSnap.empty) {
+                termPeriodsConfigs = tpSnap.docs.map((d) => ({
+                    id: d.data().id || d.id,
+                    firestoreId: d.id,
+                    ...d.data()
+                }));
+                localStorage.setItem("school_term_periods", JSON.stringify(termPeriodsConfigs));
+            }
+        } catch (e) {}
+    }
+
     async function loadStudentsFromFirestore() {
         try {
             const stuSnap = await getDocs(collection(db, "students"));
@@ -1023,7 +1082,7 @@
 
     window.loadAbsentFromFirestore = async function (showAlert = false) {
         try {
-            await loadStudentsFromFirestore();
+            await Promise.all([loadTermPeriodsFromFirestore(), loadStudentsFromFirestore()]);
             const snap = await getDocs(collection(db, "absent_records"));
             absentRecords = snap.docs.map((d) => ({
                 id: d.data().id || d.id,
@@ -1046,6 +1105,18 @@
         }
     };
 
+    onSnapshot(collection(db, "term_periods"), (snap) => {
+        if (!snap.empty) {
+            termPeriodsConfigs = snap.docs.map((d) => ({
+                id: d.data().id || d.id,
+                firestoreId: d.id,
+                ...d.data()
+            }));
+            localStorage.setItem("school_term_periods", JSON.stringify(termPeriodsConfigs));
+            renderAll();
+        }
+    }, () => {});
+
     onSnapshot(collection(db, "absent_records"), (snap) => {
         absentRecords = snap.docs.map((d) => ({
             id: d.data().id || d.id,
@@ -1064,9 +1135,15 @@
     });
 
     window.addEventListener("storage", (e) => {
-        if (e.key === SYNC_STORAGE_KEY) loadAbsentFromFirestore(false);
+        if (e.key === SYNC_STORAGE_KEY || e.key === "school_term_periods") {
+            termPeriodsConfigs = JSON.parse(localStorage.getItem("school_term_periods") || "null") || termPeriodsConfigs;
+            loadAbsentFromFirestore(false);
+        }
     });
-    window.addEventListener(SYNC_EVENT_NAME, () => loadAbsentFromFirestore(false));
+    window.addEventListener(SYNC_EVENT_NAME, () => {
+        termPeriodsConfigs = JSON.parse(localStorage.getItem("school_term_periods") || "null") || termPeriodsConfigs;
+        loadAbsentFromFirestore(false);
+    });
 
     function esc(str) {
         return String(str ?? "")
