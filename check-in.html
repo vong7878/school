@@ -1014,6 +1014,36 @@
     setupRolePermissions();
     renderAll();
     loadAbsentFromFirestore(false);
+    async function syncRoomFilterOptions(db, extraRooms = []) {
+    const selectEl =
+        document.getElementById("filterRoomSelect") ||
+        document.getElementById("roomFilter") ||
+        document.querySelector("select[id*='room' i], select[id*='grade' i]");
+    if (!selectEl) return;
+
+    const prevValue = selectEl.value;
+    const roomSet = new Set(["ມ.5", "ມ.6", "ມ.7", ...extraRooms.filter(Boolean)]);
+
+    for (const colName of ["classrooms", "rooms"]) {
+        try {
+            const snap = await getDocs(collection(db, colName));
+            snap.forEach((d) => {
+                const data = d.data() || {};
+                const rName = String(data.name || data.roomName || data.room || data.grade || "").trim();
+                if (rName) roomSet.add(rName);
+            });
+        } catch (err) {}
+    }
+
+    const sortedRooms = Array.from(roomSet);
+    selectEl.innerHTML =
+        `<option value="">ທຸກຫ້ອງ</option>` +
+        sortedRooms.map((r) => `<option value="${r.replace(/"/g, "&quot;")}">ຫ້ອງ ${r}</option>`).join("");
+
+    if (prevValue && Array.from(selectEl.options).some((o) => o.value === prevValue)) {
+        selectEl.value = prevValue;
+    }
+}
 </script>
 </body>
 </html>
