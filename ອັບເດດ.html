@@ -59,7 +59,7 @@
 
         .submenus {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
             gap: 10px;
             margin-bottom: 20px;
         }
@@ -261,6 +261,9 @@
         </button>
         <button type="button" class="submenu-btn" data-tab="tuition" onclick="switchUpdateTab('tuition')">
             💰 6. ລາຍການຄ່າຮຽນ
+        </button>
+        <button type="button" class="submenu-btn" data-tab="subjects" onclick="switchUpdateTab('subjects')">
+            📚 7. ວິຊາຮຽນ
         </button>
     </div>
 
@@ -551,11 +554,38 @@
                 amount: cleanVal(d.amount || d.fee || ""),
                 status: cleanVal(d.status || "ຄ້າງຈ່າຍ")
             })
+        },
+        subjects: {
+            title: "📚 7. ເພີ່ມ / ແກ້ໄຂ / ລົບ ວິຊາຮຽນ",
+            collections: ["subjects"],
+            primaryCol: "subjects",
+            fields: [
+                { name: "code", label: "ລະຫັດວິຊາ", type: "text", required: false, placeholder: "SUB01" },
+                { name: "name", label: "ຊື່ວິຊາຮຽນ", type: "text", required: true, placeholder: "ຄະນິດສາດ" },
+                { name: "grade", label: "ຊັ້ນ / ຫ້ອງຮຽນ", type: "text", required: false, placeholder: "ມ.5" },
+                { name: "credits", label: "ໜ່ວຍກິດ", type: "number", required: false, placeholder: "3", min: 0, max: 20, step: "0.5" },
+                { name: "teacher", label: "ຄູຜູ້ສອນ", type: "text", required: false, placeholder: "ອ. ..." }
+            ],
+            columns: [
+                { key: "code", label: "ລະຫັດ" },
+                { key: "name", label: "ຊື່ວິຊາ" },
+                { key: "grade", label: "ຫ້ອງ" },
+                { key: "credits", label: "ໜ່ວຍກິດ" },
+                { key: "teacher", label: "ຄູຜູ້ສອນ" }
+            ],
+            mapDoc: (d, id) => ({
+                id,
+                code: cleanVal(d.code || d.subjectCode || ""),
+                name: cleanVal(d.name || d.subjectName || d.subject || ""),
+                grade: cleanGrade(d.grade || d.room || ""),
+                credits: cleanVal(d.credits ?? d.credit ?? ""),
+                teacher: cleanVal(d.teacher || d.teacherName || "")
+            })
         }
     };
 
     let currentTab = "rooms";
-    let currentScoreSubMode = "subject"; // "subject" | "annual"
+    let currentScoreSubMode = "subject";
     let currentRecords = [];
     let editingRecordId = null;
     let editingCollectionName = null;
@@ -851,6 +881,10 @@
                 } else if (currentTab === "tuition") {
                     payload.name = payload.studentName;
                     payload.grade = payload.room;
+                } else if (currentTab === "subjects") {
+                    payload.subjectName = payload.name;
+                    payload.subject = payload.name;
+                    payload.subjectCode = payload.code;
                 }
 
                 if (editingRecordId) {
