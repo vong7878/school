@@ -1050,6 +1050,19 @@
     if (userRole !== "student") {
         loadTabData();
     }
+    if (currentTab === "rooms") {
+    const mirrorId = "ROOM-" + cleanGrade(payload.name).replace(/[^\p{L}\p{N}_-]+/gu, "-") || targetId;
+    await setDoc(doc(db, "classrooms", mirrorId), {
+        id: mirrorId,
+        firestoreId: mirrorId,
+        name: payload.name,
+        advisor: payload.advisor,
+        building: payload.level,
+        studentCount: Number(payload.capacity || 0),
+        note: payload.note || "",
+        updatedAt: serverTimestamp()
+    }, { merge: true });
+}
 </script>
 </body>
 </html>
