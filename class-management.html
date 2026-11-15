@@ -269,6 +269,128 @@
     </section>
 </div>
 
+<script>
+(function () {
+    const STYLE_ID = "js-responsive-class-mgmt-style";
+
+    function buildClassMgmtResponsiveCss(width) {
+        const isSmallMobile = width <= 480;
+        const isMobile = width <= 768;
+        const isTablet = width <= 1024;
+        const isWide = width >= 1440;
+
+        const bodyPadding = isSmallMobile ? "10px" : isMobile ? "12px" : "16px";
+        const containerMaxWidth = isWide ? "1360px" : "1180px";
+        const cardPadding = isSmallMobile ? "12px" : isTablet ? "15px" : "18px";
+        const titleSize = isSmallMobile ? "15.5px" : isTablet ? "17px" : "18px";
+        const h2Size = isSmallMobile ? "14.5px" : "16px";
+        const minTableWidth = isSmallMobile ? "520px" : isMobile ? "600px" : "680px";
+
+        return `
+            html, body {
+                max-width: 100% !important;
+                overflow-x: hidden !important;
+            }
+            body {
+                padding: ${bodyPadding} !important;
+            }
+            .container, .topbar, .card, .card-header, .controls, .table-wrap {
+                min-width: 0 !important;
+                max-width: 100% !important;
+            }
+            .container {
+                max-width: ${containerMaxWidth} !important;
+                gap: ${isMobile ? "12px" : "18px"} !important;
+            }
+            .topbar {
+                padding: ${isSmallMobile ? "11px 12px" : "14px 18px"} !important;
+            }
+            .page-title {
+                font-size: ${titleSize} !important;
+            }
+            .card {
+                padding: ${cardPadding} !important;
+                border-radius: ${isSmallMobile ? "12px" : "14px"} !important;
+            }
+            .card-header h2 {
+                font-size: ${h2Size} !important;
+            }
+            .table-wrap {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                width: 100% !important;
+            }
+            table {
+                min-width: ${minTableWidth} !important;
+            }
+            ${isMobile ? `
+                .card-header {
+                    flex-direction: column !important;
+                    align-items: stretch !important;
+                }
+                .controls {
+                    width: 100% !important;
+                    display: grid !important;
+                    grid-template-columns: ${isSmallMobile ? "1fr" : "repeat(auto-fit, minmax(140px, 1fr))"} !important;
+                    gap: 8px !important;
+                }
+                .controls select,
+                .controls input {
+                    width: 100% !important;
+                    min-width: 0 !important;
+                }
+                th, td {
+                    padding: 8px 9px !important;
+                    font-size: 12px !important;
+                }
+            ` : ""}
+            ${isSmallMobile ? `
+                .topbar {
+                    flex-direction: column !important;
+                    align-items: stretch !important;
+                }
+                .topbar-left .back-btn,
+                .topbar-left .btn-link {
+                    flex: 1 1 auto !important;
+                    justify-content: center !important;
+                }
+                .user-meta {
+                    justify-content: space-between !important;
+                }
+            ` : ""}
+        `;
+    }
+
+    function applyClassMgmtResponsiveLayout() {
+        const width = window.innerWidth || document.documentElement.clientWidth || 1024;
+        document.documentElement.dataset.screenMode =
+            width <= 480 ? "mobile-xs" :
+            width <= 768 ? "mobile" :
+            width <= 1024 ? "tablet" :
+            width >= 1440 ? "desktop-xl" : "desktop";
+
+        let styleEl = document.getElementById(STYLE_ID);
+        if (!styleEl) {
+            styleEl = document.createElement("style");
+            styleEl.id = STYLE_ID;
+            document.head.appendChild(styleEl);
+        }
+        styleEl.textContent = buildClassMgmtResponsiveCss(width);
+    }
+
+    let resizeTimer = null;
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(applyClassMgmtResponsiveLayout, 80);
+    });
+    window.addEventListener("orientationchange", () => {
+        setTimeout(applyClassMgmtResponsiveLayout, 120);
+    });
+    document.addEventListener("DOMContentLoaded", applyClassMgmtResponsiveLayout);
+    applyClassMgmtResponsiveLayout();
+})();
+</script>
+
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
