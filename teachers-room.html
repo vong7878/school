@@ -2,33 +2,371 @@
 <html lang="lo">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ລາຍຊື່ຄູປະຈຳຫ້ອງ - ລະບົບຄຸ້ມຄອງໂຮງຮຽນ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
-        body { background: #f4f6f9; color: #333; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-        .container { background: white; width: 100%; max-width: 960px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-top: 20px; }
-        h2 { color: #007bff; margin-bottom: 8px; text-align: center; }
-        .subtitle { text-align: center; color: #666; margin-bottom: 20px; font-size: 14px; }
+        html, body {
+            background: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            min-height: 100dvh;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
 
-        .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: #f8f9fa; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; }
-        .top-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .badge-info { background: #e7f5ff; color: #007bff; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; }
+        .topbar {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .back-btn {
+            background: #334155;
+            color: #f8fafc;
+            text-decoration: none;
+            padding: 8px 13px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: 0.2s;
+        }
+        .back-btn:hover { background: #475569; }
+        .page-title {
+            font-size: clamp(15px, 2.2vw, 18px);
+            font-weight: 700;
+            color: #38bdf8;
+            line-height: 1.35;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
 
-        .btn-link-upd { background: #007bff; color: white; border: none; padding: 8px 14px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; text-decoration: none; display: inline-block; }
-        .btn-link-upd:hover { background: #0069d9; }
+        .user-pill {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12.5px;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 100%;
+            min-width: 0;
+        }
+        .user-pill > span:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 220px;
+        }
+        .role-tag {
+            background: #2563eb;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
-        th, td { border: 1px solid #dee2e6; padding: 11px; text-align: left; font-size: 14px; }
-        th { background: #f8f9fa; font-weight: bold; color: #495057; }
-        td.center, th.center { text-align: center; }
+        .container {
+            width: 100%;
+            max-width: 1120px;
+            margin: 18px auto 32px;
+            padding: 0 14px;
+            min-width: 0;
+        }
 
-        .highlight-row { background: #e8f5e9; font-weight: bold; }
-        .source-tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 10px; background: #eef2ff; color: #3730a3; margin-left: 6px; font-weight: 600; }
+        .panel {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+            min-width: 0;
+        }
 
-        .back-link { display: inline-block; margin-top: 10px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .panel-header {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+        .panel-header h2 {
+            color: #38bdf8;
+            font-size: clamp(17px, 2.5vw, 22px);
+            margin-bottom: 6px;
+            line-height: 1.35;
+        }
+        .subtitle {
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .nav-links-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 9px 11px;
+            margin-bottom: 12px;
+        }
+        .nav-chip {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            text-decoration: none;
+            padding: 6px 11px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        .nav-chip:hover {
+            border-color: #38bdf8;
+            color: #7dd3fc;
+        }
+        .nav-chip.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-color: #60a5fa;
+            color: #fff;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 10px 13px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .top-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .badge-info {
+            background: rgba(56, 189, 248, 0.14);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 12.5px;
+            white-space: nowrap;
+        }
+
+        .btn-link-upd {
+            background: #2563eb;
+            color: #fff;
+            border: 1px solid #3b82f6;
+            padding: 7px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12.5px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        .btn-link-upd:hover { background: #1d4ed8; }
+
+        .filter-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 9px 11px;
+            margin-bottom: 14px;
+        }
+        .filter-group { min-width: 0; }
+        .filter-group label {
+            display: block;
+            font-size: 11.5px;
+            color: #94a3b8;
+            margin-bottom: 3px;
+            font-weight: 600;
+        }
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            min-width: 0;
+            padding: 6px 9px;
+            border-radius: 7px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #f8fafc;
+            font-size: 12.5px;
+        }
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #38bdf8;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 10px;
+            margin-bottom: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 620px;
+        }
+        th, td {
+            border: 1px solid #334155;
+            padding: 10px 11px;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+        th {
+            background: #0f172a;
+            font-weight: 700;
+            color: #93c5fd;
+            white-space: nowrap;
+        }
+        td {
+            background: #162032;
+            color: #f8fafc;
+            overflow-wrap: anywhere;
+        }
+        th.center, td.center { text-align: center; }
+
+        .highlight-row td {
+            background: rgba(34, 197, 94, 0.14);
+            color: #dcfce7;
+            font-weight: 600;
+        }
+        .source-tag {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.16);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #7dd3fc;
+            margin-left: 6px;
+            font-weight: 600;
+        }
+        .student-count-pill {
+            display: inline-block;
+            background: rgba(37, 99, 235, 0.22);
+            border: 1px solid rgba(96, 165, 250, 0.45);
+            color: #bfdbfe;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .bottom-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 6px;
+        }
+        .back-link {
+            display: inline-block;
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13.5px;
+        }
         .back-link:hover { text-decoration: underline; }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 12px auto 24px;
+                padding: 0 10px;
+            }
+            .panel {
+                padding: 12px;
+                border-radius: 12px;
+            }
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 10px 12px;
+            }
+            .topbar-left, .user-pill {
+                width: 100%;
+            }
+            .user-pill {
+                justify-content: space-between;
+                border-radius: 10px;
+            }
+            .user-pill > span:first-child {
+                max-width: 210px;
+            }
+            .filter-bar {
+                grid-template-columns: 1fr;
+                gap: 7px;
+                padding: 8px 9px;
+            }
+            table {
+                min-width: 540px;
+            }
+            th, td {
+                padding: 8px 8px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .page-title { font-size: 14px; }
+            .back-btn, .nav-chip, .btn-link-upd { font-size: 11.5px; padding: 6px 9px; }
+            .user-pill > span:first-child { max-width: 155px; }
+        }
+
+        /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
+        #fbSyncBadge,
+        .badge-fb,
+        [data-hide-firebase="true"],
+        [class*="firebase" i],
+        [id*="firebase" i] {
+            display: none !important;
+        }
     </style>
 
     <script>
@@ -39,33 +377,81 @@
 </head>
 <body>
 
-    <div class="container">
-        <h2>👩‍🏫 ຜັງລາຍຊື່ຄູປະຈຳຫ້ອງ (ຊັ້ນຮຽນຕ່າງໆ)</h2>
-        <p class="subtitle" id="user-role-subtitle">ກວດສອບຊື່ຄູອາຈານທີ່ຮັບຜິດຊອບເປັນຄູປະຈຳຊັ້ນ/ຫ້ອງ</p>
-
-        <div class="top-bar">
-            <span class="badge-info" id="room-total-count">ຈຳນວນລາຍການ: 0 ລາຍການ</span>
-            <div class="top-actions">
-                <a href="update.html?tab=rooms" class="btn-link-upd" id="btn-upd-rooms" style="display: none;">🛠️ 12. ອັບເດດລະບົບ (ຫ້ອງ)</a>
-                <a href="update.html?tab=teachers" class="btn-link-upd" id="btn-upd-teachers" style="display: none;">🛠️ 12. ອັບເດດລະບົບ (ຄູ)</a>
-            </div>
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="index.html" class="back-btn">← ກັບໜ້າຫຼັກ</a>
+            <div class="page-title">👩‍🏫 ຜັງລາຍຊື່ຄູປະຈຳຫ້ອງ</div>
         </div>
+        <div class="user-pill">
+            <span>👤 <strong id="top-user-name">ຜູ້ໃຊ້ງານ</strong></span>
+            <span class="role-tag" id="top-user-role">STUDENT</span>
+        </div>
+    </header>
 
-        <table>
-            <thead>
-                <tr>
-                    <th class="center" style="width: 70px;">ລຳດັບ</th>
-                    <th class="center" style="width: 170px;">ຊັ້ນ / ຫ້ອງຮຽນ</th>
-                    <th>ຊື່-ນາມສະກຸນ ຄູປະຈຳຫ້ອງ</th>
-                    <th class="center" style="width: 150px;">ເບີໂທລະສັບ</th>
-                </tr>
-            </thead>
-            <tbody id="homeroom-table-body">
-                <tr><td colspan="4" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
-            </tbody>
-        </table>
+    <div class="container">
+        <section class="panel">
+            <div class="panel-header">
+                <h2>👩‍🏫 ຜັງລາຍຊື່ຄູປະຈຳຫ້ອງ (ຊັ້ນຮຽນຕ່າງໆ)</h2>
+                <p class="subtitle" id="user-role-subtitle">ກວດສອບຊື່ຄູອາຈານທີ່ຮັບຜິດຊອບເປັນຄູປະຈຳຊັ້ນ/ຫ້ອງ ແລະ ຈຳນວນນັກຮຽນ</p>
+            </div>
 
-        <a href="index.html" class="back-link">⬅️ ກັບສູ່ໜ້າຫຼັກລະບົບ</a>
+            <nav class="nav-links-bar" aria-label="ລິ້ງໄປໜ້າຕ່າງໆ">
+                <a href="index.html" class="nav-chip">🏠 ໜ້າຫຼັກ</a>
+                <a href="ປະຕິທິນ.html" class="nav-chip">📅 ປະຕິທິນ &amp; ຕາຕະລາງ</a>
+                <a href="teachers-room.html" class="nav-chip active">👩‍🏫 ຄູປະຈຳຫ້ອງ</a>
+                <a href="update.html?tab=rooms" class="nav-chip">🏫 ຈັດການຫ້ອງ</a>
+                <a href="update.html?tab=teachers" class="nav-chip">👨‍🏫 ຈັດການຄູ</a>
+                <a href="update.html?tab=students" class="nav-chip">🎓 ຈັດການນັກຮຽນ</a>
+                <a href="update.html?tab=schedules" class="nav-chip">🗓️ ຕາຕະລາງສອນ</a>
+                <a href="update.html?tab=scores" class="nav-chip">📊 ຄະແນນ</a>
+                <a href="update.html?tab=tuition" class="nav-chip">💰 ຄ່າຮຽນ</a>
+                <a href="update.html?tab=subjects" class="nav-chip">📚 ວິຊາຮຽນ</a>
+                <a href="update.html?tab=terms" class="nav-chip" id="nav-chip-terms" style="display:none;">🗓️ ເທີມຮຽນ</a>
+            </nav>
+
+            <div class="top-bar">
+                <span class="badge-info" id="room-total-count">ຈຳນວນລາຍການ: 0 ລາຍການ</span>
+                <div class="top-actions">
+                    <a href="update.html?tab=rooms" class="btn-link-upd" id="btn-upd-rooms" style="display: none;">🛠️ 12. ອັບເດດລະບົບ (ຫ້ອງ)</a>
+                    <a href="update.html?tab=teachers" class="btn-link-upd" id="btn-upd-teachers" style="display: none;">🛠️ 12. ອັບເດດລະບົບ (ຄູ)</a>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label for="filter-room-select">🏫 ກອງຕາມຊັ້ນ / ຫ້ອງຮຽນ:</label>
+                    <select id="filter-room-select" onchange="renderCombinedView()">
+                        <option value="">-- ທຸກຫ້ອງ --</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-search-input">🔍 ຄົ້ນຫາຊື່ຄູ / ຫ້ອງ / ເບີໂທ:</label>
+                    <input type="text" id="filter-search-input" placeholder="ພິມຄຳຄົ້ນຫາ..." oninput="renderCombinedView()">
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="center" style="width: 68px;">ລຳດັບ</th>
+                            <th class="center" style="width: 155px;">ຊັ້ນ / ຫ້ອງຮຽນ</th>
+                            <th>ຊື່-ນາມສະກຸນ ຄູປະຈຳຫ້ອງ</th>
+                            <th class="center" style="width: 145px;">ຈຳນວນນັກຮຽນ</th>
+                            <th class="center" style="width: 145px;">ເບີໂທລະສັບ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="homeroom-table-body">
+                        <tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bottom-nav">
+                <a href="index.html" class="back-link">⬅️ ກັບສູ່ໜ້າຫຼັກລະບົບ</a>
+                <a href="ປະຕິທິນ.html" class="back-link">📅 ໄປໜ້າປະຕິທິນ →</a>
+            </div>
+        </section>
     </div>
 
     <script type="module">
@@ -92,6 +478,7 @@
         const HOMEROOM_COLLECTION = "homeroom_teachers";
         const ROOMS_COLLECTION = "rooms";
         const TEACHERS_COLLECTION = "teachers";
+        const STUDENTS_COLLECTION = "students";
         const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
         const SYNC_EVENT_NAME = "school-data-updated";
 
@@ -118,13 +505,41 @@
         const isAdmin = userRole === "admin";
 
         const defaultRooms = [
-            { grade: "ມ.1", room: "ມ.1", teacherName: "ອ. ບຸນມີ ສຸວັນນະລາດ", phone: "020 5511xxxx", order: 1 },
-            { grade: "ມ.2", room: "ມ.2", teacherName: "ອ. ວຽງສະຫວັນ ພົມມະວົງ", phone: "020 5522xxxx", order: 2 },
-            { grade: "ມ.3", room: "ມ.3", teacherName: "ອ. ຄຳສຸກ ວົງສາ", phone: "020 5533xxxx", order: 3 },
-            { grade: "ມ.4", room: "ມ.4", teacherName: "ອ. ມາລີ ຈັນທະວົງ", phone: "020 5544xxxx", order: 4 },
-            { grade: "ມ.5", room: "ມ.5", teacherName: "ອ. ຜູ້ຮັບຜິດຊອບຫ້ອງ ມ.5", phone: "0943782971", order: 5 },
-            { grade: "ມ.6", room: "ມ.6", teacherName: "ອ. ອາທິດ ໄຊຍະວົງ", phone: "020 5566xxxx", order: 6 }
+            { grade: "ມ.1", room: "ມ.1", teacherName: "ອ. ບຸນມີ ສຸວັນນະລາດ", phone: "020 5511xxxx", studentCount: 0, order: 1 },
+            { grade: "ມ.2", room: "ມ.2", teacherName: "ອ. ວຽງສະຫວັນ ພົມມະວົງ", phone: "020 5522xxxx", studentCount: 0, order: 2 },
+            { grade: "ມ.3", room: "ມ.3", teacherName: "ອ. ຄຳສຸກ ວົງສາ", phone: "020 5533xxxx", studentCount: 0, order: 3 },
+            { grade: "ມ.4", room: "ມ.4", teacherName: "ອ. ມາລີ ຈັນທະວົງ", phone: "020 5544xxxx", studentCount: 0, order: 4 },
+            { grade: "ມ.5", room: "ມ.5", teacherName: "ອ. ຜູ້ຮັບຜິດຊອບຫ້ອງ ມ.5", phone: "0943782971", studentCount: 0, order: 5 },
+            { grade: "ມ.6", room: "ມ.6", teacherName: "ອ. ອາທິດ ໄຊຍະວົງ", phone: "020 5566xxxx", studentCount: 0, order: 6 }
         ];
+
+        let latestHomeroom = [];
+        let latestRooms = [];
+        let latestTeachers = [];
+        let studentCountByGrade = new Map();
+
+        function rebuildStudentCounts(studentDocs) {
+            const counts = new Map();
+            const seenStudents = new Set();
+
+            for (const docSnap of studentDocs) {
+                const d = docSnap.data() || {};
+                const grade = cleanGrade(d.grade || d.room || d.classRoom || "");
+                if (!grade) continue;
+
+                const code = cleanVal(d.studentCode || d.studentId || d.code || "").toLowerCase();
+                const name = cleanVal(d.name || d.studentName || "").replace(/\s+/g, " ").toLowerCase();
+                const dedupKey = code ? `code:${code}` : (name ? `ng:${name}__${grade.toLowerCase()}` : `doc:${docSnap.id}`);
+
+                if (seenStudents.has(dedupKey)) continue;
+                seenStudents.add(dedupKey);
+
+                const gKey = grade.toLowerCase();
+                counts.set(gKey, (counts.get(gKey) || 0) + 1);
+            }
+
+            studentCountByGrade = counts;
+        }
 
         function mapHomeroomDoc(docSnap) {
             const d = docSnap.data() || {};
@@ -132,6 +547,7 @@
             const teacherVal = cleanVal(d.teacherName || d.advisor || d.name || "");
             const phoneVal = cleanVal(d.phone || d.email || "-");
             const orderVal = Number(d.order) || 99;
+            const capVal = Number(d.capacity ?? d.studentCount ?? 0);
             return {
                 docId: docSnap.id,
                 sourceLabel: "",
@@ -139,6 +555,7 @@
                 room: gradeVal,
                 teacherName: teacherVal,
                 phone: phoneVal || "-",
+                fallbackCount: Number.isFinite(capVal) && capVal > 0 ? capVal : 0,
                 order: orderVal
             };
         }
@@ -147,7 +564,8 @@
             const d = docSnap.data() || {};
             const gradeVal = cleanGrade(d.name || d.roomName || d.room || d.grade || "");
             const teacherVal = cleanVal(d.advisor || d.homeroomTeacher || d.teacherName || "ຍັງບໍ່ໄດ້ລະບຸຄູປະຈຳຫ້ອງ");
-            const phoneVal = cleanVal(d.phone || d.capacity || "-");
+            const phoneVal = cleanVal(d.phone || "-");
+            const capVal = Number(d.capacity ?? d.studentCount ?? 0);
             return {
                 docId: docSnap.id,
                 sourceLabel: "ຫ້ອງ",
@@ -155,6 +573,7 @@
                 room: gradeVal,
                 teacherName: teacherVal,
                 phone: phoneVal || "-",
+                fallbackCount: Number.isFinite(capVal) && capVal > 0 ? capVal : 0,
                 order: 99
             };
         }
@@ -172,24 +591,31 @@
                 room: gradeVal || "-",
                 teacherName: teacherVal,
                 phone: phoneVal || "-",
+                fallbackCount: 0,
                 order: 99
             };
         }
 
         function mergeRecords(homeroomList, roomList, teacherList) {
             const merged = [...homeroomList];
-            const existingGrades = new Set(homeroomList.map((r) => cleanGrade(r.grade)).filter(Boolean));
+            const existingGrades = new Set(homeroomList.map((r) => cleanGrade(r.grade).toLowerCase()).filter(Boolean));
             const existingTeachers = new Set(homeroomList.map((r) => cleanVal(r.teacherName).toLowerCase()).filter(Boolean));
 
             for (const rm of roomList) {
                 if (!rm.grade) continue;
-                if (!existingGrades.has(rm.grade)) {
+                const gKey = rm.grade.toLowerCase();
+                if (!existingGrades.has(gKey)) {
                     merged.push(rm);
-                    existingGrades.add(rm.grade);
-                } else if (rm.teacherName && rm.teacherName !== "ຍັງບໍ່ໄດ້ລະບຸຄູປະຈຳຫ້ອງ") {
-                    const target = merged.find((x) => cleanGrade(x.grade) === rm.grade);
-                    if (target && (!target.teacherName || target.teacherName === "-")) {
-                        target.teacherName = rm.teacherName;
+                    existingGrades.add(gKey);
+                } else {
+                    const target = merged.find((x) => cleanGrade(x.grade).toLowerCase() === gKey);
+                    if (target) {
+                        if (rm.teacherName && rm.teacherName !== "ຍັງບໍ່ໄດ້ລະບຸຄູປະຈຳຫ້ອງ" && (!target.teacherName || target.teacherName === "-")) {
+                            target.teacherName = rm.teacherName;
+                        }
+                        if (!target.fallbackCount && rm.fallbackCount) {
+                            target.fallbackCount = rm.fallbackCount;
+                        }
                     }
                 }
             }
@@ -197,8 +623,9 @@
             for (const tc of teacherList) {
                 if (!tc.teacherName) continue;
                 const tKey = tc.teacherName.toLowerCase();
-                if (tc.grade && tc.grade !== "-" && existingGrades.has(tc.grade)) {
-                    const target = merged.find((x) => cleanGrade(x.grade) === tc.grade);
+                const gKey = tc.grade && tc.grade !== "-" ? tc.grade.toLowerCase() : "";
+                if (gKey && existingGrades.has(gKey)) {
+                    const target = merged.find((x) => cleanGrade(x.grade).toLowerCase() === gKey);
                     if (target && (!target.teacherName || target.teacherName === "-")) {
                         target.teacherName = tc.teacherName;
                         if (tc.phone && tc.phone !== "-") target.phone = tc.phone;
@@ -209,32 +636,75 @@
                 }
             }
 
-            return merged;
+            return merged.map((item) => {
+                const gKey = cleanGrade(item.grade).toLowerCase();
+                const liveCount = gKey ? studentCountByGrade.get(gKey) : undefined;
+                const studentCount = liveCount !== undefined ? liveCount : (item.fallbackCount || 0);
+                return { ...item, studentCount };
+            });
         }
 
-        let latestHomeroom = [];
-        let latestRooms = [];
-        let latestTeachers = [];
+        function refreshRoomFilterOptions(allItems) {
+            const selectEl = document.getElementById("filter-room-select");
+            if (!selectEl) return;
 
-        function renderCombinedView() {
-            const list = mergeRecords(latestHomeroom, latestRooms, latestTeachers);
+            const prevVal = cleanGrade(selectEl.value).toLowerCase();
+            const uniqueRooms = new Map();
+
+            for (const item of allItems) {
+                const g = cleanGrade(item.grade);
+                if (!g || g === "-") continue;
+                const key = g.toLowerCase();
+                if (!uniqueRooms.has(key)) {
+                    uniqueRooms.set(key, g);
+                }
+            }
+
+            const sortedRooms = Array.from(uniqueRooms.values()).sort((a, b) => a.localeCompare(b));
+            selectEl.innerHTML =
+                `<option value="">-- ທຸກຫ້ອງ --</option>` +
+                sortedRooms.map((r) => `<option value="${esc(r)}">${esc(r)}</option>`).join("");
+
+            if (prevVal) {
+                const matched = Array.from(selectEl.options).find((o) => cleanGrade(o.value).toLowerCase() === prevVal);
+                if (matched) selectEl.value = matched.value;
+            }
+        }
+
+        window.renderCombinedView = function () {
+            const allList = mergeRecords(latestHomeroom, latestRooms, latestTeachers);
+            allList.sort((a, b) => (a.order || 99) - (b.order || 99) || String(a.grade).localeCompare(String(b.grade)));
+            refreshRoomFilterOptions(allList);
+
+            const roomFilter = cleanGrade(document.getElementById("filter-room-select")?.value || "").toLowerCase();
+            const searchKw = cleanVal(document.getElementById("filter-search-input")?.value || "").toLowerCase();
+
+            const filteredList = allList.filter((item) => {
+                const gClean = cleanGrade(item.grade).toLowerCase();
+                const matchesRoom = !roomFilter || gClean === roomFilter;
+                const matchesSearch = !searchKw ||
+                    String(item.grade || "").toLowerCase().includes(searchKw) ||
+                    String(item.teacherName || "").toLowerCase().includes(searchKw) ||
+                    String(item.phone || "").toLowerCase().includes(searchKw) ||
+                    String(item.sourceLabel || "").toLowerCase().includes(searchKw);
+                return matchesRoom && matchesSearch;
+            });
+
             const tbody = document.getElementById("homeroom-table-body");
             const totalBadge = document.getElementById("room-total-count");
+            totalBadge.innerText = `ຈຳນວນລາຍການ: ${filteredList.length} / ${allList.length} ລາຍການ`;
 
-            list.sort((a, b) => (a.order || 99) - (b.order || 99) || String(a.grade).localeCompare(String(b.grade)));
-            totalBadge.innerText = `ຈຳນວນລາຍການ: ${list.length} ລາຍການ`;
-
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="center" style="padding: 20px; color: #dc3545;">ຍັງບໍ່ມີຂໍ້ມູນຄູປະຈຳຫ້ອງ</td></tr>`;
+            if (filteredList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #fca5a5;">ບໍ່ພົບຂໍ້ມູນຄູປະຈຳຫ້ອງຕາມເງື່ອນໄຂທີ່ເລືອກ</td></tr>`;
                 return;
             }
 
             let html = '';
-            list.forEach((item, idx) => {
-                const isTargetGrade = item.grade === userGrade || String(item.grade || "").includes("ມ.5");
+            filteredList.forEach((item, idx) => {
+                const isTargetGrade = cleanGrade(item.grade) === userGrade || String(item.grade || "").includes("ມ.5");
                 const rowClass = isTargetGrade ? 'class="highlight-row"' : '';
                 const gradeLabel = isTargetGrade ? `⭐ ${esc(item.grade)} (ຫ້ອງປະຈຳ)` : `<strong>${esc(item.grade || '-')}</strong>`;
-                const nameStyle = isTargetGrade ? 'style="color: #2e7d32;"' : '';
+                const nameStyle = isTargetGrade ? 'style="color: #86efac;"' : '';
                 const tagHtml = item.sourceLabel ? `<span class="source-tag">${esc(item.sourceLabel)}</span>` : "";
 
                 html += `
@@ -242,17 +712,18 @@
                         <td class="center">${idx + 1}</td>
                         <td class="center">${gradeLabel}</td>
                         <td ${nameStyle}>${esc(item.teacherName || '-')}${tagHtml}</td>
+                        <td class="center"><span class="student-count-pill">${esc(String(item.studentCount ?? 0))} ຄົນ</span></td>
                         <td class="center">${esc(item.phone || '-')}</td>
                     </tr>
                 `;
             });
 
             tbody.innerHTML = html;
-        }
+        };
 
         window.loadHomeroomTeachers = async function () {
             const tbody = document.getElementById("homeroom-table-body");
-            tbody.innerHTML = `<tr><td colspan="4" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px;">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr>`;
 
             try {
                 const colRef = collection(db, HOMEROOM_COLLECTION);
@@ -281,10 +752,17 @@
                     latestTeachers = [];
                 }
 
+                try {
+                    const studentSnap = await getDocs(collection(db, STUDENTS_COLLECTION));
+                    rebuildStudentCounts(studentSnap.docs);
+                } catch (e) {
+                    studentCountByGrade = new Map();
+                }
+
                 renderCombinedView();
             } catch (err) {
                 console.error(err);
-                tbody.innerHTML = `<tr><td colspan="4" class="center" style="padding: 20px; color: red;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ: ${esc(err.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="center" style="padding: 20px; color: #fca5a5;">ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນ: ${esc(err.message)}</td></tr>`;
             }
         };
 
@@ -313,17 +791,26 @@
             renderCombinedView();
         }, () => {});
 
+        onSnapshot(collection(db, STUDENTS_COLLECTION), (snap) => {
+            rebuildStudentCounts(snap.docs);
+            renderCombinedView();
+        }, () => {});
+
         window.addEventListener("storage", (e) => {
             if (e.key === SYNC_STORAGE_KEY) loadHomeroomTeachers();
         });
         window.addEventListener(SYNC_EVENT_NAME, () => loadHomeroomTeachers());
 
         window.addEventListener("DOMContentLoaded", async () => {
+            document.getElementById("top-user-name").innerText = userName;
+            document.getElementById("top-user-role").innerText = userRole.toUpperCase();
             document.getElementById("user-role-subtitle").innerText = `ຜູ້ໃຊ້ງານ: ${userName} (${userRole.toUpperCase()}) • ຫ້ອງ: ${userGrade}`;
 
             if (isAdmin) {
-                document.getElementById("btn-upd-rooms").style.display = "inline-block";
-                document.getElementById("btn-upd-teachers").style.display = "inline-block";
+                document.getElementById("btn-upd-rooms").style.display = "inline-flex";
+                document.getElementById("btn-upd-teachers").style.display = "inline-flex";
+                const termsChip = document.getElementById("nav-chip-terms");
+                if (termsChip) termsChip.style.display = "inline-block";
             }
 
             await loadHomeroomTeachers();
