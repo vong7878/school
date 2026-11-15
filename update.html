@@ -55,7 +55,7 @@
             font-weight: 700;
         }
 
-        .container { max-width: 1220px; margin: 24px auto; padding: 0 16px; }
+        .container { max-width: 1280px; margin: 24px auto; padding: 0 16px; }
 
         .submenus {
             display: grid;
@@ -146,7 +146,7 @@
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
             gap: 10px;
         }
         .form-group label {
@@ -198,7 +198,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 680px;
+            min-width: 760px;
         }
         th, td {
             border: 1px solid #334155;
@@ -291,7 +291,7 @@
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, addDoc, setDoc, updateDoc, deleteDoc, doc, serverTimestamp
+        getFirestore, collection, getDocs, addDoc, setDoc, deleteDoc, doc, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -479,15 +479,27 @@
             collections: ["students"],
             primaryCol: "students",
             fields: [
-                { name: "studentCode", label: "ລະຫັດນັກຮຽນ", type: "text", required: true, placeholder: "STU001" },
-                { name: "name", label: "ຊື່ ແລະ ນາມສະກຸນ", type: "text", required: true, placeholder: "ຊື່ນັກຮຽນ" },
-                { name: "grade", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.6/1" },
+                { name: "studentCode", label: "ລະຫັດນັກຮຽນ", type: "text", required: true, placeholder: "ເຊັ່ນ: STD-006" },
+                { name: "name", label: "ຊື່ ແລະ ນາມສະກຸນນັກຮຽນ", type: "text", required: true, placeholder: "ເຊັ່ນ: ທ. ສົມປອງ ຈັນທະລາ" },
+                { name: "grade", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.5" },
+                { name: "gender", label: "ເພດ", type: "select", required: true, options: ["ຊາຍ", "ຍິງ", "ອື່ນໆ"] },
+                { name: "birthDate", label: "ວັນເດືອນປີເກີດ", type: "date", required: false, placeholder: "" },
+                { name: "guardianName", label: "ຊື່ຜູ້ປົກຄອງ", type: "text", required: false, placeholder: "ເຊັ່ນ: ທ. ບຸນມີ ຈັນທະລາ" },
+                { name: "phone", label: "ເບີໂທຕິດຕໍ່", type: "text", required: false, placeholder: "ເຊັ່ນ: 020 5544 3322" },
+                { name: "address", label: "ບ້ານ / ເມືອງ / ແຂວງ", type: "text", required: false, placeholder: "ເຊັ່ນ: ບ້ານໂພນໄຊ, ນະຄອນຫຼວງວຽງຈັນ" },
+                { name: "history", label: "ປະຫວັດການຮຽນ / ຜົນງານ / ບັນທຶກປະຫວັດ", type: "text", required: false, placeholder: "ບັນທຶກປະຫວັດການເຂົ້າຮຽນ, ຜົນງານ, ກິດຈະກຳ ຫຼື ໝາຍເຫດ" },
                 { name: "status", label: "ສະຖານະ", type: "text", required: false, placeholder: "ກຳລັງຮຽນ" }
             ],
             columns: [
                 { key: "studentCode", label: "ລະຫັດ" },
-                { key: "name", label: "ຊື່ນັກຮຽນ" },
+                { key: "name", label: "ຊື່ ແລະ ນາມສະກຸນ" },
                 { key: "grade", label: "ຫ້ອງ" },
+                { key: "gender", label: "ເພດ" },
+                { key: "birthDate", label: "ວັນເດືອນປີເກີດ" },
+                { key: "guardianName", label: "ຊື່ຜູ້ປົກຄອງ" },
+                { key: "phone", label: "ເບີໂທຕິດຕໍ່" },
+                { key: "address", label: "ບ້ານ/ເມືອງ/ແຂວງ" },
+                { key: "history", label: "ປະຫວັດການຮຽນ/ຜົນງານ/ບັນທຶກປະຫວັດ" },
                 { key: "status", label: "ສະຖານະ" }
             ],
             mapDoc: (d, id) => ({
@@ -495,6 +507,12 @@
                 studentCode: cleanVal(d.studentCode || d.studentId || d.code || id),
                 name: cleanVal(d.name || d.studentName),
                 grade: cleanVal(d.grade || d.room || d.classRoom),
+                gender: cleanVal(d.gender || d.sex || ""),
+                birthDate: cleanVal(d.birthDate || d.dob || d.birthday || ""),
+                guardianName: cleanVal(d.guardianName || d.parentName || d.guardian || ""),
+                phone: cleanVal(d.phone || d.tel || d.contact || ""),
+                address: cleanVal(d.address || d.location || d.village || ""),
+                history: cleanVal(d.history || d.record || d.achievements || d.note || ""),
                 status: cleanVal(d.status || "ກຳລັງຮຽນ"),
                 _raw: d
             })
@@ -831,7 +849,7 @@
         } else {
             getActiveFields().forEach((f) => {
                 const el = document.getElementById("fld-" + f.name);
-                if (el) el.value = target[f.name] || "";
+                if (el) el.value = target[f.name] || (f.type === "select" ? (f.options?.[0] || "") : "");
             });
         }
 
@@ -939,6 +957,8 @@
                 } else if (currentTab === "students") {
                     payload.studentId = payload.studentCode;
                     payload.room = payload.grade;
+                    payload.studentName = payload.name;
+                    if (!payload.status) payload.status = "ກຳລັງຮຽນ";
                 } else if (currentTab === "schedules") {
                     payload.grade = payload.room;
                 } else if (currentTab === "tuition") {
