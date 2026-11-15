@@ -3,38 +3,117 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>👩‍🏫 ຈັດການຄູອາຈານ</title>
+    <title>👩‍🏫 ຫ້ອງຈັດການຄູ</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
         html, body {
             margin: 0;
+            padding: 0;
             font-family: 'Noto Sans Lao', sans-serif;
             background: #0f172a;
             color: #e2e8f0;
-            padding: 14px;
+            width: 100%;
             min-height: 100vh;
             min-height: 100dvh;
-            width: 100%;
             max-width: 100%;
             overflow-x: hidden;
             -webkit-text-size-adjust: 100%;
         }
+        body {
+            padding: 12px;
+        }
         .container {
-            width: 100%;
-            max-width: 1200px;
+            max-width: 1320px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
+            width: 100%;
             min-width: 0;
         }
+        .topbar {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-width: 0;
+            width: 100%;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .back-btn, a.top-link {
+            background: #334155;
+            color: #f8fafc;
+            text-decoration: none;
+            padding: 7px 11px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+        .back-btn:hover, a.top-link:hover { background: #475569; }
+        .page-title {
+            margin: 0;
+            font-size: clamp(14.5px, 4.2vw, 18px);
+            font-weight: 700;
+            color: #f8fafc;
+            line-height: 1.3;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            flex-wrap: wrap;
+            min-width: 0;
+            max-width: 100%;
+        }
+        #currentUserName {
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .badge {
+            padding: 4px 9px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 11.5px;
+            white-space: nowrap;
+        }
+        .badge-role-admin { background: #dc2626; color: #fff; }
+        .badge-role-teacher { background: #7c3aed; color: #fff; }
+        .badge-role-student { background: #2563eb; color: #fff; }
+        .badge-grade { background: #0f766e; color: #ccfbf1; }
+        .badge-fb { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
+
         .quota-banner {
-            background: rgba(245, 158, 11, 0.16);
-            border: 1px solid rgba(245, 158, 11, 0.55);
-            color: #fef08a;
-            border-radius: 12px;
-            padding: 10px 14px;
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: #fde68a;
+            border-radius: 10px;
+            padding: 9px 12px;
             font-size: 12px;
             line-height: 1.4;
             display: none;
@@ -43,339 +122,485 @@
         .quota-banner.show {
             display: block;
         }
-        .topbar {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 14px;
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            min-width: 0;
-        }
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            min-width: 0;
-            flex: 1 1 auto;
-        }
-        .back-btn {
-            background: #334155;
-            color: #f8fafc;
-            text-decoration: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 13.5px;
-            font-weight: 600;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .back-btn:hover { background: #475569; }
-        .page-title {
-            margin: 0;
-            font-size: clamp(16px, 4.2vw, 18.5px);
-            font-weight: 700;
-            color: #f8fafc;
-            line-height: 1.3;
-            overflow-wrap: anywhere;
-        }
-        .user-meta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            flex-wrap: wrap;
-            max-width: 100%;
-            min-width: 0;
-        }
-        #currentUserName {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 200px;
-        }
-        .badge {
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-weight: 600;
-            font-size: 11.5px;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .badge-role-admin { background: #dc2626; color: #fff; }
-        .badge-role-teacher { background: #7c3aed; color: #fff; }
-        .badge-role-student { background: #2563eb; color: #fff; }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
+        .admin-only,
+        #nav-manage,
+        #panel-manage,
+        .btn-edit,
+        .btn-del {
+            display: none !important;
         }
-        .stat-card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 12px 14px;
-            min-width: 0;
-        }
-        .stat-label { font-size: 12px; color: #94a3b8; }
-        .stat-value { font-size: 20px; font-weight: 700; color: #38bdf8; margin-top: 2px; }
 
         .card {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            padding: 16px 18px;
+            padding: 14px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
             min-width: 0;
             width: 100%;
         }
         .card-header {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: stretch;
             gap: 10px;
             padding-bottom: 12px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             border-bottom: 1px solid #334155;
             min-width: 0;
         }
         .card-header h2 {
             margin: 0;
-            font-size: clamp(14.5px, 3.8vw, 16.5px);
+            font-size: clamp(14.5px, 4vw, 16.5px);
             font-weight: 700;
             color: #f8fafc;
             line-height: 1.35;
             overflow-wrap: anywhere;
         }
-        .form-grid {
+        .controls {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 10px;
-        }
-        .form-group { min-width: 0; }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 4px;
-        }
-        input, select {
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 8px;
             width: 100%;
             min-width: 0;
-            max-width: 100%;
+        }
+        input, select {
             background: #0f172a;
             color: #f8fafc;
             border: 1px solid #475569;
             border-radius: 8px;
-            padding: 8px 11px;
+            padding: 8px 10px;
             font-family: inherit;
             font-size: 13px;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
         }
         input:focus, select:focus {
             outline: none;
             border-color: #38bdf8;
         }
-        .controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            min-width: 0;
-        }
-        .controls input {
-            flex: 1 1 200px;
-        }
-        .form-actions {
-            margin-top: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
         button {
             font-family: inherit;
             border: none;
             border-radius: 8px;
-            padding: 8px 13px;
-            font-size: 13px;
+            padding: 8px 12px;
+            font-size: 12.5px;
             font-weight: 600;
             cursor: pointer;
-            white-space: nowrap;
             max-width: 100%;
         }
-        button:hover:not(:disabled) { opacity: 0.92; }
-        button:disabled { opacity: 0.6; cursor: not-allowed; }
-        .btn-save { background: #16a34a; color: #fff; }
-        .btn-cancel { background: #475569; color: #fff; }
-        .btn-sync { background: #0284c7; color: #fff; }
-        .btn-edit { background: #eab308; color: #0f172a; padding: 5px 10px; font-size: 12px; }
-        .btn-del { background: #dc2626; color: #fff; padding: 5px 10px; font-size: 12px; }
-
-        .row-actions {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
+        button:hover { opacity: 0.92; }
+        .btn-sync {
+            background: #0284c7;
+            color: #fff;
+            white-space: nowrap;
+        }
+        .btn-view {
+            background: #2563eb;
+            color: #fff;
+            padding: 6px 11px;
+            font-size: 12px;
+            white-space: nowrap;
         }
 
         .table-wrap {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            border-radius: 8px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 680px;
+            min-width: 1020px;
         }
         th, td {
             border: 1px solid #334155;
-            padding: 9px 11px;
+            padding: 10px 11px;
             text-align: left;
             font-size: 13px;
-            overflow-wrap: anywhere;
-            word-break: break-word;
+            line-height: 1.35;
         }
         th {
             background: #0f172a;
             color: #93c5fd;
             font-weight: 700;
+            white-space: nowrap;
         }
         td {
             background: #162032;
             color: #e2e8f0;
+            overflow-wrap: anywhere;
         }
         tr:hover td { background: #24334d; }
         .center { text-align: center; }
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
-        .denied-box {
-            background: #1e293b;
-            border: 1px solid #ef4444;
-            border-radius: 14px;
-            padding: 20px;
-            text-align: center;
-            color: #fca5a5;
+        .subject-pill {
+            background: rgba(56, 189, 248, 0.16);
+            color: #7dd3fc;
+            border: 1px solid #38bdf8;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 600;
+            display: inline-block;
+            max-width: 100%;
+            overflow-wrap: anywhere;
         }
 
-        @media (max-width: 640px) {
-            html, body {
-                padding: 10px;
-            }
-            .topbar, .card {
-                padding: 13px 12px;
-                border-radius: 12px;
-            }
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-            .controls, .form-actions {
-                width: 100%;
+        .pass-cell-box {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 5px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+        table .pass-cell-box {
+            justify-content: center;
+        }
+        .pass-value {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 3px 7px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #e2e8f0;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+        }
+        .pass-hidden-text {
+            color: #64748b;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .mini-btn {
+            background: #334155;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .mini-btn:hover { background: #475569; }
+        .mini-btn.edit-btn {
+            background: rgba(37, 99, 235, 0.25);
+            border-color: rgba(96, 165, 250, 0.5);
+            color: #93c5fd;
+        }
+
+        /* Mobile Card List */
+        .mobile-cards {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            min-width: 0;
+        }
+        .teacher-card {
+            background: #162032;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            min-width: 0;
+        }
+        .teacher-card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #26354d;
+            min-width: 0;
+        }
+        .teacher-card-head > div:first-child {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .teacher-card-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #f8fafc;
+            overflow-wrap: anywhere;
+            line-height: 1.35;
+        }
+        .teacher-card-sub {
+            font-size: 11.5px;
+            color: #94a3b8;
+            margin-top: 2px;
+            overflow-wrap: anywhere;
+        }
+        .teacher-card-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 12px;
+            min-width: 0;
+        }
+        .teacher-card-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            min-width: 0;
+        }
+        .teacher-card-label {
+            color: #94a3b8;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .teacher-card-val {
+            text-align: right;
+            color: #e2e8f0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .teacher-card-pass {
+            padding-top: 8px;
+            border-top: 1px solid #26354d;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+        .teacher-card-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 2px;
+        }
+
+        .history-box {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 12px;
+            min-width: 0;
+        }
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .history-item {
+            background: #162032;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 9px 11px;
+            font-size: 12.5px;
+            overflow-wrap: anywhere;
+            min-width: 0;
+        }
+        .history-label {
+            color: #94a3b8;
+            font-size: 11px;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .note-text {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 6px;
+            overflow-wrap: anywhere;
+        }
+
+        /* Modal ແກ້ໄຂອີເມວ ແລະ ລະຫັດຜ່ານ */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.84);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        .modal-backdrop.active { display: flex; }
+        .modal-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 420px;
+            max-height: 92dvh;
+            overflow-y: auto;
+            padding: 15px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+        }
+        .modal-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 4px;
+            overflow-wrap: anywhere;
+        }
+        .modal-sub {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            overflow-wrap: anywhere;
+        }
+        .form-field { margin-bottom: 11px; }
+        .form-field label {
+            display: block;
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .form-field input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #f8fafc;
+            font-size: 13.5px;
+        }
+        .form-field input:disabled { opacity: 0.55; cursor: not-allowed; }
+        .field-hint { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+        .btn-cancel { background: #334155; color: #f8fafc; }
+        .btn-save { background: #2563eb; color: #fff; }
+        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 14px;
+            left: 50%;
+            transform: translate(-50%, 12px);
+            background: #1e293b;
+            border: 1px solid #38bdf8;
+            color: #f8fafc;
+            padding: 9px 13px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+            z-index: 1200;
+            opacity: 0;
+            transition: 0.2s;
+            pointer-events: none;
+            max-width: calc(100% - 20px);
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+        .toast-msg.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            .topbar {
                 flex-direction: column;
                 align-items: stretch;
+                padding: 10px;
+                gap: 8px;
             }
-            .controls input,
-            .controls button,
-            .form-actions button {
+            .topbar-left, .user-meta {
                 width: 100%;
-                flex: 1 1 auto;
             }
-            table {
-                min-width: 580px;
-            }
-            th, td {
-                padding: 8px 9px;
-                font-size: 12px;
+            .user-meta {
+                justify-content: space-between;
             }
             #currentUserName {
                 max-width: 150px;
             }
+            .card {
+                padding: 10px;
+                border-radius: 12px;
+            }
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            .btn-sync {
+                width: 100%;
+                text-align: center;
+            }
+            .table-wrap { display: none; }
+            .mobile-cards { display: flex; }
+            .history-grid { grid-template-columns: 1fr; }
+            .modal-actions .btn-cancel,
+            .modal-actions .btn-save {
+                flex: 1 1 auto;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 380px) {
+            body { padding: 6px; }
+            .back-btn, a.top-link {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+            #currentUserName { max-width: 110px; }
+            .teacher-card { padding: 9px; }
+            .teacher-card-head { flex-direction: column; align-items: stretch; gap: 6px; }
+        }
+
+        #fbSyncBadge,
+        .badge-fb,
+        [data-hide-firebase="true"],
+        [class*="firebase" i],
+        [id*="firebase" i] {
+            display: none !important;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="quota-banner" id="quotaBanner">
-        ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບກຳລັງໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໃນເຄື່ອງ (`localStorage`) ແລະ ຈຳກັດການໂຫຼດຊ້ຳ.
-    </div>
-
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
-            <h1 class="page-title">👩‍🏫 ຈັດການຄູອາຈານ</h1>
+            <a href="teachers-room.html" class="top-link">👩‍🏫 ຜັງຄູປະຈຳຫ້ອງ</a>
+            <h1 class="page-title">👩‍🏫 ຫ້ອງຈັດການຄູ</h1>
         </div>
         <div class="user-meta">
+            <span id="fbSyncBadge" class="badge badge-fb">🔥 Firebase</span>
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
             <span id="currentUserRole" class="badge badge-role-student">STUDENT</span>
+            <span id="currentUserGrade" class="badge badge-grade">ມ.5</span>
         </div>
     </div>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-label">ຈຳນວນຄູທັງໝົດ</div>
-            <div class="stat-value" id="statTotalTeachers">0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">ຄູປະຈຳຫ້ອງ</div>
-            <div class="stat-value" id="statAdvisorTeachers">0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">ຫ້ອງຮຽນທີ່ມີຄູ</div>
-            <div class="stat-value" id="statCoveredRooms">0</div>
-        </div>
+    <div class="quota-banner" id="quotaBanner">
+        ⚠️ ໂຄຕ້າປະຈຳມື້ຂອງ Firebase ອາດຈະເຕັມ — ລະບົບກຳລັງໃຊ້ຂໍ້ມູນທີ່ເກັບໃນເຄື່ອງ (`localStorage`) ແລະ ຫຼຸດການເອີ້ນຖານຂໍ້ມູນອັດຕະໂນມັດ.
     </div>
 
-    <section class="card" id="teacherFormSection">
+    <section class="card" id="panel-history">
         <div class="card-header">
-            <h2 id="teacherFormTitle">➕ ເພີ່ມ / ແກ້ໄຂ ຂໍ້ມູນຄູອາຈານ</h2>
-        </div>
-        <form id="teacherForm" onsubmit="handleTeacherSubmit(event)">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>ຊື່ຄູອາຈານ *</label>
-                    <input type="text" id="tchName" placeholder="ເຊັ່ນ: ອ.ສິລິພອນ" required />
-                </div>
-                <div class="form-group">
-                    <label>ວິຊາສອນຫຼັກ</label>
-                    <input type="text" id="tchSubject" placeholder="ເຊັ່ນ: ຄະນິດສາດ" />
-                </div>
-                <div class="form-group">
-                    <label>ຫ້ອງປະຈຳ / ຫ້ອງຮັບຜິດຊອບ</label>
-                    <input type="text" id="tchRoom" list="roomsDatalist" placeholder="ເຊັ່ນ: ມ.6/3" />
-                    <datalist id="roomsDatalist"></datalist>
-                </div>
-                <div class="form-group">
-                    <label>ເບີໂທ / ຕິດຕໍ່</label>
-                    <input type="text" id="tchPhone" placeholder="ເຊັ່ນ: 020 5555 1234" />
-                </div>
-                <div class="form-group">
-                    <label>ໝາຍເຫດ</label>
-                    <input type="text" id="tchNote" placeholder="ເຊັ່ນ: ຄູປະຈຳຫ້ອງ" />
-                </div>
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn-save" id="btnSaveTeacher">💾 ບັນທຶກຂໍ້ມູນຄູ</button>
-                <button type="button" class="btn-cancel" id="btnCancelTeacher" style="display:none;" onclick="resetTeacherForm()">↩ ຍົກເລີກ</button>
-            </div>
-        </form>
-    </section>
-
-    <div class="denied-box" id="studentReadonlyNotice" style="display:none;">
-        ℹ️ ບັນຊີນັກຮຽນ (STUDENT) ສາມາດເບິ່ງລາຍຊື່ຄູອາຈານໄດ້ຢ່າງດຽວ
-    </div>
-
-    <section class="card">
-        <div class="card-header">
-            <h2>📋 ລາຍຊື່ຄູອາຈານທັງໝົດ (ຊິ້ງກັບຫ້ອງຮຽນ & ລະບົບ)</h2>
+            <h2>🔍 ຄົ້ນຫາ ແລະ ເບິ່ງປະຫວັດຄູໃນໂຮງຮຽນ (ໂຕບໍ່ຊ້ຳກັນ)</h2>
             <div class="controls">
-                <input type="text" id="searchTeacherInput" placeholder="ຄົ້ນຫາຊື່ຄູ, ວິຊາ, ຫ້ອງ..." oninput="renderTeachersTable()" />
-                <button type="button" class="btn-sync" id="btnReloadTeachers" onclick="loadTeachersFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນໃໝ່</button>
+                <input type="text" id="searchTeacherInput" placeholder="ຄົ້ນຫາຊື່ຄູ, ວິຊາ, ຫ້ອງ, ອີເມວ..." oninput="renderTeachersTable()" />
+                <select id="filterDepartmentSelect" onchange="renderTeachersTable()">
+                    <option value="">ທຸກພາກວິຊາ / ກອງ</option>
+                    <option value="ວິທະຍາສາດ ແລະ ຄະນິດສາດ">ວິທະຍາສາດ ແລະ ຄະນິດສາດ</option>
+                    <option value="ພາສາ ແລະ ສັງຄົມສາດ">ພາສາ ແລະ ສັງຄົມສາດ</option>
+                    <option value="ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ">ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ</option>
+                </select>
+                <button type="button" class="btn-sync" id="syncBtn" onclick="loadTeachersFromFirestore(true)">🔄 ໂຫຼດຂໍ້ມູນ</button>
             </div>
         </div>
 
@@ -384,572 +609,663 @@
                 <thead>
                     <tr>
                         <th style="width: 55px;">ລ/ດ</th>
-                        <th>ຊື່ຄູອາຈານ</th>
-                        <th>ວິຊາສອນຫຼັກ</th>
-                        <th>ຫ້ອງປະຈຳ / ຮັບຜິດຊອບ</th>
-                        <th>ເບີໂທ / ຕິດຕໍ່</th>
-                        <th>ໝາຍເຫດ</th>
-                        <th style="width: 150px;">ຈັດການ</th>
+                        <th>ລະຫັດຄູ</th>
+                        <th>ຊື່ ແລະ ນາມສະກຸນ</th>
+                        <th>ວິຊາສອນ</th>
+                        <th>ຫ້ອງທີ່ຮັບຜິດຊອບ</th>
+                        <th>ພາກວິຊາ</th>
+                        <th>ປີເຂົ້າເຮັດວຽກ</th>
+                        <th>ອີເມວ</th>
+                        <th class="center" style="width: 210px;">ລະຫັດຜ່ານ</th>
+                        <th style="width: 115px;">ປະຫວັດ</th>
                     </tr>
                 </thead>
                 <tbody id="teachersTableBody"></tbody>
             </table>
         </div>
+
+        <div class="mobile-cards" id="teachersMobileCards"></div>
+
+        <div class="history-box" id="teacherDetailBox">
+            <h3 style="margin: 0 0 10px; font-size: 14.5px; color: #93c5fd;">📖 ລາຍລະອຽດປະຫວັດຄູ</h3>
+            <div id="teacherDetailContent" class="note-text">
+                ກົດປຸ່ມ "ເບິ່ງປະຫວັດ" ໃນຕາຕະລາງດ້ານເທິງ ເພື່ອເບິ່ງປະຫວັດການສອນ, ວຸດທິການສຶກສາ ແລະ ບັນທຶກປະຫວັດຂອງຄູ.
+            </div>
+        </div>
     </section>
 </div>
 
-<script>
+<div class="modal-backdrop" id="editCredModal" onclick="if(event.target===this) closeEditModal()">
+    <div class="modal-card">
+        <div class="modal-title" id="editModalTitle">✏️ ແກ້ໄຂຂໍ້ມູນບັນຊີ</div>
+        <div class="modal-sub" id="editModalSubtitle">ຄູ</div>
+        <form id="editCredForm" onsubmit="saveCredentialEdit(event)">
+            <div class="form-field">
+                <label for="editEmailInput">📧 ອີເມວ (Email)</label>
+                <input type="email" id="editEmailInput" placeholder="example@school.edu.la" />
+                <div class="field-hint" id="emailFieldHint">ແອັດມິນສາມາດປ່ຽນອີເມວໄດ້</div>
+            </div>
+            <div class="form-field">
+                <label for="editPasswordInput">🔑 ລະຫັດຜ່ານ (Password)</label>
+                <input type="text" id="editPasswordInput" placeholder="ປ້ອນລະຫັດຜ່ານ" />
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeEditModal()">ຍົກເລີກ</button>
+                <button type="submit" class="btn-save" id="saveCredBtn">ບັນທຶກ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="toast-msg" id="toastMsg"></div>
+
+<script type="module">
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+        getFirestore, collection, getDocs, doc, setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const DEFAULT_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
+        authDomain: "my-school-c1104.firebaseapp.com",
+        projectId: "my-school-c1104",
+        storageBucket: "my-school-c1104.firebasestorage.app",
+        messagingSenderId: "339930418459",
+        appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
+        measurementId: "G-NPNFSW2C72"
+    };
+
+    const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
+    window.FIREBASE_CONFIG = firebaseConfig;
+
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const COLLECTION_NAME = "teachers";
+    const CRED_OVERRIDE_STORAGE_KEY = "school_teacher_cred_overrides_v1";
+    const LAST_FETCH_TS_KEY = "school_teachers_last_fetch_ts";
     const QUOTA_BLOCK_UNTIL_KEY = "school_firestore_quota_blocked_until";
-    const TEACHERS_FETCH_TS_KEY = "school_teachers_last_fetch_ts";
-    const TEACHERS_COOLDOWN_MS = 60000;
-    const SUBMIT_COOLDOWN_MS = 1200;
-    const QUOTA_COOLDOWN_MS = 1800000;
-    let lastSubmitTs = 0;
-
-    function setQuotaNotice(active) {
-        const banner = document.getElementById("quotaBanner");
-        if (!banner) return;
-        if (active) banner.classList.add("show");
-        else banner.classList.remove("show");
-    }
-
-    function isQuotaBlockedNow() {
-        const blocked = Date.now() < Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
-        if (blocked) setQuotaNotice(true);
-        return blocked;
-    }
+    const FETCH_COOLDOWN_MS = 60000;
+    const QUOTA_COOLDOWN_MS = 1800000; // 30 นาที
 
     function cleanVal(v) {
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
     }
 
-    function normKey(v) {
-        return cleanVal(v).replace(/\s+/g, "").toLowerCase();
+    function cleanGrade(v) {
+        return cleanVal(v).replace(/\s+/g, "");
+    }
+
+    function isEmailLike(v) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanVal(v));
+    }
+
+    function isQuotaError(err) {
+        const code = String(err?.code || "").toLowerCase();
+        const msg = String(err?.message || "").toLowerCase();
+        return (
+            code.includes("resource-exhausted") ||
+            msg.includes("quota") ||
+            msg.includes("resource exhausted") ||
+            msg.includes("daily usage")
+        );
+    }
+
+    function setQuotaNotice(active) {
+        const banner = document.getElementById("quotaBanner");
+        if (!banner) return;
+        if (active) {
+            banner.classList.add("show");
+        } else {
+            banner.classList.remove("show");
+        }
     }
 
     function resolveRole() {
-        try {
-            const raw = (
-                localStorage.getItem("userRole") ||
-                localStorage.getItem("role") ||
-                localStorage.getItem("user_role") ||
-                "student"
-            ).trim().toLowerCase();
-            if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
-            if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
-        } catch (e) {}
+        const raw = cleanVal(
+            localStorage.getItem("userRole") ||
+            localStorage.getItem("role") ||
+            localStorage.getItem("user_role") ||
+            "student"
+        ).toLowerCase();
+
+        if (["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(raw)) return "admin";
+        if (["teacher", "ຄູ", "ຄູອາຈານ", "ครู"].includes(raw)) return "teacher";
         return "student";
     }
 
     const role = resolveRole();
-    const canManageTeachers = role === "admin" || role === "teacher";
-    const userName = (function () {
-        try {
-            return localStorage.getItem("userName") || "ຜູ້ໃຊ້ງານ";
-        } catch (e) {
-            return "ຜູ້ໃຊ້ງານ";
-        }
-    })();
+    const userGrade = cleanGrade(localStorage.getItem("userGrade") || "ມ.5") || "ມ.5";
+    const userName = cleanVal(localStorage.getItem("userName")) || "ຜູ້ໃຊ້ງານ";
+    const currentUserEmail = cleanVal(
+        localStorage.getItem("userEmail") || localStorage.getItem("email") || ""
+    ).toLowerCase();
+    const currentUserId = cleanVal(
+        localStorage.getItem("userId") || localStorage.getItem("uid") || ""
+    );
 
-    function normalizeTeacher(raw, idx = 0) {
+    const roleBadge = document.getElementById("currentUserRole");
+    roleBadge.textContent = role.toUpperCase();
+    roleBadge.className = `badge badge-role-${role}`;
+
+    document.getElementById("currentUserName").textContent = userName;
+    document.getElementById("currentUserGrade").textContent = userGrade;
+
+    let currentFilteredTeachers = [];
+    let activeEditingIndex = null;
+    const revealedPasswordKeys = new Set();
+
+    function showToast(message) {
+        const el = document.getElementById("toastMsg");
+        if (!el) return;
+        el.textContent = message;
+        el.classList.add("show");
+        clearTimeout(showToast._timer);
+        showToast._timer = setTimeout(() => {
+            el.classList.remove("show");
+        }, 3200);
+    }
+
+    function getLocalOverrides() {
+        try {
+            return JSON.parse(localStorage.getItem(CRED_OVERRIDE_STORAGE_KEY) || "{}");
+        } catch (_) {
+            return {};
+        }
+    }
+
+    function saveLocalOverride(item, emailVal, passVal, allowEmail, allowPass) {
+        try {
+            const overrides = getLocalOverrides();
+            const keyId = cleanVal(item.code || item.id || item.name).toLowerCase();
+            if (!keyId) return;
+            const prev = overrides[keyId] || {};
+            overrides[keyId] = {
+                email: allowEmail ? emailVal : (prev.email ?? item.email ?? ""),
+                password: allowPass ? passVal : (prev.password ?? item.password ?? ""),
+                updatedAt: Date.now()
+            };
+            localStorage.setItem(CRED_OVERRIDE_STORAGE_KEY, JSON.stringify(overrides));
+        } catch (_) {}
+    }
+
+    function isOwnerOfRecord(t) {
+        const recName = cleanVal(t.name).toLowerCase();
+        const loggedName = cleanVal(userName).toLowerCase();
+        const recEmail = cleanVal(t.email).toLowerCase();
+        const recUid = cleanVal(t.uid || t.userId || "");
+
+        if (currentUserId && recUid && currentUserId === recUid) return true;
+        if (currentUserEmail && recEmail && currentUserEmail === recEmail) return true;
+        if (loggedName && loggedName !== "ຜູ້ໃຊ້ງານ" && loggedName !== "user" && recName && recName === loggedName) {
+            return true;
+        }
+        return false;
+    }
+
+    function canViewPassword(t) {
+        return role === "admin" || isOwnerOfRecord(t);
+    }
+
+    function canEditPassword(t) {
+        return role === "admin" || isOwnerOfRecord(t);
+    }
+
+    function canEditEmail(t) {
+        return role === "admin";
+    }
+
+    function updateSyncBadge(text) {
+        const el = document.getElementById("fbSyncBadge");
+        if (el) el.textContent = text;
+    }
+
+    function normalizeTeacherRecord(raw, fallbackId = "") {
         const d = raw || {};
-        const name = cleanVal(d.name || d.teacherName || d.fullName || "");
-        const room = cleanVal(d.room || d.grade || d.classRoom || d.advisorRoom || "");
-        const subject = cleanVal(d.subject || d.major || d.subjectName || "");
-        const phone = cleanVal(d.phone || d.tel || d.contact || d.email || "");
-        const note = cleanVal(d.note || d.remark || "");
+        const idVal = cleanVal(d.id || d.code || fallbackId);
+        const nameVal = cleanVal(d.name || d.teacherName || "");
+        const subjectVal = cleanVal(d.subject || d.major || "");
+        const roomsVal = cleanVal(d.rooms || d.room || d.grade || "");
+        const rawEmail = cleanVal(d.email || d.userEmail || d.teacherEmail || "");
+        const rawPhone = cleanVal(d.phone || "");
+        const emailVal = rawEmail || (isEmailLike(rawPhone) ? rawPhone : "");
+        const passVal = cleanVal(d.password || d.pass || d.userPassword || d.pwd || "");
+        const overrides = getLocalOverrides();
+        const ovKey = cleanVal(d.code || idVal || nameVal).toLowerCase();
+        const ov = overrides[ovKey];
+
         return {
-            id: cleanVal(d.id || d.firestoreId || `TCH-${idx + 1}`),
-            firestoreId: cleanVal(d.firestoreId || d.id || `TCH-${idx + 1}`),
-            name,
-            subject,
-            room,
-            phone,
-            note,
-            fromRoomAdvisor: Boolean(d.fromRoomAdvisor)
+            ...d,
+            id: idVal,
+            firestoreId: cleanVal(d.firestoreId || fallbackId || idVal),
+            code: cleanVal(d.code || idVal),
+            name: nameVal,
+            subject: subjectVal,
+            rooms: roomsVal,
+            room: roomsVal,
+            department: cleanVal(d.department || "ວິທະຍາສາດ ແລະ ຄະນິດສາດ"),
+            joinYear: cleanVal(d.joinYear || ""),
+            education: cleanVal(d.education || ""),
+            phone: isEmailLike(rawPhone) ? "" : rawPhone,
+            email: ov && ov.email !== undefined && ov.email !== "" ? ov.email : emailVal,
+            password: ov && ov.password !== undefined && ov.password !== "" ? ov.password : passVal,
+            uid: cleanVal(d.uid || d.userId || ""),
+            history: cleanVal(d.history || "")
         };
     }
 
-    function getRoomsFromLocalStorage() {
-        try {
-            const list = JSON.parse(localStorage.getItem("school_classrooms_data") || "[]");
-            return Array.isArray(list) ? list : [];
-        } catch (_) {
-            return [];
-        }
+    function teacherKey(t) {
+        const c = cleanVal(t.code).toLowerCase();
+        const n = cleanVal(t.name).replace(/\s+/g, " ").toLowerCase();
+        return c ? `code:${c}` : `name:${n}`;
     }
 
-    function mergeTeachersWithRoomAdvisors(baseTeachers = []) {
+    function teacherCompleteness(t) {
+        return ["code", "name", "subject", "rooms", "department", "joinYear", "education", "phone", "email", "password", "history"]
+            .reduce((acc, k) => acc + (cleanVal(t[k]) ? 1 : 0), 0);
+    }
+
+    function dedupeTeachers(list = []) {
         const map = new Map();
-
-        baseTeachers.forEach((raw, idx) => {
-            const t = normalizeTeacher(raw, idx);
-            if (!t.name) return;
-            const k = normKey(t.name);
-            map.set(k, t);
-        });
-
-        const rooms = getRoomsFromLocalStorage();
-        rooms.forEach((r, idx) => {
-            const advisorName = cleanVal(r.advisor || r.homeroomTeacher || r.teacher || "");
-            const roomName = cleanVal(r.name || r.roomName || r.room || r.grade || "");
-            if (!advisorName) return;
-            const k = normKey(advisorName);
-            const existing = map.get(k);
-            if (existing) {
-                map.set(k, {
-                    ...existing,
-                    room: existing.room || roomName,
-                    note: existing.note || (roomName ? `ຄູປະຈຳຫ້ອງ ${roomName}` : "ຄູປະຈຳຫ້ອງ")
-                });
+        list.forEach((rawItem, idx) => {
+            const item = normalizeTeacherRecord(rawItem, rawItem?.firestoreId || rawItem?.id || `TCH-${idx + 1}`);
+            if (!item.name && !item.code) return;
+            const key = teacherKey(item);
+            const prev = map.get(key);
+            if (!prev) {
+                map.set(key, item);
             } else {
-                map.set(k, {
-                    id: `ADV-${roomName || idx + 1}`,
-                    firestoreId: `ADV-${roomName || idx + 1}`,
-                    name: advisorName,
-                    subject: "",
-                    room: roomName,
-                    phone: "",
-                    note: roomName ? `ຄູປະຈຳຫ້ອງ ${roomName}` : "ຄູປະຈຳຫ້ອງ",
-                    fromRoomAdvisor: true
-                });
+                const prevScore = teacherCompleteness(prev);
+                const nextScore = teacherCompleteness(item);
+                const prevTime = prev.updatedAt?.seconds || prev.createdAt?.seconds || 0;
+                const nextTime = item.updatedAt?.seconds || item.createdAt?.seconds || 0;
+                if (nextScore > prevScore || (nextScore === prevScore && nextTime >= prevTime)) {
+                    map.set(key, { ...prev, ...item });
+                } else {
+                    map.set(key, { ...item, ...prev });
+                }
             }
         });
-
         return Array.from(map.values());
     }
 
-    let teachersData = mergeTeachersWithRoomAdvisors((function () {
-        try {
-            const raw = JSON.parse(localStorage.getItem("school_teachers_data") || "[]");
-            return Array.isArray(raw) ? raw : [];
-        } catch (_) {
-            return [];
-        }
-    })());
-
-    let editingTeacherId = null;
+    let teachersData = dedupeTeachers(
+        JSON.parse(localStorage.getItem("school_teachers_data") || "null") || [
+            {
+                id: "TCH-001",
+                firestoreId: "TCH-001",
+                code: "TCH-001",
+                name: "ອ. ສົມພອນ ວົງສາ",
+                subject: "ຄະນິດສາດ",
+                rooms: "ມ.5, ມ.6",
+                department: "ວິທະຍາສາດ ແລະ ຄະນິດສາດ",
+                joinYear: "2020",
+                education: "ປະລິນຍາຕີ ຄະນິດສາດສຶກສາ",
+                phone: "020 5511 2233",
+                email: "somphone@school.edu.la",
+                password: "",
+                history: "ສອນວິຊາຄະນິດສາດຊັ້ນ ມ.5-ມ.6 ມາແລ້ວ 6 ປີ, ນຳພານັກຮຽນສອບແຂ່ງຂັນຄະນິດສາດລະດັບເມືອງ."
+            },
+            {
+                id: "TCH-002",
+                firestoreId: "TCH-002",
+                code: "TCH-002",
+                name: "ອ. ນິດາ ແກ້ວມະນີ",
+                subject: "ພາສາອັງກິດ",
+                rooms: "ມ.5, ມ.7",
+                department: "ພາສາ ແລະ ສັງຄົມສາດ",
+                joinYear: "2022",
+                education: "ປະລິນຍາຕີ ພາສາອັງກິດສຶກສາ",
+                phone: "020 9988 7766",
+                email: "nida@school.edu.la",
+                password: "",
+                history: "ຮັບຜິດຊອບການສອນພາສາອັງກິດ ແລະ ຊຸມນຸມສົນທະນາພາສາອັງກິດປະຈຳໂຮງຮຽນ."
+            },
+            {
+                id: "TCH-003",
+                firestoreId: "TCH-003",
+                code: "TCH-003",
+                name: "ອ. ຄຳຫຼ້າ ໄຊຍະສິດ",
+                subject: "ວິທະຍາການຄຳນວນ",
+                rooms: "ມ.5, ມ.6, ມ.7",
+                department: "ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ",
+                joinYear: "2021",
+                education: "ປະລິນຍາຕີ ວິສະວະກຳຄອມພິວເຕີ / ໄອທີ",
+                phone: "020 7766 5544",
+                email: "khamla@school.edu.la",
+                password: "",
+                history: "ສອນພື້ນຖານການຂຽນໂປຣແກຣມ, ລະບົບຂໍ້ມູນ ແລະ ດູແລຫ້ອງປະຕິບັດການຄອມພິວເຕີ."
+            }
+        ]
+    );
 
     function saveTeachersLocal() {
-        const cleanList = teachersData.filter((t) => cleanVal(t.name));
-        teachersData = mergeTeachersWithRoomAdvisors(cleanList);
-        try {
-            localStorage.setItem("school_teachers_data", JSON.stringify(teachersData));
-        } catch (_) {}
+        teachersData = dedupeTeachers(teachersData);
+        localStorage.setItem("school_teachers_data", JSON.stringify(teachersData));
     }
 
-    function syncAdvisorIntoClassroomsLocal(teacher) {
-        const advisorName = cleanVal(teacher.name);
-        const roomName = cleanVal(teacher.room);
-        if (!advisorName || !roomName) return false;
+    window.toggleTeacherPassword = function (recKey) {
+        if (revealedPasswordKeys.has(recKey)) {
+            revealedPasswordKeys.delete(recKey);
+        } else {
+            revealedPasswordKeys.add(recKey);
+        }
+        renderTeachersTable();
+    };
 
-        const rooms = getRoomsFromLocalStorage();
-        if (!rooms.length) return false;
+    window.openTeacherEditModal = function (idx) {
+        const t = currentFilteredTeachers[idx];
+        if (!t) return;
+        const allowPass = canEditPassword(t);
+        const allowEmail = canEditEmail(t);
+        if (!allowPass && !allowEmail) {
+            showToast("ທ່ານບໍ່ມີສິດແກ້ໄຂຂໍ້ມູນຂອງຜູ້ໃຊ້ອື່ນ");
+            return;
+        }
+        activeEditingIndex = idx;
+        document.getElementById("editModalTitle").textContent = allowEmail
+            ? "✏️ ແກ້ໄຂອີເມວ ແລະ ລະຫັດຜ່ານ"
+            : "🔑 ປ່ຽນລະຫັດຜ່ານ";
+        document.getElementById("editModalSubtitle").textContent = `${t.code || t.id} — ${t.name}`;
 
-        let changed = false;
-        const targetRoomKey = normKey(roomName);
-        const updatedRooms = rooms.map((r) => {
-            const rName = cleanVal(r.name || r.roomName || r.room || r.grade || "");
-            if (normKey(rName) === targetRoomKey) {
-                changed = true;
+        const emailInput = document.getElementById("editEmailInput");
+        const emailHint = document.getElementById("emailFieldHint");
+        emailInput.value = t.email || "";
+        emailInput.disabled = !allowEmail;
+        emailHint.textContent = allowEmail
+            ? "ແອັດມິນສາມາດປ່ຽນອີເມວ ແລະ ລະຫັດຜ່ານໄດ້"
+            : "ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ປ່ຽນອີເມວໄດ້";
+
+        const passInput = document.getElementById("editPasswordInput");
+        passInput.value = t.password || "";
+        passInput.disabled = !allowPass;
+
+        document.getElementById("editCredModal").classList.add("active");
+    };
+
+    window.closeEditModal = function () {
+        activeEditingIndex = null;
+        document.getElementById("editCredModal").classList.remove("active");
+    };
+
+    window.saveCredentialEdit = async function (event) {
+        event.preventDefault();
+        if (activeEditingIndex === null) return;
+        const t = currentFilteredTeachers[activeEditingIndex];
+        if (!t) return;
+
+        const allowPass = canEditPassword(t);
+        const allowEmail = canEditEmail(t);
+        if (!allowPass && !allowEmail) return;
+
+        const newEmail = allowEmail ? cleanVal(document.getElementById("editEmailInput").value) : (t.email || "");
+        const newPassword = allowPass ? cleanVal(document.getElementById("editPasswordInput").value) : (t.password || "");
+
+        const saveBtn = document.getElementById("saveCredBtn");
+        saveBtn.disabled = true;
+        saveBtn.textContent = "ກຳລັງບັນທຶກ...";
+
+        teachersData = teachersData.map((item) => {
+            if (item.code === t.code || item.id === t.id || item.name === t.name) {
                 return {
-                    ...r,
-                    advisor: advisorName,
-                    homeroomTeacher: advisorName
+                    ...item,
+                    email: allowEmail ? newEmail : item.email,
+                    password: allowPass ? newPassword : item.password
                 };
             }
-            return r;
+            return item;
         });
+        saveLocalOverride(t, newEmail, newPassword, allowEmail, allowPass);
+        saveTeachersLocal();
 
-        if (changed) {
-            try {
-                localStorage.setItem("school_classrooms_data", JSON.stringify(updatedRooms));
-            } catch (_) {}
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        if (Date.now() < blockedUntil) {
+            setQuotaNotice(true);
+            renderTeachersTable();
+            closeEditModal();
+            saveBtn.disabled = false;
+            saveBtn.textContent = "ບັນທຶກ";
+            showToast("ບັນທຶກໃນເຄື່ອງແລ້ວ (ໂຄຕ້າ Firebase ເຕັມ)");
+            return;
         }
-        return changed;
-    }
 
-    function broadcastUpdate() {
-        const payload = JSON.stringify({
-            tab: "teachers",
-            updatedBy: userName,
-            timestamp: Date.now()
-        });
+        const withTimeout = (promise, ms = 9000) =>
+            Promise.race([
+                promise,
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error("ໝົດເວລາການເຊື່ອມຕໍ່ Firestore")), ms)
+                )
+            ]);
+
         try {
-            localStorage.setItem("schoolSystemDataUpdated", payload);
-        } catch (_) {}
-        window.dispatchEvent(new CustomEvent("school-data-updated", { detail: JSON.parse(payload) }));
+            const safeId = t.firestoreId || t.id || t.code;
+            if (safeId) {
+                const payload = { name: t.name, code: t.code || safeId };
+                if (allowEmail) payload.email = newEmail;
+                if (allowPass) payload.password = newPassword;
+                await withTimeout(setDoc(doc(db, COLLECTION_NAME, safeId), payload, { merge: true }), 9000);
+            }
+            setQuotaNotice(false);
+            renderTeachersTable();
+            closeEditModal();
+            showToast("ບັນທຶກຂໍ້ມູນສຳເລັດແລ້ວ");
+        } catch (err) {
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+            }
+            renderTeachersTable();
+            closeEditModal();
+            showToast("ບັນທຶກໃນເຄື່ອງແລ້ວ (Firebase ບໍ່ສາມາດຂຽນໄດ້ຊົ່ວຄາວ)");
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "ບັນທຶກ";
+        }
+    };
+
+    function renderPasswordBlock(t, idx) {
+        const recKey = `tch__${t.firestoreId || t.id || t.code || idx}`;
+        if (!canViewPassword(t)) {
+            return `<span class="pass-hidden-text">🔒 ເຊື່ອງໄວ້</span>`;
+        }
+        const isShown = revealedPasswordKeys.has(recKey);
+        const hasPass = Boolean(t.password);
+        const passText = !hasPass
+            ? `<span class="pass-hidden-text">-</span>`
+            : (isShown
+                ? `<span class="pass-value">${esc(t.password)}</span>`
+                : `<span class="pass-value">••••••••</span>`);
+        const toggleBtn = hasPass
+            ? `<button type="button" class="mini-btn" onclick="toggleTeacherPassword('${esc(recKey)}')">${isShown ? "ເຊື່ອງ" : "ເບິ່ງ"}</button>`
+            : "";
+        const editBtn = canEditPassword(t)
+            ? `<button type="button" class="mini-btn edit-btn" onclick="openTeacherEditModal(${idx})">${canEditEmail(t) ? "ແກ້ໄຂ" : "ປ່ຽນລະຫັດ"}</button>`
+            : "";
+        return `<div class="pass-cell-box">${passText}${toggleBtn}${editBtn}</div>`;
     }
 
-    function refreshRoomsDatalist() {
-        const dl = document.getElementById("roomsDatalist");
-        if (!dl) return;
-        const rooms = getRoomsFromLocalStorage();
-        const names = Array.from(new Set(
-            rooms.map((r) => cleanVal(r.name || r.roomName || r.room || r.grade || "")).filter(Boolean)
-        ));
-        dl.innerHTML = names.map((n) => `<option value="${esc(n)}"></option>`).join("");
-    }
+    window.viewTeacherHistory = function (id) {
+        const target = teachersData.find((t) => t.id === id || t.code === id);
+        const box = document.getElementById("teacherDetailContent");
+        if (!target || !box) return;
+
+        box.innerHTML = `
+            <div class="history-grid">
+                <div class="history-item">
+                    <span class="history-label">ລະຫັດຄູ</span>
+                    <strong>${esc(target.code || target.id)}</strong>
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ຊື່ ແລະ ນາມສະກຸນ</span>
+                    <strong>${esc(target.name)}</strong>
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ວິຊາສອນ / ພາກວິຊາ</span>
+                    <strong>${esc(target.subject)}</strong> (${esc(target.department || "-")})
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ຫ້ອງທີ່ຮັບຜິດຊອບ</span>
+                    <strong>${esc(target.rooms || target.room || "-")}</strong>
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ປີເຂົ້າເຮັດວຽກ</span>
+                    <strong>${esc(target.joinYear || "-")}</strong>
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ວຸດທິການສຶກສາ</span>
+                    <strong>${esc(target.education || "-")}</strong>
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ເບີໂທຕິດຕໍ່</span>
+                    <strong>${esc(target.phone || "-")}</strong>
+                </div>
+                <div class="history-item">
+                    <span class="history-label">ອີເມວ</span>
+                    <strong>${esc(target.email || "-")}</strong>
+                </div>
+            </div>
+            <div class="history-item">
+                <span class="history-label">ປະຫວັດການສອນ ແລະ ບັນທຶກປະຫວັດ</span>
+                <div>${esc(target.history || "ບໍ່ມີບັນທຶກປະຫວັດເພີ່ມເຕີມ")}</div>
+            </div>
+        `;
+    };
+
+    window.renderTeachersTable = function () {
+        const q = cleanVal(document.getElementById("searchTeacherInput").value).toLowerCase();
+        const dept = cleanVal(document.getElementById("filterDepartmentSelect").value);
+        const tbody = document.getElementById("teachersTableBody");
+        const mobileCards = document.getElementById("teachersMobileCards");
+
+        const uniqueList = dedupeTeachers(teachersData);
+        const filtered = uniqueList.filter((t) => {
+            const matchDept = !dept || cleanVal(t.department) === dept;
+            const hay = `${t.code || ""} ${t.name || ""} ${t.subject || ""} ${t.rooms || ""} ${t.room || ""} ${t.department || ""} ${t.email || ""}`.toLowerCase();
+            const matchQuery = !q || hay.includes(q);
+            return matchDept && matchQuery;
+        });
+
+        currentFilteredTeachers = filtered;
+
+        if (!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="10" class="center">ບໍ່ພົບຂໍ້ມູນຄູທີ່ຄົ້ນຫາ</td></tr>`;
+            mobileCards.innerHTML = `<div class="teacher-card" style="text-align:center;color:#94a3b8;">ບໍ່ພົບຂໍ້ມູນຄູທີ່ຄົ້ນຫາ</div>`;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map((t, idx) => `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${esc(t.code || t.id)}</td>
+                <td><strong>${esc(t.name)}</strong></td>
+                <td><span class="subject-pill">${esc(t.subject)}</span></td>
+                <td>${esc(t.rooms || t.room || "-")}</td>
+                <td>${esc(t.department || "-")}</td>
+                <td>${esc(t.joinYear || "-")}</td>
+                <td>${esc(t.email || "-")}</td>
+                <td class="center">${renderPasswordBlock(t, idx)}</td>
+                <td>
+                    <div class="actions">
+                        <button type="button" class="btn-view" onclick="viewTeacherHistory('${esc(t.id)}')">ເບິ່ງປະຫວັດ</button>
+                    </div>
+                </td>
+            </tr>
+        `).join("");
+
+        mobileCards.innerHTML = filtered.map((t, idx) => `
+            <div class="teacher-card">
+                <div class="teacher-card-head">
+                    <div>
+                        <div class="teacher-card-name">#${idx + 1} • ${esc(t.name)}</div>
+                        <div class="teacher-card-sub">${esc(t.code || t.id)} • ${esc(t.department || "-")}</div>
+                    </div>
+                    <span class="subject-pill">${esc(t.subject)}</span>
+                </div>
+                <div class="teacher-card-rows">
+                    <div class="teacher-card-row">
+                        <span class="teacher-card-label">🏫 ຫ້ອງສອນ:</span>
+                        <span class="teacher-card-val">${esc(t.rooms || t.room || "-")}</span>
+                    </div>
+                    <div class="teacher-card-row">
+                        <span class="teacher-card-label">📅 ປີເຂົ້າ:</span>
+                        <span class="teacher-card-val">${esc(t.joinYear || "-")}</span>
+                    </div>
+                    <div class="teacher-card-row">
+                        <span class="teacher-card-label">📧 ອີເມວ:</span>
+                        <span class="teacher-card-val">${esc(t.email || "-")}</span>
+                    </div>
+                </div>
+                <div class="teacher-card-pass">
+                    <span class="teacher-card-label">🔑 ລະຫັດຜ່ານ:</span>
+                    <div>${renderPasswordBlock(t, idx)}</div>
+                </div>
+                <div class="teacher-card-footer">
+                    <button type="button" class="btn-view" onclick="viewTeacherHistory('${esc(t.id)}')">ເບິ່ງປະຫວັດ</button>
+                </div>
+            </div>
+        `).join("");
+    };
+
+    window.loadTeachersFromFirestore = async function (showAlert = false) {
+        const now = Date.now();
+        const blockedUntil = Number(localStorage.getItem(QUOTA_BLOCK_UNTIL_KEY) || "0");
+        const lastFetchTs = Number(localStorage.getItem(LAST_FETCH_TS_KEY) || "0");
+
+        if (now < blockedUntil) {
+            setQuotaNotice(true);
+            updateSyncBadge("⚠️ ໂຄຕ້າເຕັມ (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
+            renderTeachersTable();
+            if (showAlert) showToast("ໂຄຕ້າ Firebase ເຕັມ ກຳລັງໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+            return;
+        }
+
+        if (!showAlert && now - lastFetchTs < FETCH_COOLDOWN_MS) {
+            renderTeachersTable();
+            return;
+        }
+
+        const syncBtn = document.getElementById("syncBtn");
+        if (syncBtn) syncBtn.disabled = true;
+
+        try {
+            const snap = await getDocs(collection(db, COLLECTION_NAME));
+            localStorage.setItem(LAST_FETCH_TS_KEY, String(Date.now()));
+            localStorage.removeItem(QUOTA_BLOCK_UNTIL_KEY);
+            setQuotaNotice(false);
+
+            if (!snap.empty) {
+                const loaded = snap.docs.map((d) => normalizeTeacherRecord(d.data(), d.id));
+                teachersData = dedupeTeachers(loaded);
+                saveTeachersLocal();
+            }
+            updateSyncBadge(`🔥 Firebase: ${firebaseConfig.projectId}`);
+            renderTeachersTable();
+            if (showAlert) showToast("✅ ໂຫຼດຂໍ້ມູນຄູສຳເລັດ!");
+        } catch (err) {
+            if (isQuotaError(err)) {
+                localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
+                setQuotaNotice(true);
+                updateSyncBadge("⚠️ ໂຄຕ້າເຕັມ (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
+                if (showAlert) showToast("⚠️ ໂຄຕ້າ Firebase ປະຈຳມື້ເຕັມ ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ");
+            } else {
+                updateSyncBadge("⚠️ Offline (ໃຊ້ຂໍ້ມູນໃນເຄື່ອງ)");
+                if (showAlert) showToast("⚠️ ເຊື່ອມຕໍ່ຊ້າ ໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໃນເຄື່ອງ");
+            }
+            renderTeachersTable();
+        } finally {
+            if (syncBtn) syncBtn.disabled = false;
+        }
+    };
 
     function esc(str) {
-        return String(str || "")
+        return String(str ?? "")
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;");
     }
 
-    function updateStats() {
-        const totalEl = document.getElementById("statTotalTeachers");
-        const advEl = document.getElementById("statAdvisorTeachers");
-        const covEl = document.getElementById("statCoveredRooms");
-
-        const advisors = teachersData.filter((t) => {
-            const n = cleanVal(t.note).toLowerCase();
-            return Boolean(cleanVal(t.room)) || n.includes("ປະຈຳຫ້ອງ") || t.fromRoomAdvisor;
-        });
-        const uniqueRooms = new Set(
-            teachersData.map((t) => normKey(t.room)).filter(Boolean)
-        );
-
-        if (totalEl) totalEl.textContent = String(teachersData.length);
-        if (advEl) advEl.textContent = String(advisors.length);
-        if (covEl) covEl.textContent = String(uniqueRooms.size);
-    }
-
-    function renderTeachersTable() {
-        const q = cleanVal(document.getElementById("searchTeacherInput")?.value || "").toLowerCase();
-        const tbody = document.getElementById("teachersTableBody");
-        if (!tbody) return;
-
-        updateStats();
-        refreshRoomsDatalist();
-
-        const filtered = teachersData.filter((t) => {
-            const hay = `${t.name || ""} ${t.subject || ""} ${t.room || ""} ${t.phone || ""} ${t.note || ""}`.toLowerCase();
-            return !q || hay.includes(q);
-        });
-
-        if (!filtered.length) {
-            tbody.innerHTML = `<tr><td colspan="7" class="center">ບໍ່ພົບຂໍ້ມູນຄູອາຈານ</td></tr>`;
-            return;
-        }
-
-        tbody.innerHTML = filtered.map((t, idx) => {
-            const actionBtns = canManageTeachers
-                ? `<div class="row-actions">
-                    <button type="button" class="btn-edit" onclick="startEditTeacher('${esc(t.id)}')">✏️ ແກ້ໄຂ</button>
-                    <button type="button" class="btn-del" onclick="deleteTeacher('${esc(t.id)}')">🗑️ ລົບ</button>
-                   </div>`
-                : `<span style="color:#94a3b8;font-size:12px;">ເບິ່ງຢ່າງດຽວ</span>`;
-
-            return `
-                <tr>
-                    <td>${idx + 1}</td>
-                    <td><strong>${esc(t.name)}</strong></td>
-                    <td>${esc(t.subject || "-")}</td>
-                    <td>${esc(t.room || "-")}</td>
-                    <td>${esc(t.phone || "-")}</td>
-                    <td>${esc(t.note || "-")}</td>
-                    <td>${actionBtns}</td>
-                </tr>
-            `;
-        }).join("");
-    }
-
-    window.startEditTeacher = function (id) {
-        if (!canManageTeachers) return;
-        const target = teachersData.find((t) => t.id === id);
-        if (!target) return;
-
-        editingTeacherId = id;
-        document.getElementById("tchName").value = target.name || "";
-        document.getElementById("tchSubject").value = target.subject || "";
-        document.getElementById("tchRoom").value = target.room || "";
-        document.getElementById("tchPhone").value = target.phone || "";
-        document.getElementById("tchNote").value = target.note || "";
-        document.getElementById("teacherFormTitle").textContent = "✏️ ແກ້ໄຂຂໍ້ມູນຄູອາຈານ";
-        document.getElementById("btnSaveTeacher").textContent = "💾 ບັນທຶກການແກ້ໄຂ";
-        document.getElementById("btnCancelTeacher").style.display = "inline-block";
-    };
-
-    window.resetTeacherForm = function () {
-        editingTeacherId = null;
-        document.getElementById("teacherForm")?.reset();
-        document.getElementById("teacherFormTitle").textContent = "➕ ເພີ່ມ / ແກ້ໄຂ ຂໍ້ມູນຄູອາຈານ";
-        document.getElementById("btnSaveTeacher").textContent = "💾 ບັນທຶກຂໍ້ມູນຄູ";
-        document.getElementById("btnCancelTeacher").style.display = "none";
-    };
-
-    window.deleteTeacher = async function (id) {
-        if (!canManageTeachers) return;
-        if (!confirm("ຕ້ອງການລົບຂໍ້ມູນຄູອາຈານຄົນນີ້ແທ້ບໍ່?")) return;
-
-        const target = teachersData.find((t) => t.id === id);
-        teachersData = teachersData.filter((t) => t.id !== id);
-        saveTeachersLocal();
-        renderTeachersTable();
-        broadcastUpdate();
-
-        if (window.fbTeachersApi && window.fbTeachersApi.deleteTeacher && target) {
-            await window.fbTeachersApi.deleteTeacher(target);
-        }
-    };
-
-    window.handleTeacherSubmit = async function (e) {
-        e.preventDefault();
-        if (!canManageTeachers) return;
-
-        const now = Date.now();
-        if (now - lastSubmitTs < SUBMIT_COOLDOWN_MS) return;
-        lastSubmitTs = now;
-
-        const name = cleanVal(document.getElementById("tchName").value);
-        const subject = cleanVal(document.getElementById("tchSubject").value);
-        const room = cleanVal(document.getElementById("tchRoom").value);
-        const phone = cleanVal(document.getElementById("tchPhone").value);
-        const note = cleanVal(document.getElementById("tchNote").value);
-        if (!name) return;
-
-        const recId = editingTeacherId || ("TCH-" + Date.now());
-        const record = {
-            id: recId,
-            firestoreId: recId,
-            name,
-            subject,
-            room,
-            phone,
-            note: note || (room ? `ຄູປະຈຳຫ້ອງ ${room}` : ""),
-            fromRoomAdvisor: false
-        };
-
-        const idx = teachersData.findIndex((t) => t.id === recId);
-        if (idx >= 0) teachersData[idx] = record;
-        else teachersData.unshift(record);
-
-        saveTeachersLocal();
-        const roomUpdated = syncAdvisorIntoClassroomsLocal(record);
-        renderTeachersTable();
-        resetTeacherForm();
-        broadcastUpdate();
-
-        if (window.fbTeachersApi && window.fbTeachersApi.saveTeacher) {
-            await window.fbTeachersApi.saveTeacher(record, idx >= 0, roomUpdated);
-        } else {
-            alert("✅ ບັນທຶກຂໍ້ມູນຄູສຳເລັດແລ້ວ!");
-        }
-    };
-
-    async function loadTeachersFromFirestore(showAlert = false) {
-        const now = Date.now();
-        const lastFetchTs = Number(localStorage.getItem(TEACHERS_FETCH_TS_KEY) || "0");
-
-        if (isQuotaBlockedNow()) {
-            teachersData = mergeTeachersWithRoomAdvisors(teachersData);
-            renderTeachersTable();
-            if (showAlert) alert("⚠️ ໂຄຕ້າ Firebase ປະຈຳມື້ເຕັມ — ສະແດງຂໍ້ມູນໃນເຄື່ອງ.");
-            return;
-        }
-
-        if (!showAlert && now - lastFetchTs < TEACHERS_COOLDOWN_MS) {
-            teachersData = mergeTeachersWithRoomAdvisors(teachersData);
-            renderTeachersTable();
-            return;
-        }
-
-        const btn = document.getElementById("btnReloadTeachers");
-        if (btn) btn.disabled = true;
-
-        try {
-            if (window.fbTeachersApi && window.fbTeachersApi.loadTeachers) {
-                await window.fbTeachersApi.loadTeachers(showAlert);
-            } else {
-                teachersData = mergeTeachersWithRoomAdvisors(teachersData);
-                renderTeachersTable();
-                if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຄູສຳເລັດ!");
-            }
-        } finally {
-            if (btn) btn.disabled = false;
-        }
-    }
-
-    const roleBadge = document.getElementById("currentUserRole");
-    if (roleBadge) {
-        roleBadge.textContent = role.toUpperCase();
-        roleBadge.className = `badge badge-role-${role}`;
-    }
-    const nameEl = document.getElementById("currentUserName");
-    if (nameEl) nameEl.textContent = userName;
-
-    if (!canManageTeachers) {
-        const formSec = document.getElementById("teacherFormSection");
-        const notice = document.getElementById("studentReadonlyNotice");
-        if (formSec) formSec.style.display = "none";
-        if (notice) notice.style.display = "block";
-    }
-
-    isQuotaBlockedNow();
-    saveTeachersLocal();
     renderTeachersTable();
-</script>
-
-<script type="module">
-    try {
-        const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-        const {
-            getFirestore, collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp
-        } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-
-        const DEFAULT_FIREBASE_CONFIG = {
-            apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
-            authDomain: "my-school-c1104.firebaseapp.com",
-            projectId: "my-school-c1104",
-            storageBucket: "my-school-c1104.firebasestorage.app",
-            messagingSenderId: "339930418459",
-            appId: "1:339930418459:web:3dd86db9d280c6cb0cd7be",
-            measurementId: "G-NPNFSW2C72"
-        };
-
-        const firebaseConfig = window.FIREBASE_CONFIG || DEFAULT_FIREBASE_CONFIG;
-        const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        function isQuotaErr(err) {
-            const code = String(err?.code || "").toLowerCase();
-            const msg = String(err?.message || "").toLowerCase();
-            return (
-                code.includes("resource-exhausted") ||
-                msg.includes("quota") ||
-                msg.includes("resource exhausted") ||
-                msg.includes("daily usage")
-            );
-        }
-
-        function markQuotaBlocked() {
-            localStorage.setItem(QUOTA_BLOCK_UNTIL_KEY, String(Date.now() + QUOTA_COOLDOWN_MS));
-            setQuotaNotice(true);
-        }
-
-        window.fbTeachersApi = {
-            async loadTeachers(showAlert = false) {
-                if (isQuotaBlockedNow()) {
-                    teachersData = mergeTeachersWithRoomAdvisors(teachersData);
-                    renderTeachersTable();
-                    if (showAlert) alert("⚠️ ໂຄຕ້າ Firebase ເຕັມ — ສະແດງຂໍ້ມູນໃນເຄື່ອງ.");
-                    return;
-                }
-                try {
-                    const snap = await getDocs(collection(db, "teachers"));
-                    const remoteList = [];
-                    snap.forEach((d, idx) => {
-                        remoteList.push(normalizeTeacher({ ...d.data(), id: d.id, firestoreId: d.id }, idx));
-                    });
-                    if (remoteList.length) {
-                        teachersData = mergeTeachersWithRoomAdvisors(remoteList);
-                        saveTeachersLocal();
-                    } else {
-                        teachersData = mergeTeachersWithRoomAdvisors(teachersData);
-                    }
-                    localStorage.setItem(TEACHERS_FETCH_TS_KEY, String(Date.now()));
-                    localStorage.removeItem(QUOTA_BLOCK_UNTIL_KEY);
-                    setQuotaNotice(false);
-                    renderTeachersTable();
-                    if (showAlert) alert("✅ ໂຫຼດຂໍ້ມູນຄູອາຈານສຳເລັດ!");
-                } catch (err) {
-                    if (isQuotaErr(err)) markQuotaBlocked();
-                    teachersData = mergeTeachersWithRoomAdvisors(teachersData);
-                    renderTeachersTable();
-                    if (showAlert) alert("⚠️ ໂຄຕ້າ Firebase ເຕັມ — ສະແດງຂໍ້ມູນໃນເຄື່ອງ.");
-                }
-            },
-
-            async saveTeacher(record, isUpdate, roomUpdated) {
-                if (isQuotaBlockedNow()) {
-                    alert("✅ ບັນທຶກຂໍ້ມູນຄູໃນເຄື່ອງແລ້ວ.");
-                    return;
-                }
-                try {
-                    const payload = {
-                        name: record.name,
-                        teacherName: record.name,
-                        subject: record.subject,
-                        room: record.room,
-                        grade: record.room,
-                        phone: record.phone,
-                        note: record.note,
-                        updatedAt: serverTimestamp()
-                    };
-                    if (isUpdate) {
-                        await setDoc(doc(db, "teachers", record.id), payload, { merge: true });
-                    } else {
-                        await setDoc(doc(db, "teachers", record.id), {
-                            ...payload,
-                            createdAt: serverTimestamp()
-                        }, { merge: true });
-                    }
-
-                    if (roomUpdated && record.room) {
-                        for (const colName of ["classrooms", "rooms"]) {
-                            try {
-                                const rSnap = await getDocs(collection(db, colName));
-                                for (const rDoc of rSnap.docs) {
-                                    const rd = rDoc.data() || {};
-                                    const rName = cleanVal(rd.name || rd.roomName || rd.room || rd.grade || "");
-                                    if (normKey(rName) === normKey(record.room)) {
-                                        await updateDoc(doc(db, colName, rDoc.id), {
-                                            advisor: record.name,
-                                            homeroomTeacher: record.name,
-                                            updatedAt: serverTimestamp()
-                                        });
-                                    }
-                                }
-                            } catch (e) {
-                                if (isQuotaErr(e)) throw e;
-                            }
-                        }
-                    }
-
-                    localStorage.setItem(TEACHERS_FETCH_TS_KEY, String(Date.now()));
-                    alert("✅ ບັນທຶກ ແລະ ຊິ້ງຂໍ້ມູນຄູສຳເລັດ!");
-                } catch (err) {
-                    if (isQuotaErr(err)) markQuotaBlocked();
-                    alert("✅ ບັນທຶກໃນເຄື່ອງແລ້ວ (ໂຄຕ້າ Firebase ອາດຈະເຕັມ).");
-                }
-            },
-
-            async deleteTeacher(target) {
-                if (isQuotaBlockedNow()) return;
-                try {
-                    await deleteDoc(doc(db, "teachers", target.id));
-                    localStorage.setItem(TEACHERS_FETCH_TS_KEY, String(Date.now()));
-                } catch (err) {
-                    if (isQuotaErr(err)) markQuotaBlocked();
-                }
-            }
-        };
-
-        window.addEventListener("storage", (e) => {
-            if (e.key === "schoolSystemDataUpdated" || e.key === "school_classrooms_data" || e.key === "school_teachers_data") {
-                try {
-                    const localTch = JSON.parse(localStorage.getItem("school_teachers_data") || "[]");
-                    teachersData = mergeTeachersWithRoomAdvisors(Array.isArray(localTch) ? localTch : teachersData);
-                } catch (_) {
-                    teachersData = mergeTeachersWithRoomAdvisors(teachersData);
-                }
-                renderTeachersTable();
-            }
-        });
-
-        window.addEventListener("school-data-updated", () => {
-            teachersData = mergeTeachersWithRoomAdvisors(teachersData);
-            renderTeachersTable();
-        });
-
-        const lastFetchTs = Number(localStorage.getItem(TEACHERS_FETCH_TS_KEY) || "0");
-        if (!isQuotaBlockedNow() && Date.now() - lastFetchTs >= TEACHERS_COOLDOWN_MS) {
-            window.fbTeachersApi.loadTeachers(false);
-        }
-    } catch (_) {}
+    loadTeachersFromFirestore(false);
 </script>
 </body>
 </html>
