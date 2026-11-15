@@ -733,6 +733,29 @@
         document.getElementById("access-denied").style.display = "block";
     }
 
+    async function checkPrerequisitesForRoom(roomName) {
+        const cleanedRoom = cleanGrade(roomName).toLowerCase();
+        const [studentSnap, teacherSnap] = await Promise.all([
+            getDocs(collection(db, "students")),
+            getDocs(collection(db, "teachers"))
+        ]);
+
+        const totalStudents = studentSnap.size;
+        const matchingStudents = studentSnap.docs.filter((d) => {
+            const data = d.data() || {};
+            const g = cleanGrade(data.grade || data.room || data.classRoom || "").toLowerCase();
+            return cleanedRoom && g === cleanedRoom;
+        });
+        const totalTeachers = teacherSnap.size;
+
+        return {
+            hasAnyStudents: totalStudents > 0,
+            hasRoomStudents: matchingStudents.length > 0,
+            roomStudentCount: matchingStudents.length,
+            hasAnyTeachers: totalTeachers > 0
+        };
+    }
+
     function getSubjectScoreFields() {
         return [
             { name: "studentName", label: "ຊື່ນັກຮຽນ", type: "text", required: true, placeholder: "ສົມໃຈ ໃຈດີ" },
@@ -789,6 +812,8 @@
             fields: [
                 { name: "code", label: "ລະຫັດຄູ", type: "text", required: true, placeholder: "ເຊັ່ນ: TCH-004" },
                 { name: "name", label: "ຊື່ ແລະ ນາມສະກຸນຄູ", type: "text", required: true, placeholder: "ເຊັ່ນ: ອ. ວິໄລວັນ ພົມມະຈັນ" },
+                { name: "email", label: "ອີເມວເຂົ້າສູ່ລະບົບ", type: "email", required: true, placeholder: "teacher@school.la" },
+                { name: "password", label: "ລະຫັດຜ່ານເຂົ້າສູ່ລະບົບ", type: "password", required: true, placeholder: "ຕັ້ງລະຫັດຜ່ານ" },
                 { name: "subject", label: "ວິຊາສອນ", type: "text", required: true, placeholder: "ເຊັ່ນ: ຄະນິດສາດ" },
                 { name: "duty", label: "ໜ້າທີ່ຮັບຜິດຊອບ", type: "text", required: false, placeholder: "ເຊັ່ນ: ປະຈຳຫ້ອງ ມ.5, ດູແລກິດຈະກຳ" },
                 { name: "department", label: "ພາກວິຊາ / ກອງ", type: "select", required: false, options: ["ວິທະຍາສາດ ແລະ ຄະນິດສາດ", "ພາສາ ແລະ ສັງຄົມສາດ", "ເຕັກໂນໂລຊີ ແລະ ຄອມພິວເຕີ"] },
@@ -800,6 +825,7 @@
             columns: [
                 { key: "code", label: "ລະຫັດຄູ" },
                 { key: "name", label: "ຊື່ ແລະ ນາມສະກຸນຄູ" },
+                { key: "email", label: "ອີເມວ" },
                 { key: "subject", label: "ວິຊາສອນ" },
                 { key: "duty", label: "ໜ້າທີ່ຮັບຜິດຊອບ" },
                 { key: "department", label: "ພາກວິຊາ/ກອງ" },
@@ -814,6 +840,8 @@
                     id,
                     code: cleanVal(d.code || d.teacherCode || d.id || id),
                     name: cleanVal(d.name || d.teacherName || ""),
+                    email: cleanVal(d.email || ""),
+                    password: cleanVal(d.password || ""),
                     subject: cleanVal(d.subject || d.major || ""),
                     duty: dutyVal,
                     rooms: dutyVal,
@@ -821,7 +849,7 @@
                     department: cleanVal(d.department || ""),
                     joinYear: cleanVal(d.joinYear || ""),
                     education: cleanVal(d.education || ""),
-                    phone: cleanVal(d.phone || d.tel || d.email || ""),
+                    phone: cleanVal(d.phone || d.tel || ""),
                     history: cleanVal(d.history || d.record || d.achievements || d.note || ""),
                     _raw: d
                 };
@@ -834,6 +862,8 @@
             fields: [
                 { name: "studentCode", label: "ລະຫັດນັກຮຽນ", type: "text", required: true, placeholder: "ເຊັ່ນ: STD-006" },
                 { name: "name", label: "ຊື່ ແລະ ນາມສະກຸນນັກຮຽນ", type: "text", required: true, placeholder: "ເຊັ່ນ: ທ. ສົມປອງ ຈັນທະລາ" },
+                { name: "email", label: "ອີເມວເຂົ້າສູ່ລະບົບ", type: "email", required: true, placeholder: "student@school.la" },
+                { name: "password", label: "ລະຫັດຜ່ານເຂົ້າສູ່ລະບົບ", type: "password", required: true, placeholder: "ຕັ້ງລະຫັດຜ່ານ" },
                 { name: "grade", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.5" },
                 { name: "gender", label: "ເພດ", type: "select", required: true, options: ["ຊາຍ", "ຍິງ", "ອື່ນໆ"] },
                 { name: "birthDate", label: "ວັນເດືອນປີເກີດ", type: "date", required: false, placeholder: "" },
@@ -846,6 +876,7 @@
             columns: [
                 { key: "studentCode", label: "ລະຫັດ" },
                 { key: "name", label: "ຊື່ ແລະ ນາມສະກຸນ" },
+                { key: "email", label: "ອີເມວ" },
                 { key: "grade", label: "ຫ້ອງ" },
                 { key: "gender", label: "ເພດ" },
                 { key: "birthDate", label: "ວັນເດືອນປີເກີດ" },
@@ -859,6 +890,8 @@
                 id,
                 studentCode: cleanVal(d.studentCode || d.studentId || d.code || id),
                 name: cleanVal(d.name || d.studentName),
+                email: cleanVal(d.email || ""),
+                password: cleanVal(d.password || ""),
                 grade: cleanVal(d.grade || d.room || d.classRoom),
                 gender: cleanVal(d.gender || d.sex || ""),
                 birthDate: cleanVal(d.birthDate || d.dob || d.birthday || ""),
@@ -1410,6 +1443,23 @@
         });
 
         try {
+            if (currentTab === "rooms") {
+                const prereq = await checkPrerequisitesForRoom(formValues.name);
+                if (!prereq.hasAnyStudents || !prereq.hasAnyTeachers) {
+                    const missingParts = [];
+                    if (!prereq.hasAnyTeachers) missingParts.push("ລາຍຊື່ຄູ");
+                    if (!prereq.hasAnyStudents) missingParts.push("ລາຍຊື່ນັກຮຽນ");
+                    alert(`⚠️ ກ່ອນບັນທຶກຫ້ອງ ຕ້ອງມີຂໍ້ມູນໃນ Firebase ກ່ອນ (ຂາດ: ${missingParts.join(" ແລະ ")}) — ລະບົບຈະພາໄປເພີ່ມຄູ ແລະ ນັກຮຽນກ່ອນ`);
+                    window.switchUpdateTab(!prereq.hasAnyTeachers ? "teachers" : "students");
+                    return;
+                }
+                if (!prereq.hasRoomStudents) {
+                    alert(`⚠️ ຫ້ອງ "${cleanGrade(formValues.name)}" ຍັງບໍ່ມີຂໍ້ມູນນັກຮຽນໃນ Firebase — ກະລຸນາໄປເພີ່ມນັກຮຽນຂອງຫ້ອງນີ້ກ່ອນ`);
+                    window.switchUpdateTab("students");
+                    return;
+                }
+            }
+
             if (currentTab === "scores") {
                 const studentName = formValues.studentName;
                 const grade = cleanGrade(formValues.room) || "ມ.5";
@@ -1495,17 +1545,26 @@
                 const payload = { ...formValues };
 
                 if (currentTab === "rooms") {
+                    const prereq = await checkPrerequisitesForRoom(payload.name);
                     payload.room = payload.name;
                     payload.grade = payload.name;
+                    payload.capacity = String(prereq.roomStudentCount || Number(payload.capacity || 0));
                 } else if (currentTab === "teachers") {
                     payload.teacherName = payload.name;
+                    payload.email = cleanVal(formValues.email).toLowerCase();
+                    payload.password = cleanVal(formValues.password);
+                    payload.role = "teacher";
                     payload.responsibility = payload.duty;
                     payload.rooms = payload.duty;
                     payload.room = payload.duty;
                 } else if (currentTab === "students") {
                     payload.studentId = payload.studentCode;
+                    payload.grade = cleanGrade(formValues.grade);
                     payload.room = payload.grade;
                     payload.studentName = payload.name;
+                    payload.email = cleanVal(formValues.email).toLowerCase();
+                    payload.password = cleanVal(formValues.password);
+                    payload.role = "student";
                     if (!payload.status) payload.status = "ກຳລັງຮຽນ";
                 } else if (currentTab === "schedules") {
                     payload.day = cleanDay(payload.day);
