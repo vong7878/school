@@ -114,7 +114,6 @@
             font-family: inherit;
             font-size: 13px;
         }
-
         .table-wrap {
             width: 100%;
             overflow-x: auto;
@@ -147,7 +146,6 @@
 </head>
 <body>
 <div class="container">
-    <!-- ແຖບດ້ານເທິງ -->
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
@@ -162,7 +160,6 @@
         </div>
     </div>
 
-    <!-- 1. ລາຍຊື່ນັກຮຽນ -->
     <section class="card" id="sec-students">
         <div class="card-header">
             <h2>👨‍🎓 1. ລາຍຊື່ນັກຮຽນ</h2>
@@ -196,7 +193,6 @@
         </div>
     </section>
 
-    <!-- 2. ຕາຕະລາງຮຽນ -->
     <section class="card" id="sec-class-timetable">
         <div class="card-header">
             <h2 id="classTimetableTitle">📅 2. ຕາຕະລາງຮຽນ</h2>
@@ -228,10 +224,21 @@
         </div>
     </section>
 
-    <!-- 3. ຕາຕະລາງສອນ (ຊ່ອນຈາກນັກຮຽນ) -->
     <section class="card" id="sec-teaching-timetable">
         <div class="card-header">
             <h2>👩‍🏫 3. ຕາຕະລາງສອນ</h2>
+            <div class="controls">
+                <select id="teachingGradeFilter" onchange="renderTeachingTimetable()">
+                    <option value="ALL">ທຸກຫ້ອງ</option>
+                    <option value="ມ.1">ມ.1</option>
+                    <option value="ມ.2">ມ.2</option>
+                    <option value="ມ.3">ມ.3</option>
+                    <option value="ມ.4">ມ.4</option>
+                    <option value="ມ.5">ມ.5</option>
+                    <option value="ມ.6">ມ.6</option>
+                    <option value="ມ.7">ມ.7</option>
+                </select>
+            </div>
         </div>
         <div class="table-wrap">
             <table>
@@ -280,13 +287,17 @@
 
     const SYNC_STORAGE_KEY = "schoolSystemDataUpdated";
     const SYNC_EVENT_NAME = "school-data-updated";
+    const TEACHING_COLS = ["teaching_schedules", "teaching_timetable", "schedules", "timetable", "lessons"];
 
     function cleanVal(v) {
+        if (Array.isArray(v)) return v.map(cleanVal).filter(Boolean).join(", ");
         return String(v ?? "").trim().replace(/^["']+|["']+$/g, "");
     }
 
     function cleanGrade(v) {
-        return cleanVal(v).replace(/\s+/g, "");
+        return cleanVal(v)
+            .replace(/^ຫ້ອງ\s*/i, "")
+            .replace(/\s+/g, "");
     }
 
     function resolveRole() {
@@ -331,6 +342,35 @@
         return `<div><strong>${subjText}</strong>${tchText}</div>`;
     }
 
+    function normalizeTeachingItem(docId, raw = {}) {
+        const teacher = cleanVal(
+            raw.teacher || raw.teacherName || raw.instructor || raw.advisor || raw.name || ""
+        );
+        const subject = cleanVal(
+            raw.subject || raw.subjectName || raw.course || raw.lesson || ""
+        );
+        const grade = cleanGrade(
+            raw.grade || raw.room || raw.roomName || raw.className || ""
+        );
+
+        const dayPart = cleanVal(raw.day || raw.days || raw.weekday || "");
+        const periodPart = cleanVal(raw.period || raw.periods || raw.slot || "");
+        const timePart = cleanVal(raw.time || raw.timeRange || raw.hours || "");
+        const combinedSchedule = [dayPart, periodPart, timePart].filter(Boolean).join(" • ");
+
+        const schedule = cleanVal(
+            raw.schedule || raw.scheduleText || combinedSchedule || "-"
+        );
+
+        return {
+            id: cleanVal(raw.id) || docId,
+            teacher,
+            subject,
+            grade,
+            schedule
+        };
+    }
+
     // -------------------- 1. ລາຍຊື່ນັກຮຽນ --------------------
     let studentsData = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
         { id: "STD-001", code: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", status: "ປົກກະຕິ" },
@@ -349,6 +389,8 @@
         const tbody = document.getElementById("studentsTableBody");
 
         let selectedGrade = cleanGrade(gradeFilterEl.value);
+        if (gradeFilterEl.value === "ALL") selectedGrade = "ALL";
+
         if (isStudent) {
             selectedGrade = userGrade;
             gradeFilterEl.value = userGrade;
@@ -460,22 +502,57 @@
     window.renderTeachingTimetable = function () {
         if (isStudent) return;
         const tbody = document.getElementById("teachingTimetableBody");
+        const filterEl = document.getElementById("teachingGradeFilter");
+        const selectedGrade = filterEl && filterEl.value !== "ALL" ? cleanGrade(filterEl.value) : "ALL";
 
-        if (!teachingSchedules.length) {
+        const list = selectedGrade === "ALL"
+            ? teachingSchedules
+            : teachingSchedules.filter((x) => cleanGrade(x.grade) === selectedGrade);
+
+        if (!list.length) {
             tbody.innerHTML = `<tr><td colspan="5" class="center">ຍັງບໍ່ມີຂໍ້ມູນຕາຕະລາງສອນ</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = teachingSchedules.map((item, idx) => `
+        tbody.innerHTML = list.map((item, idx) => `
             <tr>
                 <td>${idx + 1}</td>
-                <td>${esc(item.teacher)}</td>
-                <td>${esc(item.subject)}</td>
-                <td>${esc(item.grade)}</td>
-                <td>${esc(item.schedule)}</td>
+                <td>${esc(item.teacher || "-")}</td>
+                <td>${esc(item.subject || "-")}</td>
+                <td>${esc(item.grade || "-")}</td>
+                <td>${esc(item.schedule || "-")}</td>
             </tr>
         `).join("");
     };
+
+    async function syncTeachingFromAllCollections() {
+        if (!db || isStudent) return;
+        const collected = [];
+        const seenKeys = new Set();
+
+        for (const colName of TEACHING_COLS) {
+            try {
+                const snap = await getDocs(collection(db, colName));
+                snap.forEach((d) => {
+                    const norm = normalizeTeachingItem(d.id, d.data() || {});
+                    if (!norm.teacher && !norm.subject && norm.schedule === "-") return;
+                    const dedupKey = `${norm.teacher}|${norm.subject}|${norm.grade}|${norm.schedule}`.toLowerCase();
+                    if (!seenKeys.has(dedupKey)) {
+                        seenKeys.add(dedupKey);
+                        collected.push(norm);
+                    }
+                });
+            } catch (e) {
+                // ຂ້າມ collection ທີ່ຍັງບໍ່ມີ
+            }
+        }
+
+        if (collected.length) {
+            teachingSchedules = collected;
+            saveTeachingSchedules();
+            renderTeachingTimetable();
+        }
+    }
 
     async function loadFromFirestoreIfAvailable() {
         if (!db) return;
@@ -498,7 +575,7 @@
             const clsSnap = await getDocs(collection(db, "class_timetables"));
             if (!clsSnap.empty) {
                 clsSnap.forEach((d) => {
-                    const data = d.data();
+                    const data = d.data() || {};
                     const gKey = cleanGrade(data.grade || d.id);
                     if (gKey && Array.isArray(data.rows)) {
                         classTimetables[gKey] = data.rows;
@@ -511,22 +588,7 @@
             console.warn("ບໍ່ໄດ້ໂຫຼດ class_timetables ຈາກ Firestore:", err.message);
         }
 
-        if (!isStudent) {
-            try {
-                const teachSnap = await getDocs(collection(db, "teaching_schedules"));
-                if (!teachSnap.empty) {
-                    teachingSchedules = teachSnap.docs.map((d) => ({
-                        id: d.data().id || d.id,
-                        firestoreId: d.id,
-                        ...d.data()
-                    }));
-                    saveTeachingSchedules();
-                    renderTeachingTimetable();
-                }
-            } catch (err) {
-                console.warn("ບໍ່ໄດ້ໂຫຼດ teaching_schedules ຈາກ Firestore:", err.message);
-            }
-        }
+        await syncTeachingFromAllCollections();
     }
 
     if (db) {
@@ -541,7 +603,7 @@
         onSnapshot(collection(db, "class_timetables"), (snap) => {
             if (!snap.empty) {
                 snap.forEach((d) => {
-                    const data = d.data();
+                    const data = d.data() || {};
                     const gKey = cleanGrade(data.grade || d.id);
                     if (gKey && Array.isArray(data.rows)) classTimetables[gKey] = data.rows;
                 });
@@ -551,13 +613,11 @@
         }, () => {});
 
         if (!isStudent) {
-            onSnapshot(collection(db, "teaching_schedules"), (snap) => {
-                if (!snap.empty) {
-                    teachingSchedules = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
-                    saveTeachingSchedules();
-                    renderTeachingTimetable();
-                }
-            }, () => {});
+            for (const colName of TEACHING_COLS) {
+                onSnapshot(collection(db, colName), () => {
+                    syncTeachingFromAllCollections();
+                }, () => {});
+            }
         }
     }
 
