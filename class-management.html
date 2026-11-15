@@ -438,7 +438,20 @@
     }
 
     function cleanDay(v) {
-        return cleanVal(v).replace(/^ວັນ/i, "").trim();
+        const base = cleanVal(v)
+            .replace(/^ວັນ/i, "")
+            .replace(/^ມື້/i, "")
+            .trim();
+        const lower = base.toLowerCase();
+
+        if (["ຈັນ", "mon", "monday"].includes(lower)) return "ຈັນ";
+        if (["ອັງຄານ", "ຄານ", "ຄາມ", "tue", "tuesday"].includes(lower)) return "ອັງຄານ";
+        if (["ພຸດ", "wed", "wednesday"].includes(lower)) return "ພຸດ";
+        if (["ພະຫັດ", "ພຶຫັດ", "thu", "thursday"].includes(lower)) return "ພະຫັດ";
+        if (["ສຸກ", "fri", "friday"].includes(lower)) return "ສຸກ";
+        if (["ເສົາ", "sat", "saturday"].includes(lower)) return "ເສົາ";
+        if (["ອາທິດ", "sun", "sunday"].includes(lower)) return "ອາທິດ";
+        return base;
     }
 
     function normalizeSemester(v) {
