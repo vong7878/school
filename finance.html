@@ -178,7 +178,7 @@
             font-family: inherit;
             font-size: 13px;
         }
-        button {
+        button, a.btn-link {
             font-family: inherit;
             border: none;
             border-radius: 8px;
@@ -186,8 +186,9 @@
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
+            text-decoration: none;
         }
-        button:hover { opacity: 0.92; }
+        button:hover, a.btn-link:hover { opacity: 0.92; }
         .btn-primary {
             background: #2563eb;
             color: #fff;
@@ -295,6 +296,7 @@
                     <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
                 </select>
                 <button type="button" class="btn-add admin-action" onclick="addFeeItem()">➕ ເພີ່ມຄ່າຮຽນ</button>
+                <a href="update.html?tab=tuition" class="btn-primary btn-link admin-action">🛠️ ຫ້ອງອັບເດດ (ເມນູ 6)</a>
             </div>
         </div>
 
@@ -457,6 +459,8 @@
 
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const TUITION_COLLECTION = "tuition";
+    const LEGACY_FEE_COLLECTION = "fee_items";
 
     function getNormalizedRole() {
         const raw = (
@@ -576,13 +580,32 @@
     };
 
     let feeItems = JSON.parse(localStorage.getItem("school_fee_items") || "null") || [
-        { id: "FEE-1", item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.5", term: "ເທີມ 1 / 2026-2027", amount: "1,500,000 ກີບ" },
-        { id: "FEE-2", item: "ຄ່າບຳລຸງຫ້ອງຮຽນ & ອຸປະກອນ", grade: "ມ.5", term: "ເທີມ 1 / 2026-2027", amount: "200,000 ກີບ" },
-        { id: "FEE-3", item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.6", term: "ເທີມ 1 / 2026-2027", amount: "1,600,000 ກີບ" }
+        { id: "FEE-1", _col: TUITION_COLLECTION, item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.5", term: "ເທີມ 1 / 2026-2027", amount: "1,500,000 ກີບ", status: "ຄ້າງຈ່າຍ" },
+        { id: "FEE-2", _col: TUITION_COLLECTION, item: "ຄ່າບຳລຸງຫ້ອງຮຽນ & ອຸປະກອນ", grade: "ມ.5", term: "ເທີມ 1 / 2026-2027", amount: "200,000 ກີບ", status: "ຄ້າງຈ່າຍ" },
+        { id: "FEE-3", _col: TUITION_COLLECTION, item: "ຄ່າຮຽນປະຈຳເທີມ", grade: "ມ.6", term: "ເທີມ 1 / 2026-2027", amount: "1,600,000 ກີບ", status: "ຄ້າງຈ່າຍ" }
     ];
 
     function saveFeeItemsLocal() {
         localStorage.setItem("school_fee_items", JSON.stringify(feeItems));
+    }
+
+    function mapTuitionDoc(d, id, colName) {
+        const data = d || {};
+        const label = String(data.item || data.studentName || data.name || "ຄ່າຮຽນ").trim();
+        const gradeVal = String(data.grade || data.room || userGrade).trim();
+        return {
+            id: data.id || id,
+            firestoreId: id,
+            _col: colName,
+            item: label,
+            studentName: label,
+            name: label,
+            grade: gradeVal,
+            room: gradeVal,
+            term: String(data.term || document.getElementById("termSelect").value || "ເທີມ 1 / 2026-2027").trim(),
+            amount: String(data.amount || data.fee || "0 ກີບ").trim(),
+            status: String(data.status || "ຄ້າງຈ່າຍ").trim()
+        };
     }
 
     window.addFeeItem = async function () {
@@ -595,20 +618,27 @@
         const amount = prompt("ປ້ອນຈຳນວນເງິນ (ເຊັ່ນ 1,500,000 ກີບ):", "1,500,000 ກີບ");
         if (!amount || !amount.trim()) return;
 
+        const cleanLabel = item.trim();
+        const cleanRoom = grade.trim();
         const newFee = {
             id: "FEE-" + Date.now(),
-            item: item.trim(),
-            grade: grade.trim(),
+            _col: TUITION_COLLECTION,
+            item: cleanLabel,
+            studentName: cleanLabel,
+            name: cleanLabel,
+            grade: cleanRoom,
+            room: cleanRoom,
             term: term.trim(),
-            amount: amount.trim()
+            amount: amount.trim(),
+            status: "ຄ້າງຈ່າຍ"
         };
 
         if (db) {
             try {
-                const ref = await addDoc(collection(db, "fee_items"), newFee);
+                const ref = await addDoc(collection(db, TUITION_COLLECTION), newFee);
                 newFee.firestoreId = ref.id;
             } catch (err) {
-                console.error("Firestore fee add error:", err);
+                console.error("Firestore tuition add error:", err);
             }
         }
 
@@ -629,19 +659,27 @@
         const amount = prompt("ແກ້ໄຂຈຳນວນເງິນ:", target.amount);
         if (amount === null || !amount.trim()) return;
 
-        target.item = item.trim();
-        target.grade = grade.trim();
+        const cleanLabel = item.trim();
+        const cleanRoom = grade.trim();
+        target.item = cleanLabel;
+        target.studentName = cleanLabel;
+        target.name = cleanLabel;
+        target.grade = cleanRoom;
+        target.room = cleanRoom;
         target.amount = amount.trim();
 
         if (db && target.firestoreId) {
             try {
-                await updateDoc(doc(db, "fee_items", target.firestoreId), {
+                await updateDoc(doc(db, target._col || TUITION_COLLECTION, target.firestoreId), {
                     item: target.item,
+                    studentName: target.studentName,
+                    name: target.name,
                     grade: target.grade,
+                    room: target.room,
                     amount: target.amount
                 });
             } catch (err) {
-                console.error("Firestore fee update error:", err);
+                console.error("Firestore tuition update error:", err);
             }
         }
 
@@ -657,9 +695,9 @@
 
         if (db && target.firestoreId) {
             try {
-                await deleteDoc(doc(db, "fee_items", target.firestoreId));
+                await deleteDoc(doc(db, target._col || TUITION_COLLECTION, target.firestoreId));
             } catch (err) {
-                console.error("Firestore fee delete error:", err);
+                console.error("Firestore tuition delete error:", err);
             }
         }
 
@@ -995,9 +1033,15 @@
         } catch (err) {}
 
         try {
-            const feeSnap = await getDocs(collection(db, "fee_items"));
-            if (!feeSnap.empty) {
-                feeItems = feeSnap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
+            const mergedFees = [];
+            for (const colName of [TUITION_COLLECTION, LEGACY_FEE_COLLECTION]) {
+                const snap = await getDocs(collection(db, colName));
+                snap.forEach((d) => {
+                    mergedFees.push(mapTuitionDoc(d.data(), d.id, colName));
+                });
+            }
+            if (mergedFees.length) {
+                feeItems = mergedFees;
                 saveFeeItemsLocal();
             }
         } catch (err) {}
@@ -1020,6 +1064,11 @@
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;");
     }
+
+    window.addEventListener("storage", (e) => {
+        if (e.key === "schoolSystemDataUpdated") loadFinanceFromFirestore();
+    });
+    window.addEventListener("school-data-updated", () => loadFinanceFromFirestore());
 
     applyAdminVisibility();
     refreshFinanceView();
