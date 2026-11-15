@@ -273,6 +273,10 @@
             <form id="dynamic-crud-form">
                 <div class="form-grid" id="dynamic-fields"></div>
                 <div class="form-actions">
+                    <datalist id="studentsDatalist"></datalist>
+<button type="button" class="btn" id="btn-load-students-list" onclick="loadStudentsDatalist(true)">
+    👥 ໂຫຼດລາຍຊື່ນັກຮຽນ
+</button>
                     <button type="submit" class="btn btn-save" id="btn-submit-record">💾 ບັນທຶກລົງ Firebase</button>
                     <button type="button" class="btn" id="btn-cancel-edit" style="display:none;" onclick="resetEditMode()">↩ ຍົກເລີກການແກ້ໄຂ</button>
                 </div>
@@ -915,6 +919,49 @@
     if (userRole !== "student") {
         loadTabData();
     }
+    let studentsDirectory = [];
+
+window.loadStudentsDatalist = async function (showToast = false) {
+    try {
+        const snap = await getDocs(collection(db, "students"));
+        studentsDirectory = snap.docs.map((d) => {
+            const data = d.data() || {};
+            return {
+                id: d.id,
+                name: cleanVal(data.name || data.studentName || ""),
+                grade: cleanGrade(data.grade || data.room || data.classRoom || "")
+            };
+        }).filter((s) => s.name);
+
+        const dl = document.getElementById("studentsDatalist");
+        if (dl) {
+            dl.innerHTML = studentsDirectory.map((s) =>
+                `<option value="${escapeHtml(s.name)}" label="${escapeHtml(s.grade || "")}"></option>`
+            ).join("");
+        }
+
+        const nameInput = document.getElementById("fld-studentName");
+        const roomInput = document.getElementById("fld-room");
+        if (nameInput) {
+            nameInput.setAttribute("list", "studentsDatalist");
+            nameInput.onchange = () => {
+                const matched = studentsDirectory.find(
+                    (s) => s.name.toLowerCase() === cleanVal(nameInput.value).toLowerCase()
+                );
+                if (matched && matched.grade && roomInput && !cleanVal(roomInput.value)) {
+                    roomInput.value = matched.grade;
+                }
+            };
+        }
+
+        if (showToast) {
+            alert(`✅ ໂຫຼດລາຍຊື່ນັກຮຽນ ${studentsDirectory.length} ຄົນສຳເລັດ!`);
+        }
+    } catch (err) {
+        console.warn("ໂຫຼດລາຍຊື່ນັກຮຽນບໍ່ສຳເລັດ:", err);
+        if (showToast) alert("❌ ໂຫຼດລາຍຊື່ນັກຮຽນບໍ່ສຳເລັດ: " + err.message);
+    }
+};
 </script>
 </body>
 </html>
