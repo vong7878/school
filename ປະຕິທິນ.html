@@ -244,13 +244,13 @@
             font-size: 13px;
         }
         /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
-#fbSyncBadge,
-.badge-fb,
-[data-hide-firebase="true"],
-[class*="firebase" i],
-[id*="firebase" i] {
-  display: none !important;
-}
+        #fbSyncBadge,
+        .badge-fb,
+        [data-hide-firebase="true"],
+        [class*="firebase" i],
+        [id*="firebase" i] {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -383,7 +383,7 @@
         </div>
 
         <div class="manage-box" id="teacher-add-schedule-box" style="display: none;">
-            <h3>➕ ເພີ່ມຊົ່ວໂມງສອນ / ຮຽນປະຈຳອາທິດ (ບັນທຶກລົງ Firebase)</h3>
+            <h3>➕ ເພີ່ມຊົ່ວໂມງສອນ / ຮຽນປະຈຳອາທິດ</h3>
             <form id="weekly-schedule-form" class="manage-grid">
                 <input type="week" id="form-week" required>
                 <select id="form-day" required>
@@ -419,7 +419,7 @@
 
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAZvZSKb9JQAWu6fbzbYxApudX3MwxRYss",
@@ -434,8 +434,14 @@
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    const DEFAULT_ROOMS = ["ມ.6/1", "ມ.6/2", "ມ.6/3", "ມ.6/4", "ມ.6/5", "ມ.6/6", "ມ.6", "ມ.5"];
+
     function cleanVal(v) {
         return String(v || "").trim().replace(/^["']+|["']+$/g, "");
+    }
+
+    function normalizeRoomName(v) {
+        return cleanVal(v).replace(/^ຫ້ອງ\s*/i, "");
     }
 
     function normalizeWeekCode(w) {
@@ -519,12 +525,83 @@
     let activeRole = "student";
     let isListeningFirestore = false;
 
+    async function refreshRoomSelects(extraRooms = []) {
+        const roomMap = new Map();
+        const addRoom = (raw) => {
+            const clean = normalizeRoomName(raw);
+            if (!clean) return;
+            const key = clean.replace(/\s+/g, "").toLowerCase();
+            if (!roomMap.has(key)) {
+                roomMap.set(key, clean);
+            }
+        };
+
+        const scheduleRooms = allWeeklyEntries.map((e) => e.room);
+        const userGrade = cleanVal(localStorage.getItem("userGrade"));
+        [...DEFAULT_ROOMS, userGrade, ...scheduleRooms, ...extraRooms].forEach(addRoom);
+
+        for (const colName of ["classrooms", "rooms"]) {
+            try {
+                const snap = await getDocs(collection(db, colName));
+                snap.forEach((docSnap) => {
+                    const d = docSnap.data() || {};
+                    addRoom(d.name || d.roomName || d.room || d.grade);
+                });
+            } catch (err) {}
+        }
+
+        const roomList = Array.from(roomMap.values());
+        const stuSelect = document.getElementById("stu-room-select");
+        const tchSelect = document.getElementById("tch-room-filter");
+        const formSelect = document.getElementById("form-room");
+
+        if (stuSelect) {
+            const prev = normalizeRoomName(stuSelect.value).toLowerCase();
+            stuSelect.innerHTML = roomList
+                .map((r) => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`)
+                .join("");
+            const match = Array.from(stuSelect.options).find((o) => normalizeRoomName(o.value).toLowerCase() === prev);
+            if (match) stuSelect.value = match.value;
+        }
+
+        if (tchSelect) {
+            const prev = normalizeRoomName(tchSelect.value).toLowerCase();
+            tchSelect.innerHTML =
+                `<option value="">-- ທຸກຫ້ອງ --</option>` +
+                roomList.map((r) => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join("");
+            if (prev) {
+                const match = Array.from(tchSelect.options).find((o) => normalizeRoomName(o.value).toLowerCase() === prev);
+                if (match) tchSelect.value = match.value;
+            }
+        }
+
+        if (formSelect) {
+            const prev = normalizeRoomName(formSelect.value).toLowerCase();
+            formSelect.innerHTML = roomList
+                .map((r) => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`)
+                .join("");
+            const match = Array.from(formSelect.options).find((o) => normalizeRoomName(o.value).toLowerCase() === prev);
+            if (match) formSelect.value = match.value;
+        }
+    }
+
+    function dedupeEntries(list = []) {
+        const seen = new Map();
+        list.forEach((item) => {
+            const key = `${item.week}__${item.day}__${item.period}__${normalizeRoomName(item.room).toLowerCase()}__${item.subject.toLowerCase()}__${item.teacher.toLowerCase()}`;
+            if (!seen.has(key)) {
+                seen.set(key, item);
+            }
+        });
+        return Array.from(seen.values());
+    }
+
     function rebuildScheduleCacheAndRender() {
         const fromWeekly = weeklyDocsCache.map((d) => ({
             week: normalizeWeekCode(d.week),
             day: normalizeLaoDay(d.day),
             period: cleanVal(d.period || "1"),
-            room: cleanVal(d.room || d.grade),
+            room: normalizeRoomName(d.room || d.grade),
             subject: cleanVal(d.subject),
             teacher: cleanVal(d.teacher)
         }));
@@ -533,17 +610,17 @@
             week: normalizeWeekCode(d.week),
             day: normalizeLaoDay(d.day) || "ຈັນ",
             period: cleanVal(d.period || "1"),
-            room: cleanVal(d.room || d.grade),
+            room: normalizeRoomName(d.room || d.grade),
             subject: cleanVal(d.subject),
             teacher: cleanVal(d.teacher)
         }));
 
-        allWeeklyEntries = [...fromWeekly, ...fromTimetables];
+        allWeeklyEntries = dedupeEntries([...fromWeekly, ...fromTimetables]);
+        refreshRoomSelects();
         renderStudentWeeklyTable();
         renderTeacherWeeklyTable();
     }
 
-    // ຟັງການປ່ຽນແປງຈາກ Firestore ແບບ Real-time: ເມື່ອຄູບັນທຶກຕາຕະລາງສອນ ຈະຊິ້ງໄປສ້າງຕາຕະລາງຮຽນໃຫ້ນັກຮຽນທັນທີ
     function listenWeeklySchedulesFromFirestore() {
         if (isListeningFirestore) return;
         isListeningFirestore = true;
@@ -561,6 +638,12 @@
                 rebuildScheduleCacheAndRender();
             }, (err) => {
                 console.warn("ບໍ່ສາມາດຟັງ timetables ຈາກ Firestore:", err);
+            });
+
+            ["classrooms", "rooms"].forEach((colName) => {
+                onSnapshot(collection(db, colName), () => {
+                    refreshRoomSelects();
+                }, () => {});
             });
         } catch (err) {
             console.warn("ບໍ່ສາມາດໂຫຼດຂໍ້ມູນຈາກ Firestore:", err);
@@ -623,7 +706,7 @@
         const tbody = document.getElementById("stu-weekly-tbody");
         if (!tbody) return;
 
-        const room = cleanVal(document.getElementById("stu-room-select").value);
+        const room = normalizeRoomName(document.getElementById("stu-room-select").value).toLowerCase();
         const keyword = cleanVal(document.getElementById("stu-search-input").value).toLowerCase();
         const normCurrentWeek = normalizeWeekCode(currentStudentWeek);
         const dates = getDatesOfISOWeek(normCurrentWeek);
@@ -638,7 +721,7 @@
                     const matchWeek = !itemWeek || itemWeek === normCurrentWeek;
                     const matchDay = itemDay === dayName;
                     const matchPeriod = String(item.period) === String(p);
-                    const matchRoom = !room || item.room === room;
+                    const matchRoom = !room || normalizeRoomName(item.room).toLowerCase() === room;
                     const matchKw = !keyword ||
                         item.subject.toLowerCase().includes(keyword) ||
                         item.teacher.toLowerCase().includes(keyword);
@@ -686,7 +769,7 @@
         if (!tbody) return;
 
         const teacherKw = cleanVal(document.getElementById("tch-name-search").value).toLowerCase();
-        const roomFilter = cleanVal(document.getElementById("tch-room-filter").value);
+        const roomFilter = normalizeRoomName(document.getElementById("tch-room-filter").value).toLowerCase();
         const subjKw = cleanVal(document.getElementById("tch-subject-search").value).toLowerCase();
         const normCurrentWeek = normalizeWeekCode(currentTeacherWeek);
         const dates = getDatesOfISOWeek(normCurrentWeek);
@@ -702,7 +785,7 @@
                     const matchDay = itemDay === dayName;
                     const matchPeriod = String(item.period) === String(p);
                     const matchTeacher = !teacherKw || item.teacher.toLowerCase().includes(teacherKw);
-                    const matchRoom = !roomFilter || item.room === roomFilter;
+                    const matchRoom = !roomFilter || normalizeRoomName(item.room).toLowerCase() === roomFilter;
                     const matchSubj = !subjKw || item.subject.toLowerCase().includes(subjKw);
                     return matchWeek && matchDay && matchPeriod && matchTeacher && matchRoom && matchSubj;
                 });
@@ -734,7 +817,7 @@
             week: normalizeWeekCode(document.getElementById("form-week").value),
             day: normalizeLaoDay(document.getElementById("form-day").value),
             period: cleanVal(document.getElementById("form-period").value),
-            room: cleanVal(document.getElementById("form-room").value),
+            room: normalizeRoomName(document.getElementById("form-room").value),
             subject: cleanVal(document.getElementById("form-subject").value),
             teacher: cleanVal(document.getElementById("form-teacher").value),
             createdAt: serverTimestamp()
@@ -749,8 +832,9 @@
                 document.getElementById("tch-week-picker").value = currentTeacherWeek;
             }
             const stuRoomSelect = document.getElementById("stu-room-select");
-            if (stuRoomSelect && entry.room && Array.from(stuRoomSelect.options).some((o) => o.value === entry.room)) {
-                stuRoomSelect.value = entry.room;
+            if (stuRoomSelect && entry.room && Array.from(stuRoomSelect.options).some((o) => normalizeRoomName(o.value).toLowerCase() === entry.room.toLowerCase())) {
+                const matched = Array.from(stuRoomSelect.options).find((o) => normalizeRoomName(o.value).toLowerCase() === entry.room.toLowerCase());
+                if (matched) stuRoomSelect.value = matched.value;
             }
             localStorage.setItem("schoolSystemDataUpdated", JSON.stringify({
                 tab: "schedules",
@@ -764,10 +848,10 @@
         }
     });
 
-    function initCalendarPage() {
+    async function initCalendarPage() {
         const userName = cleanVal(localStorage.getItem("userName")) || "ຜູ້ໃຊ້ງານ";
         const userRole = cleanVal(localStorage.getItem("userRole") || localStorage.getItem("role") || "student").toLowerCase();
-        const userGrade = cleanVal(localStorage.getItem("userGrade") || "ມ.6/1");
+        const userGrade = normalizeRoomName(localStorage.getItem("userGrade") || "ມ.6/1");
 
         document.getElementById("cal-user-name").textContent = userName;
         document.getElementById("cal-user-role").textContent = userRole.toUpperCase();
@@ -776,9 +860,12 @@
         document.getElementById("tch-week-picker").value = currentTeacherWeek;
         document.getElementById("form-week").value = currentTeacherWeek;
 
+        await refreshRoomSelects([userGrade]);
+
         const roomSelect = document.getElementById("stu-room-select");
-        if (roomSelect && Array.from(roomSelect.options).some((o) => o.value === userGrade)) {
-            roomSelect.value = userGrade;
+        if (roomSelect && Array.from(roomSelect.options).some((o) => normalizeRoomName(o.value).toLowerCase() === userGrade.toLowerCase())) {
+            const matched = Array.from(roomSelect.options).find((o) => normalizeRoomName(o.value).toLowerCase() === userGrade.toLowerCase());
+            if (matched) roomSelect.value = matched.value;
         }
 
         activeRole = userRole;
@@ -817,7 +904,6 @@
     }
 
     initCalendarPage();
-
 </script>
 </body>
 </html>
