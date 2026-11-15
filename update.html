@@ -222,13 +222,13 @@
         .denied-box h2 { color: #f87171; margin-bottom: 10px; }
         .denied-box p { color: #cbd5e1; margin-bottom: 18px; }
         /* ເຊື່ອງ badge / ປ້າຍສະຖານະ Firebase */
-#fbSyncBadge,
-.badge-fb, 
-[data-hide-firebase="true"],
-[class*="firebase" i],
-[id*="firebase" i] {
-  display: none !important;
-}
+        #fbSyncBadge,
+        .badge-fb,
+        [data-hide-firebase="true"],
+        [class*="firebase" i],
+        [id*="firebase" i] {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -259,12 +259,13 @@
         <button type="button" class="submenu-btn" data-tab="scores" onclick="switchUpdateTab('scores')">📊 5. ຄະແນນນັກຮຽນ</button>
         <button type="button" class="submenu-btn" data-tab="tuition" onclick="switchUpdateTab('tuition')">💰 6. ລາຍການຄ່າຮຽນ</button>
         <button type="button" class="submenu-btn" data-tab="subjects" onclick="switchUpdateTab('subjects')">📚 7. ວິຊາຮຽນ</button>
+        <button type="button" class="submenu-btn admin-only-tab" id="btn-tab-terms" data-tab="terms" onclick="switchUpdateTab('terms')">🗓️ 8. ຈັດການເທີມຮຽນ</button>
     </div>
 
     <section class="panel">
         <div class="panel-top">
             <h2 id="active-tab-title">🏫 ເພີ່ມ / ແກ້ໄຂ / ລົບ ລາຍຊື່ຫ້ອງ</h2>
-            <span class="sync-note">⚡ ກັ່ນຕອງໂຕບໍ່ຊ້ຳກັນ & ຊິ້ງໄປທຸກໜ້າໃນລະບົບ</span>
+            <span class="sync-note">⚡ ກັ່ນຕອງໂຕບໍ່ຊ້ຳກັນ &amp; ຊິ້ງໄປທຸກໜ້າໃນລະບົບ</span>
         </div>
 
         <div class="form-card">
@@ -375,6 +376,10 @@
         if (tabKey === "tuition") {
             return `tuition:${cleanVal(item.item).toLowerCase()}__${cleanGrade(item.room).toLowerCase()}__${cleanVal(item.term).toLowerCase()}`;
         }
+        if (tabKey === "terms") {
+            const g = (!cleanVal(item.grade) || cleanVal(item.grade).toUpperCase() === "ALL") ? "all" : cleanGrade(item.grade).toLowerCase();
+            return `term:${cleanVal(item.academicYear).toLowerCase()}__${cleanVal(item.term).toLowerCase()}__${g}`;
+        }
         return `id:${item._col}__${item.id}`;
     }
 
@@ -406,9 +411,15 @@
 
     const userName = cleanVal(localStorage.getItem("userName")) || "ຜູ້ໃຊ້ງານ";
     const userRole = cleanVal(localStorage.getItem("userRole") || localStorage.getItem("role") || "student").toLowerCase();
+    const isAdmin = ["admin", "administrator", "ແອັດມິນ", "แอดมิน"].includes(userRole);
 
     document.getElementById("upd-user-name").textContent = userName;
     document.getElementById("upd-user-role").textContent = userRole.toUpperCase();
+
+    if (!isAdmin) {
+        const termsBtn = document.getElementById("btn-tab-terms");
+        if (termsBtn) termsBtn.style.display = "none";
+    }
 
     if (userRole === "student") {
         document.getElementById("update-main-container").style.display = "none";
@@ -675,11 +686,48 @@
                 teacher: cleanVal(d.teacher || d.teacherName || ""),
                 _raw: d
             })
+        },
+        terms: {
+            title: "🗓️ 8. ເພີ່ມ / ແກ້ໄຂ / ລົບ ເທີມຮຽນ & ຈຳນວນຄາບ (ສຳລັບ Admin)",
+            collections: ["term_periods"],
+            primaryCol: "term_periods",
+            adminOnly: true,
+            fields: [
+                { name: "term", label: "ຊື່ເທີມຮຽນ", type: "text", required: true, placeholder: "ເທີມ 1 / 2026-2027" },
+                { name: "academicYear", label: "ສົກຮຽນ", type: "text", required: true, placeholder: "2026-2027" },
+                { name: "grade", label: "ຫ້ອງ (ALL = ທຸກຫ້ອງ ຫຼື ມ.5)", type: "text", required: true, placeholder: "ALL" },
+                { name: "totalPeriods", label: "ຈຳນວນຄາບທັງໝົດ", type: "number", required: true, placeholder: "40", min: 1, max: 500, step: "1" },
+                { name: "maxScore", label: "ຄະແນນເຕັມ", type: "number", required: true, placeholder: "20", min: 1, max: 100, step: "1" }
+            ],
+            columns: [
+                { key: "term", label: "ຊື່ເທີມຮຽນ" },
+                { key: "academicYear", label: "ສົກຮຽນ" },
+                { key: "gradeDisplay", label: "ຫ້ອງ" },
+                { key: "periodsDisplay", label: "ຈຳນວນຄາບ" },
+                { key: "maxScore", label: "ຄະແນນເຕັມ" }
+            ],
+            mapDoc: (d, id) => {
+                const rawGrade = cleanVal(d.grade || "ALL");
+                const grade = (!rawGrade || rawGrade.toUpperCase() === "ALL") ? "ALL" : cleanGrade(rawGrade);
+                const totalPeriods = Math.max(1, Number(d.totalPeriods) || 40);
+                const maxScore = Math.max(1, Number(d.maxScore) || 20);
+                return {
+                    id,
+                    term: cleanVal(d.term || ""),
+                    academicYear: cleanVal(d.academicYear || "2026-2027"),
+                    grade,
+                    gradeDisplay: grade === "ALL" ? "ທຸກຫ້ອງ" : grade,
+                    totalPeriods,
+                    periodsDisplay: `${totalPeriods} ຄາບ`,
+                    maxScore,
+                    _raw: d
+                };
+            }
         }
     };
 
     const urlTab = cleanVal(new URLSearchParams(window.location.search).get("tab")).toLowerCase();
-    let currentTab = TAB_CONFIGS[urlTab] ? urlTab : "rooms";
+    let currentTab = (TAB_CONFIGS[urlTab] && (!TAB_CONFIGS[urlTab].adminOnly || isAdmin)) ? urlTab : "rooms";
     let currentScoreSubMode = "subject";
     let currentRecords = [];
     let editingRecordId = null;
@@ -699,6 +747,21 @@
         } catch (err) {
             console.warn(err);
         }
+    }
+
+    function syncTermsCache(list) {
+        try {
+            const normalized = list.map((item) => ({
+                id: item.id,
+                firestoreId: item.id,
+                term: item.term,
+                academicYear: item.academicYear,
+                grade: item.grade,
+                totalPeriods: Number(item.totalPeriods) || 40,
+                maxScore: Number(item.maxScore) || 20
+            }));
+            localStorage.setItem("school_term_periods", JSON.stringify(normalized));
+        } catch (e) {}
     }
 
     function getActiveFields() {
@@ -756,6 +819,17 @@
                 </div>
             `;
         }).join("");
+
+        if (currentTab === "terms") {
+            const yrEl = document.getElementById("fld-academicYear");
+            const grEl = document.getElementById("fld-grade");
+            const tpEl = document.getElementById("fld-totalPeriods");
+            const msEl = document.getElementById("fld-maxScore");
+            if (yrEl && !yrEl.value) yrEl.value = "2026-2027";
+            if (grEl && !grEl.value) grEl.value = "ALL";
+            if (tpEl && !tpEl.value) tpEl.value = "40";
+            if (msEl && !msEl.value) msEl.value = "20";
+        }
     }
 
     function renderTableHeader() {
@@ -859,16 +933,25 @@
         }
 
         currentRecords = dedupeRecords(currentTab, merged);
+        if (currentTab === "terms") {
+            syncTermsCache(currentRecords);
+        }
         renderTableBody();
     }
 
     window.switchUpdateTab = function (tabKey) {
         if (!TAB_CONFIGS[tabKey]) return;
+        if (TAB_CONFIGS[tabKey].adminOnly && !isAdmin) {
+            return alert("❌ ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເຂົ້າໃຊ້ເມນູຈັດການເທີມຮຽນໄດ້!");
+        }
         currentTab = tabKey;
         loadTabData();
     };
 
     window.startEditRecord = function (recordId, colName) {
+        if (TAB_CONFIGS[currentTab]?.adminOnly && !isAdmin) {
+            return alert("❌ ສະເພາະ Admin ເທົ່ານັ້ນ!");
+        }
         const cfg = TAB_CONFIGS[currentTab];
         const target = currentRecords.find((r) => r.id === recordId && r._col === colName);
         if (!target) return;
@@ -894,12 +977,25 @@
         editingRecordId = null;
         editingCollectionName = null;
         document.getElementById("dynamic-crud-form").reset();
+        if (currentTab === "terms") {
+            const yrEl = document.getElementById("fld-academicYear");
+            const grEl = document.getElementById("fld-grade");
+            const tpEl = document.getElementById("fld-totalPeriods");
+            const msEl = document.getElementById("fld-maxScore");
+            if (yrEl) yrEl.value = "2026-2027";
+            if (grEl) grEl.value = "ALL";
+            if (tpEl) tpEl.value = "40";
+            if (msEl) msEl.value = "20";
+        }
         document.getElementById("form-heading").textContent = "➕ ເພີ່ມຂໍ້ມູນໃໝ່";
         document.getElementById("btn-submit-record").textContent = "💾 ບັນທຶກ";
         document.getElementById("btn-cancel-edit").style.display = "none";
     };
 
     window.deleteRecordItem = async function (recordId, colName) {
+        if (TAB_CONFIGS[currentTab]?.adminOnly && !isAdmin) {
+            return alert("❌ ສະເພາະ Admin ເທົ່ານັ້ນ!");
+        }
         if (!confirm("ຕ້ອງການລົບຂໍ້ມູນລາຍການນີ້ແທ້ບໍ່?")) return;
         const cfg = TAB_CONFIGS[currentTab];
         const targetCol = colName || cfg.primaryCol;
@@ -917,6 +1013,10 @@
 
     document.getElementById("dynamic-crud-form").addEventListener("submit", async (e) => {
         e.preventDefault();
+        if (TAB_CONFIGS[currentTab]?.adminOnly && !isAdmin) {
+            return alert("❌ ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມ, ແກ້ໄຂ ຫຼື ລົບເທີມຮຽນໄດ້!");
+        }
+
         const cfg = TAB_CONFIGS[currentTab];
         const fields = getActiveFields();
         const formValues = {};
@@ -978,6 +1078,30 @@
                 }, { merge: true });
 
                 alert("✅ ບັນທຶກຄະແນນນັກຮຽນສຳເລັດແລ້ວ!");
+            } else if (currentTab === "terms") {
+                const term = formValues.term;
+                const academicYear = formValues.academicYear || "2026-2027";
+                const rawGrade = formValues.grade;
+                const grade = (!rawGrade || rawGrade.toUpperCase() === "ALL") ? "ALL" : cleanGrade(rawGrade);
+                const totalPeriods = Math.max(1, Number(formValues.totalPeriods) || 40);
+                const maxScore = Math.max(1, Number(formValues.maxScore) || 20);
+
+                const safeKey = `${academicYear}_${term}_${grade}`.replace(/[\/\\?#%]/g, "_").replace(/\s+/g, "_");
+                const docId = editingRecordId || `TERM_${safeKey}`;
+
+                const termPayload = {
+                    id: docId,
+                    firestoreId: docId,
+                    term,
+                    academicYear,
+                    grade,
+                    totalPeriods,
+                    maxScore,
+                    updatedAt: serverTimestamp()
+                };
+
+                await setDoc(doc(db, cfg.primaryCol, docId), termPayload, { merge: true });
+                alert(`✅ ບັນທຶກເທີມ "${term}" (${totalPeriods} ຄາບ) ສຳເລັດແລ້ວ!`);
             } else {
                 const payload = { ...formValues };
 
@@ -1021,12 +1145,40 @@
                         ...payload,
                         updatedAt: serverTimestamp()
                     }, { merge: true });
+
+                    if (currentTab === "rooms") {
+                        const mirrorId = "ROOM-" + cleanGrade(payload.name).replace(/[^\p{L}\p{N}_-]+/gu, "-") || targetId;
+                        await setDoc(doc(db, "classrooms", mirrorId), {
+                            id: mirrorId,
+                            firestoreId: mirrorId,
+                            name: payload.name,
+                            advisor: payload.advisor,
+                            building: payload.level,
+                            studentCount: Number(payload.capacity || 0),
+                            note: payload.note || "",
+                            updatedAt: serverTimestamp()
+                        }, { merge: true });
+                    }
                     alert("✅ ອັບເດດຂໍ້ມູນ ສຳເລັດແລ້ວ!");
                 } else {
-                    await addDoc(collection(db, cfg.primaryCol), {
+                    const docRef = await addDoc(collection(db, cfg.primaryCol), {
                         ...payload,
                         createdAt: serverTimestamp()
                     });
+
+                    if (currentTab === "rooms") {
+                        const mirrorId = "ROOM-" + cleanGrade(payload.name).replace(/[^\p{L}\p{N}_-]+/gu, "-") || docRef.id;
+                        await setDoc(doc(db, "classrooms", mirrorId), {
+                            id: mirrorId,
+                            firestoreId: mirrorId,
+                            name: payload.name,
+                            advisor: payload.advisor,
+                            building: payload.level,
+                            studentCount: Number(payload.capacity || 0),
+                            note: payload.note || "",
+                            updatedAt: serverTimestamp()
+                        }, { merge: true });
+                    }
 
                     if (currentTab === "students") {
                         const stdDocId = "STD-" + Date.now();
@@ -1058,19 +1210,6 @@
     if (userRole !== "student") {
         loadTabData();
     }
-    if (currentTab === "rooms") {
-    const mirrorId = "ROOM-" + cleanGrade(payload.name).replace(/[^\p{L}\p{N}_-]+/gu, "-") || targetId;
-    await setDoc(doc(db, "classrooms", mirrorId), {
-        id: mirrorId,
-        firestoreId: mirrorId,
-        name: payload.name,
-        advisor: payload.advisor,
-        building: payload.level,
-        studentCount: Number(payload.capacity || 0),
-        note: payload.note || "",
-        updatedAt: serverTimestamp()
-    }, { merge: true });
-}
 </script>
 </body>
 </html>
