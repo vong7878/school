@@ -178,10 +178,6 @@
             font-family: inherit;
             font-size: 13px;
         }
-        .cell-input {
-            padding: 6px 8px;
-            font-size: 13px;
-        }
         button, a.btn-link {
             font-family: inherit;
             border: none;
@@ -201,10 +197,16 @@
             gap: 6px;
         }
         .btn-add { background: #16a34a; color: #fff; padding: 6px 12px; font-size: 12px; }
-        .btn-edit { background: #eab308; color: #0f172a; padding: 5px 9px; font-size: 12px; }
         .btn-approve { background: #16a34a; color: #fff; padding: 5px 10px; font-size: 12px; }
-        .btn-del { background: #dc2626; color: #fff; padding: 5px 10px; font-size: 12px; }
         .btn-copy { background: #334155; color: #f8fafc; padding: 6px 11px; font-size: 12px; }
+
+        /* ເຊື່ອງປຸ່ມເພີ່ມ, ແກ້ໄຂ, ລົບ ທັງໝົດ */
+        .btn-add-hide,
+        .btn-edit,
+        .btn-del,
+        .admin-crud-col {
+            display: none !important;
+        }
 
         .table-wrap {
             width: 100%;
@@ -322,7 +324,7 @@
     <div class="topbar">
         <div class="topbar-left">
             <a href="index.html" class="back-btn">⬅ ກັບໄປໜ້າຫຼັກ</a>
-            <h1 class="page-title">💰 ຈັດການການເງິນ &amp; ຄ່າຮຽນ</h1>
+            <h1 class="page-title">💰 ຈັດການການເງິນ ແລະ ຄ່າຮຽນ</h1>
         </div>
         <div class="user-meta">
             <span id="currentUserName">ຜູ້ໃຊ້ງານ</span>
@@ -333,14 +335,10 @@
 
     <div class="paid-banner" id="paidTermBanner"></div>
 
-    <!-- ຕາຕະລາງຄ່າຮຽນຕາມໜ່ວຍກິດ (ແຖວ 1-7 ຊື່ວິຊາຢູ່ໜ້າ, 8 ລວມ, 9 ສະເລ່ຍໜ່ວຍກິດ, 10 ສະຖານະການຈ່າຍ) -->
+    <!-- ຕາຕະລາງສະແດງຄ່າຮຽນຕາມໜ່ວຍກິດ (10 ແຖວ - ສະແດງຢ່າງດຽວ) -->
     <section class="card" id="subject-credit-section">
         <div class="card-header">
-            <h2>📚 ຕາຕະລາງຄິດໄລ່ຄ່າຮຽນຕາມໜ່ວຍກິດ (1–7 ວິຊາ)</h2>
-            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <button type="button" class="btn-add" onclick="saveSubjectTable()">💾 ບັນທຶກຕາຕະລາງ</button>
-                <button type="button" class="btn-copy" onclick="resetSubjectTable()">↺ ຄ່າເລີ່ມຕົ້ນ</button>
-            </div>
+            <h2>📚 ຕາຕະລາງຄ່າຮຽນຕາມໜ່ວຍກິດ (1–7 ວິຊາ)</h2>
         </div>
         <div class="table-wrap">
             <table>
@@ -348,16 +346,13 @@
                     <tr>
                         <th style="width: 70px;">ແຖວ</th>
                         <th>ຊື່ວິຊາ (1–7)</th>
-                        <th style="width: 150px;">ຈຳນວນໜ່ວຍກິດ</th>
-                        <th style="width: 190px;">ລາຄາຕໍ່ໜ່ວຍກິດ (ກີບ)</th>
-                        <th style="width: 190px;">ຄ່າຮຽນວິຊາ (ກີບ)</th>
+                        <th style="width: 150px;" class="right">ຈຳນວນໜ່ວຍກິດ</th>
+                        <th style="width: 190px;" class="right">ລາຄາຕໍ່ໜ່ວຍກິດ (ກີບ)</th>
+                        <th style="width: 190px;" class="right">ຄ່າຮຽນວິຊາ (ກີບ)</th>
                     </tr>
                 </thead>
                 <tbody id="subjectTableBody"></tbody>
             </table>
-        </div>
-        <div class="note-text">
-            * ແຖວ 1–7: ຊື່ວິຊາຢູ່ທາງໜ້າ | ແຖວ 8: ລວມແຕ່ເທິງລົງລຸ່ມ (ໜ່ວຍກິດ &amp; ຄ່າຮຽນ) | ແຖວ 9: ສະເລ່ຍຄ່າໜ່ວຍກິດຮຽນ (ລວມຄ່າຮຽນ ÷ ລວມໜ່ວຍກິດ) | ແຖວ 10: ສະຖານະການຈ່າຍ
         </div>
     </section>
 
@@ -369,8 +364,6 @@
                     <option value="ເທີມ 1 / 2026-2027">ເທີມ 1 / 2026-2027</option>
                     <option value="ເທີມ 2 / 2026-2027">ເທີມ 2 / 2026-2027</option>
                 </select>
-                <button type="button" class="btn-add admin-action" onclick="addFeeItem()">➕ ເພີ່ມຄ່າຮຽນ</button>
-                <a href="update.html?tab=tuition" class="btn-primary btn-link admin-action">🛠️ ຫ້ອງອັບເດດ (ເມນູ 6)</a>
             </div>
         </div>
 
@@ -411,7 +404,6 @@
                             <th>ຫ້ອງ</th>
                             <th>ເທີມ</th>
                             <th>ຈຳນວນເງິນ</th>
-                            <th class="admin-action" style="width:140px;">ຈັດການ</th>
                         </tr>
                     </thead>
                     <tbody id="feeTableBody"></tbody>
@@ -475,7 +467,7 @@
                         <th>ເທີມ</th>
                         <th>ຈຳນວນເງິນ</th>
                         <th>ສະຖານະ</th>
-                        <th class="admin-action" style="width: 170px;">ອະນຸມັດ / ລົບ</th>
+                        <th class="admin-action" style="width: 130px;">ອະນຸມັດ</th>
                     </tr>
                 </thead>
                 <tbody id="pendingSlipsBody"></tbody>
@@ -515,7 +507,7 @@
 <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-        getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, setDoc
+        getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, doc, setDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -598,38 +590,14 @@
         return { label: `ຍັງບໍ່ທັນຊຳລະ (${selectedTerm})`, cssClass: "status-pending" };
     }
 
-    window.updateSubjectRow = function (index, field, value) {
-        if (!subjectRows[index]) return;
-        if (field === "subject") {
-            subjectRows[index].subject = value;
-        } else if (field === "credits") {
-            subjectRows[index].credits = Math.max(0, Number(value) || 0);
-        } else if (field === "pricePerCredit") {
-            subjectRows[index].pricePerCredit = Math.max(0, Number(value) || 0);
-        }
-        localStorage.setItem(SUBJECT_STORAGE_KEY, JSON.stringify(subjectRows));
-        renderSubjectTable(false);
-    };
-
-    window.saveSubjectTable = function () {
-        localStorage.setItem(SUBJECT_STORAGE_KEY, JSON.stringify(subjectRows));
-        renderSubjectTable(true);
-        alert("✅ ບັນທຶກຕາຕະລາງ 10 ແຖວສຳເລັດແລ້ວ!");
-    };
-
-    window.resetSubjectTable = function () {
-        subjectRows = DEFAULT_SUBJECTS.map((s) => ({ ...s }));
-        localStorage.setItem(SUBJECT_STORAGE_KEY, JSON.stringify(subjectRows));
-        renderSubjectTable(true);
-    };
-
-    function renderSubjectTable(rebuildInputs = true) {
+    function renderSubjectTable() {
         const tbody = document.getElementById("subjectTableBody");
         if (!tbody) return;
 
         let totalCredits = 0;
         let totalTuition = 0;
 
+        // ແຖວ 1 - 7: ຊື່ວິຊາຢູ່ທາງໜ້າ (ສະແດງຢ່າງດຽວ)
         const rowHtmlList = subjectRows.slice(0, 7).map((r, idx) => {
             const rowNum = idx + 1;
             const credits = Number(r.credits) || 0;
@@ -641,38 +609,10 @@
             return `
                 <tr data-row="${rowNum}">
                     <td class="center"><strong>${rowNum}</strong></td>
-                    <td>
-                        <input
-                            type="text"
-                            class="cell-input"
-                            value="${esc(r.subject)}"
-                            placeholder="ຊື່ວິຊາທີ ${rowNum}"
-                            oninput="updateSubjectRow(${idx}, 'subject', this.value)"
-                        />
-                    </td>
-                    <td>
-                        <input
-                            type="number"
-                            class="cell-input right"
-                            min="0"
-                            step="0.5"
-                            value="${credits}"
-                            oninput="updateSubjectRow(${idx}, 'credits', this.value)"
-                        />
-                    </td>
-                    <td>
-                        <input
-                            type="number"
-                            class="cell-input right"
-                            min="0"
-                            step="1000"
-                            value="${price}"
-                            oninput="updateSubjectRow(${idx}, 'pricePerCredit', this.value)"
-                        />
-                    </td>
-                    <td class="right" id="subTotalCell_${idx}">
-                        <strong>${subTotal.toLocaleString()} ກີບ</strong>
-                    </td>
+                    <td>${esc(r.subject)}</td>
+                    <td class="right">${credits.toLocaleString()}</td>
+                    <td class="right">${price.toLocaleString()} ກີບ</td>
+                    <td class="right"><strong>${subTotal.toLocaleString()} ກີບ</strong></td>
                 </tr>
             `;
         });
@@ -685,9 +625,9 @@
             <tr data-row="8" class="row-summary-total">
                 <td class="center">8</td>
                 <td>ລວມແຕ່ເທິງລົງລຸ່ມ (ແຖວ 1–7)</td>
-                <td class="right" id="totalCreditsCell">${totalCredits.toLocaleString()} ໜ່ວຍກິດ</td>
+                <td class="right">${totalCredits.toLocaleString()} ໜ່ວຍກິດ</td>
                 <td class="center">-</td>
-                <td class="right" id="totalTuitionCell">${totalTuition.toLocaleString()} ກີບ</td>
+                <td class="right">${totalTuition.toLocaleString()} ກີບ</td>
             </tr>
         `;
 
@@ -695,10 +635,10 @@
         const row9Html = `
             <tr data-row="9" class="row-summary-avg">
                 <td class="center">9</td>
-                <td>ສະເລ່ຍຄ່າໜ່ວຍກິດຮຽນ (ລວມເງິນ ÷ ລວມໜ່ວຍກິດ)</td>
+                <td>ສະເລ່ຍຄ່າໜ່ວຍກິດຮຽນ</td>
                 <td class="center">-</td>
-                <td class="right" id="avgCreditCell">${avgCreditFee.toLocaleString()} ກີບ / ໜ່ວຍກິດ</td>
-                <td class="right" id="avgCreditSummaryCell">${avgCreditFee.toLocaleString()} ກີບ</td>
+                <td class="right">${avgCreditFee.toLocaleString()} ກີບ / ໜ່ວຍກິດ</td>
+                <td class="right">${avgCreditFee.toLocaleString()} ກີບ</td>
             </tr>
         `;
 
@@ -707,32 +647,13 @@
             <tr data-row="10" class="row-summary-status">
                 <td class="center">10</td>
                 <td>ສະຖານະການຈ່າຍ</td>
-                <td colspan="3" id="paymentStatusCell">
+                <td colspan="3">
                     <span class="${payStatus.cssClass}">${esc(payStatus.label)}</span>
                 </td>
             </tr>
         `;
 
-        if (rebuildInputs || tbody.children.length !== 10) {
-            tbody.innerHTML = rowHtmlList.join("") + row8Html + row9Html + row10Html;
-        } else {
-            subjectRows.slice(0, 7).forEach((r, idx) => {
-                const subTotal = (Number(r.credits) || 0) * (Number(r.pricePerCredit) || 0);
-                const cell = document.getElementById(`subTotalCell_${idx}`);
-                if (cell) cell.innerHTML = `<strong>${subTotal.toLocaleString()} ກີບ</strong>`;
-            });
-            const totCredEl = document.getElementById("totalCreditsCell");
-            const totTuiEl = document.getElementById("totalTuitionCell");
-            const avgCellEl = document.getElementById("avgCreditCell");
-            const avgSumEl = document.getElementById("avgCreditSummaryCell");
-            const statusEl = document.getElementById("paymentStatusCell");
-
-            if (totCredEl) totCredEl.textContent = `${totalCredits.toLocaleString()} ໜ່ວຍກິດ`;
-            if (totTuiEl) totTuiEl.textContent = `${totalTuition.toLocaleString()} ກີບ`;
-            if (avgCellEl) avgCellEl.textContent = `${avgCreditFee.toLocaleString()} ກີບ / ໜ່ວຍກິດ`;
-            if (avgSumEl) avgSumEl.textContent = `${avgCreditFee.toLocaleString()} ກີບ`;
-            if (statusEl) statusEl.innerHTML = `<span class="${payStatus.cssClass}">${esc(payStatus.label)}</span>`;
-        }
+        tbody.innerHTML = rowHtmlList.join("") + row8Html + row9Html + row10Html;
     }
 
     const DEFAULT_QR = "https://quickchart.io/qr?text=SCHOOL-TUITION-PAYMENT&size=200";
@@ -854,104 +775,6 @@
         };
     }
 
-    window.addFeeItem = async function () {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ເພີ່ມຄ່າຮຽນໄດ້!");
-        const item = prompt("ປ້ອນຊື່ລາຍການຄ່າຮຽນ:", "ຄ່າຮຽນປະຈຳເທີມ");
-        if (!item || !item.trim()) return;
-        const grade = prompt("ປ້ອນຫ້ອງ (ເຊັ່ນ ມ.5):", userGrade);
-        if (!grade || !grade.trim()) return;
-        const term = document.getElementById("termSelect").value || "ເທີມ 1 / 2026-2027";
-        const amount = prompt("ປ້ອນຈຳນວນເງິນ (ເຊັ່ນ 1,500,000 ກີບ):", "1,500,000 ກີບ");
-        if (!amount || !amount.trim()) return;
-
-        const cleanLabel = item.trim();
-        const cleanRoom = grade.trim();
-        const newFee = {
-            id: "FEE-" + Date.now(),
-            _col: TUITION_COLLECTION,
-            item: cleanLabel,
-            studentName: cleanLabel,
-            name: cleanLabel,
-            grade: cleanRoom,
-            room: cleanRoom,
-            term: term.trim(),
-            amount: amount.trim(),
-            status: "ຄ້າງຈ່າຍ"
-        };
-
-        if (db) {
-            try {
-                const ref = await addDoc(collection(db, TUITION_COLLECTION), newFee);
-                newFee.firestoreId = ref.id;
-            } catch (err) {
-                console.error("Firestore tuition add error:", err);
-            }
-        }
-
-        feeItems.push(newFee);
-        saveFeeItemsLocal();
-        renderFeeTable();
-    };
-
-    window.editFeeItem = async function (id) {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ແກ້ໄຂຄ່າຮຽນໄດ້!");
-        const target = feeItems.find((f) => f.id === id);
-        if (!target) return;
-
-        const item = prompt("ແກ້ໄຂຊື່ລາຍການຄ່າຮຽນ:", target.item);
-        if (item === null || !item.trim()) return;
-        const grade = prompt("ແກ້ໄຂຫ້ອງ:", target.grade);
-        if (grade === null || !grade.trim()) return;
-        const amount = prompt("ແກ້ໄຂຈຳນວນເງິນ:", target.amount);
-        if (amount === null || !amount.trim()) return;
-
-        const cleanLabel = item.trim();
-        const cleanRoom = grade.trim();
-        target.item = cleanLabel;
-        target.studentName = cleanLabel;
-        target.name = cleanLabel;
-        target.grade = cleanRoom;
-        target.room = cleanRoom;
-        target.amount = amount.trim();
-
-        if (db && target.firestoreId) {
-            try {
-                await updateDoc(doc(db, target._col || TUITION_COLLECTION, target.firestoreId), {
-                    item: target.item,
-                    studentName: target.studentName,
-                    name: target.name,
-                    grade: target.grade,
-                    room: target.room,
-                    amount: target.amount
-                });
-            } catch (err) {
-                console.error("Firestore tuition update error:", err);
-            }
-        }
-
-        saveFeeItemsLocal();
-        renderFeeTable();
-    };
-
-    window.deleteFeeItem = async function (id) {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບຄ່າຮຽນໄດ້!");
-        const target = feeItems.find((f) => f.id === id);
-        if (!target) return;
-        if (!confirm(`ຢືນຢັນລົບລາຍການຄ່າຮຽນ "${target.item}"?`)) return;
-
-        if (db && target.firestoreId) {
-            try {
-                await deleteDoc(doc(db, target._col || TUITION_COLLECTION, target.firestoreId));
-            } catch (err) {
-                console.error("Firestore tuition delete error:", err);
-            }
-        }
-
-        feeItems = feeItems.filter((f) => f.id !== id);
-        saveFeeItemsLocal();
-        renderFeeTable();
-    };
-
     function savePaymentsLocal() {
         localStorage.setItem("school_payment_records", JSON.stringify(paymentRecords));
     }
@@ -1028,25 +851,6 @@
         refreshFinanceView();
     };
 
-    window.deleteSlipRecord = async function (recId) {
-        if (!isAdmin) return alert("ສະເພາະ Admin ເທົ່ານັ້ນທີ່ລົບລາຍການສະຫຼິບໄດ້!");
-        const target = paymentRecords.find((r) => r.id === recId);
-        if (!target) return;
-        if (!confirm(`ຢືນຢັນລົບລາຍການລາຍງານສະຫຼິບຂອງ "${target.studentName}" (${target.term})?`)) return;
-
-        if (db && target.firestoreId) {
-            try {
-                await deleteDoc(doc(db, "payment_records", target.firestoreId));
-            } catch (err) {
-                console.error("Firestore slip delete error:", err);
-            }
-        }
-
-        paymentRecords = paymentRecords.filter((r) => r.id !== recId);
-        savePaymentsLocal();
-        refreshFinanceView();
-    };
-
     function applyAdminVisibility() {
         const qrAdminBox = document.getElementById("qr-admin-box");
         if (qrAdminBox) {
@@ -1076,11 +880,9 @@
         const tbody = document.getElementById("feeTableBody");
         const selectedTerm = document.getElementById("termSelect").value;
         const filtered = feeItems.filter((f) => f.grade === userGrade || !isStudent);
-        const cols = isAdmin ? 5 : 4;
 
         if (!filtered.length) {
-            tbody.innerHTML = `<tr><td colspan="${cols}" class="center">ຍັງບໍ່ມີລາຍການຄ່າຮຽນ</td></tr>`;
-            applyAdminVisibility();
+            tbody.innerHTML = `<tr><td colspan="4" class="center">ຍັງບໍ່ມີລາຍການຄ່າຮຽນ</td></tr>`;
             return;
         }
 
@@ -1090,17 +892,8 @@
                 <td>${esc(f.grade)}</td>
                 <td>${esc(f.term || selectedTerm)}</td>
                 <td><strong>${esc(f.amount)}</strong></td>
-                ${isAdmin ? `
-                    <td>
-                        <div class="actions">
-                            <button type="button" class="btn-edit" onclick="editFeeItem('${esc(f.id)}')">ແກ້ໄຂ</button>
-                            <button type="button" class="btn-del" onclick="deleteFeeItem('${esc(f.id)}')">ລົບ</button>
-                        </div>
-                    </td>
-                ` : ""}
             </tr>
         `).join("");
-        applyAdminVisibility();
     }
 
     function renderPendingSlips() {
@@ -1136,7 +929,6 @@
                         <td>
                             <div class="actions">
                                 <button type="button" class="btn-approve" onclick="approveSlip('${esc(r.id)}')">ອະນຸມັດ</button>
-                                <button type="button" class="btn-del" onclick="deleteSlipRecord('${esc(r.id)}')">ລົບ</button>
                             </div>
                         </td>
                     ` : ""}
@@ -1222,7 +1014,7 @@
         const paidBanner = document.getElementById("paidTermBanner");
         const btnSubmitSlip = document.getElementById("btnSubmitSlip");
 
-        renderSubjectTable(false);
+        renderSubjectTable();
         renderFeeTable();
         renderPendingSlips();
         renderPaidHistory();
@@ -1316,7 +1108,7 @@
     window.addEventListener("school-data-updated", () => loadFinanceFromFirestore());
 
     applyAdminVisibility();
-    renderSubjectTable(true);
+    renderSubjectTable();
     refreshFinanceView();
     loadFinanceFromFirestore();
 </script>
