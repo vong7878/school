@@ -450,6 +450,11 @@
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    const DAYS_ORDER = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"];
+    const MONTHS_ORDER = [
+        "ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມິຖຸນາ",
+        "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວາ"
+    ];
     const DEFAULT_SUBJECTS = ["ຄະນິດສາດ", "ຟີຊິກສາດ", "ເຄມີສາດ", "ຊີວະສາດ", "ພາສາລາວ", "ພາສາອັງກິດ", "ໄອທີ / ຄອມ"];
     let availableSubjects = [...DEFAULT_SUBJECTS];
 
@@ -458,6 +463,29 @@
     }
     function cleanGrade(v) {
         return cleanVal(v).replace(/\s+/g, "");
+    }
+    function cleanDay(v) {
+        const base = cleanVal(v)
+            .replace(/^ວັນ/i, "")
+            .replace(/^ມື້/i, "")
+            .trim();
+        const lower = base.toLowerCase();
+
+        if (["ຈັນ", "mon", "monday"].includes(lower)) return "ຈັນ";
+        if (["ອັງຄານ", "ຄານ", "ຄາມ", "tue", "tuesday"].includes(lower)) return "ອັງຄານ";
+        if (["ພຸດ", "wed", "wednesday"].includes(lower)) return "ພຸດ";
+        if (["ພະຫັດ", "ພຶຫັດ", "thu", "thursday"].includes(lower)) return "ພະຫັດ";
+        if (["ສຸກ", "fri", "friday"].includes(lower)) return "ສຸກ";
+        if (["ເສົາ", "sat", "saturday"].includes(lower)) return "ເສົາ";
+        if (["ອາທິດ", "sun", "sunday"].includes(lower)) return "ອາທິດ";
+        return base;
+    }
+    function cleanMonth(v, fallback = "ກັນຍາ") {
+        const cleaned = cleanVal(v).replace(/^ເດືອນ/i, "").trim();
+        if (MONTHS_ORDER.includes(cleaned)) return cleaned;
+        const num = parseInt(cleaned, 10);
+        if (num >= 1 && num <= 12) return MONTHS_ORDER[num - 1];
+        return fallback;
     }
     function boundNum(v, min, max, fallback = 0) {
         const n = Number(v);
@@ -508,7 +536,7 @@
             return `subj:${cleanVal(item.name).toLowerCase()}__${cleanGrade(item.grade).toLowerCase()}`;
         }
         if (tabKey === "schedules") {
-            return `sched:${cleanVal(item.week).toLowerCase()}__${cleanVal(item.day).toLowerCase()}__${cleanVal(item.period)}__${cleanGrade(item.room).toLowerCase()}`;
+            return `sched:${cleanVal(item.week).toLowerCase()}__${cleanDay(item.day).toLowerCase()}__${cleanVal(item.period)}__${cleanGrade(item.room).toLowerCase()}`;
         }
         if (tabKey === "tuition") {
             return `tuition:${cleanVal(item.studentId).toLowerCase()}__${cleanGrade(item.room).toLowerCase()}__${cleanVal(item.term).toLowerCase()}__${cleanVal(item.subject).toLowerCase()}`;
@@ -543,7 +571,16 @@
                 }
             }
         });
-        return Array.from(map.values());
+        const deduped = Array.from(map.values());
+        if (tabKey === "schedules") {
+            deduped.sort((a, b) => {
+                const ia = DAYS_ORDER.indexOf(cleanDay(a.day));
+                const ib = DAYS_ORDER.indexOf(cleanDay(b.day));
+                if (ia !== ib) return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+                return (Number(a.period) || 0) - (Number(b.period) || 0);
+            });
+        }
+        return deduped;
     }
 
     const userName = cleanVal(localStorage.getItem("userName")) || "ຜູ້ໃຊ້ງານ";
@@ -703,7 +740,7 @@
             primaryCol: "weekly_schedules",
             fields: [
                 { name: "week", label: "ອາທິດ (ເຊັ່ນ 2026-W46 ຫຼື ວ່າງ=ທຸກອາທິດ)", type: "text", required: false, placeholder: "2026-W46" },
-                { name: "day", label: "ມື້ (ຈັນ-ສຸກ)", type: "text", required: true, placeholder: "ຈັນ" },
+                { name: "day", label: "ມື້ (ຈັນ-ອາທິດ)", type: "text", required: true, placeholder: "ຈັນ" },
                 { name: "period", label: "ຊົ່ວໂມງທີ (1-4)", type: "text", required: true, placeholder: "1" },
                 { name: "room", label: "ຫ້ອງຮຽນ", type: "text", required: true, placeholder: "ມ.6/1" },
                 { name: "subject", label: "ວິຊາ", type: "text", required: true, placeholder: "ຄະນິດສາດ" },
@@ -720,7 +757,7 @@
             mapDoc: (d, id) => ({
                 id,
                 week: cleanVal(d.week || ""),
-                day: cleanVal(d.day || "").replace(/^ວັນ/, ""),
+                day: cleanDay(d.day || ""),
                 period: cleanVal(d.period || "1"),
                 room: cleanVal(d.room || d.grade || ""),
                 subject: cleanVal(d.subject || ""),
@@ -857,6 +894,8 @@
             fields: [
                 { name: "term", label: "ຊື່ເທີມຮຽນ", type: "text", required: true, placeholder: "ເທີມ 1 / 2026-2027" },
                 { name: "academicYear", label: "ສົກຮຽນ", type: "text", required: true, placeholder: "2026-2027" },
+                { name: "startMonth", label: "ເປີດເທີມເດືອນ", type: "select", required: true, options: MONTHS_ORDER },
+                { name: "endMonth", label: "ປິດເທີມເດືອນ", type: "select", required: true, options: MONTHS_ORDER },
                 { name: "grade", label: "ຫ້ອງ (ALL = ທຸກຫ້ອງ ຫຼື ມ.5)", type: "text", required: true, placeholder: "ALL" },
                 { name: "totalPeriods", label: "ຈຳນວນຄາບທັງໝົດ", type: "number", required: true, placeholder: "40", min: 1, max: 500, step: "1" },
                 { name: "maxScore", label: "ຄະແນນເຕັມ", type: "number", required: true, placeholder: "20", min: 1, max: 100, step: "1" }
@@ -864,6 +903,7 @@
             columns: [
                 { key: "term", label: "ຊື່ເທີມຮຽນ" },
                 { key: "academicYear", label: "ສົກຮຽນ" },
+                { key: "termRangeDisplay", label: "ເປີດເທີມ - ປິດເທີມ" },
                 { key: "gradeDisplay", label: "ຫ້ອງ" },
                 { key: "periodsDisplay", label: "ຈຳນວນຄາບ" },
                 { key: "maxScore", label: "ຄະແນນເຕັມ" }
@@ -871,12 +911,17 @@
             mapDoc: (d, id) => {
                 const rawGrade = cleanVal(d.grade || "ALL");
                 const grade = (!rawGrade || rawGrade.toUpperCase() === "ALL") ? "ALL" : cleanGrade(rawGrade);
+                const startMonth = cleanMonth(d.startMonth || d.openMonth, "ກັນຍາ");
+                const endMonth = cleanMonth(d.endMonth || d.closeMonth, "ມັງກອນ");
                 const totalPeriods = Math.max(1, Number(d.totalPeriods) || 40);
                 const maxScore = Math.max(1, Number(d.maxScore) || 20);
                 return {
                     id,
                     term: cleanVal(d.term || ""),
                     academicYear: cleanVal(d.academicYear || "2026-2027"),
+                    startMonth,
+                    endMonth,
+                    termRangeDisplay: `${startMonth} – ${endMonth}`,
                     grade,
                     gradeDisplay: grade === "ALL" ? "ທຸກຫ້ອງ" : grade,
                     totalPeriods,
@@ -911,6 +956,21 @@
         }
     }
 
+    function applyTermsFormDefaults() {
+        const yrEl = document.getElementById("fld-academicYear");
+        const startEl = document.getElementById("fld-startMonth");
+        const endEl = document.getElementById("fld-endMonth");
+        const grEl = document.getElementById("fld-grade");
+        const tpEl = document.getElementById("fld-totalPeriods");
+        const msEl = document.getElementById("fld-maxScore");
+        if (yrEl && !yrEl.value) yrEl.value = "2026-2027";
+        if (startEl) startEl.value = "ກັນຍາ";
+        if (endEl) endEl.value = "ມັງກອນ";
+        if (grEl && !grEl.value) grEl.value = "ALL";
+        if (tpEl && !tpEl.value) tpEl.value = "40";
+        if (msEl && !msEl.value) msEl.value = "20";
+    }
+
     function syncTermsCache(list) {
         try {
             const normalized = list.map((item) => ({
@@ -918,6 +978,9 @@
                 firestoreId: item.id,
                 term: item.term,
                 academicYear: item.academicYear,
+                startMonth: item.startMonth,
+                endMonth: item.endMonth,
+                termRange: `${item.startMonth} – ${item.endMonth}`,
                 grade: item.grade,
                 totalPeriods: Number(item.totalPeriods) || 40,
                 maxScore: Number(item.maxScore) || 20
@@ -1002,14 +1065,7 @@
         }).join("");
 
         if (currentTab === "terms") {
-            const yrEl = document.getElementById("fld-academicYear");
-            const grEl = document.getElementById("fld-grade");
-            const tpEl = document.getElementById("fld-totalPeriods");
-            const msEl = document.getElementById("fld-maxScore");
-            if (yrEl && !yrEl.value) yrEl.value = "2026-2027";
-            if (grEl && !grEl.value) grEl.value = "ALL";
-            if (tpEl && !tpEl.value) tpEl.value = "40";
-            if (msEl && !msEl.value) msEl.value = "20";
+            applyTermsFormDefaults();
         }
 
         if (currentTab === "tuition") {
@@ -1170,14 +1226,7 @@
         editingCollectionName = null;
         document.getElementById("dynamic-crud-form").reset();
         if (currentTab === "terms") {
-            const yrEl = document.getElementById("fld-academicYear");
-            const grEl = document.getElementById("fld-grade");
-            const tpEl = document.getElementById("fld-totalPeriods");
-            const msEl = document.getElementById("fld-maxScore");
-            if (yrEl) yrEl.value = "2026-2027";
-            if (grEl) grEl.value = "ALL";
-            if (tpEl) tpEl.value = "40";
-            if (msEl) msEl.value = "20";
+            applyTermsFormDefaults();
         }
         if (currentTab === "tuition") {
             const termEl = document.getElementById("fld-term");
@@ -1279,6 +1328,9 @@
             } else if (currentTab === "terms") {
                 const term = formValues.term;
                 const academicYear = formValues.academicYear || "2026-2027";
+                const startMonth = cleanMonth(formValues.startMonth, "ກັນຍາ");
+                const endMonth = cleanMonth(formValues.endMonth, "ມັງກອນ");
+                const termRange = `${startMonth} – ${endMonth}`;
                 const rawGrade = formValues.grade;
                 const grade = (!rawGrade || rawGrade.toUpperCase() === "ALL") ? "ALL" : cleanGrade(rawGrade);
                 const totalPeriods = Math.max(1, Number(formValues.totalPeriods) || 40);
@@ -1292,6 +1344,9 @@
                     firestoreId: docId,
                     term,
                     academicYear,
+                    startMonth,
+                    endMonth,
+                    termRange,
                     grade,
                     totalPeriods,
                     maxScore,
@@ -1299,7 +1354,7 @@
                 };
 
                 await setDoc(doc(db, cfg.primaryCol, docId), termPayload, { merge: true });
-                alert(`✅ ບັນທຶກເທີມ "${term}" (${totalPeriods} ຄາບ) ສຳເລັດແລ້ວ!`);
+                alert(`✅ ບັນທຶກເທີມ "${term}" (${termRange}, ${totalPeriods} ຄາບ) ສຳເລັດແລ້ວ!`);
             } else {
                 const payload = { ...formValues };
 
@@ -1317,6 +1372,7 @@
                     payload.studentName = payload.name;
                     if (!payload.status) payload.status = "ກຳລັງຮຽນ";
                 } else if (currentTab === "schedules") {
+                    payload.day = cleanDay(payload.day);
                     payload.grade = payload.room;
                 } else if (currentTab === "tuition") {
                     const credits = Math.max(0, Number(formValues.credits) || 0);
