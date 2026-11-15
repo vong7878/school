@@ -846,3 +846,36 @@ nav *,
     font-family: inherit !important;
     line-height: 1.55 !important;
 }
+/* ແກ້ໄຂພື້ນສີຂາວ ແລະ ຕົວໜັງສືບໍ່ແຈ້ງໃນໜ້າ Dashboard */
+.dashboard-section,
+.dashboard-card,
+.stat-card,
+.summary-card,
+.overview-card,
+[class*="dashboard"] .card,
+[class*="stat"] {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border: 1px solid #334155 !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25) !important;
+}
+
+.dashboard-section h1,
+.dashboard-section h2,
+.dashboard-section h3,
+.dashboard-section p,
+.dashboard-section span,
+.dashboard-section div,
+[class*="stat"] * {
+    color: #e2e8f0;
+}
+
+/* ບັງຄັບສີຕົວເລກສະຖິຕິໃຫ້ເດັ່ນຊັດ */
+.stat-value,
+.stat-number,
+[class*="stat"] strong,
+[class*="stat"] .num,
+[class*="stat"] .count {
+    color: #38bdf8 !important;
+    font-weight: 700 !important;
+}
