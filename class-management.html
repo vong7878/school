@@ -423,6 +423,7 @@
     const DAYS_ORDER = ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"];
     const DEFAULT_GRADES = ["ມ.1", "ມ.2", "ມ.3", "ມ.4", "ມ.5", "ມ.6", "ມ.7"];
     const DEFAULT_ACADEMIC_YEAR = "2026-2027";
+    const DEFAULT_YEARS = ["2026-2027", "2027-2028", "2025-2026"];
     const DEFAULT_SEMESTER = "ພາກຮຽນທີ 1";
 
     function cleanVal(v) {
@@ -449,7 +450,7 @@
     }
 
     function normalizeAcademicYear(v) {
-        const y = cleanVal(v);
+        const y = cleanVal(v).replace(/^ສົກຮຽນ\s*/i, "").trim();
         return y || DEFAULT_ACADEMIC_YEAR;
     }
 
@@ -500,7 +501,117 @@
         return `<div><strong>${subjText}</strong>${tchText}</div>`;
     }
 
+    let termPeriodsList = JSON.parse(localStorage.getItem("school_term_periods") || "null") || [];
+    let latestSubmittedYearFromMenu8 = "";
+
+    let studentsData = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
+        { id: "STD-001", code: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", status: "ປົກກະຕິ" },
+        { id: "STD-002", code: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", status: "ປົກກະຕິ" },
+        { id: "STD-003", code: "STD-003", name: "ທ. ອານຸສອນ ວົງສາ", grade: "ມ.5", status: "ປົກກະຕິ" },
+        { id: "STD-004", code: "STD-004", name: "ນ. ດາລາວັນ ແກ້ວມະນີ", grade: "ມ.6", status: "ປົກກະຕິ" }
+    ];
+
+    function saveStudents() {
+        localStorage.setItem("school_students_list", JSON.stringify(studentsData));
+    }
+
+    let rawScheduleEntries = [];
+    let classTimetables = JSON.parse(localStorage.getItem("school_class_timetables") || "null") || {};
+    let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [];
+
+    function saveTeachingSchedules() {
+        localStorage.setItem("school_teaching_schedules", JSON.stringify(teachingSchedules));
+    }
+
+    function readLocalTermPeriods() {
+        try {
+            const cached = JSON.parse(localStorage.getItem("school_term_periods") || "null");
+            if (Array.isArray(cached) && cached.length) {
+                termPeriodsList = cached;
+            }
+        } catch (e) {}
+    }
+
+    function syncSemesterSelectFromMenu8() {
+        const semSelect = document.getElementById("semesterSelect");
+        if (!semSelect) return;
+
+        const prevSem = normalizeSemester(semSelect.value);
+        const semSet = new Set(["ພາກຮຽນທີ 1", "ພາກຮຽນທີ 2"]);
+
+        termPeriodsList.forEach((tp) => {
+            const t = cleanVal(tp?.term || tp?.semester || "");
+            if (t) semSet.add(t);
+        });
+
+        const semList = Array.from(semSet);
+        semSelect.innerHTML = semList
+            .map((s) => `<option value="${esc(s)}">${esc(s)}</option>`)
+            .join("");
+
+        if (prevSem && semList.includes(prevSem)) {
+            semSelect.value = prevSem;
+        } else if (semList.length) {
+            semSelect.value = semList[0];
+        }
+    }
+
+    function syncAcademicYearSelectOptions() {
+        readLocalTermPeriods();
+        const yearSelect = document.getElementById("academicYearSelect");
+        if (!yearSelect) return;
+
+        const prevSelected = cleanVal(yearSelect.value)
+            ? normalizeAcademicYear(yearSelect.value)
+            : "";
+        const yearSet = new Set(DEFAULT_YEARS);
+
+        const menu8Years = [];
+        termPeriodsList.forEach((tp) => {
+            const yr = cleanVal(tp?.academicYear || tp?.year || tp?.schoolYear || "");
+            if (yr) {
+                const normYr = normalizeAcademicYear(yr);
+                yearSet.add(normYr);
+                menu8Years.push(normYr);
+            }
+        });
+
+        [...rawScheduleEntries, ...teachingSchedules].forEach((entry) => {
+            const yr = cleanVal(entry?.academicYear || entry?.year || entry?.schoolYear || "");
+            if (yr) yearSet.add(normalizeAcademicYear(yr));
+        });
+
+        if (latestSubmittedYearFromMenu8) {
+            yearSet.add(latestSubmittedYearFromMenu8);
+        }
+        if (prevSelected) {
+            yearSet.add(prevSelected);
+        }
+
+        const sortedYears = Array.from(yearSet).sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+
+        yearSelect.innerHTML = sortedYears
+            .map((yr) => `<option value="${esc(yr)}">ສົກຮຽນ ${esc(yr)}</option>`)
+            .join("");
+
+        if (latestSubmittedYearFromMenu8 && sortedYears.includes(latestSubmittedYearFromMenu8)) {
+            yearSelect.value = latestSubmittedYearFromMenu8;
+            latestSubmittedYearFromMenu8 = "";
+        } else if (prevSelected && sortedYears.includes(prevSelected)) {
+            yearSelect.value = prevSelected;
+        } else if (menu8Years.length && sortedYears.includes(menu8Years[0])) {
+            yearSelect.value = menu8Years[0];
+        } else if (sortedYears.includes(DEFAULT_ACADEMIC_YEAR)) {
+            yearSelect.value = DEFAULT_ACADEMIC_YEAR;
+        } else if (sortedYears.length) {
+            yearSelect.value = sortedYears[0];
+        }
+
+        syncSemesterSelectFromMenu8();
+    }
+
     function getSelectedYear() {
+        syncAcademicYearSelectOptions();
         return normalizeAcademicYear(document.getElementById("academicYearSelect")?.value);
     }
 
@@ -546,26 +657,6 @@
             periodNum,
             schedule
         };
-    }
-
-    let termPeriodsList = JSON.parse(localStorage.getItem("school_term_periods") || "null") || [];
-    let studentsData = JSON.parse(localStorage.getItem("school_students_list") || "null") || [
-        { id: "STD-001", code: "STD-001", name: "ທ. ສົມໃຈ ພົມມະວົງ", grade: "ມ.5", status: "ປົກກະຕິ" },
-        { id: "STD-002", code: "STD-002", name: "ນ. ມາລີ ໄຊຍະສິດ", grade: "ມ.5", status: "ປົກກະຕິ" },
-        { id: "STD-003", code: "STD-003", name: "ທ. ອານຸສອນ ວົງສາ", grade: "ມ.5", status: "ປົກກະຕິ" },
-        { id: "STD-004", code: "STD-004", name: "ນ. ດາລາວັນ ແກ້ວມະນີ", grade: "ມ.6", status: "ປົກກະຕິ" }
-    ];
-
-    function saveStudents() {
-        localStorage.setItem("school_students_list", JSON.stringify(studentsData));
-    }
-
-    let rawScheduleEntries = [];
-    let classTimetables = JSON.parse(localStorage.getItem("school_class_timetables") || "null") || {};
-    let teachingSchedules = JSON.parse(localStorage.getItem("school_teaching_schedules") || "null") || [];
-
-    function saveTeachingSchedules() {
-        localStorage.setItem("school_teaching_schedules", JSON.stringify(teachingSchedules));
     }
 
     async function syncRoomSelectOptions(extraRooms = []) {
@@ -838,6 +929,7 @@
     };
 
     window.onTermPeriodChange = function () {
+        syncAcademicYearSelectOptions();
         renderClassTimetable();
         renderTeachingTimetable();
     };
@@ -865,6 +957,7 @@
         rawScheduleEntries = collected;
         teachingSchedules = collected;
         saveTeachingSchedules();
+        syncAcademicYearSelectOptions();
         await syncRoomSelectOptions();
         renderTeachingTimetable();
         renderClassTimetable();
@@ -882,6 +975,9 @@
     }
 
     async function loadFromFirestoreIfAvailable() {
+        readLocalTermPeriods();
+        syncAcademicYearSelectOptions();
+
         if (!db) return;
         try {
             const tpSnap = await getDocs(collection(db, TERM_PERIODS_COL));
@@ -892,6 +988,9 @@
                     ...d.data()
                 }));
                 localStorage.setItem("school_term_periods", JSON.stringify(termPeriodsList));
+                syncAcademicYearSelectOptions();
+                renderClassTimetable();
+                renderTeachingTimetable();
             }
         } catch (err) {}
 
@@ -920,11 +1019,27 @@
         await syncSchedulesFromAllCollections();
     }
 
+    function handleMenu8SubmitSync(detail) {
+        if (detail && detail.tab === "terms") {
+            readLocalTermPeriods();
+            if (termPeriodsList.length) {
+                const newest = termPeriodsList[termPeriodsList.length - 1];
+                if (newest?.academicYear) {
+                    latestSubmittedYearFromMenu8 = normalizeAcademicYear(newest.academicYear);
+                }
+            }
+        }
+        loadFromFirestoreIfAvailable();
+    }
+
     if (db) {
         onSnapshot(collection(db, TERM_PERIODS_COL), (snap) => {
             if (!snap.empty) {
                 termPeriodsList = snap.docs.map((d) => ({ id: d.data().id || d.id, firestoreId: d.id, ...d.data() }));
                 localStorage.setItem("school_term_periods", JSON.stringify(termPeriodsList));
+                syncAcademicYearSelectOptions();
+                renderClassTimetable();
+                renderTeachingTimetable();
             }
         }, () => {});
 
@@ -962,10 +1077,17 @@
     }
 
     window.addEventListener("storage", (e) => {
-        if (e.key === SYNC_STORAGE_KEY) loadFromFirestoreIfAvailable();
+        if (e.key === SYNC_STORAGE_KEY || e.key === "school_term_periods") {
+            let parsed = null;
+            try {
+                if (e.key === SYNC_STORAGE_KEY && e.newValue) parsed = JSON.parse(e.newValue);
+            } catch (err) {}
+            handleMenu8SubmitSync(parsed);
+        }
     });
-    window.addEventListener(SYNC_EVENT_NAME, () => loadFromFirestoreIfAvailable());
+    window.addEventListener(SYNC_EVENT_NAME, (e) => handleMenu8SubmitSync(e.detail));
 
+    syncAcademicYearSelectOptions();
     await syncRoomSelectOptions();
     renderStudents();
     renderClassTimetable();
